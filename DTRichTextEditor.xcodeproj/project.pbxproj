@@ -7,19 +7,135 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A704272713C37E9A00EE0776 /* DTCoreTextLayoutFrame+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A704271E13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.m */; };
+		A704272813C37E9A00EE0776 /* DTCursorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A704272013C37E9900EE0776 /* DTCursorView.m */; };
+		A704272913C37E9A00EE0776 /* DTRichTextEditorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A704272213C37E9900EE0776 /* DTRichTextEditorView.m */; };
+		A704272A13C37E9A00EE0776 /* DTTextPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = A704272413C37E9900EE0776 /* DTTextPosition.m */; };
+		A704272B13C37E9A00EE0776 /* DTTextRange.m in Sources */ = {isa = PBXBuildFile; fileRef = A704272613C37E9900EE0776 /* DTTextRange.m */; };
+		A704273113C37EA500EE0776 /* DTRichTextEditorAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A704272E13C37EA500EE0776 /* DTRichTextEditorAppDelegate.m */; };
+		A704273213C37EA500EE0776 /* DTRichTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A704273013C37EA500EE0776 /* DTRichTextEditorViewController.m */; };
+		A704273413C37EF500EE0776 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273313C37EF500EE0776 /* ImageIO.framework */; };
+		A704273613C37EFE00EE0776 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273513C37EFE00EE0776 /* CoreText.framework */; };
+		A704273813C37F0500EE0776 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273713C37F0500EE0776 /* QuartzCore.framework */; };
+		A704273A13C37F0B00EE0776 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273913C37F0B00EE0776 /* MediaPlayer.framework */; };
+		A70427DC13C37F3800EE0776 /* CGUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = A704276413C37F3800EE0776 /* CGUtils.m */; };
+		A70427DD13C37F3800EE0776 /* DemoAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A704276613C37F3800EE0776 /* DemoAppDelegate.m */; };
+		A70427DE13C37F3800EE0776 /* DemoSnippetsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A704276813C37F3800EE0776 /* DemoSnippetsViewController.m */; };
+		A70427DF13C37F3800EE0776 /* DemoTextViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A704276A13C37F3800EE0776 /* DemoTextViewController.m */; };
+		A70427E013C37F3800EE0776 /* DTAttributedTextContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = A704276C13C37F3800EE0776 /* DTAttributedTextContentView.m */; };
+		A70427E113C37F3800EE0776 /* DTAttributedTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = A704276E13C37F3800EE0776 /* DTAttributedTextView.m */; };
+		A70427E213C37F3800EE0776 /* DTCoreTextFontCollection.m in Sources */ = {isa = PBXBuildFile; fileRef = A704277013C37F3800EE0776 /* DTCoreTextFontCollection.m */; };
+		A70427E313C37F3800EE0776 /* DTCoreTextFontDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = A704277213C37F3800EE0776 /* DTCoreTextFontDescriptor.m */; };
+		A70427E413C37F3800EE0776 /* DTCoreTextGlyphRun.m in Sources */ = {isa = PBXBuildFile; fileRef = A704277413C37F3800EE0776 /* DTCoreTextGlyphRun.m */; };
+		A70427E513C37F3800EE0776 /* DTCoreTextLayouter.m in Sources */ = {isa = PBXBuildFile; fileRef = A704277613C37F3800EE0776 /* DTCoreTextLayouter.m */; };
+		A70427E613C37F3800EE0776 /* DTCoreTextLayoutFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = A704277813C37F3800EE0776 /* DTCoreTextLayoutFrame.m */; };
+		A70427E713C37F3800EE0776 /* DTCoreTextLayoutLine.m in Sources */ = {isa = PBXBuildFile; fileRef = A704277A13C37F3800EE0776 /* DTCoreTextLayoutLine.m */; };
+		A70427E813C37F3800EE0776 /* DTCoreTextParagraphStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = A704277C13C37F3800EE0776 /* DTCoreTextParagraphStyle.m */; };
+		A70427E913C37F3800EE0776 /* DTHTMLElement.m in Sources */ = {isa = PBXBuildFile; fileRef = A704277E13C37F3800EE0776 /* DTHTMLElement.m */; };
+		A70427EA13C37F3800EE0776 /* DTLazyImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = A704278013C37F3800EE0776 /* DTLazyImageView.m */; };
+		A70427EB13C37F3800EE0776 /* DTLinkButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A704278213C37F3800EE0776 /* DTLinkButton.m */; };
+		A70427EC13C37F3800EE0776 /* DTTextAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = A704278413C37F3800EE0776 /* DTTextAttachment.m */; };
+		A70427ED13C37F3800EE0776 /* NSAttributedString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = A704278613C37F3800EE0776 /* NSAttributedString+HTML.m */; };
+		A70427EF13C37F3800EE0776 /* NSAttributedStringRunDelegates.m in Sources */ = {isa = PBXBuildFile; fileRef = A704278A13C37F3800EE0776 /* NSAttributedStringRunDelegates.m */; };
+		A70427F013C37F3800EE0776 /* NSCharacterSet+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = A704278C13C37F3800EE0776 /* NSCharacterSet+HTML.m */; };
+		A70427F113C37F3800EE0776 /* NSData+Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = A704278E13C37F3800EE0776 /* NSData+Base64.m */; };
+		A70427F213C37F3800EE0776 /* NSMutableAttributedString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = A704279013C37F3800EE0776 /* NSMutableAttributedString+HTML.m */; };
+		A70427F313C37F3800EE0776 /* NSScanner+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = A704279213C37F3800EE0776 /* NSScanner+HTML.m */; };
+		A70427F413C37F3800EE0776 /* NSString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = A704279413C37F3800EE0776 /* NSString+HTML.m */; };
+		A70427F513C37F3800EE0776 /* NSString+UTF8Cleaner.m in Sources */ = {isa = PBXBuildFile; fileRef = A704279613C37F3800EE0776 /* NSString+UTF8Cleaner.m */; };
+		A70427F713C37F3800EE0776 /* NSURL+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = A704279A13C37F3800EE0776 /* NSURL+HTML.m */; };
+		A70427F813C37F3800EE0776 /* UIColor+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = A704279C13C37F3800EE0776 /* UIColor+HTML.m */; };
+		A70427FA13C37F3800EE0776 /* UIDevice+DTVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = A70427A013C37F3800EE0776 /* UIDevice+DTVersion.m */; };
+		A704281E13C37FEE00EE0776 /* DTRichTextEditorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A704281A13C37FEE00EE0776 /* DTRichTextEditorViewController.xib */; };
+		A704281F13C37FEE00EE0776 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A704281B13C37FEE00EE0776 /* Icon.png */; };
+		A704282013C37FEE00EE0776 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A704281C13C37FEE00EE0776 /* Icon@2x.png */; };
+		A704282113C37FEE00EE0776 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = A704281D13C37FEE00EE0776 /* MainWindow.xib */; };
 		A7F0C84313C326E900EBD027 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84213C326E900EBD027 /* UIKit.framework */; };
 		A7F0C84513C326E900EBD027 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84413C326E900EBD027 /* Foundation.framework */; };
 		A7F0C84713C326E900EBD027 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84613C326E900EBD027 /* CoreGraphics.framework */; };
 		A7F0C84D13C326E900EBD027 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A7F0C84B13C326E900EBD027 /* InfoPlist.strings */; };
 		A7F0C84F13C326E900EBD027 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A7F0C84E13C326E900EBD027 /* main.m */; };
-		A7F0C85313C326E900EBD027 /* DTRichTextEditorAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A7F0C85213C326E900EBD027 /* DTRichTextEditorAppDelegate.m */; };
-		A7F0C85513C326E900EBD027 /* DTRichTextEditorViewController.h in Resources */ = {isa = PBXBuildFile; fileRef = A7F0C85413C326E900EBD027 /* DTRichTextEditorViewController.h */; };
-		A7F0C85713C326E900EBD027 /* DTRichTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A7F0C85613C326E900EBD027 /* DTRichTextEditorViewController.m */; };
-		A7F0C85A13C326E900EBD027 /* DTRichTextEditorViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = A7F0C85813C326E900EBD027 /* DTRichTextEditorViewController_iPhone.xib */; };
-		A7F0C85D13C326E900EBD027 /* DTRichTextEditorViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = A7F0C85B13C326E900EBD027 /* DTRichTextEditorViewController_iPad.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A704271D13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTCoreTextLayoutFrame+DTRichText.h"; sourceTree = "<group>"; };
+		A704271E13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DTCoreTextLayoutFrame+DTRichText.m"; sourceTree = "<group>"; };
+		A704271F13C37E9900EE0776 /* DTCursorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTCursorView.h; sourceTree = "<group>"; };
+		A704272013C37E9900EE0776 /* DTCursorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTCursorView.m; sourceTree = "<group>"; };
+		A704272113C37E9900EE0776 /* DTRichTextEditorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditorView.h; sourceTree = "<group>"; };
+		A704272213C37E9900EE0776 /* DTRichTextEditorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorView.m; sourceTree = "<group>"; };
+		A704272313C37E9900EE0776 /* DTTextPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTTextPosition.h; sourceTree = "<group>"; };
+		A704272413C37E9900EE0776 /* DTTextPosition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTTextPosition.m; sourceTree = "<group>"; };
+		A704272513C37E9900EE0776 /* DTTextRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTTextRange.h; sourceTree = "<group>"; };
+		A704272613C37E9900EE0776 /* DTTextRange.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTTextRange.m; sourceTree = "<group>"; };
+		A704272D13C37EA500EE0776 /* DTRichTextEditorAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditorAppDelegate.h; sourceTree = "<group>"; };
+		A704272E13C37EA500EE0776 /* DTRichTextEditorAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorAppDelegate.m; sourceTree = "<group>"; };
+		A704272F13C37EA500EE0776 /* DTRichTextEditorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditorViewController.h; sourceTree = "<group>"; };
+		A704273013C37EA500EE0776 /* DTRichTextEditorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorViewController.m; sourceTree = "<group>"; };
+		A704273313C37EF500EE0776 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		A704273513C37EFE00EE0776 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		A704273713C37F0500EE0776 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		A704273913C37F0B00EE0776 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		A704276313C37F3800EE0776 /* CGUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CGUtils.h; path = Classes/CGUtils.h; sourceTree = "<group>"; };
+		A704276413C37F3800EE0776 /* CGUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CGUtils.m; path = Classes/CGUtils.m; sourceTree = "<group>"; };
+		A704276513C37F3800EE0776 /* DemoAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DemoAppDelegate.h; path = Classes/DemoAppDelegate.h; sourceTree = "<group>"; };
+		A704276613C37F3800EE0776 /* DemoAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DemoAppDelegate.m; path = Classes/DemoAppDelegate.m; sourceTree = "<group>"; };
+		A704276713C37F3800EE0776 /* DemoSnippetsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DemoSnippetsViewController.h; path = Classes/DemoSnippetsViewController.h; sourceTree = "<group>"; };
+		A704276813C37F3800EE0776 /* DemoSnippetsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DemoSnippetsViewController.m; path = Classes/DemoSnippetsViewController.m; sourceTree = "<group>"; };
+		A704276913C37F3800EE0776 /* DemoTextViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DemoTextViewController.h; path = Classes/DemoTextViewController.h; sourceTree = "<group>"; };
+		A704276A13C37F3800EE0776 /* DemoTextViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DemoTextViewController.m; path = Classes/DemoTextViewController.m; sourceTree = "<group>"; };
+		A704276B13C37F3800EE0776 /* DTAttributedTextContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextContentView.h; path = Classes/DTAttributedTextContentView.h; sourceTree = "<group>"; };
+		A704276C13C37F3800EE0776 /* DTAttributedTextContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTAttributedTextContentView.m; path = Classes/DTAttributedTextContentView.m; sourceTree = "<group>"; };
+		A704276D13C37F3800EE0776 /* DTAttributedTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextView.h; path = Classes/DTAttributedTextView.h; sourceTree = "<group>"; };
+		A704276E13C37F3800EE0776 /* DTAttributedTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTAttributedTextView.m; path = Classes/DTAttributedTextView.m; sourceTree = "<group>"; };
+		A704276F13C37F3800EE0776 /* DTCoreTextFontCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTCoreTextFontCollection.h; path = Classes/DTCoreTextFontCollection.h; sourceTree = "<group>"; };
+		A704277013C37F3800EE0776 /* DTCoreTextFontCollection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTCoreTextFontCollection.m; path = Classes/DTCoreTextFontCollection.m; sourceTree = "<group>"; };
+		A704277113C37F3800EE0776 /* DTCoreTextFontDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTCoreTextFontDescriptor.h; path = Classes/DTCoreTextFontDescriptor.h; sourceTree = "<group>"; };
+		A704277213C37F3800EE0776 /* DTCoreTextFontDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTCoreTextFontDescriptor.m; path = Classes/DTCoreTextFontDescriptor.m; sourceTree = "<group>"; };
+		A704277313C37F3800EE0776 /* DTCoreTextGlyphRun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTCoreTextGlyphRun.h; path = Classes/DTCoreTextGlyphRun.h; sourceTree = "<group>"; };
+		A704277413C37F3800EE0776 /* DTCoreTextGlyphRun.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTCoreTextGlyphRun.m; path = Classes/DTCoreTextGlyphRun.m; sourceTree = "<group>"; };
+		A704277513C37F3800EE0776 /* DTCoreTextLayouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTCoreTextLayouter.h; path = Classes/DTCoreTextLayouter.h; sourceTree = "<group>"; };
+		A704277613C37F3800EE0776 /* DTCoreTextLayouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTCoreTextLayouter.m; path = Classes/DTCoreTextLayouter.m; sourceTree = "<group>"; };
+		A704277713C37F3800EE0776 /* DTCoreTextLayoutFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTCoreTextLayoutFrame.h; path = Classes/DTCoreTextLayoutFrame.h; sourceTree = "<group>"; };
+		A704277813C37F3800EE0776 /* DTCoreTextLayoutFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTCoreTextLayoutFrame.m; path = Classes/DTCoreTextLayoutFrame.m; sourceTree = "<group>"; };
+		A704277913C37F3800EE0776 /* DTCoreTextLayoutLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTCoreTextLayoutLine.h; path = Classes/DTCoreTextLayoutLine.h; sourceTree = "<group>"; };
+		A704277A13C37F3800EE0776 /* DTCoreTextLayoutLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTCoreTextLayoutLine.m; path = Classes/DTCoreTextLayoutLine.m; sourceTree = "<group>"; };
+		A704277B13C37F3800EE0776 /* DTCoreTextParagraphStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTCoreTextParagraphStyle.h; path = Classes/DTCoreTextParagraphStyle.h; sourceTree = "<group>"; };
+		A704277C13C37F3800EE0776 /* DTCoreTextParagraphStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTCoreTextParagraphStyle.m; path = Classes/DTCoreTextParagraphStyle.m; sourceTree = "<group>"; };
+		A704277D13C37F3800EE0776 /* DTHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLElement.h; path = Classes/DTHTMLElement.h; sourceTree = "<group>"; };
+		A704277E13C37F3800EE0776 /* DTHTMLElement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTHTMLElement.m; path = Classes/DTHTMLElement.m; sourceTree = "<group>"; };
+		A704277F13C37F3800EE0776 /* DTLazyImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTLazyImageView.h; path = Classes/DTLazyImageView.h; sourceTree = "<group>"; };
+		A704278013C37F3800EE0776 /* DTLazyImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTLazyImageView.m; path = Classes/DTLazyImageView.m; sourceTree = "<group>"; };
+		A704278113C37F3800EE0776 /* DTLinkButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTLinkButton.h; path = Classes/DTLinkButton.h; sourceTree = "<group>"; };
+		A704278213C37F3800EE0776 /* DTLinkButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTLinkButton.m; path = Classes/DTLinkButton.m; sourceTree = "<group>"; };
+		A704278313C37F3800EE0776 /* DTTextAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTTextAttachment.h; path = Classes/DTTextAttachment.h; sourceTree = "<group>"; };
+		A704278413C37F3800EE0776 /* DTTextAttachment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTTextAttachment.m; path = Classes/DTTextAttachment.m; sourceTree = "<group>"; };
+		A704278513C37F3800EE0776 /* NSAttributedString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSAttributedString+HTML.h"; path = "Classes/NSAttributedString+HTML.h"; sourceTree = "<group>"; };
+		A704278613C37F3800EE0776 /* NSAttributedString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSAttributedString+HTML.m"; path = "Classes/NSAttributedString+HTML.m"; sourceTree = "<group>"; };
+		A704278913C37F3800EE0776 /* NSAttributedStringRunDelegates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSAttributedStringRunDelegates.h; path = Classes/NSAttributedStringRunDelegates.h; sourceTree = "<group>"; };
+		A704278A13C37F3800EE0776 /* NSAttributedStringRunDelegates.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSAttributedStringRunDelegates.m; path = Classes/NSAttributedStringRunDelegates.m; sourceTree = "<group>"; };
+		A704278B13C37F3800EE0776 /* NSCharacterSet+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSCharacterSet+HTML.h"; path = "Classes/NSCharacterSet+HTML.h"; sourceTree = "<group>"; };
+		A704278C13C37F3800EE0776 /* NSCharacterSet+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSCharacterSet+HTML.m"; path = "Classes/NSCharacterSet+HTML.m"; sourceTree = "<group>"; };
+		A704278D13C37F3800EE0776 /* NSData+Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSData+Base64.h"; path = "Classes/NSData+Base64.h"; sourceTree = "<group>"; };
+		A704278E13C37F3800EE0776 /* NSData+Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+Base64.m"; path = "Classes/NSData+Base64.m"; sourceTree = "<group>"; };
+		A704278F13C37F3800EE0776 /* NSMutableAttributedString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSMutableAttributedString+HTML.h"; path = "Classes/NSMutableAttributedString+HTML.h"; sourceTree = "<group>"; };
+		A704279013C37F3800EE0776 /* NSMutableAttributedString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSMutableAttributedString+HTML.m"; path = "Classes/NSMutableAttributedString+HTML.m"; sourceTree = "<group>"; };
+		A704279113C37F3800EE0776 /* NSScanner+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSScanner+HTML.h"; path = "Classes/NSScanner+HTML.h"; sourceTree = "<group>"; };
+		A704279213C37F3800EE0776 /* NSScanner+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSScanner+HTML.m"; path = "Classes/NSScanner+HTML.m"; sourceTree = "<group>"; };
+		A704279313C37F3800EE0776 /* NSString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+HTML.h"; path = "Classes/NSString+HTML.h"; sourceTree = "<group>"; };
+		A704279413C37F3800EE0776 /* NSString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+HTML.m"; path = "Classes/NSString+HTML.m"; sourceTree = "<group>"; };
+		A704279513C37F3800EE0776 /* NSString+UTF8Cleaner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+UTF8Cleaner.h"; path = "Classes/NSString+UTF8Cleaner.h"; sourceTree = "<group>"; };
+		A704279613C37F3800EE0776 /* NSString+UTF8Cleaner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+UTF8Cleaner.m"; path = "Classes/NSString+UTF8Cleaner.m"; sourceTree = "<group>"; };
+		A704279913C37F3800EE0776 /* NSURL+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSURL+HTML.h"; path = "Classes/NSURL+HTML.h"; sourceTree = "<group>"; };
+		A704279A13C37F3800EE0776 /* NSURL+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSURL+HTML.m"; path = "Classes/NSURL+HTML.m"; sourceTree = "<group>"; };
+		A704279B13C37F3800EE0776 /* UIColor+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIColor+HTML.h"; path = "Classes/UIColor+HTML.h"; sourceTree = "<group>"; };
+		A704279C13C37F3800EE0776 /* UIColor+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIColor+HTML.m"; path = "Classes/UIColor+HTML.m"; sourceTree = "<group>"; };
+		A704279F13C37F3800EE0776 /* UIDevice+DTVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIDevice+DTVersion.h"; path = "Classes/UIDevice+DTVersion.h"; sourceTree = "<group>"; };
+		A70427A013C37F3800EE0776 /* UIDevice+DTVersion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIDevice+DTVersion.m"; path = "Classes/UIDevice+DTVersion.m"; sourceTree = "<group>"; };
+		A704281A13C37FEE00EE0776 /* DTRichTextEditorViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DTRichTextEditorViewController.xib; sourceTree = "<group>"; };
+		A704281B13C37FEE00EE0776 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		A704281C13C37FEE00EE0776 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
+		A704281D13C37FEE00EE0776 /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		A7F0C83E13C326E900EBD027 /* DTRichTextEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DTRichTextEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7F0C84213C326E900EBD027 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		A7F0C84413C326E900EBD027 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -28,12 +144,6 @@
 		A7F0C84C13C326E900EBD027 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		A7F0C84E13C326E900EBD027 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A7F0C85013C326E900EBD027 /* DTRichTextEditor-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DTRichTextEditor-Prefix.pch"; sourceTree = "<group>"; };
-		A7F0C85113C326E900EBD027 /* DTRichTextEditorAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditorAppDelegate.h; sourceTree = "<group>"; };
-		A7F0C85213C326E900EBD027 /* DTRichTextEditorAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorAppDelegate.m; sourceTree = "<group>"; };
-		A7F0C85413C326E900EBD027 /* DTRichTextEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditorViewController.h; sourceTree = "<group>"; };
-		A7F0C85613C326E900EBD027 /* DTRichTextEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorViewController.m; sourceTree = "<group>"; };
-		A7F0C85913C326E900EBD027 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/DTRichTextEditorViewController_iPhone.xib; sourceTree = "<group>"; };
-		A7F0C85C13C326E900EBD027 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/DTRichTextEditorViewController_iPad.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +151,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A704273A13C37F0B00EE0776 /* MediaPlayer.framework in Frameworks */,
+				A704273813C37F0500EE0776 /* QuartzCore.framework in Frameworks */,
+				A704273613C37EFE00EE0776 /* CoreText.framework in Frameworks */,
+				A704273413C37EF500EE0776 /* ImageIO.framework in Frameworks */,
 				A7F0C84313C326E900EBD027 /* UIKit.framework in Frameworks */,
 				A7F0C84513C326E900EBD027 /* Foundation.framework in Frameworks */,
 				A7F0C84713C326E900EBD027 /* CoreGraphics.framework in Frameworks */,
@@ -50,10 +164,106 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A704271C13C37E9900EE0776 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				A704273B13C37F3800EE0776 /* NSAttributedString-Additions-for-HTML */,
+				A704271D13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.h */,
+				A704271E13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.m */,
+				A704271F13C37E9900EE0776 /* DTCursorView.h */,
+				A704272013C37E9900EE0776 /* DTCursorView.m */,
+				A704272113C37E9900EE0776 /* DTRichTextEditorView.h */,
+				A704272213C37E9900EE0776 /* DTRichTextEditorView.m */,
+				A704272313C37E9900EE0776 /* DTTextPosition.h */,
+				A704272413C37E9900EE0776 /* DTTextPosition.m */,
+				A704272513C37E9900EE0776 /* DTTextRange.h */,
+				A704272613C37E9900EE0776 /* DTTextRange.m */,
+			);
+			name = Core;
+			path = DTRichTextEditor/Core;
+			sourceTree = "<group>";
+		};
+		A704272C13C37EA500EE0776 /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				A704272D13C37EA500EE0776 /* DTRichTextEditorAppDelegate.h */,
+				A704272E13C37EA500EE0776 /* DTRichTextEditorAppDelegate.m */,
+				A704272F13C37EA500EE0776 /* DTRichTextEditorViewController.h */,
+				A704273013C37EA500EE0776 /* DTRichTextEditorViewController.m */,
+			);
+			name = Demo;
+			path = DTRichTextEditor/Demo;
+			sourceTree = "<group>";
+		};
+		A704273B13C37F3800EE0776 /* NSAttributedString-Additions-for-HTML */ = {
+			isa = PBXGroup;
+			children = (
+				A704276313C37F3800EE0776 /* CGUtils.h */,
+				A704276413C37F3800EE0776 /* CGUtils.m */,
+				A704276513C37F3800EE0776 /* DemoAppDelegate.h */,
+				A704276613C37F3800EE0776 /* DemoAppDelegate.m */,
+				A704276713C37F3800EE0776 /* DemoSnippetsViewController.h */,
+				A704276813C37F3800EE0776 /* DemoSnippetsViewController.m */,
+				A704276913C37F3800EE0776 /* DemoTextViewController.h */,
+				A704276A13C37F3800EE0776 /* DemoTextViewController.m */,
+				A704276B13C37F3800EE0776 /* DTAttributedTextContentView.h */,
+				A704276C13C37F3800EE0776 /* DTAttributedTextContentView.m */,
+				A704276D13C37F3800EE0776 /* DTAttributedTextView.h */,
+				A704276E13C37F3800EE0776 /* DTAttributedTextView.m */,
+				A704276F13C37F3800EE0776 /* DTCoreTextFontCollection.h */,
+				A704277013C37F3800EE0776 /* DTCoreTextFontCollection.m */,
+				A704277113C37F3800EE0776 /* DTCoreTextFontDescriptor.h */,
+				A704277213C37F3800EE0776 /* DTCoreTextFontDescriptor.m */,
+				A704277313C37F3800EE0776 /* DTCoreTextGlyphRun.h */,
+				A704277413C37F3800EE0776 /* DTCoreTextGlyphRun.m */,
+				A704277513C37F3800EE0776 /* DTCoreTextLayouter.h */,
+				A704277613C37F3800EE0776 /* DTCoreTextLayouter.m */,
+				A704277713C37F3800EE0776 /* DTCoreTextLayoutFrame.h */,
+				A704277813C37F3800EE0776 /* DTCoreTextLayoutFrame.m */,
+				A704277913C37F3800EE0776 /* DTCoreTextLayoutLine.h */,
+				A704277A13C37F3800EE0776 /* DTCoreTextLayoutLine.m */,
+				A704277B13C37F3800EE0776 /* DTCoreTextParagraphStyle.h */,
+				A704277C13C37F3800EE0776 /* DTCoreTextParagraphStyle.m */,
+				A704277D13C37F3800EE0776 /* DTHTMLElement.h */,
+				A704277E13C37F3800EE0776 /* DTHTMLElement.m */,
+				A704277F13C37F3800EE0776 /* DTLazyImageView.h */,
+				A704278013C37F3800EE0776 /* DTLazyImageView.m */,
+				A704278113C37F3800EE0776 /* DTLinkButton.h */,
+				A704278213C37F3800EE0776 /* DTLinkButton.m */,
+				A704278313C37F3800EE0776 /* DTTextAttachment.h */,
+				A704278413C37F3800EE0776 /* DTTextAttachment.m */,
+				A704278513C37F3800EE0776 /* NSAttributedString+HTML.h */,
+				A704278613C37F3800EE0776 /* NSAttributedString+HTML.m */,
+				A704278913C37F3800EE0776 /* NSAttributedStringRunDelegates.h */,
+				A704278A13C37F3800EE0776 /* NSAttributedStringRunDelegates.m */,
+				A704278B13C37F3800EE0776 /* NSCharacterSet+HTML.h */,
+				A704278C13C37F3800EE0776 /* NSCharacterSet+HTML.m */,
+				A704278D13C37F3800EE0776 /* NSData+Base64.h */,
+				A704278E13C37F3800EE0776 /* NSData+Base64.m */,
+				A704278F13C37F3800EE0776 /* NSMutableAttributedString+HTML.h */,
+				A704279013C37F3800EE0776 /* NSMutableAttributedString+HTML.m */,
+				A704279113C37F3800EE0776 /* NSScanner+HTML.h */,
+				A704279213C37F3800EE0776 /* NSScanner+HTML.m */,
+				A704279313C37F3800EE0776 /* NSString+HTML.h */,
+				A704279413C37F3800EE0776 /* NSString+HTML.m */,
+				A704279513C37F3800EE0776 /* NSString+UTF8Cleaner.h */,
+				A704279613C37F3800EE0776 /* NSString+UTF8Cleaner.m */,
+				A704279913C37F3800EE0776 /* NSURL+HTML.h */,
+				A704279A13C37F3800EE0776 /* NSURL+HTML.m */,
+				A704279B13C37F3800EE0776 /* UIColor+HTML.h */,
+				A704279C13C37F3800EE0776 /* UIColor+HTML.m */,
+				A704279F13C37F3800EE0776 /* UIDevice+DTVersion.h */,
+				A70427A013C37F3800EE0776 /* UIDevice+DTVersion.m */,
+			);
+			path = "NSAttributedString-Additions-for-HTML";
+			sourceTree = SOURCE_ROOT;
+		};
 		A7F0C83313C326E900EBD027 = {
 			isa = PBXGroup;
 			children = (
-				A7F0C84813C326E900EBD027 /* DTRichTextEditor */,
+				A704271C13C37E9900EE0776 /* Core */,
+				A704272C13C37EA500EE0776 /* Demo */,
+				A7F0C84913C326E900EBD027 /* Supporting Files */,
 				A7F0C84113C326E900EBD027 /* Frameworks */,
 				A7F0C83F13C326E900EBD027 /* Products */,
 			);
@@ -70,6 +280,10 @@
 		A7F0C84113C326E900EBD027 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A704273913C37F0B00EE0776 /* MediaPlayer.framework */,
+				A704273713C37F0500EE0776 /* QuartzCore.framework */,
+				A704273513C37EFE00EE0776 /* CoreText.framework */,
+				A704273313C37EF500EE0776 /* ImageIO.framework */,
 				A7F0C84213C326E900EBD027 /* UIKit.framework */,
 				A7F0C84413C326E900EBD027 /* Foundation.framework */,
 				A7F0C84613C326E900EBD027 /* CoreGraphics.framework */,
@@ -77,29 +291,20 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		A7F0C84813C326E900EBD027 /* DTRichTextEditor */ = {
-			isa = PBXGroup;
-			children = (
-				A7F0C85113C326E900EBD027 /* DTRichTextEditorAppDelegate.h */,
-				A7F0C85213C326E900EBD027 /* DTRichTextEditorAppDelegate.m */,
-				A7F0C85413C326E900EBD027 /* DTRichTextEditorViewController.h */,
-				A7F0C85613C326E900EBD027 /* DTRichTextEditorViewController.m */,
-				A7F0C85813C326E900EBD027 /* DTRichTextEditorViewController_iPhone.xib */,
-				A7F0C85B13C326E900EBD027 /* DTRichTextEditorViewController_iPad.xib */,
-				A7F0C84913C326E900EBD027 /* Supporting Files */,
-			);
-			path = DTRichTextEditor;
-			sourceTree = "<group>";
-		};
 		A7F0C84913C326E900EBD027 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A704281A13C37FEE00EE0776 /* DTRichTextEditorViewController.xib */,
+				A704281B13C37FEE00EE0776 /* Icon.png */,
+				A704281C13C37FEE00EE0776 /* Icon@2x.png */,
+				A704281D13C37FEE00EE0776 /* MainWindow.xib */,
 				A7F0C84A13C326E900EBD027 /* DTRichTextEditor-Info.plist */,
 				A7F0C84B13C326E900EBD027 /* InfoPlist.strings */,
 				A7F0C84E13C326E900EBD027 /* main.m */,
 				A7F0C85013C326E900EBD027 /* DTRichTextEditor-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			path = DTRichTextEditor;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -150,9 +355,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				A7F0C84D13C326E900EBD027 /* InfoPlist.strings in Resources */,
-				A7F0C85513C326E900EBD027 /* DTRichTextEditorViewController.h in Resources */,
-				A7F0C85A13C326E900EBD027 /* DTRichTextEditorViewController_iPhone.xib in Resources */,
-				A7F0C85D13C326E900EBD027 /* DTRichTextEditorViewController_iPad.xib in Resources */,
+				A704281E13C37FEE00EE0776 /* DTRichTextEditorViewController.xib in Resources */,
+				A704281F13C37FEE00EE0776 /* Icon.png in Resources */,
+				A704282013C37FEE00EE0776 /* Icon@2x.png in Resources */,
+				A704282113C37FEE00EE0776 /* MainWindow.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -164,8 +370,41 @@
 			buildActionMask = 2147483647;
 			files = (
 				A7F0C84F13C326E900EBD027 /* main.m in Sources */,
-				A7F0C85313C326E900EBD027 /* DTRichTextEditorAppDelegate.m in Sources */,
-				A7F0C85713C326E900EBD027 /* DTRichTextEditorViewController.m in Sources */,
+				A704272713C37E9A00EE0776 /* DTCoreTextLayoutFrame+DTRichText.m in Sources */,
+				A704272813C37E9A00EE0776 /* DTCursorView.m in Sources */,
+				A704272913C37E9A00EE0776 /* DTRichTextEditorView.m in Sources */,
+				A704272A13C37E9A00EE0776 /* DTTextPosition.m in Sources */,
+				A704272B13C37E9A00EE0776 /* DTTextRange.m in Sources */,
+				A704273113C37EA500EE0776 /* DTRichTextEditorAppDelegate.m in Sources */,
+				A704273213C37EA500EE0776 /* DTRichTextEditorViewController.m in Sources */,
+				A70427DC13C37F3800EE0776 /* CGUtils.m in Sources */,
+				A70427DD13C37F3800EE0776 /* DemoAppDelegate.m in Sources */,
+				A70427DE13C37F3800EE0776 /* DemoSnippetsViewController.m in Sources */,
+				A70427DF13C37F3800EE0776 /* DemoTextViewController.m in Sources */,
+				A70427E013C37F3800EE0776 /* DTAttributedTextContentView.m in Sources */,
+				A70427E113C37F3800EE0776 /* DTAttributedTextView.m in Sources */,
+				A70427E213C37F3800EE0776 /* DTCoreTextFontCollection.m in Sources */,
+				A70427E313C37F3800EE0776 /* DTCoreTextFontDescriptor.m in Sources */,
+				A70427E413C37F3800EE0776 /* DTCoreTextGlyphRun.m in Sources */,
+				A70427E513C37F3800EE0776 /* DTCoreTextLayouter.m in Sources */,
+				A70427E613C37F3800EE0776 /* DTCoreTextLayoutFrame.m in Sources */,
+				A70427E713C37F3800EE0776 /* DTCoreTextLayoutLine.m in Sources */,
+				A70427E813C37F3800EE0776 /* DTCoreTextParagraphStyle.m in Sources */,
+				A70427E913C37F3800EE0776 /* DTHTMLElement.m in Sources */,
+				A70427EA13C37F3800EE0776 /* DTLazyImageView.m in Sources */,
+				A70427EB13C37F3800EE0776 /* DTLinkButton.m in Sources */,
+				A70427EC13C37F3800EE0776 /* DTTextAttachment.m in Sources */,
+				A70427ED13C37F3800EE0776 /* NSAttributedString+HTML.m in Sources */,
+				A70427EF13C37F3800EE0776 /* NSAttributedStringRunDelegates.m in Sources */,
+				A70427F013C37F3800EE0776 /* NSCharacterSet+HTML.m in Sources */,
+				A70427F113C37F3800EE0776 /* NSData+Base64.m in Sources */,
+				A70427F213C37F3800EE0776 /* NSMutableAttributedString+HTML.m in Sources */,
+				A70427F313C37F3800EE0776 /* NSScanner+HTML.m in Sources */,
+				A70427F413C37F3800EE0776 /* NSString+HTML.m in Sources */,
+				A70427F513C37F3800EE0776 /* NSString+UTF8Cleaner.m in Sources */,
+				A70427F713C37F3800EE0776 /* NSURL+HTML.m in Sources */,
+				A70427F813C37F3800EE0776 /* UIColor+HTML.m in Sources */,
+				A70427FA13C37F3800EE0776 /* UIDevice+DTVersion.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,22 +419,6 @@
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
-		A7F0C85813C326E900EBD027 /* DTRichTextEditorViewController_iPhone.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				A7F0C85913C326E900EBD027 /* en */,
-			);
-			name = DTRichTextEditorViewController_iPhone.xib;
-			sourceTree = "<group>";
-		};
-		A7F0C85B13C326E900EBD027 /* DTRichTextEditorViewController_iPad.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				A7F0C85C13C326E900EBD027 /* en */,
-			);
-			name = DTRichTextEditorViewController_iPad.xib;
-			sourceTree = "<group>";
-		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -204,7 +427,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -219,7 +441,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -230,7 +452,6 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -238,7 +459,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -287,6 +508,7 @@
 				A7F0C86213C326E900EBD027 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

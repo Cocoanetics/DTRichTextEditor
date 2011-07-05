@@ -2,19 +2,16 @@
 //  main.m
 //  DTRichTextEditor
 //
-//  Created by Oliver Drobnik on 7/5/11.
+//  Created by Oliver Drobnik on 1/23/11.
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
-#import "DTRichTextEditorAppDelegate.h"
-
-int main(int argc, char *argv[])
-{
-	int retVal = 0;
-	@autoreleasepool {
-	    retVal = UIApplicationMain(argc, argv, nil, NSStringFromClass([DTRichTextEditorAppDelegate class]));
-	}
-	return retVal;
+int main(int argc, char *argv[]) {
+    
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+    int retVal = UIApplicationMain(argc, argv, nil, nil);
+    [pool release];
+    return retVal;
 }
