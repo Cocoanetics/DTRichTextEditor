@@ -1,0 +1,294 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A7F0C84313C326E900EBD027 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84213C326E900EBD027 /* UIKit.framework */; };
+		A7F0C84513C326E900EBD027 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84413C326E900EBD027 /* Foundation.framework */; };
+		A7F0C84713C326E900EBD027 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84613C326E900EBD027 /* CoreGraphics.framework */; };
+		A7F0C84D13C326E900EBD027 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A7F0C84B13C326E900EBD027 /* InfoPlist.strings */; };
+		A7F0C84F13C326E900EBD027 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A7F0C84E13C326E900EBD027 /* main.m */; };
+		A7F0C85313C326E900EBD027 /* DTRichTextEditorAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A7F0C85213C326E900EBD027 /* DTRichTextEditorAppDelegate.m */; };
+		A7F0C85513C326E900EBD027 /* DTRichTextEditorViewController.h in Resources */ = {isa = PBXBuildFile; fileRef = A7F0C85413C326E900EBD027 /* DTRichTextEditorViewController.h */; };
+		A7F0C85713C326E900EBD027 /* DTRichTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A7F0C85613C326E900EBD027 /* DTRichTextEditorViewController.m */; };
+		A7F0C85A13C326E900EBD027 /* DTRichTextEditorViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = A7F0C85813C326E900EBD027 /* DTRichTextEditorViewController_iPhone.xib */; };
+		A7F0C85D13C326E900EBD027 /* DTRichTextEditorViewController_iPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = A7F0C85B13C326E900EBD027 /* DTRichTextEditorViewController_iPad.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A7F0C83E13C326E900EBD027 /* DTRichTextEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DTRichTextEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7F0C84213C326E900EBD027 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		A7F0C84413C326E900EBD027 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		A7F0C84613C326E900EBD027 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		A7F0C84A13C326E900EBD027 /* DTRichTextEditor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DTRichTextEditor-Info.plist"; sourceTree = "<group>"; };
+		A7F0C84C13C326E900EBD027 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A7F0C84E13C326E900EBD027 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A7F0C85013C326E900EBD027 /* DTRichTextEditor-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DTRichTextEditor-Prefix.pch"; sourceTree = "<group>"; };
+		A7F0C85113C326E900EBD027 /* DTRichTextEditorAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditorAppDelegate.h; sourceTree = "<group>"; };
+		A7F0C85213C326E900EBD027 /* DTRichTextEditorAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorAppDelegate.m; sourceTree = "<group>"; };
+		A7F0C85413C326E900EBD027 /* DTRichTextEditorViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditorViewController.h; sourceTree = "<group>"; };
+		A7F0C85613C326E900EBD027 /* DTRichTextEditorViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorViewController.m; sourceTree = "<group>"; };
+		A7F0C85913C326E900EBD027 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/DTRichTextEditorViewController_iPhone.xib; sourceTree = "<group>"; };
+		A7F0C85C13C326E900EBD027 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/DTRichTextEditorViewController_iPad.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A7F0C83B13C326E900EBD027 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7F0C84313C326E900EBD027 /* UIKit.framework in Frameworks */,
+				A7F0C84513C326E900EBD027 /* Foundation.framework in Frameworks */,
+				A7F0C84713C326E900EBD027 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A7F0C83313C326E900EBD027 = {
+			isa = PBXGroup;
+			children = (
+				A7F0C84813C326E900EBD027 /* DTRichTextEditor */,
+				A7F0C84113C326E900EBD027 /* Frameworks */,
+				A7F0C83F13C326E900EBD027 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A7F0C83F13C326E900EBD027 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A7F0C83E13C326E900EBD027 /* DTRichTextEditor.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A7F0C84113C326E900EBD027 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A7F0C84213C326E900EBD027 /* UIKit.framework */,
+				A7F0C84413C326E900EBD027 /* Foundation.framework */,
+				A7F0C84613C326E900EBD027 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A7F0C84813C326E900EBD027 /* DTRichTextEditor */ = {
+			isa = PBXGroup;
+			children = (
+				A7F0C85113C326E900EBD027 /* DTRichTextEditorAppDelegate.h */,
+				A7F0C85213C326E900EBD027 /* DTRichTextEditorAppDelegate.m */,
+				A7F0C85413C326E900EBD027 /* DTRichTextEditorViewController.h */,
+				A7F0C85613C326E900EBD027 /* DTRichTextEditorViewController.m */,
+				A7F0C85813C326E900EBD027 /* DTRichTextEditorViewController_iPhone.xib */,
+				A7F0C85B13C326E900EBD027 /* DTRichTextEditorViewController_iPad.xib */,
+				A7F0C84913C326E900EBD027 /* Supporting Files */,
+			);
+			path = DTRichTextEditor;
+			sourceTree = "<group>";
+		};
+		A7F0C84913C326E900EBD027 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A7F0C84A13C326E900EBD027 /* DTRichTextEditor-Info.plist */,
+				A7F0C84B13C326E900EBD027 /* InfoPlist.strings */,
+				A7F0C84E13C326E900EBD027 /* main.m */,
+				A7F0C85013C326E900EBD027 /* DTRichTextEditor-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A7F0C83D13C326E900EBD027 /* DTRichTextEditor */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A7F0C86013C326E900EBD027 /* Build configuration list for PBXNativeTarget "DTRichTextEditor" */;
+			buildPhases = (
+				A7F0C83A13C326E900EBD027 /* Sources */,
+				A7F0C83B13C326E900EBD027 /* Frameworks */,
+				A7F0C83C13C326E900EBD027 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DTRichTextEditor;
+			productName = DTRichTextEditor;
+			productReference = A7F0C83E13C326E900EBD027 /* DTRichTextEditor.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A7F0C83513C326E900EBD027 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = A7F0C83813C326E900EBD027 /* Build configuration list for PBXProject "DTRichTextEditor" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A7F0C83313C326E900EBD027;
+			productRefGroup = A7F0C83F13C326E900EBD027 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A7F0C83D13C326E900EBD027 /* DTRichTextEditor */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A7F0C83C13C326E900EBD027 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7F0C84D13C326E900EBD027 /* InfoPlist.strings in Resources */,
+				A7F0C85513C326E900EBD027 /* DTRichTextEditorViewController.h in Resources */,
+				A7F0C85A13C326E900EBD027 /* DTRichTextEditorViewController_iPhone.xib in Resources */,
+				A7F0C85D13C326E900EBD027 /* DTRichTextEditorViewController_iPad.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A7F0C83A13C326E900EBD027 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7F0C84F13C326E900EBD027 /* main.m in Sources */,
+				A7F0C85313C326E900EBD027 /* DTRichTextEditorAppDelegate.m in Sources */,
+				A7F0C85713C326E900EBD027 /* DTRichTextEditorViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A7F0C84B13C326E900EBD027 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A7F0C84C13C326E900EBD027 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		A7F0C85813C326E900EBD027 /* DTRichTextEditorViewController_iPhone.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A7F0C85913C326E900EBD027 /* en */,
+			);
+			name = DTRichTextEditorViewController_iPhone.xib;
+			sourceTree = "<group>";
+		};
+		A7F0C85B13C326E900EBD027 /* DTRichTextEditorViewController_iPad.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A7F0C85C13C326E900EBD027 /* en */,
+			);
+			name = DTRichTextEditorViewController_iPad.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A7F0C85E13C326E900EBD027 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A7F0C85F13C326E900EBD027 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A7F0C86113C326E900EBD027 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "DTRichTextEditor/DTRichTextEditor-Prefix.pch";
+				INFOPLIST_FILE = "DTRichTextEditor/DTRichTextEditor-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		A7F0C86213C326E900EBD027 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "DTRichTextEditor/DTRichTextEditor-Prefix.pch";
+				INFOPLIST_FILE = "DTRichTextEditor/DTRichTextEditor-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A7F0C83813C326E900EBD027 /* Build configuration list for PBXProject "DTRichTextEditor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7F0C85E13C326E900EBD027 /* Debug */,
+				A7F0C85F13C326E900EBD027 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A7F0C86013C326E900EBD027 /* Build configuration list for PBXNativeTarget "DTRichTextEditor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7F0C86113C326E900EBD027 /* Debug */,
+				A7F0C86213C326E900EBD027 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A7F0C83513C326E900EBD027 /* Project object */;
+}
