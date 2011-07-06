@@ -47,7 +47,7 @@
     self.keyboardType = UIKeyboardTypeDefault;
     self.returnKeyType = UIReturnKeyDefault;
     self.secureTextEntry = NO;
- //   self.spellCheckingType = UITextSpellCheckingTypeYes;
+	//   self.spellCheckingType = UITextSpellCheckingTypeYes;
     
     self.selectionAffinity = UITextStorageDirectionForward;
 	
@@ -70,7 +70,7 @@
 - (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	 
+	
 	[_selectedTextRange release];
 	[_markedTextRange release];
 	[_loupe release];
@@ -101,11 +101,11 @@
 	[self.contentView addGestureRecognizer:longPress];
 	[longPress release];
 	
-//	
-//	UITapGestureRecognizer *doubletap = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubletapped:)] autorelease];
-//	doubletap.numberOfTapsRequired = 2;
-//	doubletap.delegate = self;
-//	[self.contentView addGestureRecognizer:doubletap];
+	//	
+	//	UITapGestureRecognizer *doubletap = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubletapped:)] autorelease];
+	//	doubletap.numberOfTapsRequired = 2;
+	//	doubletap.delegate = self;
+	//	[self.contentView addGestureRecognizer:doubletap];
 	
 	
     self.backgroundColor = [UIColor whiteColor];
@@ -170,6 +170,31 @@
 	[self.inputDelegate selectionDidChange:self];
 }
 
+#pragma mark Menu
+
+- (void)hideContextMenu
+{
+	UIMenuController *menuController = [UIMenuController sharedMenuController];
+	
+	if ([menuController isMenuVisible])
+	{
+		[menuController setMenuVisible:NO animated:YES];
+	}
+}
+
+- (void)showContextMenuFromTargetRect:(CGRect)targetRect
+{
+	UIMenuController *menuController = [UIMenuController sharedMenuController];
+	UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Item" action:@selector(menuItemClicked:)];
+	
+	//NSAssert([self becomeFirstResponder], @"Sorry, UIMenuController will not work with %@ since it cannot become first responder", self);
+	//[menuController setMenuItems:[NSArray arrayWithObject:resetMenuItem]];
+	[menuController setTargetRect:targetRect inView:self];
+	[menuController setMenuVisible:YES animated:YES];
+	
+	[resetMenuItem release];
+}
+
 #pragma mark -
 #pragma mark Debugging
 - (void)addSubview:(UIView *)view
@@ -209,24 +234,88 @@
     
 }
 
+- (DTTextRange *)rangeForWordAtPosition:(DTTextPosition *)position
+{
+	DTTextRange *forRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionForward];
+    DTTextRange *backRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionBackward];
+	
+    if (forRange && backRange) 
+	{
+        DTTextRange *newRange = [DTTextRange textRangeFromStart:[backRange start] toEnd:[backRange end]];
+		return newRange;
+    }
+	else if (forRange) 
+	{
+		return forRange;
+    } 
+	else if (backRange) 
+	{
+		return backRange;
+    }
+	
+	return nil;
+}
+
 - (void)select:(id)sender
 {
-    
+	DTTextPosition *currentPosition = [_selectedTextRange start];
+	DTTextRange *wordRange = [self rangeForWordAtPosition:currentPosition];
+	
+	if (wordRange)
+	{
+		[self setSelectedTextRange:wordRange];
+		return;
+	}
+	
+	// we did not get a forward or backward range, like Word!|
+	DTTextPosition *previousPosition = (id)([tokenizer positionFromPosition:currentPosition
+																 toBoundary:UITextGranularityWord 
+																inDirection:UITextStorageDirectionBackward]);
+	
+	wordRange = [self rangeForWordAtPosition:previousPosition];
+	
+	if (wordRange)
+	{
+		// extend this range to go up to current position
+		DTTextRange *newRange = [DTTextRange textRangeFromStart:[wordRange start] toEnd:currentPosition];
+		
+		[self setSelectedTextRange:newRange];
+	}
 }
 
 - (void)selectAll:(id)sender
 {
-    
+	DTTextRange *fullRange = [DTTextRange textRangeFromStart:(DTTextPosition *)[self beginningOfDocument] toEnd:(DTTextPosition *)[self endOfDocument]];
+	[self setSelectedTextRange:fullRange];
 }
 
 - (void)delete:(id)sender
 {
-    
+	
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
-    return NO;
+//	NSLog(@"canPerform: %@", NSStringFromSelector(action));
+	
+	
+	if (action == @selector(selectAll:))
+	{
+		return YES;
+	}
+	
+	if (action == @selector(select:))
+	{
+		return YES;
+	}
+	
+	if (action == @selector(paste:))
+	{
+		// TODO: check pasteboard if there is something contained that can be pasted here
+		return NO;
+	}
+	
+	return NO;
 }
 
 #pragma mark UIKeyInput Protocol
@@ -252,11 +341,14 @@
 		DTTextRange *selectedRange = (id)self.selectedTextRange;
 		
 		[self replaceRange:selectedRange withText:text];
-		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:(id)selectedRange.start offset:[text length]]];
+		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[selectedRange start] offset:[text length]]];
 		// leave marking intact
 	}
-}
 	
+	// hide context menu on inserting text
+	[self hideContextMenu];
+}
+
 - (void)deleteBackward
 {
 	DTTextRange *currentRange = (id)[self selectedTextRange];
@@ -265,14 +357,14 @@
 	{
 		// delete character left of carret
 		
-		DTTextPosition *delEnd = (id)currentRange.start;
+		DTTextPosition *delEnd = [currentRange start];
 		DTTextPosition *docStart = (id)[self beginningOfDocument];
 		
 		if ([docStart compare:delEnd] == NSOrderedAscending)
 		{
 			DTTextPosition *delStart = [DTTextPosition textPositionWithLocation:delEnd.location-1];
 			DTTextRange *delRange = [DTTextRange textRangeFromStart:delStart toEnd:delEnd];
-
+			
 			[self replaceRange:delRange  withText:@""];
 			[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:delStart offset:0]];
 		}
@@ -281,8 +373,11 @@
 	{
 		// delete selection
 		[self replaceRange:currentRange withText:nil];
-		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:(id)currentRange.start offset:0]];
+		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[currentRange start] offset:0]];
 	}
+	
+	// hide context menu on deleting text
+	[self hideContextMenu];
 }
 
 #pragma mark -
@@ -303,9 +398,9 @@
 - (void)replaceRange:(DTTextRange *)range withText:(NSString *)text
 {
 	NSRange myRange = [range NSRangeValue];
-    
-    [range retain];
-    
+	
+	[range retain];
+	
 	if (!text)
 	{
 		// text could be nil, but that's not valid for replaceCharactersInRange
@@ -317,15 +412,15 @@
 		[_internalAttributedText replaceCharactersInRange:myRange withString:text];
 		self.attributedString = _internalAttributedText;
 		
-		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:(id)range.start offset:[text length]]];
+		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:[text length]]];
 		//[self setSelectedTextRange:range];
 	}
 	else 
 	{
 		_internalAttributedText = [[NSMutableAttributedString alloc] initWithString:text];
 		self.attributedString = _internalAttributedText;
-        
-        // makes passed range a zombie!
+		
+		// makes passed range a zombie!
 		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:(id)[self beginningOfDocument] offset:[text length]]];
 	}
 	
@@ -342,10 +437,10 @@
 {
 	if (!_selectedTextRange)
 	{
-       // [inputDelegate selectionWillChange:self];
+		// [inputDelegate selectionWillChange:self];
 		DTTextPosition *begin = (id)[self beginningOfDocument];
 		_selectedTextRange = [[DTTextRange alloc] initWithStart:begin end:begin];
-       // [inputDelegate selectionDidChange:self];
+		// [inputDelegate selectionDidChange:self];
 	}
 	
 	return (id)_selectedTextRange;
@@ -353,18 +448,18 @@
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange
 {
-    if (_selectedTextRange != newTextRange)
-    {
-        [self willChangeValueForKey:@"selectedTextRange"];
-        [_selectedTextRange release];
-        
-        _selectedTextRange = [newTextRange copy];
-        
-        [self updateCursor];
-        
-        [self.selectionLayer setNeedsDisplay];
-        [self didChangeValueForKey:@"selectedTextRange"];
-    }
+	if (_selectedTextRange != newTextRange)
+	{
+		[self willChangeValueForKey:@"selectedTextRange"];
+		[_selectedTextRange release];
+		
+		_selectedTextRange = [newTextRange copy];
+		
+		[self updateCursor];
+		
+		[self.selectionLayer setNeedsDisplay];
+		[self didChangeValueForKey:@"selectedTextRange"];
+	}
 }
 
 - (UITextRange *)markedTextRange
@@ -397,7 +492,7 @@
 	DTTextRange *currentMarkedRange = (id)self.markedTextRange;
 	DTTextRange *currentSelection = (id)self.selectedTextRange;
 	DTTextRange *replaceRange;
-    
+	
 	if (currentMarkedRange)
 	{
 		// replace current marked text
@@ -413,20 +508,20 @@
 		{
 			replaceRange = currentSelection;
 		}
-        
+		
 	}
 	
 	// do the replacing
 	[self replaceRange:replaceRange withText:markedText];
 	
 	// adjust selection
-	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:(id)replaceRange.start offset:[markedText length]]];
-    
+	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[replaceRange start] offset:[markedText length]]];
+	
 	[self willChangeValueForKey:@"markedTextRange"];
 	
 	// selected range is always zero-based
-	DTTextPosition *startOfReplaceRange = (id)replaceRange.start;
-    
+	DTTextPosition *startOfReplaceRange = [replaceRange start];
+	
 	// set new marked range
 	[_markedTextRange release];
 	_markedTextRange = [[DTTextRange alloc] initWithNSRange:NSMakeRange(startOfReplaceRange.location, [markedText length])];
@@ -475,7 +570,7 @@
 			return begin;
 		}
 	}
-    
+	
 	if (offset>0)
 	{
 		if (([position compare:end] == NSOrderedAscending))
@@ -622,14 +717,14 @@
 {
 	DTTextPosition *position = (id)[self closestPositionToPoint:point];
 	
-	if ([position compare:(id)range.start] == NSOrderedAscending)
+	if ([position compare:[range start]] == NSOrderedAscending)
 	{
-		return range.start;
+		return [range start];
 	}
 	
-	if ([position compare:(id)range.end] == NSOrderedDescending)
+	if ([position compare:[range end]] == NSOrderedDescending)
 	{
-		return range.end;
+		return [range end];
 	}
 	
 	return position;
@@ -637,12 +732,12 @@
 
 - (UITextRange *)characterRangeAtPoint:(CGPoint)point
 {
-    NSInteger index = [self.contentView.layoutFrame closestIndexToPoint:point];
-    
-    DTTextPosition *position = [DTTextPosition textPositionWithLocation:index];
-    DTTextRange *range = [DTTextRange textRangeFromStart:position toEnd:position];
-    
-    return range;
+	NSInteger index = [self.contentView.layoutFrame closestIndexToPoint:point];
+	
+	DTTextPosition *position = [DTTextPosition textPositionWithLocation:index];
+	DTTextRange *range = [DTTextRange textRangeFromStart:position toEnd:position];
+	
+	return range;
 }
 
 #pragma mark Text Input Delegate and Text Input Tokenizer
@@ -661,43 +756,43 @@
 #pragma mark Returning Text Styling Information
 - (NSDictionary *)textStylingAtPosition:(DTTextPosition *)position inDirection:(UITextStorageDirection)direction;
 {
-    if (!position)
-        return nil;
-    
+	if (!position)
+		return nil;
+	
 	if ([position isEqual:(id)[self endOfDocument]])
 	{
 		direction = UITextStorageDirectionBackward;
 	}
 	
-    NSDictionary *ctStyles;
-    if (direction == UITextStorageDirectionBackward && index > 0)
-        ctStyles = [_internalAttributedText attributesAtIndex:position.location-1 effectiveRange:NULL];
-    else
-        ctStyles = [_internalAttributedText attributesAtIndex:position.location effectiveRange:NULL];
-    
-    /* TODO: Return typingAttributes, if position is the same as the insertion point? */
+	NSDictionary *ctStyles;
+	if (direction == UITextStorageDirectionBackward && index > 0)
+		ctStyles = [_internalAttributedText attributesAtIndex:position.location-1 effectiveRange:NULL];
+	else
+		ctStyles = [_internalAttributedText attributesAtIndex:position.location effectiveRange:NULL];
 	
-    NSMutableDictionary *uiStyles = [ctStyles mutableCopy];
-    [uiStyles autorelease];
-    
-    CTFontRef ctFont = (CTFontRef)[ctStyles objectForKey:(id)kCTFontAttributeName];
-    if (ctFont) 
+	/* TODO: Return typingAttributes, if position is the same as the insertion point? */
+	
+	NSMutableDictionary *uiStyles = [ctStyles mutableCopy];
+	[uiStyles autorelease];
+	
+	CTFontRef ctFont = (CTFontRef)[ctStyles objectForKey:(id)kCTFontAttributeName];
+	if (ctFont) 
 	{
-        /* As far as I can tell, the name that UIFont wants is the PostScript name of the font. (It's undocumented, of course. RADAR 7881781 / 7241008) */
-        CFStringRef fontName = CTFontCopyPostScriptName(ctFont);
-        UIFont *uif = [UIFont fontWithName:(id)fontName size:CTFontGetSize(ctFont)];
-        CFRelease(fontName);
-        [uiStyles setObject:uif forKey:UITextInputTextFontKey];
-    }
-    
-    CGColorRef cgColor = (CGColorRef)[ctStyles objectForKey:(id)kCTForegroundColorAttributeName];
-    if (cgColor)
-        [uiStyles setObject:[UIColor colorWithCGColor:cgColor] forKey:UITextInputTextColorKey];
-    
-    if (self.backgroundColor)
-        [uiStyles setObject:self.backgroundColor forKey:UITextInputTextBackgroundColorKey];
-    
-    return uiStyles;
+		/* As far as I can tell, the name that UIFont wants is the PostScript name of the font. (It's undocumented, of course. RADAR 7881781 / 7241008) */
+		CFStringRef fontName = CTFontCopyPostScriptName(ctFont);
+		UIFont *uif = [UIFont fontWithName:(id)fontName size:CTFontGetSize(ctFont)];
+		CFRelease(fontName);
+		[uiStyles setObject:uif forKey:UITextInputTextFontKey];
+	}
+	
+	CGColorRef cgColor = (CGColorRef)[ctStyles objectForKey:(id)kCTForegroundColorAttributeName];
+	if (cgColor)
+		[uiStyles setObject:[UIColor colorWithCGColor:cgColor] forKey:UITextInputTextColorKey];
+	
+	if (self.backgroundColor)
+		[uiStyles setObject:self.backgroundColor forKey:UITextInputTextBackgroundColorKey];
+	
+	return uiStyles;
 }
 
 
@@ -766,19 +861,14 @@
 		
 		[self moveCursorToPositionClosestToLocation:touchPoint];
 	}
-}
-
-- (void)doubletapped:(UITapGestureRecognizer *)gesture
-{
-	if (gesture.state == UIGestureRecognizerStateRecognized)
-	{
-		contentView.drawDebugFrames = !contentView.drawDebugFrames;
-	}
+	
+	[self showContextMenuFromTargetRect:_cursor.frame];
+	
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture 
 {
-    CGPoint touchPoint = [gesture locationInView:self.contentView];
+	CGPoint touchPoint = [gesture locationInView:self.contentView];
 	
 	switch (gesture.state) 
 	{
@@ -789,9 +879,9 @@
 			[_loupe presentLoupeFromLocation:touchPoint];
 			
 			_cursor.state = DTCursorStateStatic;
-			break;
 		}
 			
+			// one began we also set the touch point and move the cursor
 		case UIGestureRecognizerStateChanged:
 		{
 			_loupe.touchPoint = touchPoint;
@@ -803,12 +893,22 @@
 			
 		default:
 		{
-			[_loupe dismissLoupeTowardsLocation:touchPoint];
-
+			[_loupe dismissLoupeTowardsLocation:self.cursor.center];
+			
 			_cursor.state = DTCursorStateBlinking;
+			
+			[self showContextMenuFromTargetRect:self.cursor.frame];
 			
 			break;
 		}
+	}
+}
+
+- (void)doubletapped:(UITapGestureRecognizer *)gesture
+{
+	if (gesture.state == UIGestureRecognizerStateRecognized)
+	{
+		contentView.drawDebugFrames = !contentView.drawDebugFrames;
 	}
 }
 
@@ -846,7 +946,7 @@
 			// no selection to draw
 			return;
 		}
-
+		
 		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_selectedTextRange NSRangeValue]];
 		
 		CGContextSetRGBFillColor(ctx, 0, 0.338, 0.652, 0.204);
@@ -859,23 +959,23 @@
 	}
 	else if (layer == markLayer)
 	{
-			if (!_markedTextRange)
-			{
-				// no selection to draw
-				return;
-			}
-			
-			NSArray *rects = [self.contentView.layoutFrame selectionRectsForRange:[_markedTextRange NSRangeValue]];
-			
-			CGContextSetRGBFillColor(ctx, 0, 0.652, 0.338, 0.204);
-			
-			for (NSValue *value in rects)
-			{
-				CGRect rect = [value CGRectValue];
-				CGContextFillRect(ctx, rect);
-			}
+		if (!_markedTextRange)
+		{
+			// no selection to draw
+			return;
+		}
+		
+		NSArray *rects = [self.contentView.layoutFrame selectionRectsForRange:[_markedTextRange NSRangeValue]];
+		
+		CGContextSetRGBFillColor(ctx, 0, 0.652, 0.338, 0.204);
+		
+		for (NSValue *value in rects)
+		{
+			CGRect rect = [value CGRectValue];
+			CGContextFillRect(ctx, rect);
+		}
 	}
-
+	
 }
 
 #pragma mark Notifications

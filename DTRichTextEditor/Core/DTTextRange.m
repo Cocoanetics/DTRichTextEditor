@@ -82,15 +82,15 @@
 	return [_start isEqual:_end];
 }
 
-- (UITextPosition *)start
-{
-	return _start;
-}
-
-- (UITextPosition *)end
-{
-	return _end;
-}
+//- (UITextPosition *)start
+//{
+//	return _start;
+//}
+//
+//- (UITextPosition *)end
+//{
+//	return _end;
+//}
 
 - (NSRange)NSRangeValue
 {
@@ -107,6 +107,17 @@
 	return [NSString stringWithFormat:@"<%@ start:%@ end:%@>", [self class], _start, _end];
 }
 
+- (DTTextPosition *)start
+{
+	return (DTTextPosition *)_start;
+}
+
+- (DTTextPosition *)end
+{
+	return (DTTextPosition *)_end;
+}
+
+
 #pragma mark Copying
 - (id)copyWithZone:(NSZone *)zone
 {
@@ -115,7 +126,7 @@
 	return newRange;
 }
 
-//@synthesize _start;
-//@synthesize _end;
+@synthesize start = _start;
+@synthesize end = _end;
 
 @end

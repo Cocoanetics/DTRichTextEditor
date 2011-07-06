@@ -28,4 +28,8 @@
 - (NSRange)NSRangeValue;
 - (NSUInteger)length;
 
+- (DTTextPosition *)start;
+- (DTTextPosition *)end;
+
+
 @end

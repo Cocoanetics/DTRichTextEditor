@@ -208,12 +208,12 @@
 				A704271E13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.m */,
 				A704271F13C37E9900EE0776 /* DTCursorView.h */,
 				A704272013C37E9900EE0776 /* DTCursorView.m */,
-				A704272113C37E9900EE0776 /* DTRichTextEditorView.h */,
-				A704272213C37E9900EE0776 /* DTRichTextEditorView.m */,
 				A704272313C37E9900EE0776 /* DTTextPosition.h */,
 				A704272413C37E9900EE0776 /* DTTextPosition.m */,
 				A704272513C37E9900EE0776 /* DTTextRange.h */,
 				A704272613C37E9900EE0776 /* DTTextRange.m */,
+				A704272113C37E9900EE0776 /* DTRichTextEditorView.h */,
+				A704272213C37E9900EE0776 /* DTRichTextEditorView.m */,
 			);
 			name = Core;
 			path = DTRichTextEditor/Core;
