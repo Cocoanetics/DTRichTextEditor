@@ -77,7 +77,7 @@
 	
 	[_internalAttributedText release];
 	[markedTextStyle release];
-	[cursorView release];
+	[_cursor release];
 	[selectionLayer release];
 	
 	[super dealloc];
@@ -127,22 +127,40 @@
 	
 	if (!position || ![_selectedTextRange isEmpty])
 	{
-		[cursorView removeFromSuperview];
+		[_cursor removeFromSuperview];
 		return;
 	}
 	
 	CGRect cursorFrame = [self caretRectForPosition:self.selectedTextRange.start];
     cursorFrame.size.width = 3.0;
 	
-	if (!cursorView)
+	if (!_cursor)
 	{
-		self.cursorView = [[[DTCursorView alloc] initWithFrame:cursorFrame] autorelease];
+		self.cursor = [[[DTCursorView alloc] initWithFrame:cursorFrame] autorelease];
 	}
 	
-	self.cursorView.frame = cursorFrame;
-	[self.contentView addSubview:cursorView];
+	self.cursor.frame = cursorFrame;
+	[self.contentView addSubview:_cursor];
 	
 	[self scrollRectToVisible:cursorFrame animated:YES];
+}
+
+- (void)moveCursorToPositionClosestToLocation:(CGPoint)location
+{
+	[self.inputDelegate selectionWillChange:self];
+	
+	if (!self.markedTextRange)
+	{
+		DTTextPosition *position = (id)[self closestPositionToPoint:location];
+		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:position offset:0]];
+	}
+	else 
+	{
+		DTTextPosition *position = (id)[self closestPositionToPoint:location];
+		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:position offset:0]];
+	}
+	
+	[self.inputDelegate selectionDidChange:self];
 }
 
 #pragma mark -
@@ -807,6 +825,8 @@
 			_loupe.touchPoint = touchPoint;
 			
 			[_loupe presentLoupeFromLocation:touchPoint];
+			
+			_cursor.state = DTCursorStateStatic;
 			break;
 		}
 			
@@ -815,12 +835,16 @@
 			// Show Cursor and position between glyphs
 			_loupe.touchPoint = touchPoint;
 			
+			[self moveCursorToPositionClosestToLocation:touchPoint];
+			
 			break;
 		}
 			
 		default:
 		{
 			[_loupe dismissLoupeTowardsLocation:touchPoint];
+
+			_cursor.state = DTCursorStateBlinking;
 			
 			break;
 		}
@@ -958,7 +982,6 @@
 
 @synthesize markedTextRange = _markedTextRange;
 
-@synthesize cursorView;
 @synthesize selectionLayer;
 @synthesize markLayer;
 @synthesize editable = _editable;
@@ -975,6 +998,8 @@
 //@synthesize spellCheckingType;
 
 @synthesize loupe = _loupe;
+@synthesize cursor = _cursor;
+
 
 
 @end

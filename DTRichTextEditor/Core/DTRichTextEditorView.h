@@ -39,7 +39,6 @@
     BOOL secureTextEntry;                                // default is NO
 	
   //  UITextSpellCheckingType spellCheckingType;
-	DTCursorView *cursorView;
 	
 	CALayer *selectionLayer;
 	CALayer *markLayer;
@@ -48,6 +47,7 @@
     BOOL _editable;
 	
 	DTLoupeView *_loupe;
+	DTCursorView *_cursor;
 }
 
 
@@ -59,7 +59,7 @@
 @property (nonatomic, copy) NSDictionary *markedTextStyle;
 @property (nonatomic) UITextStorageDirection selectionAffinity;
 
-@property (nonatomic, retain) DTCursorView *cursorView;
+@property (nonatomic, retain) DTCursorView *cursor;
 
 // UITextInputTraits
 @property(nonatomic) UITextAutocapitalizationType autocapitalizationType;
