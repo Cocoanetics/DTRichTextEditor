@@ -93,7 +93,7 @@
     self.editable = YES;
     self.selectionAffinity = UITextStorageDirectionForward;
     // experiment: should be provided
-	tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapped:)];
+	tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
 	tap.delegate = self;
 	[self.contentView addGestureRecognizer:tap];
 	
@@ -112,10 +112,17 @@
 	
 	self.clipsToBounds = YES;
 	self.textDelegate = self;
-    self.scrollEnabled = NO; 
+    self.scrollEnabled = YES; 
 	
 	// for autocorrection candidate view
 	self.userInteractionEnabled = YES;
+}
+
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+	// need to skip self hitTest or else we get an endless hitTest loop
+	return [self.contentView hitTest:point withEvent:event];
 }
 
 #pragma mark -
@@ -171,13 +178,13 @@
     [super addSubview:view];
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-	UIView *hitView = [super hitTest:point withEvent:event];
-	
-	NSLog(@"hitView: %@", hitView);
-	return hitView;
-}
+//- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+//{
+//	UIView *hitView = [super hitTest:point withEvent:event];
+//	
+//	NSLog(@"hitView: %@", hitView);
+//	return hitView;
+//}
 
 #pragma mark -
 #pragma mark UIResponder
@@ -219,7 +226,7 @@
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
-    return YES;
+    return NO;
 }
 
 #pragma mark UIKeyInput Protocol
@@ -745,24 +752,8 @@
 }
 
 #pragma mark Gestures
-- (void)tapped:(UITapGestureRecognizer *)gesture
+- (void)handleTap:(UITapGestureRecognizer *)gesture
 {
-	
-	CGPoint point = [gesture locationInView:self.contentView];
-	UIView *hitView = [self.contentView hitTest:point withEvent:nil];
-	
-	NSLog(@"%@", hitView);
-	
-//	if (hitView != self.contentView)
-//	{
-//		// cause cancelling of this gesture
-//
-//		gesture.enabled = NO; 
-//		gesture.enabled = YES;
-//		return;
-//		
-//	}
-	
 	if (gesture.state == UIGestureRecognizerStateRecognized)
 	{
 		if (![self isFirstResponder] && [self canBecomeFirstResponder])
@@ -771,35 +762,9 @@
 			//gesture.enabled = NO;
 		}
 		
+		CGPoint touchPoint = [gesture locationInView:self.contentView];
 		
-		
-		
-		//if (hitView == self.contentView)
-		{
-			NSLog(@"tapped");
-			
-			[self.inputDelegate selectionWillChange:self];
-
-			if (!self.markedTextRange)
-			{
-				DTTextPosition *position = (id)[self closestPositionToPoint:[gesture locationInView:self.contentView]];
-				[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:position offset:0]];
-			}
-			else 
-			{
-				DTTextPosition *position = (id)[self closestPositionToPoint:[gesture locationInView:self.contentView] withinRange:self.markedTextRange];
-				[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:position offset:0]];
-			}
-
-			
-			//[self unmarkText];
-		
-		[self.inputDelegate selectionDidChange:self];
-			
-		//	[inputDelegate textWillChange:self];
-		//	[inputDelegate textDidChange:self];
-			
-		}
+		[self moveCursorToPositionClosestToLocation:touchPoint];
 	}
 }
 
@@ -820,10 +785,7 @@
 		case UIGestureRecognizerStateBegan:
 		{
 			self.loupe.style = DTLoupeStyleCircle;
-			
-			// The Initial TouchPoint needs to be set before we set the style
 			_loupe.touchPoint = touchPoint;
-			
 			[_loupe presentLoupeFromLocation:touchPoint];
 			
 			_cursor.state = DTCursorStateStatic;
@@ -832,7 +794,6 @@
 			
 		case UIGestureRecognizerStateChanged:
 		{
-			// Show Cursor and position between glyphs
 			_loupe.touchPoint = touchPoint;
 			
 			[self moveCursorToPositionClosestToLocation:touchPoint];
