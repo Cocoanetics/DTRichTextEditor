@@ -8,12 +8,20 @@
 
 #import <UIKit/UIKit.h>
 
-
 extern NSString * const DTCursorViewDidBlink;
+
+typedef enum 
+{
+	DTCursorStateBlinking = 0,
+	DTCursorStateStatic
+} DTCursorState;
 
 @interface DTCursorView : UIView 
 {
 	NSTimer *blinkingTimer;
+	DTCursorState _state;
 }
+
+@property (nonatomic, assign) DTCursorState state;
 
 @end

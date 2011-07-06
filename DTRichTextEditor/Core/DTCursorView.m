@@ -17,9 +17,8 @@ NSString * const DTCursorViewDidBlink = @"DTCursorViewDidBlink";
 - (id)initWithFrame:(CGRect)frame {
     
     self = [super initWithFrame:frame];
-    if (self) {
-        // Initialization code.
-		
+    if (self) 
+	{
 		self.backgroundColor = [UIColor colorWithRed:66.07/255.0 green:107.0/255.0 blue:242.0/255.0 alpha:1.0];
     }
     return self;
@@ -48,26 +47,8 @@ NSString * const DTCursorViewDidBlink = @"DTCursorViewDidBlink";
 	}
 }
 
-- (void)setFrame:(CGRect)newFrame
+- (void)setTimerForNextBlink
 {
-	if (newFrame.size.width==0)
-	{
-		NSLog(@"???");
-	}
-	
-	// frame changing keeps cursor visible
-	[blinkingTimer invalidate], blinkingTimer = nil;
-	self.hidden = NO;
-	
-	[super setFrame:newFrame];
-	
-	blinkingTimer = [NSTimer scheduledTimerWithTimeInterval:0.8 target:self selector:@selector(blink:) userInfo:nil repeats:NO];
-}
-
-- (void)blink:(NSTimer *)timer
-{
-	self.hidden = !self.hidden;
-	
 	if (self.hidden)
 	{
 		blinkingTimer = [NSTimer scheduledTimerWithTimeInterval:0.4 target:self selector:@selector(blink:) userInfo:nil repeats:NO];
@@ -76,9 +57,58 @@ NSString * const DTCursorViewDidBlink = @"DTCursorViewDidBlink";
 	{
 		blinkingTimer = [NSTimer scheduledTimerWithTimeInterval:0.8 target:self selector:@selector(blink:) userInfo:nil repeats:NO];
 	}
+}
+
+- (void)setFrame:(CGRect)newFrame
+{
+	[super setFrame:newFrame];
+	
+	// frame changing keeps cursor visible
+	[blinkingTimer invalidate], blinkingTimer = nil;
+	self.hidden = NO;
+
+	// blink after a while again
+	[self setTimerForNextBlink];
+}
+
+- (void)blink:(NSTimer *)timer
+{
+	self.hidden = !self.hidden;
+	
+	[self setTimerForNextBlink];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:DTCursorViewDidBlink object:self];
 }
 
+#pragma mark Properties
+
+- (void)setState:(DTCursorState)state
+{
+	_state = state;
+	
+	switch (state) 
+	{
+		case DTCursorStateBlinking:
+		{
+			if (!blinkingTimer)
+			{
+				[self setTimerForNextBlink];
+			}
+			
+			break;
+		}
+			
+		case DTCursorStateStatic:
+		{
+			[blinkingTimer invalidate], blinkingTimer = nil;
+			
+			self.hidden = NO;
+			
+			break;
+		}
+	}
+}
+
+@synthesize state = _state;
 
 @end
