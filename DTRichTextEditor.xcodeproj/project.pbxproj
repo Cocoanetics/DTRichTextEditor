@@ -50,6 +50,23 @@
 		A704281F13C37FEE00EE0776 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A704281B13C37FEE00EE0776 /* Icon.png */; };
 		A704282013C37FEE00EE0776 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A704281C13C37FEE00EE0776 /* Icon@2x.png */; };
 		A704282113C37FEE00EE0776 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = A704281D13C37FEE00EE0776 /* MainWindow.xib */; };
+		A7DD237D13C449BC0015C604 /* DTLoupeView.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DD236C13C449BC0015C604 /* DTLoupeView.m */; };
+		A7DD237E13C449BC0015C604 /* kb-drag-dot.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD236D13C449BC0015C604 /* kb-drag-dot.png */; };
+		A7DD237F13C449BC0015C604 /* kb-drag-dot@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD236E13C449BC0015C604 /* kb-drag-dot@2x.png */; };
+		A7DD238013C449BC0015C604 /* kb-loupe-hi.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD236F13C449BC0015C604 /* kb-loupe-hi.png */; };
+		A7DD238113C449BC0015C604 /* kb-loupe-hi@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237013C449BC0015C604 /* kb-loupe-hi@2x.png */; };
+		A7DD238213C449BC0015C604 /* kb-loupe-lo.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237113C449BC0015C604 /* kb-loupe-lo.png */; };
+		A7DD238313C449BC0015C604 /* kb-loupe-lo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237213C449BC0015C604 /* kb-loupe-lo@2x.png */; };
+		A7DD238413C449BC0015C604 /* kb-loupe-mask.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237313C449BC0015C604 /* kb-loupe-mask.png */; };
+		A7DD238513C449BC0015C604 /* kb-loupe-mask@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237413C449BC0015C604 /* kb-loupe-mask@2x.png */; };
+		A7DD238613C449BC0015C604 /* kb-magnifier-ranged-hi.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237513C449BC0015C604 /* kb-magnifier-ranged-hi.png */; };
+		A7DD238713C449BC0015C604 /* kb-magnifier-ranged-hi@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237613C449BC0015C604 /* kb-magnifier-ranged-hi@2x.png */; };
+		A7DD238813C449BC0015C604 /* kb-magnifier-ranged-lo-stemless.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237713C449BC0015C604 /* kb-magnifier-ranged-lo-stemless.png */; };
+		A7DD238913C449BC0015C604 /* kb-magnifier-ranged-lo-stemless@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237813C449BC0015C604 /* kb-magnifier-ranged-lo-stemless@2x.png */; };
+		A7DD238A13C449BC0015C604 /* kb-magnifier-ranged-lo.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237913C449BC0015C604 /* kb-magnifier-ranged-lo.png */; };
+		A7DD238B13C449BC0015C604 /* kb-magnifier-ranged-lo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237A13C449BC0015C604 /* kb-magnifier-ranged-lo@2x.png */; };
+		A7DD238C13C449BC0015C604 /* kb-magnifier-ranged-mask.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237B13C449BC0015C604 /* kb-magnifier-ranged-mask.png */; };
+		A7DD238D13C449BC0015C604 /* kb-magnifier-ranged-mask@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237C13C449BC0015C604 /* kb-magnifier-ranged-mask@2x.png */; };
 		A7F0C84313C326E900EBD027 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84213C326E900EBD027 /* UIKit.framework */; };
 		A7F0C84513C326E900EBD027 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84413C326E900EBD027 /* Foundation.framework */; };
 		A7F0C84713C326E900EBD027 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84613C326E900EBD027 /* CoreGraphics.framework */; };
@@ -136,6 +153,24 @@
 		A704281B13C37FEE00EE0776 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		A704281C13C37FEE00EE0776 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		A704281D13C37FEE00EE0776 /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
+		A7DD236B13C449BC0015C604 /* DTLoupeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTLoupeView.h; sourceTree = "<group>"; };
+		A7DD236C13C449BC0015C604 /* DTLoupeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTLoupeView.m; sourceTree = "<group>"; };
+		A7DD236D13C449BC0015C604 /* kb-drag-dot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-drag-dot.png"; sourceTree = "<group>"; };
+		A7DD236E13C449BC0015C604 /* kb-drag-dot@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-drag-dot@2x.png"; sourceTree = "<group>"; };
+		A7DD236F13C449BC0015C604 /* kb-loupe-hi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-loupe-hi.png"; sourceTree = "<group>"; };
+		A7DD237013C449BC0015C604 /* kb-loupe-hi@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-loupe-hi@2x.png"; sourceTree = "<group>"; };
+		A7DD237113C449BC0015C604 /* kb-loupe-lo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-loupe-lo.png"; sourceTree = "<group>"; };
+		A7DD237213C449BC0015C604 /* kb-loupe-lo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-loupe-lo@2x.png"; sourceTree = "<group>"; };
+		A7DD237313C449BC0015C604 /* kb-loupe-mask.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-loupe-mask.png"; sourceTree = "<group>"; };
+		A7DD237413C449BC0015C604 /* kb-loupe-mask@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-loupe-mask@2x.png"; sourceTree = "<group>"; };
+		A7DD237513C449BC0015C604 /* kb-magnifier-ranged-hi.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-magnifier-ranged-hi.png"; sourceTree = "<group>"; };
+		A7DD237613C449BC0015C604 /* kb-magnifier-ranged-hi@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-magnifier-ranged-hi@2x.png"; sourceTree = "<group>"; };
+		A7DD237713C449BC0015C604 /* kb-magnifier-ranged-lo-stemless.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-magnifier-ranged-lo-stemless.png"; sourceTree = "<group>"; };
+		A7DD237813C449BC0015C604 /* kb-magnifier-ranged-lo-stemless@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-magnifier-ranged-lo-stemless@2x.png"; sourceTree = "<group>"; };
+		A7DD237913C449BC0015C604 /* kb-magnifier-ranged-lo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-magnifier-ranged-lo.png"; sourceTree = "<group>"; };
+		A7DD237A13C449BC0015C604 /* kb-magnifier-ranged-lo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-magnifier-ranged-lo@2x.png"; sourceTree = "<group>"; };
+		A7DD237B13C449BC0015C604 /* kb-magnifier-ranged-mask.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-magnifier-ranged-mask.png"; sourceTree = "<group>"; };
+		A7DD237C13C449BC0015C604 /* kb-magnifier-ranged-mask@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-magnifier-ranged-mask@2x.png"; sourceTree = "<group>"; };
 		A7F0C83E13C326E900EBD027 /* DTRichTextEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DTRichTextEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7F0C84213C326E900EBD027 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		A7F0C84413C326E900EBD027 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -168,6 +203,7 @@
 			isa = PBXGroup;
 			children = (
 				A704273B13C37F3800EE0776 /* NSAttributedString-Additions-for-HTML */,
+				A7DD236A13C449BC0015C604 /* DTLoupeView */,
 				A704271D13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.h */,
 				A704271E13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.m */,
 				A704271F13C37E9900EE0776 /* DTCursorView.h */,
@@ -257,6 +293,39 @@
 			);
 			path = "NSAttributedString-Additions-for-HTML";
 			sourceTree = SOURCE_ROOT;
+		};
+		A7DD236A13C449BC0015C604 /* DTLoupeView */ = {
+			isa = PBXGroup;
+			children = (
+				A7DD239113C450EC0015C604 /* Images */,
+				A7DD236B13C449BC0015C604 /* DTLoupeView.h */,
+				A7DD236C13C449BC0015C604 /* DTLoupeView.m */,
+			);
+			path = DTLoupeView;
+			sourceTree = SOURCE_ROOT;
+		};
+		A7DD239113C450EC0015C604 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				A7DD236D13C449BC0015C604 /* kb-drag-dot.png */,
+				A7DD236E13C449BC0015C604 /* kb-drag-dot@2x.png */,
+				A7DD236F13C449BC0015C604 /* kb-loupe-hi.png */,
+				A7DD237013C449BC0015C604 /* kb-loupe-hi@2x.png */,
+				A7DD237113C449BC0015C604 /* kb-loupe-lo.png */,
+				A7DD237213C449BC0015C604 /* kb-loupe-lo@2x.png */,
+				A7DD237313C449BC0015C604 /* kb-loupe-mask.png */,
+				A7DD237413C449BC0015C604 /* kb-loupe-mask@2x.png */,
+				A7DD237513C449BC0015C604 /* kb-magnifier-ranged-hi.png */,
+				A7DD237613C449BC0015C604 /* kb-magnifier-ranged-hi@2x.png */,
+				A7DD237713C449BC0015C604 /* kb-magnifier-ranged-lo-stemless.png */,
+				A7DD237813C449BC0015C604 /* kb-magnifier-ranged-lo-stemless@2x.png */,
+				A7DD237913C449BC0015C604 /* kb-magnifier-ranged-lo.png */,
+				A7DD237A13C449BC0015C604 /* kb-magnifier-ranged-lo@2x.png */,
+				A7DD237B13C449BC0015C604 /* kb-magnifier-ranged-mask.png */,
+				A7DD237C13C449BC0015C604 /* kb-magnifier-ranged-mask@2x.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
 		};
 		A7F0C83313C326E900EBD027 = {
 			isa = PBXGroup;
@@ -359,6 +428,22 @@
 				A704281F13C37FEE00EE0776 /* Icon.png in Resources */,
 				A704282013C37FEE00EE0776 /* Icon@2x.png in Resources */,
 				A704282113C37FEE00EE0776 /* MainWindow.xib in Resources */,
+				A7DD237E13C449BC0015C604 /* kb-drag-dot.png in Resources */,
+				A7DD237F13C449BC0015C604 /* kb-drag-dot@2x.png in Resources */,
+				A7DD238013C449BC0015C604 /* kb-loupe-hi.png in Resources */,
+				A7DD238113C449BC0015C604 /* kb-loupe-hi@2x.png in Resources */,
+				A7DD238213C449BC0015C604 /* kb-loupe-lo.png in Resources */,
+				A7DD238313C449BC0015C604 /* kb-loupe-lo@2x.png in Resources */,
+				A7DD238413C449BC0015C604 /* kb-loupe-mask.png in Resources */,
+				A7DD238513C449BC0015C604 /* kb-loupe-mask@2x.png in Resources */,
+				A7DD238613C449BC0015C604 /* kb-magnifier-ranged-hi.png in Resources */,
+				A7DD238713C449BC0015C604 /* kb-magnifier-ranged-hi@2x.png in Resources */,
+				A7DD238813C449BC0015C604 /* kb-magnifier-ranged-lo-stemless.png in Resources */,
+				A7DD238913C449BC0015C604 /* kb-magnifier-ranged-lo-stemless@2x.png in Resources */,
+				A7DD238A13C449BC0015C604 /* kb-magnifier-ranged-lo.png in Resources */,
+				A7DD238B13C449BC0015C604 /* kb-magnifier-ranged-lo@2x.png in Resources */,
+				A7DD238C13C449BC0015C604 /* kb-magnifier-ranged-mask.png in Resources */,
+				A7DD238D13C449BC0015C604 /* kb-magnifier-ranged-mask@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,6 +490,7 @@
 				A70427F713C37F3800EE0776 /* NSURL+HTML.m in Sources */,
 				A70427F813C37F3800EE0776 /* UIColor+HTML.m in Sources */,
 				A70427FA13C37F3800EE0776 /* UIDevice+DTVersion.m in Sources */,
+				A7DD237D13C449BC0015C604 /* DTLoupeView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

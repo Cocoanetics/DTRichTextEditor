@@ -9,6 +9,8 @@
 #import "DTCursorView.h"
 
 
+NSString * const DTCursorViewDidBlink = @"DTCursorViewDidBlink";
+
 @implementation DTCursorView
 
 
@@ -66,8 +68,6 @@
 {
 	self.hidden = !self.hidden;
 	
-//	NSLog(@"%@", NSStringFromCGRect(self.frame));
-	
 	if (self.hidden)
 	{
 		blinkingTimer = [NSTimer scheduledTimerWithTimeInterval:0.4 target:self selector:@selector(blink:) userInfo:nil repeats:NO];
@@ -76,7 +76,8 @@
 	{
 		blinkingTimer = [NSTimer scheduledTimerWithTimeInterval:0.8 target:self selector:@selector(blink:) userInfo:nil repeats:NO];
 	}
-
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:DTCursorViewDidBlink object:self];
 }
 
 

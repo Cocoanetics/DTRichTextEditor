@@ -20,11 +20,15 @@
 
 #import "DTCoreTextLayoutFrame+DTRichText.h"
 
+#import "DTLoupeView.h"
+
 @interface DTRichTextEditorView ()
 
 @property (nonatomic, retain) NSMutableAttributedString *internalAttributedText;
 @property (nonatomic, retain) CALayer *selectionLayer;
 @property (nonatomic, retain) CALayer *markLayer;
+
+@property (nonatomic, retain) DTLoupeView *loupe;
 
 @end
 
@@ -46,6 +50,9 @@
  //   self.spellCheckingType = UITextSpellCheckingTypeYes;
     
     self.selectionAffinity = UITextStorageDirectionForward;
+	
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cursorDidBlink:) name:DTCursorViewDidBlink object:nil];
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -62,8 +69,11 @@
 
 - (void)dealloc
 {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	 
 	[_selectedTextRange release];
 	[_markedTextRange release];
+	[_loupe release];
 	
 	[_internalAttributedText release];
 	[markedTextStyle release];
@@ -86,6 +96,11 @@
 	tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapped:)];
 	tap.delegate = self;
 	[self.contentView addGestureRecognizer:tap];
+	
+	UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+	[self.contentView addGestureRecognizer:longPress];
+	[longPress release];
+	
 //	
 //	UITapGestureRecognizer *doubletap = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubletapped:)] autorelease];
 //	doubletap.numberOfTapsRequired = 2;
@@ -777,6 +792,41 @@
 		contentView.drawDebugFrames = !contentView.drawDebugFrames;
 	}
 }
+
+- (void)handleLongPress:(UILongPressGestureRecognizer *)gesture 
+{
+    CGPoint touchPoint = [gesture locationInView:self.contentView];
+	
+	switch (gesture.state) 
+	{
+		case UIGestureRecognizerStateBegan:
+		{
+			self.loupe.style = DTLoupeStyleCircle;
+			
+			// The Initial TouchPoint needs to be set before we set the style
+			_loupe.touchPoint = touchPoint;
+			
+			[_loupe presentLoupeFromLocation:touchPoint];
+			break;
+		}
+			
+		case UIGestureRecognizerStateChanged:
+		{
+			// Show Cursor and position between glyphs
+			_loupe.touchPoint = touchPoint;
+			
+			break;
+		}
+			
+		default:
+		{
+			[_loupe dismissLoupeTowardsLocation:touchPoint];
+			
+			break;
+		}
+	}
+}
+
 //
 //- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 //{
@@ -843,6 +893,17 @@
 
 }
 
+#pragma mark Notifications
+
+- (void)cursorDidBlink:(NSNotification *)notification
+{
+	// update loupe magnified image to show changed cursor
+	if ([_loupe isShowing])
+	{
+		[_loupe setNeedsDisplay];
+	}
+}
+
 
 #pragma mark Properties
 
@@ -881,6 +942,16 @@
 	return markLayer;
 }
 
+- (DTLoupeView *)loupe
+{
+	if (!_loupe)
+	{
+		_loupe = [[DTLoupeView alloc] initWithStyle:DTLoupeStyleCircle targetView:self.contentView];
+	}
+	
+	return _loupe;
+}
+
 @synthesize internalAttributedText = _internalAttributedText;
 
 @synthesize markedTextStyle;
@@ -902,6 +973,8 @@
 @synthesize returnKeyType;
 @synthesize secureTextEntry;
 //@synthesize spellCheckingType;
+
+@synthesize loupe = _loupe;
 
 
 @end

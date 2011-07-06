@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 
 
+extern NSString * const DTCursorViewDidBlink;
+
 @interface DTCursorView : UIView 
 {
 	NSTimer *blinkingTimer;

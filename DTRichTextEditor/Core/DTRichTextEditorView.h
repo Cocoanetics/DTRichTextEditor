@@ -13,6 +13,7 @@
 
 @class DTTextRange, DTTextPosition;
 @class DTCursorView;
+@class DTLoupeView;
 
 
 @interface DTRichTextEditorView : DTAttributedTextView <UITextInputTraits, UITextInput, DTAttributedTextContentViewDelegate, UIGestureRecognizerDelegate>
@@ -45,6 +46,8 @@
 	
 	UITapGestureRecognizer *tap;
     BOOL _editable;
+	
+	DTLoupeView *_loupe;
 }
 
 
