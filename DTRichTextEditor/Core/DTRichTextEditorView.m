@@ -56,6 +56,7 @@
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cursorDidBlink:) name:DTCursorViewDidBlink object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(menuDidHide:) name:UIMenuControllerDidHideMenuNotification object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loupeDidHide:) name:DTLoupeDidHide object:nil];
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -85,6 +86,7 @@
 	[_selectionView release];
 	
 	[longPressGesture release];
+	[panGesture release];
 	
 	[super dealloc];
 }
@@ -112,14 +114,9 @@
 	
 	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
-	UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDragHandle:)];
-	[self addGestureRecognizer:pan];
-	pan.delegate = self;
-	[pan release];
-	
-	
-	self.userInteractionEnabled = YES;
-	self.selectionView.userInteractionEnabled = YES;
+	panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDragHandle:)];
+	panGesture.delegate = self;
+	[self addGestureRecognizer:panGesture];
 	
 	longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
 	longPressGesture.delegate = self;
@@ -194,7 +191,17 @@
 	if (_shouldReshowContextMenuAfterHide)
 	{
 		_shouldReshowContextMenuAfterHide = NO;
+		
+		[self performSelector:@selector(showContextMenuFromSelection) withObject:nil afterDelay:0.10];
+	}
+}
 
+- (void)loupeDidHide:(NSNotification *)notification
+{
+	if (_shouldShowContextMenuAfterLoupeHide)
+	{
+		_shouldShowContextMenuAfterLoupeHide = NO;
+		
 		[self performSelector:@selector(showContextMenuFromSelection) withObject:nil afterDelay:0.10];
 	}
 }
@@ -230,10 +237,10 @@
 	[self hideContextMenu];
 	
 	[self.inputDelegate selectionWillChange:self];
-
+	
 	
 	DTTextPosition *position = (id)[self closestPositionToPoint:location];
-
+	
 	if ([_selectedTextRange length])
 	{
 		// existing selection constrains free movement
@@ -288,10 +295,12 @@
 			{
 				[self becomeFirstResponder];
 			}
-
+			
 			_dragMode = DTDragModeCursor;
 			
 			self.loupe.style = DTLoupeStyleCircle;
+			self.loupe.magnification = 1.2;
+			
 			_loupe.touchPoint = touchPoint;
 			[_loupe presentLoupeFromLocation:touchPoint];
 			
@@ -306,7 +315,7 @@
 			
 			break;
 		}
-		
+			
 		case UIGestureRecognizerStateEnded:
 		{
 			[self showContextMenuFromSelection];
@@ -317,6 +326,7 @@
 			[_loupe dismissLoupeTowardsLocation:self.cursor.center];
 			
 			_cursor.state = DTCursorStateBlinking;
+			_dragMode = DTDragModeNone;
 			
 			break;
 		}
@@ -338,16 +348,40 @@
 	{
 		case UIGestureRecognizerStateBegan:
 		{
+			BOOL legalStart = NO;
+			CGPoint loupeStartPoint;
+			
 			// selection and self have same coordinate system
 			if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
 			{
 				_dragMode = DTDragModeLeftHandle;
-				startCaretMid = CGRectCenter([_selectionView beginCaretRect]);
+				
+				CGRect rect = [_selectionView beginCaretRect];
+				loupeStartPoint= CGPointMake(CGRectGetMidX(rect), rect.origin.y);
+				startCaretMid = CGRectCenter(rect);
+				legalStart = YES;
 			}
 			else if (CGRectContainsPoint(_selectionView.dragHandleRight.frame, touchPoint))
 			{
 				_dragMode = DTDragModeRightHandle;
-				startCaretMid = CGRectCenter([_selectionView endCaretRect]);
+				
+				CGRect rect = [_selectionView endCaretRect];
+				loupeStartPoint = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
+				startCaretMid = CGRectCenter(rect);
+				legalStart = YES;
+			}
+			else
+			{
+				gesture.enabled = NO;
+				gesture.enabled = YES;
+			}
+			
+			if (legalStart)
+			{
+				self.loupe.style = DTLoupeStyleRectangleWithArrow;
+				self.loupe.magnification = 0.5;
+				self.loupe.touchPoint = loupeStartPoint;
+				[self.loupe presentLoupeFromLocation:loupeStartPoint];
 			}
 			
 			[self hideContextMenu];
@@ -376,6 +410,8 @@
 				if ([position compare:endPosition]==NSOrderedAscending)
 				{
 					newRange = [DTTextRange textRangeFromStart:position toEnd:endPosition];
+					
+					
 				}
 			}
 			else if (_dragMode == DTDragModeRightHandle)
@@ -390,19 +426,46 @@
 			{
 				[self setSelectedTextRange:newRange];
 			}
-			
+
+			if (_dragMode == DTDragModeLeftHandle)
+			{
+				CGRect rect = [_selectionView beginCaretRect];
+				CGPoint point = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
+				self.loupe.touchPoint = point;
+			}
+			else if (_dragMode == DTDragModeRightHandle)
+			{
+				CGRect rect = [_selectionView endCaretRect];
+				CGPoint point = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
+				self.loupe.touchPoint = point;
+			}
+
 			
 			break;
 		}
 			
 		case UIGestureRecognizerStateEnded:
 		{
-			[self showContextMenuFromSelection];
+			if (_dragMode == DTDragModeLeftHandle)
+			{
+				CGRect rect = [_selectionView beginCaretRect];
+				CGPoint point = CGRectCenter(rect);
+				_shouldShowContextMenuAfterLoupeHide = YES;
+				[self.loupe dismissLoupeTowardsLocation:point];
+			}
+			else if (_dragMode == DTDragModeRightHandle)
+			{
+				_shouldShowContextMenuAfterLoupeHide = YES;
+				CGRect rect = [_selectionView endCaretRect];
+				CGPoint point = CGRectCenter(rect);
+				[self.loupe dismissLoupeTowardsLocation:point];
+			}
 		}
 			
 		default:
 		{
-			_dragMode = DTDragModeCursor;
+			_dragMode = DTDragModeNone;
+			
 			break;
 		}
 	}
@@ -418,24 +481,47 @@
 	}
 }
 
-//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-//{
-//	NSLog(@"%@ - %@", [gestureRecognizer class], [otherGestureRecognizer class]);
-//	return YES;
-//}
-//
-//- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-//{
-//	if ([gestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]])
-//	{
-//		if (_isDraggingHandle)
-//		{
-//			return NO;
-//		}
-//	}
-//	
-//	return YES;
-//}
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+	if (gestureRecognizer == panGesture && otherGestureRecognizer == longPressGesture)
+	{
+		return YES;
+	}
+	
+	return NO;		
+	//		NSLog(@"%@ - %@", [gestureRecognizer class], [otherGestureRecognizer class]);
+	
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+	if (gestureRecognizer == longPressGesture)
+	{
+		if (_dragMode == DTDragModeNone)
+		{
+			return YES;
+		}
+		else
+		{
+			return NO;
+		}
+	}
+	
+	if (gestureRecognizer == panGesture)
+	{
+		if (_dragMode == DTDragModeNone)
+		{
+			return YES;
+		}
+		else
+		{
+			return NO;
+		}
+	}
+	
+	
+	return YES;
+}
 
 //
 
@@ -534,17 +620,17 @@
 {
 	DTTextPosition *currentPosition = [_selectedTextRange start];
 	DTTextRange *wordRange = [self rangeForWordAtPosition:currentPosition];
-	 
+	
 	if (!wordRange)
 	{
 		// we did not get a forward or backward range, like Word!|
 		DTTextPosition *previousPosition = (id)([tokenizer positionFromPosition:currentPosition
-																 toBoundary:UITextGranularityWord 
-																inDirection:UITextStorageDirectionBackward]);
-	
+																	 toBoundary:UITextGranularityWord 
+																	inDirection:UITextStorageDirectionBackward]);
+		
 		wordRange = [self rangeForWordAtPosition:previousPosition];
-	
-
+		
+		
 		if (wordRange)
 		{
 			// extend this range to go up to current position
@@ -750,11 +836,11 @@
 		_selectedTextRange = [newTextRange copy];
 		
 		[self updateCursor];
-
+		
 		self.selectionView.style = DTTextSelectionStyleSelection;
 		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_selectedTextRange NSRangeValue]];
 		_selectionView.selectionRectangles = rects;
-
+		
 		// drag handles only for range
 		if (newTextRange.length)
 		{

@@ -18,9 +18,10 @@
 
 typedef enum
 {
-	DTDragModeCursor = 0,
+	DTDragModeNone = 0,
 	DTDragModeLeftHandle,
-	DTDragModeRightHandle
+	DTDragModeRightHandle,
+	DTDragModeCursor
 } DTDragMode;
 
 
@@ -57,8 +58,10 @@ typedef enum
 	
 	DTDragMode _dragMode;
 	BOOL _shouldReshowContextMenuAfterHide;
+	BOOL _shouldShowContextMenuAfterLoupeHide;
 	
 	UILongPressGestureRecognizer *longPressGesture;
+	UIPanGestureRecognizer *panGesture;
 }
 
 
