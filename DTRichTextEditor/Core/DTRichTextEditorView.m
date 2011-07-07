@@ -55,6 +55,7 @@
 	
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cursorDidBlink:) name:DTCursorViewDidBlink object:nil];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(menuDidHide:) name:UIMenuControllerDidHideMenuNotification object:nil];
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -145,13 +146,59 @@
 		hitView = [super hitTest:point withEvent:event];
 	}
 	
-	NSLog(@"hit: %@", hitView);
+	//NSLog(@"hit: %@", hitView);
 	
 	// need to skip self hitTest or else we get an endless hitTest loop
 	return hitView;
 }
 
-#pragma mark -
+#pragma mark Menu
+
+- (void)hideContextMenu
+{
+	UIMenuController *menuController = [UIMenuController sharedMenuController];
+	
+	if ([menuController isMenuVisible])
+	{
+		[menuController setMenuVisible:NO animated:YES];
+	}
+}
+
+- (void)showContextMenuFromSelection
+{
+	CGRect targetRect;
+	
+	if ([_selectedTextRange length])
+	{
+		targetRect = [_selectionView selectionEnvelope];
+	}
+	else
+	{
+		targetRect = self.cursor.frame;
+	}
+	
+	UIMenuController *menuController = [UIMenuController sharedMenuController];
+	
+	UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Item" action:@selector(menuItemClicked:)];
+	
+	//NSAssert([self becomeFirstResponder], @"Sorry, UIMenuController will not work with %@ since it cannot become first responder", self);
+	//[menuController setMenuItems:[NSArray arrayWithObject:resetMenuItem]];
+	[menuController setTargetRect:targetRect inView:self];
+	[menuController setMenuVisible:YES animated:YES];
+	
+	[resetMenuItem release];
+}
+
+- (void)menuDidHide:(NSNotification *)notification
+{
+	if (_shouldReshowContextMenuAfterHide)
+	{
+		_shouldReshowContextMenuAfterHide = NO;
+
+		[self performSelector:@selector(showContextMenuFromSelection) withObject:nil afterDelay:0.10];
+	}
+}
+
 #pragma mark Custom Selection/Marking/Cursor
 - (void)updateCursor
 {
@@ -180,46 +227,36 @@
 
 - (void)moveCursorToPositionClosestToLocation:(CGPoint)location
 {
-	[self.inputDelegate selectionWillChange:self];
+	[self hideContextMenu];
 	
-	if (!self.markedTextRange)
+	[self.inputDelegate selectionWillChange:self];
+
+	
+	DTTextPosition *position = (id)[self closestPositionToPoint:location];
+
+	if ([_selectedTextRange length])
 	{
-		DTTextPosition *position = (id)[self closestPositionToPoint:location];
-		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:position offset:0]];
+		// existing selection constrains free movement
+		DTTextPosition *start = [_selectedTextRange start];
+		DTTextPosition *end = [_selectedTextRange end];
+		
+		if ([start compare:position] == NSOrderedDescending)
+		{
+			position = start;
+		}
+		
+		if ([position compare:end] == NSOrderedDescending)
+		{
+			position = end;
+		}
 	}
-	else 
-	{
-		DTTextPosition *position = (id)[self closestPositionToPoint:location];
-		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:position offset:0]];
-	}
+	
+	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:position offset:0]];
 	
 	[self.inputDelegate selectionDidChange:self];
 }
 
-#pragma mark Menu
 
-- (void)hideContextMenu
-{
-	UIMenuController *menuController = [UIMenuController sharedMenuController];
-	
-	if ([menuController isMenuVisible])
-	{
-		[menuController setMenuVisible:NO animated:YES];
-	}
-}
-
-- (void)showContextMenuFromTargetRect:(CGRect)targetRect
-{
-	UIMenuController *menuController = [UIMenuController sharedMenuController];
-	UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Item" action:@selector(menuItemClicked:)];
-	
-	//NSAssert([self becomeFirstResponder], @"Sorry, UIMenuController will not work with %@ since it cannot become first responder", self);
-	//[menuController setMenuItems:[NSArray arrayWithObject:resetMenuItem]];
-	[menuController setTargetRect:targetRect inView:self];
-	[menuController setMenuVisible:YES animated:YES];
-	
-	[resetMenuItem release];
-}
 
 #pragma mark Gestures
 - (void)handleTap:(UITapGestureRecognizer *)gesture
@@ -229,7 +266,6 @@
 		if (![self isFirstResponder] && [self canBecomeFirstResponder])
 		{
 			[self becomeFirstResponder];
-			//gesture.enabled = NO;
 		}
 		
 		CGPoint touchPoint = [gesture locationInView:self.contentView];
@@ -238,9 +274,6 @@
 		
 		[self hideContextMenu];
 	}
-	
-//	[self showContextMenuFromTargetRect:_cursor.frame];
-	
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture 
@@ -251,6 +284,11 @@
 	{
 		case UIGestureRecognizerStateBegan:
 		{
+			if (![self isFirstResponder] && [self canBecomeFirstResponder])
+			{
+				[self becomeFirstResponder];
+			}
+
 			_dragMode = DTDragModeCursor;
 			
 			self.loupe.style = DTLoupeStyleCircle;
@@ -271,7 +309,7 @@
 		
 		case UIGestureRecognizerStateEnded:
 		{
-			[self showContextMenuFromTargetRect:self.cursor.frame];
+			[self showContextMenuFromSelection];
 		}
 			
 		case UIGestureRecognizerStateCancelled:
@@ -305,16 +343,14 @@
 			{
 				_dragMode = DTDragModeLeftHandle;
 				startCaretMid = CGRectCenter([_selectionView beginCaretRect]);
-				
-				break;
 			}
 			else if (CGRectContainsPoint(_selectionView.dragHandleRight.frame, touchPoint))
 			{
 				_dragMode = DTDragModeRightHandle;
 				startCaretMid = CGRectCenter([_selectionView endCaretRect]);
-				
-				break;
 			}
+			
+			[self hideContextMenu];
 			
 			break;
 		}
@@ -339,7 +375,6 @@
 			{
 				if ([position compare:endPosition]==NSOrderedAscending)
 				{
-					NSLog(@"left");
 					newRange = [DTTextRange textRangeFromStart:position toEnd:endPosition];
 				}
 			}
@@ -347,7 +382,6 @@
 			{
 				if ([startPosition compare:position]==NSOrderedAscending)
 				{
-					NSLog(@"right");
 					newRange = [DTTextRange textRangeFromStart:startPosition toEnd:position];
 				}
 			}
@@ -361,6 +395,11 @@
 			break;
 		}
 			
+		case UIGestureRecognizerStateEnded:
+		{
+			[self showContextMenuFromSelection];
+		}
+			
 		default:
 		{
 			_dragMode = DTDragModeCursor;
@@ -369,54 +408,7 @@
 	}
 }
 
-- (void)handleDragHandleRight:(UIPanGestureRecognizer *)gesture
-{
-	static CGPoint startCaretMid = {0,0};
-	
-	switch (gesture.state) 
-	{
-		case UIGestureRecognizerStateBegan:
-		{
-			_dragMode = DTDragModeRightHandle;
-			
-			CGRect rect = [_selectionView endCaretRect];
-			startCaretMid = CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
-			
-			break;
-		}
-			
-		case UIGestureRecognizerStateChanged:
-		{
-			CGPoint translation = [gesture translationInView:self];
-			
-			// get current mid point
-			CGPoint movedMidPoint = startCaretMid;
-			movedMidPoint.x += translation.x;
-			movedMidPoint.y += translation.y;
-			
-			DTTextPosition *position = (DTTextPosition *)[self closestPositionToPoint:movedMidPoint];
-			DTTextPosition *startPosition = [_selectedTextRange start];
-			
-			if ([startPosition compare:position]==NSOrderedAscending)
-			{
-				DTTextRange *newRange = [DTTextRange textRangeFromStart:startPosition toEnd:position];
-				[self setSelectedTextRange:newRange];
-			}
-			
-			break;
-		}
-			
-		case UIGestureRecognizerStateEnded:
-		{
-			
-			break;
-		}
-			
-		default:
-		{
-		}
-	}
-}
+
 
 - (void)doubletapped:(UITapGestureRecognizer *)gesture
 {
@@ -542,31 +534,36 @@
 {
 	DTTextPosition *currentPosition = [_selectedTextRange start];
 	DTTextRange *wordRange = [self rangeForWordAtPosition:currentPosition];
-	
-	if (wordRange)
+	 
+	if (!wordRange)
 	{
-		[self setSelectedTextRange:wordRange];
-		return;
-	}
-	
-	// we did not get a forward or backward range, like Word!|
-	DTTextPosition *previousPosition = (id)([tokenizer positionFromPosition:currentPosition
+		// we did not get a forward or backward range, like Word!|
+		DTTextPosition *previousPosition = (id)([tokenizer positionFromPosition:currentPosition
 																 toBoundary:UITextGranularityWord 
 																inDirection:UITextStorageDirectionBackward]);
 	
-	wordRange = [self rangeForWordAtPosition:previousPosition];
+		wordRange = [self rangeForWordAtPosition:previousPosition];
+	
+
+		if (wordRange)
+		{
+			// extend this range to go up to current position
+			wordRange = [DTTextRange textRangeFromStart:[wordRange start] toEnd:currentPosition];
+		}
+	}
 	
 	if (wordRange)
 	{
-		// extend this range to go up to current position
-		DTTextRange *newRange = [DTTextRange textRangeFromStart:[wordRange start] toEnd:currentPosition];
+		_shouldReshowContextMenuAfterHide = YES;
 		
-		[self setSelectedTextRange:newRange];
+		[self setSelectedTextRange:wordRange];
 	}
 }
 
 - (void)selectAll:(id)sender
 {
+	_shouldReshowContextMenuAfterHide = YES;
+	
 	DTTextRange *fullRange = [DTTextRange textRangeFromStart:(DTTextPosition *)[self beginningOfDocument] toEnd:(DTTextPosition *)[self endOfDocument]];
 	[self setSelectedTextRange:fullRange];
 }
@@ -583,12 +580,27 @@
 	
 	if (action == @selector(selectAll:))
 	{
-		return YES;
+		if ([[_selectedTextRange start] isEqual:(id)[self beginningOfDocument]] && [[_selectedTextRange end] isEqual:(id)[self endOfDocument]])
+		{
+			return NO;	
+		}
+		else
+		{
+			return YES;
+		}
 	}
 	
 	if (action == @selector(select:))
 	{
-		return YES;
+		// selection only possibly from cursor, not when already selection in place
+		if ([_selectedTextRange length])
+		{
+			return NO;
+		}
+		else
+		{
+			return YES;
+		}
 	}
 	
 	if (action == @selector(paste:))

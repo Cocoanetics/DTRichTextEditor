@@ -54,4 +54,6 @@ typedef enum
 - (CGRect)beginCaretRect;
 - (CGRect)endCaretRect;
 
+- (CGRect)selectionEnvelope;
+
 @end

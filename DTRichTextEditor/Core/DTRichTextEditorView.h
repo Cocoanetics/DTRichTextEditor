@@ -56,6 +56,7 @@ typedef enum
 	DTTextSelectionView *_selectionView;
 	
 	DTDragMode _dragMode;
+	BOOL _shouldReshowContextMenuAfterHide;
 	
 	UILongPressGestureRecognizer *longPressGesture;
 }

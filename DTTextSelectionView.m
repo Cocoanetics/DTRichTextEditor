@@ -68,6 +68,26 @@
 	return rect;
 }
 
+- (CGRect)selectionEnvelope
+{
+	if (![_selectionRectangles count])
+	{
+		return CGRectNull;
+	}
+	
+	CGRect unionRect = [[_selectionRectangles objectAtIndex:0] CGRectValue];
+	
+	// draw all these rectangles
+	for (NSValue *value in _selectionRectangles)
+	{
+		CGRect rect = [value CGRectValue];
+		
+		unionRect = CGRectUnion(unionRect, rect);
+	}
+	
+	return unionRect;
+}
+
 - (void)adjustDragHandles
 {
 	if (![_selectionRectangles count])
