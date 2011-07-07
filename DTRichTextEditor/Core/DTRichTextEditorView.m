@@ -51,7 +51,7 @@
 	//   self.spellCheckingType = UITextSpellCheckingTypeYes;
     
     self.selectionAffinity = UITextStorageDirectionForward;
-	self.contentInset = UIEdgeInsetsMake(5, 5, 5, 5);
+	//self.contentInset = UIEdgeInsetsMake(5, 5, 5, 5);
 	
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cursorDidBlink:) name:DTCursorViewDidBlink object:nil];
@@ -112,15 +112,15 @@
 	//	//	doubletap.delegate = self;
 	//	//	[self.contentView addGestureRecognizer:doubletap];
 	
-	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDragHandle:)];
 	panGesture.delegate = self;
-	[self addGestureRecognizer:panGesture];
+	[self.contentView addGestureRecognizer:panGesture];
 	
 	longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
 	longPressGesture.delegate = self;
-	[self addGestureRecognizer:longPressGesture];
+	[self.contentView addGestureRecognizer:longPressGesture];
 	
 	
     self.backgroundColor = [UIColor whiteColor];
@@ -234,8 +234,6 @@
 
 - (void)moveCursorToPositionClosestToLocation:(CGPoint)location
 {
-	[self hideContextMenu];
-	
 	[self.inputDelegate selectionWillChange:self];
 	
 	
@@ -280,6 +278,8 @@
 		[self moveCursorToPositionClosestToLocation:touchPoint];
 		
 		[self hideContextMenu];
+		
+		self.scrollEnabled = YES;
 	}
 }
 
@@ -305,12 +305,15 @@
 			[_loupe presentLoupeFromLocation:touchPoint];
 			
 			_cursor.state = DTCursorStateStatic;
+			
+			self.scrollEnabled = NO;
 		}
 			
 		case UIGestureRecognizerStateChanged:
 		{
 			_loupe.touchPoint = touchPoint;
 			
+			[self hideContextMenu];
 			[self moveCursorToPositionClosestToLocation:touchPoint];
 			
 			break;
@@ -318,7 +321,7 @@
 			
 		case UIGestureRecognizerStateEnded:
 		{
-			[self showContextMenuFromSelection];
+			_shouldShowContextMenuAfterLoupeHide = YES;
 		}
 			
 		case UIGestureRecognizerStateCancelled:
@@ -487,41 +490,42 @@
 	{
 		return YES;
 	}
-	
-	return NO;		
-	//		NSLog(@"%@ - %@", [gestureRecognizer class], [otherGestureRecognizer class]);
+
+	NSLog(@"%@ - %@", [gestureRecognizer class], [otherGestureRecognizer class]);
+
+	return YES;		
 	
 }
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-{
-	if (gestureRecognizer == longPressGesture)
-	{
-		if (_dragMode == DTDragModeNone)
-		{
-			return YES;
-		}
-		else
-		{
-			return NO;
-		}
-	}
-	
-	if (gestureRecognizer == panGesture)
-	{
-		if (_dragMode == DTDragModeNone)
-		{
-			return YES;
-		}
-		else
-		{
-			return NO;
-		}
-	}
-	
-	
-	return YES;
-}
+//- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+//{
+//	if (gestureRecognizer == longPressGesture)
+//	{
+//		if (_dragMode == DTDragModeNone)
+//		{
+//			return YES;
+//		}
+//		else
+//		{
+//			return NO;
+//		}
+//	}
+//	
+//	if (gestureRecognizer == panGesture)
+//	{
+//		if (_dragMode == DTDragModeNone)
+//		{
+//			return YES;
+//		}
+//		else
+//		{
+//			return NO;
+//		}
+//	}
+//	
+//	
+//	return YES;
+//}
 
 //
 
@@ -531,12 +535,25 @@
 	
 	if (gestureRecognizer == longPressGesture)
 	{
+		if (![_selectionView dragHandlesVisible])
+		{
+			return YES;
+		}
+		
 		// selection and contentView have same coordinate system
 		if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
 		{
 			return NO;
 		}
 		else if (CGRectContainsPoint(_selectionView.dragHandleRight.frame, touchPoint))
+		{
+			return NO;
+		}
+	}
+	
+	if (gestureRecognizer == panGesture)
+	{
+		if (![_selectionView dragHandlesVisible])
 		{
 			return NO;
 		}
@@ -643,6 +660,8 @@
 		_shouldReshowContextMenuAfterHide = YES;
 		
 		[self setSelectedTextRange:wordRange];
+
+		self.scrollEnabled = NO;
 	}
 }
 
@@ -652,6 +671,8 @@
 	
 	DTTextRange *fullRange = [DTTextRange textRangeFromStart:(DTTextPosition *)[self beginningOfDocument] toEnd:(DTTextPosition *)[self endOfDocument]];
 	[self setSelectedTextRange:fullRange];
+	
+	self.scrollEnabled = NO;
 }
 
 - (void)delete:(id)sender
@@ -1233,7 +1254,7 @@
 	
 	_internalAttributedText = [newAttributedText retain];
 	
-	
+	self.contentView.edgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
 	self.attributedString = _internalAttributedText;
 	[self.contentView relayoutText];
 	
