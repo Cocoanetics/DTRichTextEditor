@@ -117,6 +117,10 @@
 	return (DTTextPosition *)_end;
 }
 
+- (BOOL)isEqual:(DTTextRange *)otherRange
+{
+	return ([_start isEqual:[otherRange start]] && [_end isEqual:[otherRange end]]);
+}
 
 #pragma mark Copying
 - (id)copyWithZone:(NSZone *)zone

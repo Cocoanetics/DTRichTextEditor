@@ -192,6 +192,7 @@
 		NSInteger testIndex = i + range.location;
 		
 		CGRect rect = [self frameOfGlyphAtIndex:testIndex];
+		rect.size.width = 3.0;
 		
 		CGPoint center = CGPointMake(rect.origin.x + rect.size.width / 2.0, rect.origin.y + rect.size.height / 2.0);
 		
@@ -208,7 +209,99 @@
 		}
 	}
 	
-	if (closestIndex>0)
+	if (closestIndex>=0)
+	{
+		return closestIndex;
+	}
+	
+	return -1;
+}
+
+
+- (NSInteger)closestCursorIndexToPoint:(CGPoint)point
+{
+	NSArray *lines = self.lines;
+	
+	if (![lines count])
+	{
+		return -1;
+	}
+	
+	DTCoreTextLayoutLine *firstLine = [lines objectAtIndex:0];
+	if (point.y < CGRectGetMinY(firstLine.frame))
+	{
+		return 0;
+	}
+	
+	DTCoreTextLayoutLine *lastLine = [lines lastObject];
+	if (point.y > CGRectGetMaxY(lastLine.frame))
+	{
+		return NSMaxRange([self visibleStringRange])-1;
+	}
+	
+	// find closest line
+	DTCoreTextLayoutLine *closestLine = nil;
+	CGFloat closestDistance = CGFLOAT_MAX;
+	
+	for (DTCoreTextLayoutLine *oneLine in lines)
+	{
+		// line contains point 
+		if (CGRectGetMinY(oneLine.frame) <= point.y && CGRectGetMaxY(oneLine.frame) >= point.y)
+		{
+			closestLine = oneLine;
+			break;
+		}
+		
+		CGFloat top = CGRectGetMinX(oneLine.frame);
+		CGFloat bottom = CGRectGetMaxX(oneLine.frame);
+		
+		
+		CGFloat distanceToTop = fabsf(top - point.y);
+		CGFloat distanceToBottom = fabsf(bottom - point.y);
+		
+		if (distanceToTop < closestDistance)
+		{
+			closestLine = oneLine;
+			closestDistance = distanceToTop;
+		}
+		
+		if (distanceToBottom < closestDistance)
+		{
+			closestLine = oneLine;
+			closestDistance = distanceToTop;
+		}
+	}
+	
+	if (!closestLine)
+	{
+		return -1;
+	}
+	
+	// find the closest index in this line
+	
+	NSInteger closestIndex = -1;
+	NSRange range = [closestLine stringRange];
+	
+	closestDistance = CGFLOAT_MAX;
+	
+	for (int i=0; i<range.length; i++)
+	{
+		NSInteger testIndex = i + range.location;
+		
+		CGRect rect = [closestLine frameOfGlyphAtIndex:i];
+		rect.size.width = 3.0;
+		CGFloat mid = CGRectGetMidX(rect);
+		
+		CGFloat horizDistance = fabs(point.x - mid);
+		
+		if (horizDistance < closestDistance)
+		{
+			closestDistance = horizDistance;
+			closestIndex = testIndex;
+		}
+	}
+	
+	if (closestIndex>=0)
 	{
 		return closestIndex;
 	}

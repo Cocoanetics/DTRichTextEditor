@@ -70,6 +70,11 @@
 
 - (void)adjustDragHandles
 {
+	if (![_selectionRectangles count])
+	{
+		return;
+	}
+	
 	CGRect firstRect = [self beginCaretRect];
 	CGRect lastRect = [self endCaretRect];
 	
@@ -174,8 +179,6 @@
 
 - (void)setDragHandlesVisible:(BOOL)dragHandlesVisible animated:(BOOL)animated
 {
-	NSAssert([_selectionRectangles count], @"Cannot show handles on empty selection");
-	
 	if (_dragHandlesVisible != dragHandlesVisible)
 	{
 		_dragHandlesVisible = dragHandlesVisible;

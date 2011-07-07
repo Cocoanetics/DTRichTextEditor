@@ -154,8 +154,8 @@
 		A704281B13C37FEE00EE0776 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		A704281C13C37FEE00EE0776 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		A704281D13C37FEE00EE0776 /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
-		A713992213C5A2B400722B67 /* DTTextSelectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTTextSelectionView.h; path = ../DTTextSelectionView.h; sourceTree = "<group>"; };
-		A713992313C5A2B400722B67 /* DTTextSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTTextSelectionView.m; path = ../DTTextSelectionView.m; sourceTree = "<group>"; };
+		A713992213C5A2B400722B67 /* DTTextSelectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTTextSelectionView.h; sourceTree = SOURCE_ROOT; };
+		A713992313C5A2B400722B67 /* DTTextSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTTextSelectionView.m; sourceTree = SOURCE_ROOT; };
 		A7DD236B13C449BC0015C604 /* DTLoupeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTLoupeView.h; sourceTree = "<group>"; };
 		A7DD236C13C449BC0015C604 /* DTLoupeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTLoupeView.m; sourceTree = "<group>"; };
 		A7DD236D13C449BC0015C604 /* kb-drag-dot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-drag-dot.png"; sourceTree = "<group>"; };

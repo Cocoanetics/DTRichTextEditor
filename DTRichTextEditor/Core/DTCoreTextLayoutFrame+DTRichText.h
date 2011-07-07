@@ -22,5 +22,6 @@
 - (NSInteger)indexForPositionDownwardsFromIndex:(NSInteger)index offset:(NSInteger)offset;
 
 - (NSInteger)closestIndexToPoint:(CGPoint)point;
+- (NSInteger)closestCursorIndexToPoint:(CGPoint)point;
 
 @end

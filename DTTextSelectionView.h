@@ -15,6 +15,7 @@ typedef enum
 	
 } DTTextSelectionStyle;
 
+@class DTTextSelectionView;
 
 @interface DTTextSelectionView : UIView
 {
