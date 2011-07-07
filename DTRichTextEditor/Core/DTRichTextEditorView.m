@@ -21,14 +21,14 @@
 #import "DTCoreTextLayoutFrame+DTRichText.h"
 
 #import "DTLoupeView.h"
+#import "DTTextSelectionView.h"
 
 @interface DTRichTextEditorView ()
 
 @property (nonatomic, retain) NSMutableAttributedString *internalAttributedText;
-@property (nonatomic, retain) CALayer *selectionLayer;
-@property (nonatomic, retain) CALayer *markLayer;
 
 @property (nonatomic, retain) DTLoupeView *loupe;
+@property (nonatomic, retain) DTTextSelectionView *selectionView;
 
 @end
 
@@ -77,8 +77,9 @@
 	
 	[_internalAttributedText release];
 	[markedTextStyle release];
+
 	[_cursor release];
-	[selectionLayer release];
+	[_selectionView release];
 	
 	[super dealloc];
 }
@@ -97,16 +98,27 @@
 	tap.delegate = self;
 	[self.contentView addGestureRecognizer:tap];
 	
+	
+//	//	
+//	//	UITapGestureRecognizer *doubletap = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubletapped:)] autorelease];
+//	//	doubletap.numberOfTapsRequired = 2;
+//	//	doubletap.delegate = self;
+//	//	[self.contentView addGestureRecognizer:doubletap];
+
+	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+	
+//	UIPanGestureRecognizer *leftPan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDragHandleLeft:)];
+//	[self.selectionView.dragHandleLeft addGestureRecognizer:leftPan];
+//	leftPan.delegate = self;
+//	[leftPan release];
+
 	UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
-	[self.contentView addGestureRecognizer:longPress];
+	[self addGestureRecognizer:longPress];
+	//[longPress requireGestureRecognizerToFail:leftPan];
+	longPress.minimumPressDuration = 0.2;
+	longPress.delegate = self;
 	[longPress release];
-	
-	//	
-	//	UITapGestureRecognizer *doubletap = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubletapped:)] autorelease];
-	//	doubletap.numberOfTapsRequired = 2;
-	//	doubletap.delegate = self;
-	//	[self.contentView addGestureRecognizer:doubletap];
-	
+
 	
     self.backgroundColor = [UIColor whiteColor];
 	
@@ -121,8 +133,17 @@
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
+	UIView *hitView = [self.contentView hitTest:point withEvent:event];
+	
+	NSLog(@"hit: %@", hitView);
+	
+	if (!hitView)
+	{
+		hitView = [super hitTest:point withEvent:event];
+	}
+	
 	// need to skip self hitTest or else we get an endless hitTest loop
-	return [self.contentView hitTest:point withEvent:event];
+	return hitView;
 }
 
 #pragma mark -
@@ -457,7 +478,20 @@
 		
 		[self updateCursor];
 		
-		[self.selectionLayer setNeedsDisplay];
+		self.selectionView.style = DTTextSelectionStyleSelection;
+		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_selectedTextRange NSRangeValue]];
+		_selectionView.selectionRectangles = rects;
+		
+		// drag handles only for range
+		if (newTextRange.length)
+		{
+			_selectionView.dragHandlesVisible = YES;
+		}
+		else
+		{
+			_selectionView.dragHandlesVisible = NO;
+		}
+		
 		[self didChangeValueForKey:@"selectedTextRange"];
 	}
 }
@@ -526,7 +560,10 @@
 	[_markedTextRange release];
 	_markedTextRange = [[DTTextRange alloc] initWithNSRange:NSMakeRange(startOfReplaceRange.location, [markedText length])];
 	
-	[self.markLayer setNeedsDisplay];
+	self.selectionView.style = DTTextSelectionStyleMarking;
+	NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_markedTextRange NSRangeValue]];
+	_selectionView.selectionRectangles = rects;
+	_selectionView.dragHandlesVisible = NO;
 	
 	[self didChangeValueForKey:@"markedTextRange"];
 }
@@ -541,7 +578,7 @@
 	[_markedTextRange release];
 	_markedTextRange = nil;
 	
-	[markLayer setNeedsDisplay];
+	[_selectionView setNeedsDisplay];
 }
 
 @synthesize selectionAffinity = _selectionAffinity;
@@ -868,38 +905,106 @@
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture 
 {
+	static CGPoint startPosition = {0,0};
+	static CGPoint startCaretMid = {0,0};
+	
 	CGPoint touchPoint = [gesture locationInView:self.contentView];
 	
 	switch (gesture.state) 
 	{
 		case UIGestureRecognizerStateBegan:
 		{
-			self.loupe.style = DTLoupeStyleCircle;
-			_loupe.touchPoint = touchPoint;
-			[_loupe presentLoupeFromLocation:touchPoint];
+			startPosition = touchPoint;
 			
-			_cursor.state = DTCursorStateStatic;
+			// selection and self have same coordinate system
+			if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
+			{
+				_dragMode = DTDragModeLeftHandle;
+				
+				CGRect rect = [_selectionView beginCaretRect];
+				startCaretMid = CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
+				break;
+			}
+			else if (CGRectContainsPoint(_selectionView.dragHandleRight.frame, touchPoint))
+			{
+				_dragMode = DTDragModeRightHandle;
+				
+				CGRect rect = [_selectionView endCaretRect];
+				startCaretMid = CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
+				break;
+
+			}
+			else
+			{
+				_dragMode = DTDragModeCursor;
+				
+				self.loupe.style = DTLoupeStyleCircle;
+				_loupe.touchPoint = touchPoint;
+				[_loupe presentLoupeFromLocation:touchPoint];
+				
+				_cursor.state = DTCursorStateStatic;
+			}
+			
 		}
 			
 			// one began we also set the touch point and move the cursor
 		case UIGestureRecognizerStateChanged:
 		{
-			_loupe.touchPoint = touchPoint;
+			CGPoint translation;
+			translation.x = touchPoint.x - startPosition.x;
+			translation.y = touchPoint.y - startPosition.y;
 			
-			[self moveCursorToPositionClosestToLocation:touchPoint];
+			if (_dragMode == DTDragModeCursor)
+			{
+				_loupe.touchPoint = touchPoint;
+			
+				[self moveCursorToPositionClosestToLocation:touchPoint];
+			}
+			else if (_dragMode == DTDragModeLeftHandle)
+			{
+				// get current mid point
+				CGPoint movedMidPoint = startCaretMid;
+				movedMidPoint.x += translation.x;
+				movedMidPoint.y += translation.y;
+				
+				DTTextPosition *position = (DTTextPosition *)[self closestPositionToPoint:movedMidPoint];
+				
+				DTTextRange *newRange = [DTTextRange textRangeFromStart:position toEnd:[_selectedTextRange end]];
+				[self setSelectedTextRange:newRange];
+			}
+			else if (_dragMode == DTDragModeRightHandle)
+			{
+				// get current mid point
+				CGPoint movedMidPoint = startCaretMid;
+				movedMidPoint.x += translation.x;
+				movedMidPoint.y += translation.y;
+				
+				DTTextPosition *position = (DTTextPosition *)[self closestPositionToPoint:movedMidPoint];
+				
+				DTTextRange *newRange = [DTTextRange textRangeFromStart:[_selectedTextRange start] toEnd:position];
+				[self setSelectedTextRange:newRange];
+			}
+			
+			break;
+		}
+			
+		case UIGestureRecognizerStateEnded:
+		{
+			if (_dragMode == DTDragModeCursor)
+			{
+			[_loupe dismissLoupeTowardsLocation:self.cursor.center];
+			
+			_cursor.state = DTCursorStateBlinking;
+			
+			[self showContextMenuFromTargetRect:self.cursor.frame];
+			}
 			
 			break;
 		}
 			
 		default:
 		{
-			[_loupe dismissLoupeTowardsLocation:self.cursor.center];
-			
-			_cursor.state = DTCursorStateBlinking;
-			
-			[self showContextMenuFromTargetRect:self.cursor.frame];
-			
-			break;
+			NSLog(@"longpress cancelled");
 		}
 	}
 }
@@ -912,7 +1017,27 @@
 	}
 }
 
+//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+//{
+//	NSLog(@"%@ - %@", [gestureRecognizer class], [otherGestureRecognizer class]);
+//	return YES;
+//}
 //
+//- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+//{
+//	if ([gestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]])
+//	{
+//		if (_isDraggingHandle)
+//		{
+//			return NO;
+//		}
+//	}
+//	
+//	return YES;
+//}
+
+//
+
 //- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 //{
 //	if (gestureRecognizer == tap)
@@ -936,47 +1061,6 @@
 //	return YES;
 //}
 
-#pragma mark Layer drawing
-- (void)drawLayer:(CALayer*)layer inContext:(CGContextRef)ctx
-{
-	if (layer == selectionLayer)
-	{
-		if (!_selectedTextRange)
-		{
-			// no selection to draw
-			return;
-		}
-		
-		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_selectedTextRange NSRangeValue]];
-		
-		CGContextSetRGBFillColor(ctx, 0, 0.338, 0.652, 0.204);
-		
-		for (NSValue *value in rects)
-		{
-			CGRect rect = [value CGRectValue];
-			CGContextFillRect(ctx, rect);
-		}
-	}
-	else if (layer == markLayer)
-	{
-		if (!_markedTextRange)
-		{
-			// no selection to draw
-			return;
-		}
-		
-		NSArray *rects = [self.contentView.layoutFrame selectionRectsForRange:[_markedTextRange NSRangeValue]];
-		
-		CGContextSetRGBFillColor(ctx, 0, 0.652, 0.338, 0.204);
-		
-		for (NSValue *value in rects)
-		{
-			CGRect rect = [value CGRectValue];
-			CGContextFillRect(ctx, rect);
-		}
-	}
-	
-}
 
 #pragma mark Notifications
 
@@ -996,35 +1080,7 @@
 {
 	[super setContentSize:newContentSize];
 	
-	// adjust the layers so that the entire selection is visible
-	markLayer.frame = self.contentView.bounds;
-	selectionLayer.frame = self.contentView.bounds;
-}
-
-- (CALayer *)selectionLayer
-{
-	if (!selectionLayer)
-	{
-		selectionLayer = [[CALayer alloc ]init];
-		selectionLayer.frame = self.bounds;
-		[self.layer addSublayer:selectionLayer];
-		selectionLayer.delegate = self;
-	}
-	
-	return selectionLayer;
-}
-
-- (CALayer *)markLayer
-{
-	if (!markLayer)
-	{
-		markLayer = [[CALayer alloc ]init];
-		markLayer.frame = self.bounds;
-		[self.layer addSublayer:markLayer];
-		markLayer.delegate = self;
-	}
-	
-	return markLayer;
+	self.selectionView.frame = self.contentView.frame;
 }
 
 - (DTLoupeView *)loupe
@@ -1037,14 +1093,25 @@
 	return _loupe;
 }
 
+- (DTTextSelectionView *)selectionView
+{
+	if (!_selectionView)
+	{
+		_selectionView = [[DTTextSelectionView alloc] initWithTextView:self.contentView];
+		[self addSubview:_selectionView];
+	}
+	
+	return _selectionView;
+}
+
+
+
 @synthesize internalAttributedText = _internalAttributedText;
 
 @synthesize markedTextStyle;
 
 @synthesize markedTextRange = _markedTextRange;
 
-@synthesize selectionLayer;
-@synthesize markLayer;
 @synthesize editable = _editable;
 
 
@@ -1060,6 +1127,7 @@
 
 @synthesize loupe = _loupe;
 @synthesize cursor = _cursor;
+@synthesize selectionView = _selectionView;
 
 
 

@@ -14,6 +14,14 @@
 @class DTTextRange, DTTextPosition;
 @class DTCursorView;
 @class DTLoupeView;
+@class DTTextSelectionView;
+
+typedef enum
+{
+	DTDragModeCursor = 0,
+	DTDragModeLeftHandle,
+	DTDragModeRightHandle
+} DTDragMode;
 
 
 @interface DTRichTextEditorView : DTAttributedTextView <UITextInputTraits, UITextInput, DTAttributedTextContentViewDelegate, UIGestureRecognizerDelegate>
@@ -40,14 +48,14 @@
 	
   //  UITextSpellCheckingType spellCheckingType;
 	
-	CALayer *selectionLayer;
-	CALayer *markLayer;
-	
 	UITapGestureRecognizer *tap;
     BOOL _editable;
 	
 	DTLoupeView *_loupe;
 	DTCursorView *_cursor;
+	DTTextSelectionView *_selectionView;
+	
+	DTDragMode _dragMode;
 }
 
 

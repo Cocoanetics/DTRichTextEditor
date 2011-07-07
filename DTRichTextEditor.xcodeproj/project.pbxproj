@@ -50,6 +50,7 @@
 		A704281F13C37FEE00EE0776 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A704281B13C37FEE00EE0776 /* Icon.png */; };
 		A704282013C37FEE00EE0776 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A704281C13C37FEE00EE0776 /* Icon@2x.png */; };
 		A704282113C37FEE00EE0776 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = A704281D13C37FEE00EE0776 /* MainWindow.xib */; };
+		A713992413C5A2B400722B67 /* DTTextSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = A713992313C5A2B400722B67 /* DTTextSelectionView.m */; };
 		A7DD237D13C449BC0015C604 /* DTLoupeView.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DD236C13C449BC0015C604 /* DTLoupeView.m */; };
 		A7DD237E13C449BC0015C604 /* kb-drag-dot.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD236D13C449BC0015C604 /* kb-drag-dot.png */; };
 		A7DD237F13C449BC0015C604 /* kb-drag-dot@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD236E13C449BC0015C604 /* kb-drag-dot@2x.png */; };
@@ -153,6 +154,8 @@
 		A704281B13C37FEE00EE0776 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		A704281C13C37FEE00EE0776 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		A704281D13C37FEE00EE0776 /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
+		A713992213C5A2B400722B67 /* DTTextSelectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTTextSelectionView.h; sourceTree = "<group>"; };
+		A713992313C5A2B400722B67 /* DTTextSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTTextSelectionView.m; sourceTree = "<group>"; };
 		A7DD236B13C449BC0015C604 /* DTLoupeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTLoupeView.h; sourceTree = "<group>"; };
 		A7DD236C13C449BC0015C604 /* DTLoupeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTLoupeView.m; sourceTree = "<group>"; };
 		A7DD236D13C449BC0015C604 /* kb-drag-dot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-drag-dot.png"; sourceTree = "<group>"; };
@@ -203,6 +206,7 @@
 			isa = PBXGroup;
 			children = (
 				A704273B13C37F3800EE0776 /* NSAttributedString-Additions-for-HTML */,
+				A713992013C5A27800722B67 /* DTTextSelectionView */,
 				A7DD236A13C449BC0015C604 /* DTLoupeView */,
 				A704271D13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.h */,
 				A704271E13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.m */,
@@ -293,6 +297,16 @@
 			);
 			path = "NSAttributedString-Additions-for-HTML";
 			sourceTree = SOURCE_ROOT;
+		};
+		A713992013C5A27800722B67 /* DTTextSelectionView */ = {
+			isa = PBXGroup;
+			children = (
+				A713992213C5A2B400722B67 /* DTTextSelectionView.h */,
+				A713992313C5A2B400722B67 /* DTTextSelectionView.m */,
+			);
+			name = DTTextSelectionView;
+			path = ../../DTLoupeView;
+			sourceTree = "<group>";
 		};
 		A7DD236A13C449BC0015C604 /* DTLoupeView */ = {
 			isa = PBXGroup;
@@ -491,6 +505,7 @@
 				A70427F813C37F3800EE0776 /* UIColor+HTML.m in Sources */,
 				A70427FA13C37F3800EE0776 /* UIDevice+DTVersion.m in Sources */,
 				A7DD237D13C449BC0015C604 /* DTLoupeView.m in Sources */,
+				A713992413C5A2B400722B67 /* DTTextSelectionView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
