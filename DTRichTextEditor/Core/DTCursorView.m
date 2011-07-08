@@ -30,25 +30,10 @@ NSString * const DTCursorViewDidBlink = @"DTCursorViewDidBlink";
     [super dealloc];
 }
 
-
-// start timer when becoming visible, stop when off a window
-- (void)willMoveToWindow:(UIWindow *)newWindow
-{
-	if (newWindow)
-	{
-		// now visible
-		if (!blinkingTimer)
-		{
-		}
-	}
-	else 
-	{
-		//[blinkingTimer invalidate], blinkingTimer = nil;
-	}
-}
-
 - (void)setTimerForNextBlink
 {
+	[blinkingTimer invalidate], blinkingTimer = nil;
+	
 	if (self.hidden)
 	{
 		blinkingTimer = [NSTimer scheduledTimerWithTimeInterval:0.4 target:self selector:@selector(blink:) userInfo:nil repeats:NO];
@@ -56,6 +41,20 @@ NSString * const DTCursorViewDidBlink = @"DTCursorViewDidBlink";
 	else 
 	{
 		blinkingTimer = [NSTimer scheduledTimerWithTimeInterval:0.8 target:self selector:@selector(blink:) userInfo:nil repeats:NO];
+	}
+}
+
+// start timer when becoming visible, stop when off a window
+- (void)willMoveToWindow:(UIWindow *)newWindow
+{
+	if (newWindow)
+	{
+		// blink after a while again
+		[self setTimerForNextBlink];
+	}
+	else 
+	{
+		[blinkingTimer invalidate], blinkingTimer = nil;
 	}
 }
 
