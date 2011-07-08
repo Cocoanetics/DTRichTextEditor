@@ -252,23 +252,24 @@
 			break;
 		}
 		
-		CGFloat top = CGRectGetMinX(oneLine.frame);
-		CGFloat bottom = CGRectGetMaxX(oneLine.frame);
+		CGFloat top = CGRectGetMinY(oneLine.frame);
+		CGFloat bottom = CGRectGetMaxY(oneLine.frame);
 		
+		CGFloat distance = CGFLOAT_MAX;
 		
-		CGFloat distanceToTop = fabsf(top - point.y);
-		CGFloat distanceToBottom = fabsf(bottom - point.y);
-		
-		if (distanceToTop < closestDistance)
+		if (top > point.y)
 		{
-			closestLine = oneLine;
-			closestDistance = distanceToTop;
+			distance = top - point.y;
+		}
+		else if (bottom < point.y)
+		{
+			distance = point.y - bottom;
 		}
 		
-		if (distanceToBottom < closestDistance)
+		if (distance < closestDistance)
 		{
 			closestLine = oneLine;
-			closestDistance = distanceToTop;
+			closestDistance = distance;
 		}
 	}
 	
@@ -278,7 +279,6 @@
 	}
 	
 	// find the closest index in this line
-	
 	NSInteger closestIndex = -1;
 	NSRange range = [closestLine stringRange];
 	

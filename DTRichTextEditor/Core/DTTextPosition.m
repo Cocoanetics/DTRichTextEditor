@@ -32,13 +32,14 @@
 	return self;
 }
 
-- (NSComparisonResult)compare:(DTTextPosition *)other
+- (NSComparisonResult)compare:(id)object
 {
-	if (_location < other.location)
+	DTTextPosition *otherPosition = (DTTextPosition *)object;
+	if (_location < otherPosition.location)
 	{
 		return NSOrderedAscending;
 	}
-	else if (_location > other.location)
+	else if (_location > otherPosition.location)
 	{
 		return NSOrderedDescending;
 	}
@@ -46,9 +47,10 @@
 	return NSOrderedSame;
 }
 
-- (BOOL)isEqual:(DTTextPosition *)aPosition
+- (BOOL)isEqual:(id)object;
 {
-	return [self compare:aPosition]==NSOrderedSame;
+	DTTextPosition *otherPosition = (DTTextPosition *)object;
+	return [self compare:otherPosition]==NSOrderedSame;
 }
 
 
@@ -57,6 +59,10 @@
 	return [NSString stringWithFormat:@"<%@ location=%d>", [self class], _location];
 }
 
+- (DTTextPosition *)textPositionWithOffset:(NSInteger)offset
+{
+	return [DTTextPosition textPositionWithLocation:_location + offset];
+}
 
 
 #pragma mark Copying

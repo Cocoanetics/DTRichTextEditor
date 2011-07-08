@@ -52,6 +52,11 @@
 		A704282113C37FEE00EE0776 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = A704281D13C37FEE00EE0776 /* MainWindow.xib */; };
 		A713992413C5A2B400722B67 /* DTTextSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = A713992313C5A2B400722B67 /* DTTextSelectionView.m */; };
 		A76F897413C70073007B37C0 /* UIView+DT.m in Sources */ = {isa = PBXBuildFile; fileRef = A76F897313C70073007B37C0 /* UIView+DT.m */; };
+		A76F897F13C72F5B007B37C0 /* 43-film-roll.png in Resources */ = {isa = PBXBuildFile; fileRef = A76F897D13C72F5B007B37C0 /* 43-film-roll.png */; };
+		A76F898013C72F5B007B37C0 /* 43-film-roll@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A76F897E13C72F5B007B37C0 /* 43-film-roll@2x.png */; };
+		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
+		A76F898613C735E4007B37C0 /* NSAttributedString+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A76F898513C735E4007B37C0 /* NSAttributedString+DTRichText.m */; };
+		A76F898913C751D5007B37C0 /* NSMutableAttributedString+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A76F898813C751D5007B37C0 /* NSMutableAttributedString+DTRichText.m */; };
 		A7DD237D13C449BC0015C604 /* DTLoupeView.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DD236C13C449BC0015C604 /* DTLoupeView.m */; };
 		A7DD237E13C449BC0015C604 /* kb-drag-dot.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD236D13C449BC0015C604 /* kb-drag-dot.png */; };
 		A7DD237F13C449BC0015C604 /* kb-drag-dot@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD236E13C449BC0015C604 /* kb-drag-dot@2x.png */; };
@@ -159,6 +164,13 @@
 		A713992313C5A2B400722B67 /* DTTextSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTTextSelectionView.m; sourceTree = SOURCE_ROOT; };
 		A76F897213C70073007B37C0 /* UIView+DT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+DT.h"; sourceTree = "<group>"; };
 		A76F897313C70073007B37C0 /* UIView+DT.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+DT.m"; sourceTree = "<group>"; };
+		A76F897D13C72F5B007B37C0 /* 43-film-roll.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "43-film-roll.png"; sourceTree = "<group>"; };
+		A76F897E13C72F5B007B37C0 /* 43-film-roll@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "43-film-roll@2x.png"; sourceTree = "<group>"; };
+		A76F898113C73421007B37C0 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		A76F898413C735E4007B37C0 /* NSAttributedString+DTRichText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+DTRichText.h"; sourceTree = "<group>"; };
+		A76F898513C735E4007B37C0 /* NSAttributedString+DTRichText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+DTRichText.m"; sourceTree = "<group>"; };
+		A76F898713C751D5007B37C0 /* NSMutableAttributedString+DTRichText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+DTRichText.h"; sourceTree = "<group>"; };
+		A76F898813C751D5007B37C0 /* NSMutableAttributedString+DTRichText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+DTRichText.m"; sourceTree = "<group>"; };
 		A7DD236B13C449BC0015C604 /* DTLoupeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTLoupeView.h; sourceTree = "<group>"; };
 		A7DD236C13C449BC0015C604 /* DTLoupeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTLoupeView.m; sourceTree = "<group>"; };
 		A7DD236D13C449BC0015C604 /* kb-drag-dot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-drag-dot.png"; sourceTree = "<group>"; };
@@ -192,6 +204,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */,
 				A704273A13C37F0B00EE0776 /* MediaPlayer.framework in Frameworks */,
 				A704273813C37F0500EE0776 /* QuartzCore.framework in Frameworks */,
 				A704273613C37EFE00EE0776 /* CoreText.framework in Frameworks */,
@@ -208,6 +221,7 @@
 		A704271C13C37E9900EE0776 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				A76F898313C73514007B37C0 /* Helpers */,
 				A704273B13C37F3800EE0776 /* NSAttributedString-Additions-for-HTML */,
 				A713992013C5A27800722B67 /* DTTextSelectionView */,
 				A7DD236A13C449BC0015C604 /* DTLoupeView */,
@@ -311,6 +325,28 @@
 			path = ../../DTLoupeView;
 			sourceTree = "<group>";
 		};
+		A76F897C13C72F40007B37C0 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				A76F897D13C72F5B007B37C0 /* 43-film-roll.png */,
+				A76F897E13C72F5B007B37C0 /* 43-film-roll@2x.png */,
+				A704281B13C37FEE00EE0776 /* Icon.png */,
+				A704281C13C37FEE00EE0776 /* Icon@2x.png */,
+			);
+			name = Images;
+			sourceTree = "<group>";
+		};
+		A76F898313C73514007B37C0 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				A76F898413C735E4007B37C0 /* NSAttributedString+DTRichText.h */,
+				A76F898513C735E4007B37C0 /* NSAttributedString+DTRichText.m */,
+				A76F898713C751D5007B37C0 /* NSMutableAttributedString+DTRichText.h */,
+				A76F898813C751D5007B37C0 /* NSMutableAttributedString+DTRichText.m */,
+			);
+			name = Helpers;
+			sourceTree = "<group>";
+		};
 		A7DD236A13C449BC0015C604 /* DTLoupeView */ = {
 			isa = PBXGroup;
 			children = (
@@ -349,6 +385,7 @@
 		A7F0C83313C326E900EBD027 = {
 			isa = PBXGroup;
 			children = (
+				A76F898113C73421007B37C0 /* AssetsLibrary.framework */,
 				A704271C13C37E9900EE0776 /* Core */,
 				A704272C13C37EA500EE0776 /* Demo */,
 				A7F0C84913C326E900EBD027 /* Supporting Files */,
@@ -382,9 +419,8 @@
 		A7F0C84913C326E900EBD027 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				A76F897C13C72F40007B37C0 /* Images */,
 				A704281A13C37FEE00EE0776 /* DTRichTextEditorViewController.xib */,
-				A704281B13C37FEE00EE0776 /* Icon.png */,
-				A704281C13C37FEE00EE0776 /* Icon@2x.png */,
 				A704281D13C37FEE00EE0776 /* MainWindow.xib */,
 				A7F0C84A13C326E900EBD027 /* DTRichTextEditor-Info.plist */,
 				A7F0C84B13C326E900EBD027 /* InfoPlist.strings */,
@@ -463,6 +499,8 @@
 				A7DD238B13C449BC0015C604 /* kb-magnifier-ranged-lo@2x.png in Resources */,
 				A7DD238C13C449BC0015C604 /* kb-magnifier-ranged-mask.png in Resources */,
 				A7DD238D13C449BC0015C604 /* kb-magnifier-ranged-mask@2x.png in Resources */,
+				A76F897F13C72F5B007B37C0 /* 43-film-roll.png in Resources */,
+				A76F898013C72F5B007B37C0 /* 43-film-roll@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -512,6 +550,8 @@
 				A7DD237D13C449BC0015C604 /* DTLoupeView.m in Sources */,
 				A713992413C5A2B400722B67 /* DTTextSelectionView.m in Sources */,
 				A76F897413C70073007B37C0 /* UIView+DT.m in Sources */,
+				A76F898613C735E4007B37C0 /* NSAttributedString+DTRichText.m in Sources */,
+				A76F898913C751D5007B37C0 /* NSMutableAttributedString+DTRichText.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

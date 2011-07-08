@@ -25,25 +25,25 @@
 //	return range;
 //}
 
-+ (DTTextRange *)textRangeFromStart:(DTTextPosition *)start toEnd:(DTTextPosition *)end
++ (DTTextRange *)textRangeFromStart:(UITextPosition *)start toEnd:(UITextPosition *)end
 {
 	DTTextRange *range = [[[DTTextRange alloc] initWithStart:start end:end] autorelease];
 	
 	return range;
 }
 
-+ (DTTextRange *)emptyRangeAtPosition:(DTTextPosition *)position offset:(NSInteger)offset
++ (DTTextRange *)emptyRangeAtPosition:(UITextPosition *)position offset:(NSInteger)offset
 {
-	DTTextPosition *newPosition = [DTTextPosition textPositionWithLocation:position.location + offset];
+	DTTextPosition *newPosition = [DTTextPosition textPositionWithLocation:[(DTTextPosition *)position location] + offset];
 	
 	return [DTTextRange textRangeFromStart:newPosition toEnd:newPosition];
 }
 
-- (id)initWithStart:(DTTextPosition *)start end:(DTTextPosition *)end
+- (id)initWithStart:(UITextPosition  *)start end:(UITextPosition *)end
 {
 	if (self = [super init])
 	{
-		if ([start compare:end] == NSOrderedDescending)
+		if ([(DTTextPosition *)start compare:end] == NSOrderedDescending)
 		{
 			_start = [end copy];
 			_end = [start copy];
@@ -117,9 +117,10 @@
 	return (DTTextPosition *)_end;
 }
 
-- (BOOL)isEqual:(DTTextRange *)otherRange
+- (BOOL)isEqual:(id)object
 {
-	return ([_start isEqual:[otherRange start]] && [_end isEqual:[otherRange end]]);
+	UITextRange *otherRange = (DTTextRange *)object;
+	return ([_start isEqual:(id)otherRange.start] && [_end isEqual:(id)otherRange.end]);
 }
 
 #pragma mark Copying

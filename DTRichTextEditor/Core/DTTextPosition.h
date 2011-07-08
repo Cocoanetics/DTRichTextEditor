@@ -18,8 +18,10 @@
 
 - (id)initWithLocation:(NSInteger)location;
 
-- (NSComparisonResult)compare:(DTTextPosition *)other;
+- (NSComparisonResult)compare:(id)object;
 - (BOOL)isEqual:(DTTextPosition *)aPosition;
+
+- (DTTextPosition *)textPositionWithOffset:(NSInteger)offset;
 
 @property (nonatomic, assign) NSInteger location;
 

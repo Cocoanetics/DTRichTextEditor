@@ -10,6 +10,7 @@
 
 #import "DTAttributedTextView.h"
 #import "DTAttributedTextContentView.h"
+#import "NSAttributedString+DTRichText.h"
 
 @class DTTextRange, DTTextPosition;
 @class DTCursorView;
@@ -85,5 +86,9 @@ typedef enum
 @property(nonatomic, getter=isSecureTextEntry) BOOL secureTextEntry;
 //@property(nonatomic) UITextSpellCheckingType spellCheckingType;
 
+// overwritten, accepts NSString or NSAttributedString
+- (void)replaceRange:(UITextRange *)range withText:(id)text;
+- (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
+- (void)replaceRange:(UITextRange *)range withAttachment:(DTTextAttachment *)attachment;
 
 @end

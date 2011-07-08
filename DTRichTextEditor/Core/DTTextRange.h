@@ -17,19 +17,19 @@
 }
 
 
-+ (DTTextRange *)textRangeFromStart:(DTTextPosition *)start toEnd:(DTTextPosition *)end;
++ (DTTextRange *)textRangeFromStart:(UITextPosition *)start toEnd:(UITextPosition *)end;
 //+ (DTTextRange *)textRangeFromStartLocation:(NSInteger)start toEndLocation:(NSInteger)end;
 
-+ (DTTextRange *)emptyRangeAtPosition:(DTTextPosition *)position offset:(NSInteger)offset;
++ (DTTextRange *)emptyRangeAtPosition:(UITextPosition *)position offset:(NSInteger)offset;
 
-- (id)initWithStart:(DTTextPosition *)start end:(DTTextPosition *)end;
+- (id)initWithStart:(UITextPosition *)start end:(UITextPosition *)end;
 - (id)initWithNSRange:(NSRange)range;
 
 - (NSRange)NSRangeValue;
 - (NSUInteger)length;
 
-- (DTTextPosition *)start;
-- (DTTextPosition *)end;
+//- (DTTextPosition *)start;
+//- (DTTextPosition *)end;
 
 
 @end

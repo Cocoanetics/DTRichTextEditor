@@ -8,6 +8,9 @@
 
 #import "DTRichTextEditorViewController.h"
 #import "NSAttributedString+HTML.h"
+#import "NSAttributedString+DTRichText.h"
+
+#import <AssetsLibrary/AssetsLibrary.h>
 
 @implementation DTRichTextEditorViewController
 
@@ -50,6 +53,11 @@
 	[richEditor setAttributedText:string];
 	//[richEditor setPosition:[richEditor endOfDocument]];
 	
+	UIBarButtonItem *photo = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];
+	self.navigationItem.rightBarButtonItem = photo;
+	[photo release];
+	
+	richEditor.contentView.shouldDrawImages = YES;
 }
 
 
@@ -78,6 +86,62 @@
 
 - (void)dealloc {
     [super dealloc];
+}
+
+#pragma mark Helpers
+
+- (void)replaceCurrentSelectionWithPhoto:(UIImage *)image
+{
+	// make an attachment
+	DTTextAttachment *attachment = [[[DTTextAttachment alloc] init] autorelease];
+	attachment.contents = (id)image;
+	attachment.displaySize = image.size;
+	attachment.originalSize = image.size;
+	attachment.contentType = DTTextAttachmentTypeImage;
+	
+	UITextRange *selection = richEditor.selectedTextRange;
+	[richEditor replaceRange:selection withAttachment:attachment];
+}
+
+
+#pragma mark Actions
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+	NSURL *imageURL = [info valueForKey:UIImagePickerControllerReferenceURL];
+    NSLog(@"%@",imageURL);
+    ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
+    {
+        CGImageRef iref = [myasset thumbnail];
+        if (iref) {
+            UIImage *theThumbnail = [UIImage imageWithCGImage:iref];
+			[self replaceCurrentSelectionWithPhoto:theThumbnail];
+        }
+    };
+	
+	
+    ALAssetsLibraryAccessFailureBlock failureblock  = ^(NSError *myerror)
+    {
+        NSLog(@"booya, cant get image - %@",[myerror localizedDescription]);
+    };
+	
+    if(imageURL)
+    {
+        ALAssetsLibrary* assetslibrary = [[[ALAssetsLibrary alloc] init] autorelease];
+        [assetslibrary assetForURL:imageURL 
+                       resultBlock:resultblock
+                      failureBlock:failureblock];
+    }
+	
+    [self dismissModalViewControllerAnimated:YES];
+}
+
+- (void)insertPhoto:(UIBarButtonItem *)sender
+{
+	UIImagePickerController *picker = [[[UIImagePickerController alloc] init] autorelease];
+	picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+	picker.delegate = self;
+	[self presentModalViewController:picker animated:YES];
 }
 
 @end

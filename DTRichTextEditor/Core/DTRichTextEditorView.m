@@ -9,7 +9,8 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "DTAttributedTextContentView.h"
-
+#import "DTCoreTextLayoutFrame+DTRichText.h"
+#import "NSMutableAttributedString+DTRichText.h"
 #import "DTRichTextEditorView.h"
 
 #import "DTTextPosition.h"
@@ -17,8 +18,6 @@
 
 #import "DTCursorView.h"
 #import "DTCoreTextLayouter.h"
-
-#import "DTCoreTextLayoutFrame+DTRichText.h"
 
 #import "DTLoupeView.h"
 #import "DTTextSelectionView.h"
@@ -61,6 +60,8 @@
 	[center addObserver:self selector:@selector(loupeDidHide:) name:DTLoupeDidHide object:nil];
 	[center addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
 	[center addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+	
+	[self.contentView addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -77,6 +78,7 @@
 
 - (void)dealloc
 {
+	[self.contentView removeObserver:self forKeyPath:@"frame"];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
 	[_selectedTextRange release];
@@ -137,6 +139,19 @@
 	self.userInteractionEnabled = YES;
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if ([keyPath isEqualToString:@"frame"] && object == contentView)
+	{
+//		CGRect newFrame = [[change objectForKey:NSKeyValueChangeNewKey] CGRectValue];
+//		
+//		[self setContentSize:newFrame.size];
+//		
+//		NSLog(@"%@", NSStringFromUIEdgeInsets())
+//		
+//		NSLog(@"%@", change);
+	}
+}
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
@@ -151,6 +166,16 @@
 	
 	// need to skip self hitTest or else we get an endless hitTest loop
 	return hitView;
+}
+
+- (void)layoutSubviews
+{
+	[super layoutSubviews];
+	
+	if (self.isDragging && [_loupe isShowing] && _loupe.style == DTLoupeStyleCircle)
+	{
+		_loupe.seeThroughMode = YES;
+	}
 }
 
 #pragma mark Menu
@@ -231,6 +256,14 @@
 		[self addSubview:_cursor];
 	}
 	
+	UIEdgeInsets reverseInsets = self.contentView.edgeInsets;
+	reverseInsets.top *= -1.0;
+	reverseInsets.bottom *= -1.0;
+	reverseInsets.left *= -1.0;
+	reverseInsets.right *= -1.0;
+	
+	cursorFrame = UIEdgeInsetsInsetRect(cursorFrame, reverseInsets);
+	
 	[self scrollRectToVisible:cursorFrame animated:YES];
 }
 
@@ -244,8 +277,8 @@
 	if ([_selectedTextRange length])
 	{
 		// existing selection constrains free movement
-		DTTextPosition *start = [_selectedTextRange start];
-		DTTextPosition *end = [_selectedTextRange end];
+		DTTextPosition *start = (id)_selectedTextRange.start;
+		DTTextPosition *end = (id)_selectedTextRange.end;
 		
 		if ([start compare:position] == NSOrderedDescending)
 		{
@@ -285,14 +318,30 @@
 	
 	// calculate bottom covered amount
 	CGFloat coveredHeight = MAX(0, self.frame.size.height - keyboardFrame.origin.y);
+	NSLog(@"covered: %f", coveredHeight);
 	
 	self.contentInset = UIEdgeInsetsMake(0, 0, coveredHeight, 0);
 	self.scrollIndicatorInsets = self.contentInset;
+	
+	NSLog(@"%@ %@", NSStringFromCGRect(self.contentView.frame), NSStringFromCGRect(self.bounds));
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
-	self.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+//	self.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+//	self.scrollIndicatorInsets = self.contentInset;
+	
+	NSDictionary *userInfo = [notification userInfo];
+	CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+	
+	// convert to view coordinates, frame is in window coordinates, not rotated
+	keyboardFrame = [self convertRect:keyboardFrame fromView:self.window];
+	
+	// calculate bottom covered amount
+	CGFloat coveredHeight = MAX(0, self.frame.size.height - keyboardFrame.origin.y);
+	NSLog(@"covered: %f", coveredHeight);
+	
+	self.contentInset = UIEdgeInsetsMake(0, 0, coveredHeight, 0);
 	self.scrollIndicatorInsets = self.contentInset;
 }
 
@@ -312,8 +361,6 @@
 		[self moveCursorToPositionClosestToLocation:touchPoint];
 		
 		[self hideContextMenu];
-		
-		self.scrollEnabled = YES;
 	}
 }
 
@@ -339,13 +386,12 @@
 			[_loupe presentLoupeFromLocation:touchPoint];
 			
 			_cursor.state = DTCursorStateStatic;
-			
-			self.scrollEnabled = NO;
 		}
 			
 		case UIGestureRecognizerStateChanged:
 		{
 			_loupe.touchPoint = touchPoint;
+			_loupe.seeThroughMode = NO;
 			
 			[self hideContextMenu];
 			[self moveCursorToPositionClosestToLocation:touchPoint];
@@ -403,8 +449,8 @@
 				_dragMode = DTDragModeRightHandle;
 				
 				CGRect rect = [_selectionView endCaretRect];
-				loupeStartPoint = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
 				startCaretMid = CGRectCenter(rect);
+				loupeStartPoint = startCaretMid;
 				legalStart = YES;
 			}
 			else
@@ -437,8 +483,8 @@
 			
  			DTTextPosition *position = (DTTextPosition *)[self closestPositionToPoint:movedMidPoint];
 			
-			DTTextPosition *startPosition = [_selectedTextRange start];
-			DTTextPosition *endPosition = [_selectedTextRange end];
+			DTTextPosition *startPosition = (DTTextPosition *)_selectedTextRange.start;
+			DTTextPosition *endPosition = (DTTextPosition *)_selectedTextRange.end;
 			
 			DTTextRange *newRange = nil;
 			
@@ -463,7 +509,7 @@
 			{
 				[self setSelectedTextRange:newRange];
 			}
-
+			
 			if (_dragMode == DTDragModeLeftHandle)
 			{
 				CGRect rect = [_selectionView beginCaretRect];
@@ -473,10 +519,10 @@
 			else if (_dragMode == DTDragModeRightHandle)
 			{
 				CGRect rect = [_selectionView endCaretRect];
-				CGPoint point = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
+				CGPoint point = CGRectCenter(rect);
 				self.loupe.touchPoint = point;
 			}
-
+			
 			
 			break;
 		}
@@ -669,7 +715,7 @@
 
 - (void)select:(id)sender
 {
-	DTTextPosition *currentPosition = [_selectedTextRange start];
+	DTTextPosition *currentPosition = (DTTextPosition *)[_selectedTextRange start];
 	DTTextRange *wordRange = [self rangeForWordAtPosition:currentPosition];
 	
 	if (!wordRange)
@@ -694,8 +740,6 @@
 		_shouldReshowContextMenuAfterHide = YES;
 		
 		[self setSelectedTextRange:wordRange];
-
-		self.scrollEnabled = NO;
 	}
 }
 
@@ -705,8 +749,6 @@
 	
 	DTTextRange *fullRange = [DTTextRange textRangeFromStart:(DTTextPosition *)[self beginningOfDocument] toEnd:(DTTextPosition *)[self endOfDocument]];
 	[self setSelectedTextRange:fullRange];
-	
-	self.scrollEnabled = NO;
 }
 
 - (void)delete:(id)sender
@@ -792,8 +834,8 @@
 	{
 		// delete character left of carret
 		
-		DTTextPosition *delEnd = [currentRange start];
-		DTTextPosition *docStart = (id)[self beginningOfDocument];
+		DTTextPosition *delEnd = (DTTextPosition *)currentRange.start;
+		DTTextPosition *docStart = (DTTextPosition *)[self beginningOfDocument];
 		
 		if ([docStart compare:delEnd] == NSOrderedAscending)
 		{
@@ -830,7 +872,22 @@
 	return [bareText substringWithRange:rangeValue];
 }
 
-- (void)replaceRange:(DTTextRange *)range withText:(NSString *)text
+- (NSDictionary *)typingAttributesForRange:(DTTextRange *)range
+{
+	return [self.internalAttributedText typingAttributesForRange:[range NSRangeValue]];
+}
+
+- (void)replaceRange:(DTTextRange *)range withAttachment:(DTTextAttachment *)attachment
+{
+	[_internalAttributedText replaceRange:[range NSRangeValue] withAttachment:attachment];
+	
+	self.attributedString = _internalAttributedText;
+	
+	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:1]];
+	[self updateCursor];
+}
+
+- (void)replaceRange:(DTTextRange *)range withText:(id)text
 {
 	NSRange myRange = [range NSRangeValue];
 	
@@ -842,29 +899,59 @@
 		text = @"";
 	}
 	
-	if (_internalAttributedText)
+	if ([text isKindOfClass:[NSString class]])
 	{
-		[_internalAttributedText replaceCharactersInRange:myRange withString:text];
-		self.attributedString = _internalAttributedText;
+		NSDictionary *typingAttributes = [self typingAttributesForRange:range];	
 		
-		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:[text length]]];
-		//[self setSelectedTextRange:range];
+		if ([typingAttributes objectForKey:@"DTTextAttachment"])
+		{
+			// has an attachment, we need a new dictionary
+			
+			NSMutableDictionary *tmpDict = [typingAttributes mutableCopy];
+			
+			[tmpDict removeObjectForKey:(id)kCTRunDelegateAttributeName];
+			[tmpDict removeObjectForKey:@"DTAttachmentParagraphSpacing"];
+			[tmpDict removeObjectForKey:@"DTTextAttachment"];
+			
+			text = [[[NSAttributedString alloc] initWithString:text attributes:tmpDict] autorelease];
+			
+			[tmpDict release];
+		}
 	}
-	else 
+	
+	if ([text isKindOfClass:[NSString class]])
 	{
-		_internalAttributedText = [[NSMutableAttributedString alloc] initWithString:text];
-		self.attributedString = _internalAttributedText;
-		
-		// makes passed range a zombie!
-		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:(id)[self beginningOfDocument] offset:[text length]]];
+		[self.internalAttributedText replaceCharactersInRange:myRange withString:text];
 	}
+	else if ([text isKindOfClass:[NSAttributedString class]])
+	{
+		[self.internalAttributedText replaceCharactersInRange:myRange withAttributedString:text];
+	}
+	
+	self.attributedString = _internalAttributedText;
+	
+	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:[text length]]];
+	
+	
+	
+	//	if (_internalAttributedText)
+	//	{
+	//		[_internalAttributedText replaceCharactersInRange:myRange withString:text];
+	//		self.attributedString = _internalAttributedText;
+	//		
+	//		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:[text length]]];
+	//		//[self setSelectedTextRange:range];
+	//	}
+	//	else 
+	//	{
+	//		_internalAttributedText = [[NSMutableAttributedString alloc] initWithString:text];
+	//		self.attributedString = _internalAttributedText;
+	//		
+	//		// makes passed range a zombie!
+	//		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:(id)[self beginningOfDocument] offset:[text length]]];
+	//	}
 	
 	[self updateCursor];
-	
-	if (myRange.length>1)
-	{
-		//´[inputDelegate textDidChange:self];
-	}
 }
 
 #pragma mark Working with Marked and Selected Text 
@@ -964,12 +1051,12 @@
 	[self replaceRange:replaceRange withText:markedText];
 	
 	// adjust selection
-	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[replaceRange start] offset:[markedText length]]];
+	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:replaceRange.start offset:[markedText length]]];
 	
 	[self willChangeValueForKey:@"markedTextRange"];
 	
 	// selected range is always zero-based
-	DTTextPosition *startOfReplaceRange = [replaceRange start];
+	DTTextPosition *startOfReplaceRange = (DTTextPosition *)replaceRange.start;
 	
 	// set new marked range
 	[_markedTextRange release];
@@ -1208,7 +1295,7 @@
 #pragma mark Returning Text Styling Information
 - (NSDictionary *)textStylingAtPosition:(DTTextPosition *)position inDirection:(UITextStorageDirection)direction;
 {
-	if (!position)
+	if (!position)  
 		return nil;
 	
 	if ([position isEqual:(id)[self endOfDocument]])
@@ -1347,6 +1434,16 @@
 	}
 	
 	return _selectionView;
+}
+
+- (NSMutableAttributedString *)internalAttributedText
+{
+	if (!_internalAttributedText)
+	{
+		_internalAttributedText = [[NSMutableAttributedString alloc] init];
+	}
+	
+	return _internalAttributedText;
 }
 
 

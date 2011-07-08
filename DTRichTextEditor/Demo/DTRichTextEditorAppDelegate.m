@@ -13,6 +13,7 @@
 
 @synthesize window;
 @synthesize viewController;
+@synthesize navController;
 
 
 #pragma mark -
@@ -20,7 +21,10 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions 
 {  
-    [self.window addSubview:viewController.view];
+	navController = [[UINavigationController alloc] initWithRootViewController:viewController];
+	viewController.title = @"Rich Text Demo";
+	
+    [self.window addSubview:navController.view];
     [self.window makeKeyAndVisible];
 
     return YES;
@@ -77,6 +81,7 @@
 
 - (void)dealloc {
     [viewController release];
+	[navController release];
     [window release];
     [super dealloc];
 }

@@ -13,10 +13,12 @@
 @interface DTRichTextEditorAppDelegate : NSObject <UIApplicationDelegate> {
     UIWindow *window;
     DTRichTextEditorViewController *viewController;
+	UINavigationController *navController;
 }
 
 @property (nonatomic, retain) IBOutlet UIWindow *window;
 @property (nonatomic, retain) IBOutlet DTRichTextEditorViewController *viewController;
+@property (nonatomic, retain) IBOutlet UINavigationController *navController;;
 
 @end
 
