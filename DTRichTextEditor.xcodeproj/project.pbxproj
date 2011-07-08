@@ -51,6 +51,7 @@
 		A704282013C37FEE00EE0776 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A704281C13C37FEE00EE0776 /* Icon@2x.png */; };
 		A704282113C37FEE00EE0776 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = A704281D13C37FEE00EE0776 /* MainWindow.xib */; };
 		A713992413C5A2B400722B67 /* DTTextSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = A713992313C5A2B400722B67 /* DTTextSelectionView.m */; };
+		A76F897413C70073007B37C0 /* UIView+DT.m in Sources */ = {isa = PBXBuildFile; fileRef = A76F897313C70073007B37C0 /* UIView+DT.m */; };
 		A7DD237D13C449BC0015C604 /* DTLoupeView.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DD236C13C449BC0015C604 /* DTLoupeView.m */; };
 		A7DD237E13C449BC0015C604 /* kb-drag-dot.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD236D13C449BC0015C604 /* kb-drag-dot.png */; };
 		A7DD237F13C449BC0015C604 /* kb-drag-dot@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD236E13C449BC0015C604 /* kb-drag-dot@2x.png */; };
@@ -156,6 +157,8 @@
 		A704281D13C37FEE00EE0776 /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		A713992213C5A2B400722B67 /* DTTextSelectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTTextSelectionView.h; sourceTree = SOURCE_ROOT; };
 		A713992313C5A2B400722B67 /* DTTextSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTTextSelectionView.m; sourceTree = SOURCE_ROOT; };
+		A76F897213C70073007B37C0 /* UIView+DT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+DT.h"; sourceTree = "<group>"; };
+		A76F897313C70073007B37C0 /* UIView+DT.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+DT.m"; sourceTree = "<group>"; };
 		A7DD236B13C449BC0015C604 /* DTLoupeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTLoupeView.h; sourceTree = "<group>"; };
 		A7DD236C13C449BC0015C604 /* DTLoupeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTLoupeView.m; sourceTree = "<group>"; };
 		A7DD236D13C449BC0015C604 /* kb-drag-dot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-drag-dot.png"; sourceTree = "<group>"; };
@@ -314,6 +317,8 @@
 				A7DD239113C450EC0015C604 /* Images */,
 				A7DD236B13C449BC0015C604 /* DTLoupeView.h */,
 				A7DD236C13C449BC0015C604 /* DTLoupeView.m */,
+				A76F897213C70073007B37C0 /* UIView+DT.h */,
+				A76F897313C70073007B37C0 /* UIView+DT.m */,
 			);
 			path = DTLoupeView;
 			sourceTree = SOURCE_ROOT;
@@ -506,6 +511,7 @@
 				A70427FA13C37F3800EE0776 /* UIDevice+DTVersion.m in Sources */,
 				A7DD237D13C449BC0015C604 /* DTLoupeView.m in Sources */,
 				A713992413C5A2B400722B67 /* DTTextSelectionView.m in Sources */,
+				A76F897413C70073007B37C0 /* UIView+DT.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

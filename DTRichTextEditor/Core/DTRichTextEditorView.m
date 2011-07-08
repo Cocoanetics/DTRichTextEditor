@@ -54,9 +54,13 @@
 	//self.contentInset = UIEdgeInsetsMake(5, 5, 5, 5);
 	
 	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cursorDidBlink:) name:DTCursorViewDidBlink object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(menuDidHide:) name:UIMenuControllerDidHideMenuNotification object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(loupeDidHide:) name:DTLoupeDidHide object:nil];
+	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+	
+	[center addObserver:self selector:@selector(cursorDidBlink:) name:DTCursorViewDidBlink object:nil];
+	[center addObserver:self selector:@selector(menuDidHide:) name:UIMenuControllerDidHideMenuNotification object:nil];
+	[center addObserver:self selector:@selector(loupeDidHide:) name:DTLoupeDidHide object:nil];
+	[center addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
+	[center addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -112,7 +116,7 @@
 	//	//	doubletap.delegate = self;
 	//	//	[self.contentView addGestureRecognizer:doubletap];
 	
-	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDragHandle:)];
 	panGesture.delegate = self;
@@ -220,14 +224,12 @@
 	
 	CGRect cursorFrame = [self caretRectForPosition:self.selectedTextRange.start];
     cursorFrame.size.width = 3.0;
-	
-	if (!_cursor)
-	{
-		self.cursor = [[[DTCursorView alloc] initWithFrame:cursorFrame] autorelease];
-	}
-	
 	self.cursor.frame = cursorFrame;
-	[self.contentView addSubview:_cursor];
+	
+	if (!_cursor.superview)
+	{
+		[self addSubview:_cursor];
+	}
 	
 	[self scrollRectToVisible:cursorFrame animated:YES];
 }
@@ -261,6 +263,38 @@
 	[self.inputDelegate selectionDidChange:self];
 }
 
+
+#pragma mark Notifications
+
+- (void)cursorDidBlink:(NSNotification *)notification
+{
+	// update loupe magnified image to show changed cursor
+	if ([_loupe isShowing])
+	{
+		[_loupe setNeedsDisplay];
+	}
+}
+
+- (void)keyboardDidShow:(NSNotification *)notification
+{
+	NSDictionary *userInfo = [notification userInfo];
+	CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
+	
+	// convert to view coordinates, frame is in window coordinates, not rotated
+	keyboardFrame = [self convertRect:keyboardFrame fromView:self.window];
+	
+	// calculate bottom covered amount
+	CGFloat coveredHeight = MAX(0, self.frame.size.height - keyboardFrame.origin.y);
+	
+	self.contentInset = UIEdgeInsetsMake(0, 0, coveredHeight, 0);
+	self.scrollIndicatorInsets = self.contentInset;
+}
+
+- (void)keyboardWillHide:(NSNotification *)notification
+{
+	self.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+	self.scrollIndicatorInsets = self.contentInset;
+}
 
 
 #pragma mark Gestures
@@ -484,18 +518,18 @@
 	}
 }
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-	if (gestureRecognizer == panGesture && otherGestureRecognizer == longPressGesture)
-	{
-		return YES;
-	}
-
-	NSLog(@"%@ - %@", [gestureRecognizer class], [otherGestureRecognizer class]);
-
-	return YES;		
-	
-}
+//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+//{
+//	if (gestureRecognizer == panGesture && otherGestureRecognizer == longPressGesture)
+//	{
+//		return YES;
+//	}
+//
+//	//NSLog(@"%@ - %@", [gestureRecognizer class], [otherGestureRecognizer class]);
+//
+//	return YES;		
+//	
+//}
 
 //- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 //{
@@ -1273,19 +1307,6 @@
 	return [DTTextPosition textPositionWithLocation:newIndex];
 }
 
-
-#pragma mark Notifications
-
-- (void)cursorDidBlink:(NSNotification *)notification
-{
-	// update loupe magnified image to show changed cursor
-	if ([_loupe isShowing])
-	{
-		[_loupe setNeedsDisplay];
-	}
-}
-
-
 #pragma mark Properties
 
 - (void)setContentSize:(CGSize)newContentSize
@@ -1293,6 +1314,7 @@
 	[super setContentSize:newContentSize];
 	
 	self.selectionView.frame = self.contentView.frame;
+	[self updateCursor];
 }
 
 - (DTLoupeView *)loupe
@@ -1303,6 +1325,17 @@
 	}
 	
 	return _loupe;
+}
+
+- (DTCursorView *)cursor
+{
+	if (!_cursor)
+	{
+		_cursor = [[DTCursorView alloc] initWithFrame:CGRectZero];
+		[self.contentView addSubview:_cursor];
+	}
+	
+	return _cursor;
 }
 
 - (DTTextSelectionView *)selectionView
