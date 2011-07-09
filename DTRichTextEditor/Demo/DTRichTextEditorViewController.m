@@ -57,6 +57,10 @@
 	self.navigationItem.rightBarButtonItem = photo;
 	[photo release];
 	
+	UIBarButtonItem *bold = [[UIBarButtonItem alloc] initWithTitle:@"Bold" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleBold:)];
+	self.navigationItem.leftBarButtonItem = bold;
+	[bold release];
+	
 	richEditor.contentView.shouldDrawImages = YES;
 }
 
@@ -109,7 +113,6 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
 	NSURL *imageURL = [info valueForKey:UIImagePickerControllerReferenceURL];
-    NSLog(@"%@",imageURL);
     ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
     {
         CGImageRef iref = [myasset thumbnail];
@@ -142,6 +145,12 @@
 	picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	picker.delegate = self;
 	[self presentModalViewController:picker animated:YES];
+}
+
+- (void)toggleBold:(UIBarButtonItem *)sender
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	[richEditor toggleBoldStyleInRange:range];
 }
 
 @end

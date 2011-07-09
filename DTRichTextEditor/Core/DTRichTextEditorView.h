@@ -91,4 +91,6 @@ typedef enum
 - (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
 - (void)replaceRange:(UITextRange *)range withAttachment:(DTTextAttachment *)attachment;
 
+- (void)toggleBoldStyleInRange:(UITextRange *)range;
+
 @end

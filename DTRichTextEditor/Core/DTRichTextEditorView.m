@@ -23,6 +23,7 @@
 #import "DTTextSelectionView.h"
 #import "CGUtils.h"
 #import "UIView+DT.h"
+#import "DTCoreTextFontDescriptor.h"
 
 @interface DTRichTextEditorView ()
 
@@ -61,8 +62,6 @@
 	[center addObserver:self selector:@selector(loupeDidHide:) name:DTLoupeDidHide object:nil];
 	[center addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
 	[center addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-	
-	[self.contentView addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -118,7 +117,7 @@
 	//	//	doubletap.delegate = self;
 	//	//	[self.contentView addGestureRecognizer:doubletap];
 	
-	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDragHandle:)];
 	panGesture.delegate = self;
@@ -856,6 +855,70 @@
 	
 	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:1]];
 	[self updateCursor];
+}
+
+- (void)toggleBoldStyleInRange:(UITextRange *)range
+{
+	// first character determines current boldness
+	NSDictionary *currentAttributes = [self typingAttributesForRange:range];
+	
+	CTFontRef currentFont = (CTFontRef)[currentAttributes objectForKey:(id)kCTFontAttributeName];
+	NSLog(@"%@", currentFont);
+	DTCoreTextFontDescriptor *typingFontDescriptor = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
+	
+	// need to replace name with family
+	CFStringRef family = CTFontCopyFamilyName(currentFont);
+	typingFontDescriptor.fontFamily = (NSString *)family;
+	CFRelease(family);
+	
+	typingFontDescriptor.fontName = nil;
+	
+	
+	DTTextPosition *start = (id)range.start;
+	DTTextPosition *end = (id)range.end;
+	
+    NSRange validRange = NSMakeRange(start.location, end.location - start.location);
+    
+    NSRange attrRange;
+    NSUInteger index=validRange.location;
+    
+    while (index < NSMaxRange(validRange)) 
+    {
+        NSMutableDictionary *attrs = [[self.internalAttributedText attributesAtIndex:index effectiveRange:&attrRange] mutableCopy];
+		CTFontRef currentFont = (CTFontRef)[attrs objectForKey:(id)kCTFontAttributeName];
+		DTCoreTextFontDescriptor *desc = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
+		
+		// need to replace name with family
+		CFStringRef family = CTFontCopyFamilyName(currentFont);
+		desc.fontFamily = (NSString *)family;
+		CFRelease(family);
+		
+		desc.fontName = nil;
+		
+		desc.boldTrait = !typingFontDescriptor.boldTrait;
+		CTFontRef newFont = [desc newMatchingFont];
+		NSLog(@"%@", newFont);
+		[attrs setObject:(id)newFont forKey:(id)kCTFontAttributeName];
+		CFRelease(newFont);
+		
+		if (attrRange.location < validRange.location)
+		{
+			attrRange.length -= (validRange.location - attrRange.location);
+			attrRange.location = validRange.location;
+		}
+		
+		if (NSMaxRange(attrRange)>NSMaxRange(validRange))
+		{
+			attrRange.length = NSMaxRange(validRange) - attrRange.location;
+		}
+		
+		[self.internalAttributedText setAttributes:attrs range:attrRange];
+
+        index += attrRange.length;
+    }
+	
+	self.attributedString = self.internalAttributedText;
+	//[self.contentView relayoutText];
 }
 
 - (void)replaceRange:(DTTextRange *)range withText:(id)text
