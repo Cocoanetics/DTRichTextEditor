@@ -22,6 +22,7 @@
 #import "DTLoupeView.h"
 #import "DTTextSelectionView.h"
 #import "CGUtils.h"
+#import "UIView+DT.h"
 
 @interface DTRichTextEditorView ()
 
@@ -78,7 +79,6 @@
 
 - (void)dealloc
 {
-	[self.contentView removeObserver:self forKeyPath:@"frame"];
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
 	[_selectedTextRange release];
@@ -131,26 +131,8 @@
 	
     self.backgroundColor = [UIColor whiteColor];
 	
-	self.clipsToBounds = YES;
-	self.textDelegate = self;
-    self.scrollEnabled = YES; 
-	
 	// for autocorrection candidate view
 	self.userInteractionEnabled = YES;
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if ([keyPath isEqualToString:@"frame"] && object == contentView)
-	{
-//		CGRect newFrame = [[change objectForKey:NSKeyValueChangeNewKey] CGRectValue];
-//		
-//		[self setContentSize:newFrame.size];
-//		
-//		NSLog(@"%@", NSStringFromUIEdgeInsets())
-//		
-//		NSLog(@"%@", change);
-	}
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
@@ -310,38 +292,27 @@
 
 - (void)keyboardDidShow:(NSNotification *)notification
 {
+	// keyboard frame is in window coordinates
 	NSDictionary *userInfo = [notification userInfo];
 	CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
 	
-	// convert to view coordinates, frame is in window coordinates, not rotated
-	keyboardFrame = [self convertRect:keyboardFrame fromView:self.window];
+	// convert own frame to window coordinates, frame is in superview's coordinates
+	CGRect ownFrame = [self.window convertRect:self.frame fromView:self.superview];
 	
-	// calculate bottom covered amount
-	CGFloat coveredHeight = MAX(0, self.frame.size.height - keyboardFrame.origin.y);
-	NSLog(@"covered: %f", coveredHeight);
+	// calculate the area of own frame that is covered by keyboard
+	CGRect coveredFrame = CGRectIntersection(ownFrame, keyboardFrame);
 	
-	self.contentInset = UIEdgeInsetsMake(0, 0, coveredHeight, 0);
+	// now this might be rotated, so convert it back
+	coveredFrame = [self.window convertRect:coveredFrame toView:self.superview];
+
+	// set inset to make up for covered array at bottom
+	self.contentInset = UIEdgeInsetsMake(0, 0, coveredFrame.size.height, 0);
 	self.scrollIndicatorInsets = self.contentInset;
-	
-	NSLog(@"%@ %@", NSStringFromCGRect(self.contentView.frame), NSStringFromCGRect(self.bounds));
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
-//	self.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
-//	self.scrollIndicatorInsets = self.contentInset;
-	
-	NSDictionary *userInfo = [notification userInfo];
-	CGRect keyboardFrame = [[userInfo objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-	
-	// convert to view coordinates, frame is in window coordinates, not rotated
-	keyboardFrame = [self convertRect:keyboardFrame fromView:self.window];
-	
-	// calculate bottom covered amount
-	CGFloat coveredHeight = MAX(0, self.frame.size.height - keyboardFrame.origin.y);
-	NSLog(@"covered: %f", coveredHeight);
-	
-	self.contentInset = UIEdgeInsetsMake(0, 0, coveredHeight, 0);
+	self.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
 	self.scrollIndicatorInsets = self.contentInset;
 }
 
