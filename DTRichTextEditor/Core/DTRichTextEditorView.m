@@ -1540,3 +1540,14 @@
 
 
 @end
+
+
+@implementation DTRichTextEditorView (manipulation)
+
+- (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate
+{
+	// update all attachments that matchin this URL (possibly multiple images with same size)
+	return [self.contentView.layoutFrame textAttachmentsWithPredicate:predicate];
+}
+
+@end

@@ -95,3 +95,9 @@ typedef enum
 - (void)scrollCursorVisibleAnimated:(BOOL)animated;
 
 @end
+
+@interface DTRichTextEditorView (manipulation)
+
+- (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate;
+
+@end
