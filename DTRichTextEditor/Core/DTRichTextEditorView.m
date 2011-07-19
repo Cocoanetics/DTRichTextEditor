@@ -80,17 +80,17 @@
 	{
 		panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDragHandle:)];
 		panGesture.delegate = self;
-		[self.contentView addGestureRecognizer:panGesture];
+		[self addGestureRecognizer:panGesture];
 	}
 	
 	if (!longPressGesture)
 	{
 		longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
 		longPressGesture.delegate = self;
-		[self.contentView addGestureRecognizer:longPressGesture];
+		[self addGestureRecognizer:longPressGesture];
 	}
 	
-	self.contentView.userInteractionEnabled = YES;
+	//self.contentView.userInteractionEnabled = YES;
 	self.selectionView.userInteractionEnabled = NO;
 	// --- notifications
 	
@@ -141,20 +141,21 @@
     [self setDefaults];
 }
 
-//- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-//{
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+{
+	UIView *hitView = [super hitTest:point withEvent:event];
 //	UIView *hitView = [self.contentView hitTest:point withEvent:event];
-//	
+	
 //	if (!hitView)
 //	{
 //		hitView = [super hitTest:point withEvent:event];
 //	}
-//	
-//	//NSLog(@"hit: %@", hitView);
-//	
-//	// need to skip self hitTest or else we get an endless hitTest loop
-//	return hitView;
-//}
+	
+	NSLog(@"hit: %@", hitView);
+	
+	// need to skip self hitTest or else we get an endless hitTest loop
+	return hitView;
+}
 
 - (void)layoutSubviews
 {
@@ -226,6 +227,11 @@
 #pragma mark Custom Selection/Marking/Cursor
 - (void)scrollCursorVisibleAnimated:(BOOL)animated
 {
+	if (!_selectedTextRange || _markedTextRange || ![_selectedTextRange isEmpty])
+	{
+		return;
+	}
+	
 	CGRect cursorFrame = [self caretRectForPosition:self.selectedTextRange.start];
     cursorFrame.size.width = 3.0;
 	
@@ -255,22 +261,62 @@
 	// re-add cursor
 	DTTextPosition *position = (id)self.selectedTextRange.start;
 	
-	if (!position || ![_selectedTextRange isEmpty])
+	// no selection
+	if (!position)
 	{
+		// remove cursor
 		[_cursor removeFromSuperview];
+		
+		// remove selection
+		_selectionView.selectionRectangles = nil;
+
 		return;
 	}
 	
-	CGRect cursorFrame = [self caretRectForPosition:self.selectedTextRange.start];
-    cursorFrame.size.width = 3.0;
-	self.cursor.frame = cursorFrame;
 	
-	if (!_cursor.superview)
+	
+	
+	// single cursor
+	if ([_selectedTextRange isEmpty])
 	{
-		[self addSubview:_cursor];
+		_selectionView.dragHandlesVisible = NO;
+		
+		CGRect cursorFrame = [self caretRectForPosition:position];
+		cursorFrame.size.width = 3.0;
+		self.cursor.frame = cursorFrame;
+		
+		if (!_cursor.superview)
+		{
+			[self addSubview:_cursor];
+		}
+		
+		[self scrollCursorVisibleAnimated:YES];
 	}
-	
-	[self scrollCursorVisibleAnimated:YES];
+	else
+	{
+		self.selectionView.style = DTTextSelectionStyleSelection;
+		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_selectedTextRange NSRangeValue]];
+		_selectionView.selectionRectangles = rects;
+		
+		_selectionView.dragHandlesVisible = YES;
+		
+		[_cursor removeFromSuperview];
+		
+		return;
+	}
+
+	if (_markedTextRange)
+	{
+		self.selectionView.style = DTTextSelectionStyleMarking;
+		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_markedTextRange NSRangeValue]];
+		_selectionView.selectionRectangles = rects;
+		
+		_selectionView.dragHandlesVisible = NO;
+	}
+	else
+	{
+		_selectionView.selectionRectangles = nil;
+	}
 }
 
 - (void)moveCursorToPositionClosestToLocation:(CGPoint)location
@@ -351,6 +397,11 @@
 		if (![self isFirstResponder] && [self canBecomeFirstResponder])
 		{
 			[self becomeFirstResponder];
+		}
+		
+		if (_markedTextRange)
+		{
+			return;
 		}
 		
 		CGPoint touchPoint = [gesture locationInView:self.contentView];
@@ -608,7 +659,7 @@
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-	CGPoint touchPoint = [touch locationInView:self.contentView];	
+	CGPoint touchPoint = [touch locationInView:self];	
 	
 	if (gestureRecognizer == longPressGesture)
 	{
@@ -616,6 +667,8 @@
 		{
 			return YES;
 		}
+		
+		//NSLog(@"%@ contains %@", NSStringFromCGRect(_selectionView.dragHandleLeft.frame), NSStringFromCGPoint(touchPoint));
 		
 		// selection and contentView have same coordinate system
 		if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
@@ -636,6 +689,7 @@
 		}
 	}
 	
+	//NSLog(@"YES");
 	return YES;
 }
 
@@ -1046,21 +1100,6 @@
 		
 		[self updateCursor];
 		
-		self.selectionView.style = DTTextSelectionStyleSelection;
-		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_selectedTextRange NSRangeValue]];
-		_selectionView.selectionRectangles = rects;
-		
-		// drag handles only for range
-		if (newTextRange.length)
-		{
-			
-			_selectionView.dragHandlesVisible = YES;
-		}
-		else
-		{
-			_selectionView.dragHandlesVisible = NO;
-		}
-		
 		[self didChangeValueForKey:@"selectedTextRange"];
 	}
 }
@@ -1129,10 +1168,7 @@
 	[_markedTextRange release];
 	_markedTextRange = [[DTTextRange alloc] initWithNSRange:NSMakeRange(startOfReplaceRange.location, [markedText length])];
 	
-	self.selectionView.style = DTTextSelectionStyleMarking;
-	NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_markedTextRange NSRangeValue]];
-	_selectionView.selectionRectangles = rects;
-	_selectionView.dragHandlesVisible = NO;
+	[self updateCursor];
 	
 	[self didChangeValueForKey:@"markedTextRange"];
 }
@@ -1147,7 +1183,7 @@
 	[_markedTextRange release];
 	_markedTextRange = nil;
 	
-	[_selectionView setNeedsDisplay];
+	[self updateCursor];
 }
 
 @synthesize selectionAffinity = _selectionAffinity;
@@ -1442,7 +1478,7 @@
 	
 	_internalAttributedText = [newAttributedText retain];
 	
-	self.contentView.edgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+	self.contentView.edgeInsets = UIEdgeInsetsMake(20, 10, 10, 10);
 	self.attributedString = _internalAttributedText;
 	[self.contentView relayoutText];
 	
@@ -1469,6 +1505,8 @@
 	
 	self.selectionView.frame = self.contentView.frame;
 	[self updateCursor];
+	
+	
 }
 
 - (DTLoupeView *)loupe
@@ -1497,7 +1535,7 @@
 	if (!_selectionView)
 	{
 		_selectionView = [[DTTextSelectionView alloc] initWithTextView:self.contentView];
-		[self addSubview:_selectionView];
+		[self.contentView addSubview:_selectionView];
 	}
 	
 	return _selectionView;
@@ -1549,6 +1587,11 @@
 {
 	// update all attachments that matchin this URL (possibly multiple images with same size)
 	return [self.contentView.layoutFrame textAttachmentsWithPredicate:predicate];
+}
+
+- (void)relayoutText
+{
+	[self.contentView relayoutText];
 }
 
 @end

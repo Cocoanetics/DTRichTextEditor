@@ -99,5 +99,6 @@ typedef enum
 @interface DTRichTextEditorView (manipulation)
 
 - (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate;
+- (void)relayoutText;
 
 @end

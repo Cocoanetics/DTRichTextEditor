@@ -172,7 +172,7 @@
 	if (!_dragHandleLeft)
 	{
 		_dragHandleLeft = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
-		_dragHandleLeft.userInteractionEnabled = YES;
+		_dragHandleLeft.userInteractionEnabled = NO;
 		_dragHandleLeft.image = [UIImage imageNamed:@"kb-drag-dot.png"];
 		_dragHandleLeft.contentMode = UIViewContentModeCenter;
 		_dragHandleLeft.alpha = 0;
@@ -186,7 +186,7 @@
 	if (!_dragHandleRight)
 	{
 		_dragHandleRight = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 44, 44)];
-		_dragHandleRight.userInteractionEnabled = YES;
+		_dragHandleRight.userInteractionEnabled = NO;
 		_dragHandleRight.image = [UIImage imageNamed:@"kb-drag-dot.png"];
 		_dragHandleRight.contentMode = UIViewContentModeCenter;
 		_dragHandleRight.alpha = 0;
