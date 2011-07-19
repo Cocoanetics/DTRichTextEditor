@@ -42,6 +42,7 @@
 #pragma mark Initialization
 - (void)setDefaults
 {
+	// --- text input
     self.autocapitalizationType = UITextAutocapitalizationTypeSentences;
     self.autocorrectionType = UITextAutocorrectionTypeDefault;
     self.enablesReturnKeyAutomatically = NO;
@@ -49,19 +50,45 @@
     self.keyboardType = UIKeyboardTypeDefault;
     self.returnKeyType = UIReturnKeyDefault;
     self.secureTextEntry = NO;
-	//   self.spellCheckingType = UITextSpellCheckingTypeYes;
-    
     self.selectionAffinity = UITextStorageDirectionForward;
-	//self.contentInset = UIEdgeInsetsMake(5, 5, 5, 5);
+	//   self.spellCheckingType = UITextSpellCheckingTypeYes;
+
+	// --- look
+    self.backgroundColor = [UIColor whiteColor];
+	self.contentView.backgroundColor = [UIColor whiteColor];
+    self.editable = YES;
+    self.selectionAffinity = UITextStorageDirectionForward;
+	self.userInteractionEnabled = YES; 	// for autocorrection candidate view
+
+	// --- gestures
+	if (!tap)
+	{
+		tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+		tap.delegate = self;
+		[self addGestureRecognizer:tap];
+	}
 	
+	//	//	
+	//	//	UITapGestureRecognizer *doubletap = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubletapped:)] autorelease];
+	//	//	doubletap.numberOfTapsRequired = 2;
+	//	//	doubletap.delegate = self;
+	//	//	[self.contentView addGestureRecognizer:doubletap];
 	
-	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+
+	if (!panGesture)
+	{
+		panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDragHandle:)];
+		panGesture.delegate = self;
+		[self.contentView addGestureRecognizer:panGesture];
+	}
 	
-	[center addObserver:self selector:@selector(cursorDidBlink:) name:DTCursorViewDidBlink object:nil];
-	[center addObserver:self selector:@selector(menuDidHide:) name:UIMenuControllerDidHideMenuNotification object:nil];
-	[center addObserver:self selector:@selector(loupeDidHide:) name:DTLoupeDidHide object:nil];
-	[center addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
-	[center addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+	if (!longPressGesture)
+	{
+		longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
+		longPressGesture.delegate = self;
+		[self.contentView addGestureRecognizer:longPressGesture];
+	}
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -101,37 +128,6 @@
     [super awakeFromNib];
     
     [self setDefaults];
-    
-    self.contentView.backgroundColor = [UIColor whiteColor];
-    self.editable = YES;
-    self.selectionAffinity = UITextStorageDirectionForward;
-    // experiment: should be provided
-	tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-	tap.delegate = self;
-	[self addGestureRecognizer:tap];
-	
-	
-	//	//	
-	//	//	UITapGestureRecognizer *doubletap = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubletapped:)] autorelease];
-	//	//	doubletap.numberOfTapsRequired = 2;
-	//	//	doubletap.delegate = self;
-	//	//	[self.contentView addGestureRecognizer:doubletap];
-	
-	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
-	
-	panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDragHandle:)];
-	panGesture.delegate = self;
-	[self.contentView addGestureRecognizer:panGesture];
-	
-	longPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPress:)];
-	longPressGesture.delegate = self;
-	[self.contentView addGestureRecognizer:longPressGesture];
-	
-	
-    self.backgroundColor = [UIColor whiteColor];
-	
-	// for autocorrection candidate view
-	self.userInteractionEnabled = YES;
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
@@ -142,8 +138,6 @@
 	{
 		hitView = [super hitTest:point withEvent:event];
 	}
-	
-	//NSLog(@"hit: %@", hitView);
 	
 	// need to skip self hitTest or else we get an endless hitTest loop
 	return hitView;
