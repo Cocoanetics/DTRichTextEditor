@@ -7,6 +7,7 @@
 //
 
 #import "DTTextSelectionView.h"
+#import <QuartzCore/QuartzCore.h>
 
 @interface DTTextSelectionView ()
 
@@ -25,7 +26,7 @@
 	{
 		self.textView = view;
 		self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-		self.contentMode = UIViewContentModeRedraw;
+		self.contentMode = UIViewContentModeTopLeft;
 		self.backgroundColor = [UIColor clearColor];
     }
     return self;
@@ -99,12 +100,17 @@
 	
 	if (!CGRectIsNull(firstRect) && !CGRectIsNull(lastRect))
 	{
+		// might be called in animation block and we don't want handles to fly around
+		[CATransaction begin];
+		[CATransaction setDisableActions:YES];
 		
 		[self.superview addSubview:self.dragHandleLeft];
 		_dragHandleLeft.center = CGPointMake(CGRectGetMidX(firstRect), firstRect.origin.y - 5.0);
 		
 		[self.superview addSubview:self.dragHandleRight];
 		_dragHandleRight.center = CGPointMake(CGRectGetMidX(lastRect), CGRectGetMaxY(lastRect) + 9.0);
+		
+		[CATransaction commit];
 	}
 }
 
