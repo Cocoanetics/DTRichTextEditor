@@ -90,6 +90,8 @@
 		[self.contentView addGestureRecognizer:longPressGesture];
 	}
 	
+	self.contentView.userInteractionEnabled = YES;
+	self.selectionView.userInteractionEnabled = NO;
 	// --- notifications
 	
 	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
@@ -139,20 +141,20 @@
     [self setDefaults];
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-	UIView *hitView = [self.contentView hitTest:point withEvent:event];
-	
-	if (!hitView)
-	{
-		hitView = [super hitTest:point withEvent:event];
-	}
-	
-	//NSLog(@"hit: %@", hitView);
-	
-	// need to skip self hitTest or else we get an endless hitTest loop
-	return hitView;
-}
+//- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+//{
+//	UIView *hitView = [self.contentView hitTest:point withEvent:event];
+//	
+//	if (!hitView)
+//	{
+//		hitView = [super hitTest:point withEvent:event];
+//	}
+//	
+//	//NSLog(@"hit: %@", hitView);
+//	
+//	// need to skip self hitTest or else we get an endless hitTest loop
+//	return hitView;
+//}
 
 - (void)layoutSubviews
 {
@@ -226,7 +228,6 @@
 {
 	CGRect cursorFrame = [self caretRectForPosition:self.selectedTextRange.start];
     cursorFrame.size.width = 3.0;
-	self.cursor.frame = cursorFrame;
 	
 	if (!_cursor.superview)
 	{
