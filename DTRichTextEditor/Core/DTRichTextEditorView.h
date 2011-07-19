@@ -92,5 +92,6 @@ typedef enum
 - (void)replaceRange:(UITextRange *)range withAttachment:(DTTextAttachment *)attachment;
 
 - (void)toggleBoldStyleInRange:(UITextRange *)range;
+- (void)scrollCursorVisibleAnimated:(BOOL)animated;
 
 @end

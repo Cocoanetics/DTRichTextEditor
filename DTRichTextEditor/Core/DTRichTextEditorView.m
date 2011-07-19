@@ -222,6 +222,33 @@
 }
 
 #pragma mark Custom Selection/Marking/Cursor
+- (void)scrollCursorVisibleAnimated:(BOOL)animated
+{
+	CGRect cursorFrame = [self caretRectForPosition:self.selectedTextRange.start];
+    cursorFrame.size.width = 3.0;
+	self.cursor.frame = cursorFrame;
+	
+	if (!_cursor.superview)
+	{
+		[self addSubview:_cursor];
+	}
+	
+	UIEdgeInsets reverseInsets = self.contentView.edgeInsets;
+	reverseInsets.top *= -1.0;
+	reverseInsets.bottom *= -1.0;
+	reverseInsets.left *= -1.0;
+	reverseInsets.right *= -1.0;
+	
+	cursorFrame = UIEdgeInsetsInsetRect(cursorFrame, reverseInsets);
+	
+	[self scrollRectToVisible:cursorFrame animated:animated];
+}
+
+- (void)_scrollCursorVisible
+{
+	[self scrollCursorVisibleAnimated:YES];
+}
+
 - (void)updateCursor
 {
 	// re-add cursor
@@ -242,15 +269,7 @@
 		[self addSubview:_cursor];
 	}
 	
-	UIEdgeInsets reverseInsets = self.contentView.edgeInsets;
-	reverseInsets.top *= -1.0;
-	reverseInsets.bottom *= -1.0;
-	reverseInsets.left *= -1.0;
-	reverseInsets.right *= -1.0;
-	
-	cursorFrame = UIEdgeInsetsInsetRect(cursorFrame, reverseInsets);
-	
-	[self scrollRectToVisible:cursorFrame animated:YES];
+	[self scrollCursorVisibleAnimated:YES];
 }
 
 - (void)moveCursorToPositionClosestToLocation:(CGPoint)location
@@ -312,6 +331,8 @@
 	// set inset to make up for covered array at bottom
 	self.contentInset = UIEdgeInsetsMake(0, 0, coveredFrame.size.height, 0);
 	self.scrollIndicatorInsets = self.contentInset;
+	
+	[self performSelector:@selector(_scrollCursorVisible) withObject:nil afterDelay:0.3];
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
@@ -649,6 +670,12 @@
 - (BOOL)canBecomeFirstResponder
 {
 	return YES;
+}
+
+- (BOOL)resignFirstResponder
+{
+	self.selectedTextRange = nil;
+	return [super resignFirstResponder];
 }
 
 - (void)cut:(id)sender
@@ -996,13 +1023,13 @@
 #pragma mark Working with Marked and Selected Text 
 - (UITextRange *)selectedTextRange
 {
-	if (!_selectedTextRange)
-	{
-		// [inputDelegate selectionWillChange:self];
-		DTTextPosition *begin = (id)[self beginningOfDocument];
-		_selectedTextRange = [[DTTextRange alloc] initWithStart:begin end:begin];
-		// [inputDelegate selectionDidChange:self];
-	}
+//	if (!_selectedTextRange)
+//	{
+//		// [inputDelegate selectionWillChange:self];
+//		DTTextPosition *begin = (id)[self beginningOfDocument];
+//		_selectedTextRange = [[DTTextRange alloc] initWithStart:begin end:begin];
+//		// [inputDelegate selectionDidChange:self];
+//	}
 	
 	return (id)_selectedTextRange;
 }
