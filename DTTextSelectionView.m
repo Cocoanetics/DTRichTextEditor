@@ -33,7 +33,6 @@
 
 - (void)dealloc
 {
-	[_textView release];
 	[_cursorColor release];
 	
 	[_dragHandleLeft release];
