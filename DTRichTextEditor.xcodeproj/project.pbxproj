@@ -385,7 +385,6 @@
 		A7F0C83313C326E900EBD027 = {
 			isa = PBXGroup;
 			children = (
-				A76F898113C73421007B37C0 /* AssetsLibrary.framework */,
 				A704271C13C37E9900EE0776 /* Core */,
 				A704272C13C37EA500EE0776 /* Demo */,
 				A7F0C84913C326E900EBD027 /* Supporting Files */,
@@ -405,6 +404,7 @@
 		A7F0C84113C326E900EBD027 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A76F898113C73421007B37C0 /* AssetsLibrary.framework */,
 				A704273913C37F0B00EE0776 /* MediaPlayer.framework */,
 				A704273713C37F0500EE0776 /* QuartzCore.framework */,
 				A704273513C37EFE00EE0776 /* CoreText.framework */,

@@ -139,6 +139,8 @@
 		hitView = [super hitTest:point withEvent:event];
 	}
 	
+	//NSLog(@"hit: %@", hitView);
+	
 	// need to skip self hitTest or else we get an endless hitTest loop
 	return hitView;
 }
