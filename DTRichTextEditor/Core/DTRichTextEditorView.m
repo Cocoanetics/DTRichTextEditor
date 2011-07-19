@@ -141,21 +141,21 @@
     [self setDefaults];
 }
 
-- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-{
-	UIView *hitView = [super hitTest:point withEvent:event];
-//	UIView *hitView = [self.contentView hitTest:point withEvent:event];
-	
-//	if (!hitView)
-//	{
-//		hitView = [super hitTest:point withEvent:event];
-//	}
-	
-	NSLog(@"hit: %@", hitView);
-	
-	// need to skip self hitTest or else we get an endless hitTest loop
-	return hitView;
-}
+//- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
+//{
+//	UIView *hitView = [super hitTest:point withEvent:event];
+////	UIView *hitView = [self.contentView hitTest:point withEvent:event];
+//	
+////	if (!hitView)
+////	{
+////		hitView = [super hitTest:point withEvent:event];
+////	}
+//	
+//	NSLog(@"hit: %@", hitView);
+//	
+//	// need to skip self hitTest or else we get an endless hitTest loop
+//	return hitView;
+//}
 
 - (void)layoutSubviews
 {
