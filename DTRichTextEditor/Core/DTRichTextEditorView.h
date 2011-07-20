@@ -61,6 +61,8 @@ typedef enum
 	BOOL _shouldReshowContextMenuAfterHide;
 	BOOL _shouldShowContextMenuAfterLoupeHide;
 	
+	CGPoint _dragCursorStartMidPoint;
+	CGPoint _touchDownPoint;
 	UILongPressGestureRecognizer *longPressGesture;
 	UIPanGestureRecognizer *panGesture;
 }

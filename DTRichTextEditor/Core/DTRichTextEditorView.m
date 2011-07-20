@@ -374,13 +374,37 @@
 }
 
 
-- (void)presentLoupeWithTouchPoint:(CGPoint)touchPoint animated:(BOOL)animated
+- (void)presentLoupeWithTouchPoint:(CGPoint)touchPoint
 {
+	_touchDownPoint = touchPoint;
+	
+	if (_selectionView.dragHandlesVisible)
+	{
+		if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
+		{
+			_dragMode = DTDragModeLeftHandle;
+		}
+		else if (CGRectContainsPoint(_selectionView.dragHandleRight.frame, touchPoint))
+		{
+			_dragMode = DTDragModeRightHandle;
+		}
+		else 
+		{
+			_dragMode = DTDragModeCursor;
+		}
+	}
+	else
+	{
+		_dragMode = DTDragModeCursor;
+	}
+	
 	if (_dragMode == DTDragModeLeftHandle)
 	{
 		CGPoint loupeStartPoint;
 		CGRect rect = [_selectionView beginCaretRect];
 		loupeStartPoint= CGPointMake(CGRectGetMidX(rect), rect.origin.y);
+		_dragCursorStartMidPoint = CGRectCenter(rect);
+
 		
 		self.loupe.style = DTLoupeStyleRectangleWithArrow;
 		self.loupe.magnification = 0.5;
@@ -395,7 +419,8 @@
 		CGPoint loupeStartPoint;
 		
 		CGRect rect = [_selectionView endCaretRect];
-		loupeStartPoint = CGRectCenter(rect);;
+		loupeStartPoint = CGRectCenter(rect);
+		_dragCursorStartMidPoint = CGRectCenter(rect);
 		
 		self.loupe.style = DTLoupeStyleRectangleWithArrow;
 		self.loupe.magnification = 0.5;
@@ -410,15 +435,103 @@
 	self.loupe.style = DTLoupeStyleCircle;
 	self.loupe.magnification = 1.2;
 	
+	[self moveCursorToPositionClosestToLocation:touchPoint];
+	
 	_loupe.touchPoint = touchPoint;
 	[_loupe presentLoupeFromLocation:touchPoint];
+	
+	
 }
 
-- (void)dismissLoupeWithTochpoint:(CGPoint)touchpoint animated:(BOOL)animated
+- (void)moveLoupeWithTouchPoint:(CGPoint)touchPoint
 {
+	if (_dragMode == DTDragModeCursor)
+	{
+		_loupe.touchPoint = touchPoint;
+		_loupe.seeThroughMode = NO;
+		
+		[self hideContextMenu];
+		[self moveCursorToPositionClosestToLocation:touchPoint];
+		return;
+	}
+	
+	CGPoint translation = touchPoint;
+	translation.x -= _touchDownPoint.x;
+	translation.y -= _touchDownPoint.y;
+	
+	// get current mid point
+	CGPoint movedMidPoint = _dragCursorStartMidPoint;
+	movedMidPoint.x += translation.x;
+	movedMidPoint.y += translation.y;
+	
+	DTTextPosition *position = (DTTextPosition *)[self closestPositionToPoint:movedMidPoint];
+	
+	DTTextPosition *startPosition = (DTTextPosition *)_selectedTextRange.start;
+	DTTextPosition *endPosition = (DTTextPosition *)_selectedTextRange.end;
+	
+	DTTextRange *newRange = nil;
+	
+	if (_dragMode == DTDragModeLeftHandle)
+	{
+		if ([position compare:endPosition]==NSOrderedAscending)
+		{
+			newRange = [DTTextRange textRangeFromStart:position toEnd:endPosition];
+			
+			
+		}
+	}
+	else if (_dragMode == DTDragModeRightHandle)
+	{
+		if ([startPosition compare:position]==NSOrderedAscending)
+		{
+			newRange = [DTTextRange textRangeFromStart:startPosition toEnd:position];
+		}
+	}
+	
+	if (newRange && ![newRange isEqual:_selectedTextRange])
+	{
+		[self setSelectedTextRange:newRange];
+	}
+	
+	if (_dragMode == DTDragModeLeftHandle)
+	{
+		CGRect rect = [_selectionView beginCaretRect];
+		CGPoint point = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
+		self.loupe.touchPoint = point;
+	}
+	else if (_dragMode == DTDragModeRightHandle)
+	{
+		CGRect rect = [_selectionView endCaretRect];
+		CGPoint point = CGRectCenter(rect);
+		self.loupe.touchPoint = point;
+	}
 	
 	
+}
+
+- (void)dismissLoupeWithTouchPoint:(CGPoint)touchPoint
+{
+	if (_dragMode == DTDragModeCursor)
+	{
+		[_loupe dismissLoupeTowardsLocation:self.cursor.center];
+		_cursor.state = DTCursorStateBlinking;
+	}
+	else if (_dragMode == DTDragModeLeftHandle)
+	{
+		CGRect rect = [_selectionView beginCaretRect];
+		CGPoint point = CGRectCenter(rect);
+		_shouldShowContextMenuAfterLoupeHide = YES;
+		[_loupe dismissLoupeTowardsLocation:point];
+	}
+	else if (_dragMode == DTDragModeRightHandle)
+	{
+		_shouldShowContextMenuAfterLoupeHide = YES;
+		CGRect rect = [_selectionView endCaretRect];
+		CGPoint point = CGRectCenter(rect);
+		[_loupe dismissLoupeTowardsLocation:point];
+	}
 	
+	_dragMode = DTDragModeNone;	
 }
 
 
@@ -496,25 +609,42 @@
 				[self becomeFirstResponder];
 			}
 			
-			_dragMode = DTDragModeCursor;
+			// selection and self have same coordinate system
+			if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
+			{
+				_dragMode = DTDragModeLeftHandle;
+			}
+			else if (CGRectContainsPoint(_selectionView.dragHandleRight.frame, touchPoint))
+			{
+				_dragMode = DTDragModeRightHandle;
+			}
+			else
+			{
+				_dragMode = DTDragModeCursor;
+			}
 			
-			// normal round loupe
-			self.loupe.style = DTLoupeStyleCircle;
-			self.loupe.magnification = 1.2;
 			
-			_loupe.touchPoint = touchPoint;
-			[_loupe presentLoupeFromLocation:touchPoint];
-			
+			[self presentLoupeWithTouchPoint:touchPoint];
+//			
+//			// normal round loupe
+//			self.loupe.style = DTLoupeStyleCircle;
+//			self.loupe.magnification = 1.2;
+//			
+//			_loupe.touchPoint = touchPoint;
+//			[_loupe presentLoupeFromLocation:touchPoint];
+//			
 			_cursor.state = DTCursorStateStatic;
 		}
 			
 		case UIGestureRecognizerStateChanged:
 		{
-			_loupe.touchPoint = touchPoint;
-			_loupe.seeThroughMode = NO;
+			[self moveLoupeWithTouchPoint:touchPoint];
 			
-			[self hideContextMenu];
-			[self moveCursorToPositionClosestToLocation:touchPoint];
+//			_loupe.touchPoint = touchPoint;
+//			_loupe.seeThroughMode = NO;
+//			
+//			[self hideContextMenu];
+//			[self moveCursorToPositionClosestToLocation:touchPoint];
 			
 			break;
 		}
@@ -526,10 +656,11 @@
 			
 		case UIGestureRecognizerStateCancelled:
 		{
-			[_loupe dismissLoupeTowardsLocation:self.cursor.center];
-			
-			_cursor.state = DTCursorStateBlinking;
-			_dragMode = DTDragModeNone;
+			[self dismissLoupeWithTouchPoint:touchPoint];
+//			[_loupe dismissLoupeTowardsLocation:self.cursor.center];
+//			
+//			_cursor.state = DTCursorStateBlinking;
+//			_dragMode = DTDragModeNone;
 			
 			break;
 		}
@@ -543,126 +674,27 @@
 
 - (void)handleDragHandle:(UIPanGestureRecognizer *)gesture
 {
-	static CGPoint startCaretMid = {0,0};
-	
 	CGPoint touchPoint = [gesture locationInView:self.contentView];
 	
 	switch (gesture.state) 
 	{
 		case UIGestureRecognizerStateBegan:
 		{
-			BOOL legalStart = NO;
-			CGPoint loupeStartPoint;
-			
-			// selection and self have same coordinate system
-			if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
-			{
-				_dragMode = DTDragModeLeftHandle;
-				
-				CGRect rect = [_selectionView beginCaretRect];
-				loupeStartPoint= CGPointMake(CGRectGetMidX(rect), rect.origin.y);
-				startCaretMid = CGRectCenter(rect);
-				legalStart = YES;
-			}
-			else if (CGRectContainsPoint(_selectionView.dragHandleRight.frame, touchPoint))
-			{
-				_dragMode = DTDragModeRightHandle;
-				
-				CGRect rect = [_selectionView endCaretRect];
-				startCaretMid = CGRectCenter(rect);
-				loupeStartPoint = startCaretMid;
-				legalStart = YES;
-			}
-			else
-			{
-				gesture.enabled = NO;
-				gesture.enabled = YES;
-			}
-			
-			if (legalStart)
-			{
-				self.loupe.style = DTLoupeStyleRectangleWithArrow;
-				self.loupe.magnification = 0.5;
-				self.loupe.touchPoint = loupeStartPoint;
-				[self.loupe presentLoupeFromLocation:loupeStartPoint];
-			}
-			
-			[self hideContextMenu];
+			[self presentLoupeWithTouchPoint:touchPoint];
 			
 			break;
 		}
 			
 		case UIGestureRecognizerStateChanged:
 		{
-			CGPoint translation = [gesture translationInView:self];
-			
-			// get current mid point
-			CGPoint movedMidPoint = startCaretMid;
-			movedMidPoint.x += translation.x;
-			movedMidPoint.y += translation.y;
-			
- 			DTTextPosition *position = (DTTextPosition *)[self closestPositionToPoint:movedMidPoint];
-			
-			DTTextPosition *startPosition = (DTTextPosition *)_selectedTextRange.start;
-			DTTextPosition *endPosition = (DTTextPosition *)_selectedTextRange.end;
-			
-			DTTextRange *newRange = nil;
-			
-			if (_dragMode == DTDragModeLeftHandle)
-			{
-				if ([position compare:endPosition]==NSOrderedAscending)
-				{
-					newRange = [DTTextRange textRangeFromStart:position toEnd:endPosition];
-					
-					
-				}
-			}
-			else if (_dragMode == DTDragModeRightHandle)
-			{
-				if ([startPosition compare:position]==NSOrderedAscending)
-				{
-					newRange = [DTTextRange textRangeFromStart:startPosition toEnd:position];
-				}
-			}
-			
-			if (newRange && ![newRange isEqual:_selectedTextRange])
-			{
-				[self setSelectedTextRange:newRange];
-			}
-			
-			if (_dragMode == DTDragModeLeftHandle)
-			{
-				CGRect rect = [_selectionView beginCaretRect];
-				CGPoint point = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
-				self.loupe.touchPoint = point;
-			}
-			else if (_dragMode == DTDragModeRightHandle)
-			{
-				CGRect rect = [_selectionView endCaretRect];
-				CGPoint point = CGRectCenter(rect);
-				self.loupe.touchPoint = point;
-			}
-			
+			[self moveLoupeWithTouchPoint:touchPoint];
 			
 			break;
 		}
 			
 		case UIGestureRecognizerStateEnded:
 		{
-			if (_dragMode == DTDragModeLeftHandle)
-			{
-				CGRect rect = [_selectionView beginCaretRect];
-				CGPoint point = CGRectCenter(rect);
-				_shouldShowContextMenuAfterLoupeHide = YES;
-				[self.loupe dismissLoupeTowardsLocation:point];
-			}
-			else if (_dragMode == DTDragModeRightHandle)
-			{
-				_shouldShowContextMenuAfterLoupeHide = YES;
-				CGRect rect = [_selectionView endCaretRect];
-				CGPoint point = CGRectCenter(rect);
-				[self.loupe dismissLoupeTowardsLocation:point];
-			}
+			[self dismissLoupeWithTouchPoint:touchPoint];
 		}
 			
 		default:
@@ -735,22 +767,22 @@
 	
 	if (gestureRecognizer == longPressGesture)
 	{
-		if (![_selectionView dragHandlesVisible])
-		{
-			return YES;
-		}
+//		if (![_selectionView dragHandlesVisible])
+//		{
+//			return YES;
+//		}
 		
 		//NSLog(@"%@ contains %@", NSStringFromCGRect(_selectionView.dragHandleLeft.frame), NSStringFromCGPoint(touchPoint));
 		
 		// selection and contentView have same coordinate system
-		if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
-		{
-			return NO;
-		}
-		else if (CGRectContainsPoint(_selectionView.dragHandleRight.frame, touchPoint))
-		{
-			return NO;
-		}
+//		if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
+//		{
+//			return NO;
+//		}
+//		else if (CGRectContainsPoint(_selectionView.dragHandleRight.frame, touchPoint))
+//		{
+//			return NO;
+//		}
 	}
 	
 	if (gestureRecognizer == panGesture)
@@ -894,7 +926,7 @@
 	
 	if (action == @selector(selectAll:))
 	{
-		if ([[_selectedTextRange start] isEqual:(id)[self beginningOfDocument]] && [[_selectedTextRange end] isEqual:(id)[self endOfDocument]])
+		if (([[_selectedTextRange start] isEqual:(id)[self beginningOfDocument]] && [[_selectedTextRange end] isEqual:(id)[self endOfDocument]]) || ![_selectedTextRange isEmpty])
 		{
 			return NO;	
 		}

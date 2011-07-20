@@ -237,7 +237,15 @@
 		
 		[self adjustDragHandles];
 		
-		[self setNeedsDisplay];
+		if (_selectionRectangles)
+		{
+			self.alpha = 1;
+			[self setNeedsDisplay];
+		}
+		else
+		{
+			self.alpha = 0;
+		}
 	}
 }
 
