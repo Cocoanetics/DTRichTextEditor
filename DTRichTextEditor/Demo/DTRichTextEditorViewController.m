@@ -89,6 +89,7 @@
 
 
 - (void)dealloc {
+	[lastSelection release];
     [super dealloc];
 }
 
@@ -96,6 +97,11 @@
 
 - (void)replaceCurrentSelectionWithPhoto:(UIImage *)image
 {
+	if (!lastSelection)
+	{
+		return;
+	}
+	
 	// make an attachment
 	DTTextAttachment *attachment = [[[DTTextAttachment alloc] init] autorelease];
 	attachment.contents = (id)image;
@@ -103,8 +109,7 @@
 	attachment.originalSize = image.size;
 	attachment.contentType = DTTextAttachmentTypeImage;
 	
-	UITextRange *selection = richEditor.selectedTextRange;
-	[richEditor replaceRange:selection withAttachment:attachment];
+	[richEditor replaceRange:lastSelection withAttachment:attachment];
 }
 
 
@@ -141,6 +146,15 @@
 
 - (void)insertPhoto:(UIBarButtonItem *)sender
 {
+	// preserve last selection because this goes away when editor loses firstResponder
+	[lastSelection release];
+	lastSelection = [richEditor.selectedTextRange retain];
+	
+	if (!lastSelection)
+	{
+		return;
+	}
+	
 	UIImagePickerController *picker = [[[UIImagePickerController alloc] init] autorelease];
 	picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	picker.delegate = self;

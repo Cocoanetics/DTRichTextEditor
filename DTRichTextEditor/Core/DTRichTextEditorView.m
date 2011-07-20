@@ -44,6 +44,8 @@
 #pragma mark Initialization
 - (void)setDefaults
 {
+	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+	
 	// --- text input
     self.autocapitalizationType = UITextAutocapitalizationTypeSentences;
     self.autocorrectionType = UITextAutocorrectionTypeDefault;
@@ -372,6 +374,55 @@
 }
 
 
+- (void)presentLoupeWithTouchPoint:(CGPoint)touchPoint animated:(BOOL)animated
+{
+	if (_dragMode == DTDragModeLeftHandle)
+	{
+		CGPoint loupeStartPoint;
+		CGRect rect = [_selectionView beginCaretRect];
+		loupeStartPoint= CGPointMake(CGRectGetMidX(rect), rect.origin.y);
+		
+		self.loupe.style = DTLoupeStyleRectangleWithArrow;
+		self.loupe.magnification = 0.5;
+		self.loupe.touchPoint = loupeStartPoint;
+		[self.loupe presentLoupeFromLocation:loupeStartPoint];
+
+		return;
+	}
+	
+	if (_dragMode == DTDragModeRightHandle)
+	{
+		CGPoint loupeStartPoint;
+		
+		CGRect rect = [_selectionView endCaretRect];
+		loupeStartPoint = CGRectCenter(rect);;
+		
+		self.loupe.style = DTLoupeStyleRectangleWithArrow;
+		self.loupe.magnification = 0.5;
+		self.loupe.touchPoint = loupeStartPoint;
+		[self.loupe presentLoupeFromLocation:loupeStartPoint];
+
+		return;
+	}
+
+	// normal round loupe
+
+	self.loupe.style = DTLoupeStyleCircle;
+	self.loupe.magnification = 1.2;
+	
+	_loupe.touchPoint = touchPoint;
+	[_loupe presentLoupeFromLocation:touchPoint];
+}
+
+- (void)dismissLoupeWithTochpoint:(CGPoint)touchpoint animated:(BOOL)animated
+{
+	
+	
+	
+}
+
+
+
 #pragma mark Notifications
 
 - (void)cursorDidBlink:(NSNotification *)notification
@@ -447,6 +498,7 @@
 			
 			_dragMode = DTDragModeCursor;
 			
+			// normal round loupe
 			self.loupe.style = DTLoupeStyleCircle;
 			self.loupe.magnification = 1.2;
 			
@@ -749,6 +801,8 @@
 
 - (BOOL)resignFirstResponder
 {
+	// this removes cursor and selections
+	
 	self.selectedTextRange = nil;
 	return [super resignFirstResponder];
 }
@@ -970,7 +1024,6 @@
 	NSDictionary *currentAttributes = [self typingAttributesForRange:range];
 	
 	CTFontRef currentFont = (CTFontRef)[currentAttributes objectForKey:(id)kCTFontAttributeName];
-	NSLog(@"%@", currentFont);
 	DTCoreTextFontDescriptor *typingFontDescriptor = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
 	
 	// need to replace name with family
@@ -1004,7 +1057,6 @@
 		
 		desc.boldTrait = !typingFontDescriptor.boldTrait;
 		CTFontRef newFont = [desc newMatchingFont];
-		NSLog(@"%@", newFont);
 		[attrs setObject:(id)newFont forKey:(id)kCTFontAttributeName];
 		CFRelease(newFont);
 		
@@ -1030,7 +1082,6 @@
 
 - (void)replaceRange:(DTTextRange *)range withText:(id)text
 {
-	NSLog(@"replace");
 	NSRange myRange = [range NSRangeValue];
 	
 	// otherwise this turns into zombie

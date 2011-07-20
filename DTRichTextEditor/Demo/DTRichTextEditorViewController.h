@@ -13,6 +13,8 @@
 @interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate> {
 
 	IBOutlet DTRichTextEditorView *richEditor;
+	
+	UITextRange *lastSelection;
 }
 
 @end
