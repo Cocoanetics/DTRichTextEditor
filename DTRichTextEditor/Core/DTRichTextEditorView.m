@@ -32,6 +32,8 @@
 @property (nonatomic, retain) DTLoupeView *loupe;
 @property (nonatomic, retain) DTTextSelectionView *selectionView;
 
+@property (nonatomic, readwrite) UITextRange *markedTextRange;  // internal property writeable
+
 @end
 
 
@@ -52,14 +54,14 @@
     self.secureTextEntry = NO;
     self.selectionAffinity = UITextStorageDirectionForward;
 	//   self.spellCheckingType = UITextSpellCheckingTypeYes;
-
+	
 	// --- look
     self.backgroundColor = [UIColor whiteColor];
 	self.contentView.backgroundColor = [UIColor whiteColor];
     self.editable = YES;
     self.selectionAffinity = UITextStorageDirectionForward;
 	self.userInteractionEnabled = YES; 	// for autocorrection candidate view
-
+	
 	// --- gestures
 	if (!tap)
 	{
@@ -75,7 +77,7 @@
 	//	//	[self.contentView addGestureRecognizer:doubletap];
 	
 	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
-
+	
 	if (!panGesture)
 	{
 		panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleDragHandle:)];
@@ -144,14 +146,12 @@
 //- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 //{
 //	UIView *hitView = [super hitTest:point withEvent:event];
-////	UIView *hitView = [self.contentView hitTest:point withEvent:event];
+//	//	UIView *hitView = [self.contentView hitTest:point withEvent:event];
 //	
-////	if (!hitView)
-////	{
-////		hitView = [super hitTest:point withEvent:event];
-////	}
-//	
-//	NSLog(@"hit: %@", hitView);
+//	//	if (!hitView)
+//	//	{
+//	//		hitView = [super hitTest:point withEvent:event];
+//	//	}
 //	
 //	// need to skip self hitTest or else we get an endless hitTest loop
 //	return hitView;
@@ -227,7 +227,7 @@
 #pragma mark Custom Selection/Marking/Cursor
 - (void)scrollCursorVisibleAnimated:(BOOL)animated
 {
-	if (!_selectedTextRange || _markedTextRange || ![_selectedTextRange isEmpty])
+	if  (![_selectedTextRange isEmpty])
 	{
 		return;
 	}
@@ -248,7 +248,20 @@
 	
 	cursorFrame = UIEdgeInsetsInsetRect(cursorFrame, reverseInsets);
 	
-	[self scrollRectToVisible:cursorFrame animated:animated];
+	if (animated)
+	{
+		[UIView beginAnimations:nil context:nil];
+		
+		// this prevents multiple scrolling to same position
+		[UIView setAnimationBeginsFromCurrentState:YES];
+	}
+	
+	[self scrollRectToVisible:cursorFrame animated:NO];
+	
+	if (animated)
+	{
+		[UIView commitAnimations];
+	}
 }
 
 - (void)_scrollCursorVisible
@@ -269,7 +282,7 @@
 		
 		// remove selection
 		_selectionView.selectionRectangles = nil;
-
+		
 		return;
 	}
 	
@@ -304,7 +317,7 @@
 		
 		return;
 	}
-
+	
 	if (_markedTextRange)
 	{
 		self.selectionView.style = DTTextSelectionStyleMarking;
@@ -323,25 +336,35 @@
 {
 	[self.inputDelegate selectionWillChange:self];
 	
+	DTTextRange *constrainingRange = nil;
 	
-	DTTextPosition *position = (id)[self closestPositionToPoint:location];
-	
-	if ([_selectedTextRange length])
+	if ([_markedTextRange length])
 	{
-		// existing selection constrains free movement
-		DTTextPosition *start = (id)_selectedTextRange.start;
-		DTTextPosition *end = (id)_selectedTextRange.end;
-		
-		if ([start compare:position] == NSOrderedDescending)
-		{
-			position = start;
-		}
-		
-		if ([position compare:end] == NSOrderedDescending)
-		{
-			position = end;
-		}
+		constrainingRange = _markedTextRange;
 	}
+	else if ([_selectedTextRange length])
+	{
+		constrainingRange =_selectedTextRange;
+	}
+	
+	DTTextPosition *position = (id)[self closestPositionToPoint:location withinRange:constrainingRange];
+	
+	//	if ([_selectedTextRange length])
+	//	{
+	//		// existing selection constrains free movement
+	//		DTTextPosition *start = (id)_selectedTextRange.start;
+	//		DTTextPosition *end = (id)_selectedTextRange.end;
+	//		
+	//		if ([start compare:position] == NSOrderedDescending)
+	//		{
+	//			position = start;
+	//		}
+	//		
+	//		if ([position compare:end] == NSOrderedDescending)
+	//		{
+	//			position = end;
+	//		}
+	//	}
 	
 	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:position offset:0]];
 	
@@ -374,7 +397,7 @@
 	
 	// now this might be rotated, so convert it back
 	coveredFrame = [self.window convertRect:coveredFrame toView:self.superview];
-
+	
 	// set inset to make up for covered array at bottom
 	self.contentInset = UIEdgeInsetsMake(0, 0, coveredFrame.size.height, 0);
 	self.scrollIndicatorInsets = self.contentInset;
@@ -399,14 +422,11 @@
 			[self becomeFirstResponder];
 		}
 		
-		if (_markedTextRange)
-		{
-			return;
-		}
-		
 		CGPoint touchPoint = [gesture locationInView:self.contentView];
 		
 		[self moveCursorToPositionClosestToLocation:touchPoint];
+		
+		[self unmarkText];
 		
 		[self hideContextMenu];
 	}
@@ -1000,7 +1020,7 @@
 		}
 		
 		[self.internalAttributedText setAttributes:attrs range:attrRange];
-
+		
         index += attrRange.length;
     }
 	
@@ -1010,9 +1030,11 @@
 
 - (void)replaceRange:(DTTextRange *)range withText:(id)text
 {
+	NSLog(@"replace");
 	NSRange myRange = [range NSRangeValue];
 	
-	[range retain];
+	// otherwise this turns into zombie
+	[[range retain] autorelease];
 	
 	if (!text)
 	{
@@ -1073,18 +1095,19 @@
 	//	}
 	
 	[self updateCursor];
+	[self scrollCursorVisibleAnimated:YES];
 }
 
 #pragma mark Working with Marked and Selected Text 
 - (UITextRange *)selectedTextRange
 {
-//	if (!_selectedTextRange)
-//	{
-//		// [inputDelegate selectionWillChange:self];
-//		DTTextPosition *begin = (id)[self beginningOfDocument];
-//		_selectedTextRange = [[DTTextRange alloc] initWithStart:begin end:begin];
-//		// [inputDelegate selectionDidChange:self];
-//	}
+	//	if (!_selectedTextRange)
+	//	{
+	//		// [inputDelegate selectionWillChange:self];
+	//		DTTextPosition *begin = (id)[self beginningOfDocument];
+	//		_selectedTextRange = [[DTTextRange alloc] initWithStart:begin end:begin];
+	//		// [inputDelegate selectionDidChange:self];
+	//	}
 	
 	return (id)_selectedTextRange;
 }
@@ -1165,8 +1188,7 @@
 	DTTextPosition *startOfReplaceRange = (DTTextPosition *)replaceRange.start;
 	
 	// set new marked range
-	[_markedTextRange release];
-	_markedTextRange = [[DTTextRange alloc] initWithNSRange:NSMakeRange(startOfReplaceRange.location, [markedText length])];
+	self.markedTextRange = [[[DTTextRange alloc]  initWithNSRange:NSMakeRange(startOfReplaceRange.location, [markedText length])] autorelease];
 	
 	[self updateCursor];
 	
@@ -1178,12 +1200,18 @@
 	return [NSDictionary dictionaryWithObjectsAndKeys:[UIColor greenColor], UITextInputTextColorKey, nil];
 }
 
+
 - (void)unmarkText
 {
-	[_markedTextRange release];
-	_markedTextRange = nil;
+	[inputDelegate selectionWillChange:self];
+
+	self.markedTextRange = nil;
 	
 	[self updateCursor];
+	
+	// calling selectionDidChange makes the input candidate go away
+
+	[inputDelegate selectionDidChange:self];
 }
 
 @synthesize selectionAffinity = _selectionAffinity;
@@ -1354,19 +1382,29 @@
 }
 
 
+- (UITextPosition *)closestPositionToPoint:(CGPoint)point
+{
+	NSInteger newIndex = [self.contentView.layoutFrame closestCursorIndexToPoint:point];
+	
+	return [DTTextPosition textPositionWithLocation:newIndex];
+}
+
 // called when marked text is showing
 - (UITextPosition *)closestPositionToPoint:(CGPoint)point withinRange:(DTTextRange *)range
 {
 	DTTextPosition *position = (id)[self closestPositionToPoint:point];
 	
-	if ([position compare:[range start]] == NSOrderedAscending)
+	if (range)
 	{
-		return [range start];
-	}
-	
-	if ([position compare:[range end]] == NSOrderedDescending)
-	{
-		return [range end];
+		if ([position compare:[range start]] == NSOrderedAscending)
+		{
+			return [range start];
+		}
+		
+		if ([position compare:[range end]] == NSOrderedDescending)
+		{
+			return [range end];
+		}
 	}
 	
 	return position;
@@ -1490,14 +1528,20 @@
 	return [[[NSAttributedString alloc] initWithAttributedString:_internalAttributedText] autorelease];
 }
 
-- (UITextPosition *)closestPositionToPoint:(CGPoint)point
-{
-	NSInteger newIndex = [self.contentView.layoutFrame closestCursorIndexToPoint:point];
-	
-	return [DTTextPosition textPositionWithLocation:newIndex];
-}
-
 #pragma mark Properties
+
+- (void)setMarkedTextRange:(UITextRange *)markedTextRange
+{
+	if (markedTextRange != _markedTextRange)
+	{
+		[self willChangeValueForKey:@"markedTextRange"];
+		
+		[_markedTextRange release];
+		_markedTextRange = [markedTextRange copy];
+
+		[self didChangeValueForKey:@"markedTextRange"];
+	}
+}
 
 - (void)setContentSize:(CGSize)newContentSize
 {
