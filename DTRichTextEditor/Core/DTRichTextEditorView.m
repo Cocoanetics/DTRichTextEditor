@@ -44,7 +44,7 @@
 #pragma mark Initialization
 - (void)setDefaults
 {
-	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	// --- text input
     self.autocapitalizationType = UITextAutocapitalizationTypeSentences;
