@@ -173,7 +173,7 @@
 - (void)toggleBold:(UIBarButtonItem *)sender
 {
 	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor toggleBoldStyleInRange:range];
+	[richEditor toggleBoldInRange:range];
 }
 
 #pragma mark Notifications

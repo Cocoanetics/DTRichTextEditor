@@ -1077,85 +1077,6 @@
 	return [bareText substringWithRange:rangeValue];
 }
 
-- (NSDictionary *)typingAttributesForRange:(DTTextRange *)range
-{
-	return [self.internalAttributedText typingAttributesForRange:[range NSRangeValue]];
-}
-
-- (void)replaceRange:(DTTextRange *)range withAttachment:(DTTextAttachment *)attachment
-{
-	NSParameterAssert(range);
-	
-	[_internalAttributedText replaceRange:[range NSRangeValue] withAttachment:attachment];
-	
-	self.attributedString = _internalAttributedText;
-	
-	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:1]];
-	[self updateCursor];
-}
-
-- (void)toggleBoldStyleInRange:(UITextRange *)range
-{
-	// first character determines current boldness
-	NSDictionary *currentAttributes = [self typingAttributesForRange:range];
-	
-	CTFontRef currentFont = (CTFontRef)[currentAttributes objectForKey:(id)kCTFontAttributeName];
-	DTCoreTextFontDescriptor *typingFontDescriptor = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
-	
-	// need to replace name with family
-	CFStringRef family = CTFontCopyFamilyName(currentFont);
-	typingFontDescriptor.fontFamily = (NSString *)family;
-	CFRelease(family);
-	
-	typingFontDescriptor.fontName = nil;
-	
-	
-	DTTextPosition *start = (id)range.start;
-	DTTextPosition *end = (id)range.end;
-	
-    NSRange validRange = NSMakeRange(start.location, end.location - start.location);
-    
-    NSRange attrRange;
-    NSUInteger index=validRange.location;
-    
-    while (index < NSMaxRange(validRange)) 
-    {
-        NSMutableDictionary *attrs = [[self.internalAttributedText attributesAtIndex:index effectiveRange:&attrRange] mutableCopy];
-		CTFontRef currentFont = (CTFontRef)[attrs objectForKey:(id)kCTFontAttributeName];
-		DTCoreTextFontDescriptor *desc = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
-		
-		// need to replace name with family
-		CFStringRef family = CTFontCopyFamilyName(currentFont);
-		desc.fontFamily = (NSString *)family;
-		CFRelease(family);
-		
-		desc.fontName = nil;
-		
-		desc.boldTrait = !typingFontDescriptor.boldTrait;
-		CTFontRef newFont = [desc newMatchingFont];
-		[attrs setObject:(id)newFont forKey:(id)kCTFontAttributeName];
-		CFRelease(newFont);
-		
-		if (attrRange.location < validRange.location)
-		{
-			attrRange.length -= (validRange.location - attrRange.location);
-			attrRange.location = validRange.location;
-		}
-		
-		if (NSMaxRange(attrRange)>NSMaxRange(validRange))
-		{
-			attrRange.length = NSMaxRange(validRange) - attrRange.location;
-		}
-		
-		[self.internalAttributedText setAttributes:attrs range:attrRange];
-		
-        index += attrRange.length;
-    }
-	
-	self.attributedString = self.internalAttributedText;
-	//[self.contentView relayoutText];
-}
-
 - (void)replaceRange:(DTTextRange *)range withText:(id)text
 {
 	NSParameterAssert(range);
@@ -1755,6 +1676,41 @@
 
 
 @implementation DTRichTextEditorView (manipulation)
+
+- (NSDictionary *)typingAttributesForRange:(DTTextRange *)range
+{
+	return [self.internalAttributedText typingAttributesForRange:[range NSRangeValue]];
+}
+
+- (void)replaceRange:(DTTextRange *)range withAttachment:(DTTextAttachment *)attachment
+{
+	NSParameterAssert(range);
+	
+	[_internalAttributedText replaceRange:[range NSRangeValue] withAttachment:attachment];
+	
+	self.attributedString = _internalAttributedText;
+	
+	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:1]];
+	[self updateCursor];
+}
+
+- (void)toggleBoldInRange:(UITextRange *)range
+{
+	[self.internalAttributedText toggleBoldInRange:[(DTTextRange *)range NSRangeValue]];
+	self.attributedText = self.internalAttributedText; // makes immutable copy and driggers layout
+}
+
+- (void)toggleItalicInRange:(UITextRange *)range
+{
+	[self.internalAttributedText toggleItalicInRange:[(DTTextRange *)range NSRangeValue]];
+	self.attributedText = self.internalAttributedText; // makes immutable copy and driggers layout
+}
+
+- (void)toggleUnderlineInRange:(UITextRange *)range
+{
+	[self.internalAttributedText toggleUnderlineInRange:[(DTTextRange *)range NSRangeValue]];
+	self.attributedText = self.internalAttributedText; // makes immutable copy and driggers layout
+}
 
 - (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate
 {

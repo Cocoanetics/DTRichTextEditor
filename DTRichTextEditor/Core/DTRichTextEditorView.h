@@ -94,12 +94,15 @@ typedef enum
 - (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
 - (void)replaceRange:(UITextRange *)range withAttachment:(DTTextAttachment *)attachment;
 
-- (void)toggleBoldStyleInRange:(UITextRange *)range;
 - (void)scrollCursorVisibleAnimated:(BOOL)animated;
 
 @end
 
 @interface DTRichTextEditorView (manipulation)
+
+- (void)toggleBoldInRange:(UITextRange *)range;
+- (void)toggleItalicInRange:(UITextRange *)range;
+- (void)toggleUnderlineInRange:(UITextRange *)range;
 
 - (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate;
 - (void)relayoutText;
