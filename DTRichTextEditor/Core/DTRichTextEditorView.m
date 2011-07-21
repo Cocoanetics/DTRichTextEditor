@@ -1042,6 +1042,8 @@
 
 - (void)replaceRange:(DTTextRange *)range withAttachment:(DTTextAttachment *)attachment
 {
+	NSParameterAssert(range);
+	
 	[_internalAttributedText replaceRange:[range NSRangeValue] withAttachment:attachment];
 	
 	self.attributedString = _internalAttributedText;
@@ -1114,6 +1116,8 @@
 
 - (void)replaceRange:(DTTextRange *)range withText:(id)text
 {
+	NSParameterAssert(range);
+	
 	NSRange myRange = [range NSRangeValue];
 	
 	// otherwise this turns into zombie

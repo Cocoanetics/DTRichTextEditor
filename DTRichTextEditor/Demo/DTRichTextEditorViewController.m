@@ -54,14 +54,20 @@
 	//[richEditor setPosition:[richEditor endOfDocument]];
 	
 	UIBarButtonItem *photo = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];
+	photo.enabled = NO;
 	self.navigationItem.rightBarButtonItem = photo;
 	[photo release];
 	
 	UIBarButtonItem *bold = [[UIBarButtonItem alloc] initWithTitle:@"Bold" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleBold:)];
+	bold.enabled = NO;
 	self.navigationItem.leftBarButtonItem = bold;
 	[bold release];
 	
+	// disable this once you use your own image views
 	richEditor.contentView.shouldDrawImages = YES;
+	
+	// watch the selectedTextRange property
+	[richEditor addObserver:self forKeyPath:@"selectedTextRange" options:NSKeyValueObservingOptionNew context:self];
 }
 
 
@@ -88,7 +94,10 @@
 }
 
 
-- (void)dealloc {
+- (void)dealloc 
+{
+	[richEditor removeObserver:self forKeyPath:@"selectedTextRange"];
+	
 	[lastSelection release];
     [super dealloc];
 }
@@ -165,6 +174,28 @@
 {
 	UITextRange *range = richEditor.selectedTextRange;
 	[richEditor toggleBoldStyleInRange:range];
+}
+
+#pragma mark Notifications
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if ([keyPath isEqualToString:@"selectedTextRange"] && context == self)
+	{
+		id newRange = [change objectForKey:NSKeyValueChangeNewKey];
+		
+		// disable photo/bold button if there is no selection
+		if (newRange == [NSNull null])
+		{
+			self.navigationItem.leftBarButtonItem.enabled = NO;
+			self.navigationItem.rightBarButtonItem.enabled = NO;
+		}
+		else
+		{
+			self.navigationItem.rightBarButtonItem.enabled = YES;
+			self.navigationItem.leftBarButtonItem.enabled = YES;
+			
+		}
+	}
 }
 
 @end
