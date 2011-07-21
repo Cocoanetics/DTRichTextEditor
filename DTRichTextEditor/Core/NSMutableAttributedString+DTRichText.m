@@ -190,7 +190,7 @@
 		}
 		else
 		{
-			[attrs setObject:[NSNumber numberWithBool:YES] forKey:(id)kCTUnderlineStyleAttributeName];
+			[attrs setObject:[NSNumber numberWithInteger:kCTUnderlineStyleSingle] forKey:(id)kCTUnderlineStyleAttributeName];
 		}
 		if (attrRange.location < range.location)
 		{

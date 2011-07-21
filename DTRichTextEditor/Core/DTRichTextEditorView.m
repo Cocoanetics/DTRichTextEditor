@@ -34,7 +34,10 @@
 
 @property (nonatomic, readwrite) UITextRange *markedTextRange;  // internal property writeable
 
+@property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
+
 - (DTTextRange *)rangeForWordAtPosition:(DTTextPosition *)position;
+
 
 @end
 
@@ -130,6 +133,8 @@
 	
 	[_internalAttributedText release];
 	[markedTextStyle release];
+	
+	[_overrideInsertionAttributes release];
 	
 	[_cursor release];
 	[_selectionView release];
@@ -1669,6 +1674,7 @@
 @synthesize loupe = _loupe;
 @synthesize cursor = _cursor;
 @synthesize selectionView = _selectionView;
+@synthesize overrideInsertionAttributes = _overrideInsertionAttributes;
 
 
 
@@ -1696,8 +1702,15 @@
 
 - (void)toggleBoldInRange:(UITextRange *)range
 {
-	[self.internalAttributedText toggleBoldInRange:[(DTTextRange *)range NSRangeValue]];
-	self.attributedText = self.internalAttributedText; // makes immutable copy and driggers layout
+	if ([range isEmpty])
+	{
+		self.overrideInsertionAttributes = [self typingAttributesForRange:range];
+	}
+	else
+	{
+		[self.internalAttributedText toggleBoldInRange:[(DTTextRange *)range NSRangeValue]];
+		self.attributedText = self.internalAttributedText; // makes immutable copy and driggers layout
+	}
 }
 
 - (void)toggleItalicInRange:(UITextRange *)range

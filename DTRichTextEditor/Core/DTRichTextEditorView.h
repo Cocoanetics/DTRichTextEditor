@@ -62,6 +62,7 @@ typedef enum
 	
 	CGPoint _dragCursorStartMidPoint;
 	CGPoint _touchDownPoint;
+	NSDictionary *_overrideInsertionAttributes;
 	
 	UITapGestureRecognizer *tap;
 	UILongPressGestureRecognizer *longPressGesture;
@@ -91,14 +92,15 @@ typedef enum
 
 // overwritten, accepts NSString or NSAttributedString
 - (void)replaceRange:(UITextRange *)range withText:(id)text;
-- (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
-- (void)replaceRange:(UITextRange *)range withAttachment:(DTTextAttachment *)attachment;
 
 - (void)scrollCursorVisibleAnimated:(BOOL)animated;
 
 @end
 
 @interface DTRichTextEditorView (manipulation)
+
+- (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
+- (void)replaceRange:(UITextRange *)range withAttachment:(DTTextAttachment *)attachment;
 
 - (void)toggleBoldInRange:(UITextRange *)range;
 - (void)toggleItalicInRange:(UITextRange *)range;
