@@ -62,7 +62,7 @@
 	// --- look
     self.backgroundColor = [UIColor whiteColor];
 	self.contentView.backgroundColor = [UIColor whiteColor];
-    self.editable = YES;
+	self.editable = YES;
     self.selectionAffinity = UITextStorageDirectionForward;
 	self.userInteractionEnabled = YES; 	// for autocorrection candidate view
 	
@@ -352,11 +352,7 @@
 - (void)selectWordAtPositionClosestToLocation:(CGPoint)location
 {
 	DTTextPosition *position = (id)[self closestPositionToPoint:location];
-	
-	NSLog(@"pos: %@", position);
-	
 	DTTextRange *wordRange = [self rangeForWordAtPosition:position];
-	
 	self.selectedTextRange = wordRange;
 }
 
