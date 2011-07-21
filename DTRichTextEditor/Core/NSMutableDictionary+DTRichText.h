@@ -16,4 +16,6 @@
 - (void)toggleItalic;
 - (void)toggleUnderline;
 
+- (void)removeAttachment;
+
 @end

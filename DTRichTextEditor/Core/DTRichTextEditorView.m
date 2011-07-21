@@ -1113,11 +1113,7 @@
 			// has an attachment, we need a new dictionary
 			
 			NSMutableDictionary *tmpDict = [typingAttributes mutableCopy];
-			
-			[tmpDict removeObjectForKey:(id)kCTRunDelegateAttributeName];
-			[tmpDict removeObjectForKey:@"DTAttachmentParagraphSpacing"];
-			[tmpDict removeObjectForKey:@"DTTextAttachment"];
-			
+			[tmpDict removeAttachment];
 			text = [[[NSAttributedString alloc] initWithString:text attributes:tmpDict] autorelease];
 			
 			[tmpDict release];
@@ -1708,7 +1704,7 @@
 {
 	NSParameterAssert(range);
 	
-	[_internalAttributedText replaceRange:[range NSRangeValue] withAttachment:attachment];
+	[_internalAttributedText replaceRange:[range NSRangeValue] withAttachment:attachment inParagraph:YES];
 	
 	self.attributedString = _internalAttributedText;
 	

@@ -7,6 +7,8 @@
 //
 
 #import "NSMutableAttributedString+DTRichText.h"
+#import "NSMutableAttributedString+HTML.h"
+#import "NSMutableDictionary+DTRichText.h"
 
 #import "DTTextAttachment.h"
 #import <CoreText/CoreText.h>
@@ -43,23 +45,76 @@
 	return [self attributesAtIndex:index effectiveRange:NULL];
 }
 
-- (void)replaceRange:(NSRange)range withAttachment:(DTTextAttachment *)attachment
+- (void)replaceRange:(NSRange)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph
 {
 	NSMutableDictionary *attributes = [[self typingAttributesForRange:range] mutableCopy];
 	
+	// just in case if there is an attachment at the insertion point
+	[attributes removeAttachment];
+	
+	BOOL needsParagraphBefore = NO;
+	BOOL needsParagraphAfter = NO;
+	
+	if (range.location>0)
+	{
+		NSInteger index = range.location-1;
+		
+		NSString *character = [[self string] substringWithRange:NSMakeRange(index, 1)];
+		
+		if (![character isEqualToString:@"\n"])
+		{
+			needsParagraphBefore = YES;
+		}
+	}
+
+	if (range.location<[self length])
+	{
+		NSInteger index = range.location;
+		
+		NSString *character = [[self string] substringWithRange:NSMakeRange(index, 1)];
+		
+		if (![character isEqualToString:@"\n"])
+		{
+			needsParagraphAfter = YES;
+		}
+	}
+
+	NSMutableAttributedString *tmpAttributedString = [[[NSMutableAttributedString alloc] initWithString:@""] autorelease];
+	
+	if (needsParagraphBefore)
+	{
+		NSAttributedString *formattedNL = [[NSAttributedString alloc] initWithString:@"\n" attributes:attributes];
+		[tmpAttributedString appendAttributedString:formattedNL];
+		[formattedNL release];
+	}
+
+	NSMutableDictionary *objectAttributes = [attributes mutableCopy];
+	
 	// need run delegate for sizing
 	CTRunDelegateRef embeddedObjectRunDelegate = createEmbeddedObjectRunDelegate((id)attachment);
-	[attributes setObject:(id)embeddedObjectRunDelegate forKey:(id)kCTRunDelegateAttributeName];
+	[objectAttributes setObject:(id)embeddedObjectRunDelegate forKey:(id)kCTRunDelegateAttributeName];
 	CFRelease(embeddedObjectRunDelegate);
 	
 	// add attachment
-	[attributes setObject:attachment forKey:@"DTTextAttachment"];
+	[objectAttributes setObject:attachment forKey:@"DTTextAttachment"];
+
 	
-	NSAttributedString *tmpStr = [[NSAttributedString alloc] initWithString:UNICODE_OBJECT_PLACEHOLDER attributes:attributes];
-	
-	[self replaceCharactersInRange:range withAttributedString:tmpStr];
-	
+	NSAttributedString *tmpStr = [[NSAttributedString alloc] initWithString:UNICODE_OBJECT_PLACEHOLDER attributes:objectAttributes];
+	[tmpAttributedString appendAttributedString:tmpStr];
 	[tmpStr release];
+	
+	[objectAttributes release];
+
+	if (needsParagraphAfter)
+	{
+		NSAttributedString *formattedNL = [[NSAttributedString alloc] initWithString:@"\n" attributes:attributes];
+		[tmpAttributedString appendAttributedString:formattedNL];
+		[formattedNL release];
+	}
+
+	
+	[self replaceCharactersInRange:range withAttributedString:tmpAttributedString];
+	
 	[attributes release];
 }
 
