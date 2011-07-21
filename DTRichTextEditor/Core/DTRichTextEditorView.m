@@ -11,6 +11,8 @@
 #import "DTAttributedTextContentView.h"
 #import "DTCoreTextLayoutFrame+DTRichText.h"
 #import "NSMutableAttributedString+DTRichText.h"
+#import "NSDictionary+DTRichText.h"
+#import "NSMutableDictionary+DTRichText.h"
 #import "DTRichTextEditorView.h"
 
 #import "DTTextPosition.h"
@@ -786,7 +788,7 @@
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-	CGPoint touchPoint = [touch locationInView:self];	
+	//CGPoint touchPoint = [touch locationInView:self];	
 	
 	if (gestureRecognizer == longPressGesture)
 	{
@@ -1096,11 +1098,16 @@
 		// text could be nil, but that's not valid for replaceCharactersInRange
 		text = @"";
 	}
+
+	NSDictionary *typingAttributes = self.overrideInsertionAttributes;
+	
+	if (!typingAttributes)
+	{
+		typingAttributes = [self typingAttributesForRange:range];
+	}
 	
 	if ([text isKindOfClass:[NSString class]])
 	{
-		NSDictionary *typingAttributes = [self typingAttributesForRange:range];	
-		
 		if ([typingAttributes objectForKey:@"DTTextAttachment"])
 		{
 			// has an attachment, we need a new dictionary
@@ -1119,10 +1126,17 @@
 	
 	if ([text isKindOfClass:[NSString class]])
 	{
-		[self.internalAttributedText replaceCharactersInRange:myRange withString:text];
+		// need to replace attributes with typing attributes
+		text = [[[NSAttributedString alloc] initWithString:text attributes:typingAttributes] autorelease];
+		
+		
+		[self.internalAttributedText replaceCharactersInRange:myRange withAttributedString:text];
 	}
 	else if ([text isKindOfClass:[NSAttributedString class]])
 	{
+		// need to replace attributes with typing attributes
+		text = [[[NSAttributedString alloc] initWithString:[text string] attributes:typingAttributes] autorelease];
+		
 		[self.internalAttributedText replaceCharactersInRange:myRange withAttributedString:text];
 	}
 	
@@ -1177,6 +1191,8 @@
 		_selectedTextRange = [newTextRange copy];
 		
 		[self updateCursor];
+		
+		self.overrideInsertionAttributes = nil;
 		
 		[self didChangeValueForKey:@"selectedTextRange"];
 	}
@@ -1704,7 +1720,16 @@
 {
 	if ([range isEmpty])
 	{
-		self.overrideInsertionAttributes = [self typingAttributesForRange:range];
+		// if we only have a cursor then we save the attributes for the next insertion
+		NSMutableDictionary *tmpDict = [self.overrideInsertionAttributes mutableCopy];
+		
+		if (!tmpDict)
+		{
+			tmpDict = [[self typingAttributesForRange:range] mutableCopy];
+		}
+		[tmpDict toggleBold];
+		self.overrideInsertionAttributes = tmpDict;
+		[tmpDict release];
 	}
 	else
 	{
@@ -1715,14 +1740,46 @@
 
 - (void)toggleItalicInRange:(UITextRange *)range
 {
-	[self.internalAttributedText toggleItalicInRange:[(DTTextRange *)range NSRangeValue]];
-	self.attributedText = self.internalAttributedText; // makes immutable copy and driggers layout
+	if ([range isEmpty])
+	{
+		// if we only have a cursor then we save the attributes for the next insertion
+		NSMutableDictionary *tmpDict = [self.overrideInsertionAttributes mutableCopy];
+		
+		if (!tmpDict)
+		{
+			tmpDict = [[self typingAttributesForRange:range] mutableCopy];
+		}
+		[tmpDict toggleItalic];
+		self.overrideInsertionAttributes = tmpDict;
+		[tmpDict release];
+	}
+	else
+	{
+		[self.internalAttributedText toggleItalicInRange:[(DTTextRange *)range NSRangeValue]];
+		self.attributedText = self.internalAttributedText; // makes immutable copy and driggers layout
+	}
 }
 
 - (void)toggleUnderlineInRange:(UITextRange *)range
 {
-	[self.internalAttributedText toggleUnderlineInRange:[(DTTextRange *)range NSRangeValue]];
-	self.attributedText = self.internalAttributedText; // makes immutable copy and driggers layout
+	if ([range isEmpty])
+	{
+		// if we only have a cursor then we save the attributes for the next insertion
+		NSMutableDictionary *tmpDict = [self.overrideInsertionAttributes mutableCopy];
+		
+		if (!tmpDict)
+		{
+			tmpDict = [[self typingAttributesForRange:range] mutableCopy];
+		}
+		[tmpDict toggleUnderline];
+		self.overrideInsertionAttributes = tmpDict;
+		[tmpDict release];
+	}
+	else
+	{
+		[self.internalAttributedText toggleUnderlineInRange:[(DTTextRange *)range NSRangeValue]];
+		self.attributedText = self.internalAttributedText; // makes immutable copy and driggers layout
+	}
 }
 
 - (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate

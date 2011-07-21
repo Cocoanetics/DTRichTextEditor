@@ -8,11 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSMutableDictionary (DTRichText)
+#import "NSDictionary+DTRichText.h"
 
-- (BOOL)isBold;
-- (BOOL)isItalic;
-- (BOOL)isUnderline;
+@interface NSMutableDictionary (DTRichText)
 
 - (void)toggleBold;
 - (void)toggleItalic;

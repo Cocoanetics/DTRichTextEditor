@@ -58,6 +58,7 @@
 		A76F898613C735E4007B37C0 /* NSAttributedString+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A76F898513C735E4007B37C0 /* NSAttributedString+DTRichText.m */; };
 		A76F898913C751D5007B37C0 /* NSMutableAttributedString+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A76F898813C751D5007B37C0 /* NSMutableAttributedString+DTRichText.m */; };
 		A770831013D8860C001CA4AA /* NSMutableDictionary+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A770830F13D8860C001CA4AA /* NSMutableDictionary+DTRichText.m */; };
+		A770831413D888BB001CA4AA /* NSDictionary+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A770831313D888BB001CA4AA /* NSDictionary+DTRichText.m */; };
 		A7DD237D13C449BC0015C604 /* DTLoupeView.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DD236C13C449BC0015C604 /* DTLoupeView.m */; };
 		A7DD237E13C449BC0015C604 /* kb-drag-dot.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD236D13C449BC0015C604 /* kb-drag-dot.png */; };
 		A7DD237F13C449BC0015C604 /* kb-drag-dot@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD236E13C449BC0015C604 /* kb-drag-dot@2x.png */; };
@@ -174,6 +175,8 @@
 		A76F898813C751D5007B37C0 /* NSMutableAttributedString+DTRichText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+DTRichText.m"; sourceTree = "<group>"; };
 		A770830E13D8860C001CA4AA /* NSMutableDictionary+DTRichText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+DTRichText.h"; sourceTree = "<group>"; };
 		A770830F13D8860C001CA4AA /* NSMutableDictionary+DTRichText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableDictionary+DTRichText.m"; sourceTree = "<group>"; };
+		A770831213D888BB001CA4AA /* NSDictionary+DTRichText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+DTRichText.h"; sourceTree = "<group>"; };
+		A770831313D888BB001CA4AA /* NSDictionary+DTRichText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+DTRichText.m"; sourceTree = "<group>"; };
 		A7DD236B13C449BC0015C604 /* DTLoupeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTLoupeView.h; sourceTree = "<group>"; };
 		A7DD236C13C449BC0015C604 /* DTLoupeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTLoupeView.m; sourceTree = "<group>"; };
 		A7DD236D13C449BC0015C604 /* kb-drag-dot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-drag-dot.png"; sourceTree = "<group>"; };
@@ -342,6 +345,8 @@
 		A76F898313C73514007B37C0 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				A770831213D888BB001CA4AA /* NSDictionary+DTRichText.h */,
+				A770831313D888BB001CA4AA /* NSDictionary+DTRichText.m */,
 				A770830E13D8860C001CA4AA /* NSMutableDictionary+DTRichText.h */,
 				A770830F13D8860C001CA4AA /* NSMutableDictionary+DTRichText.m */,
 				A76F898413C735E4007B37C0 /* NSAttributedString+DTRichText.h */,
@@ -558,6 +563,7 @@
 				A76F898613C735E4007B37C0 /* NSAttributedString+DTRichText.m in Sources */,
 				A76F898913C751D5007B37C0 /* NSMutableAttributedString+DTRichText.m in Sources */,
 				A770831013D8860C001CA4AA /* NSMutableDictionary+DTRichText.m in Sources */,
+				A770831413D888BB001CA4AA /* NSDictionary+DTRichText.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

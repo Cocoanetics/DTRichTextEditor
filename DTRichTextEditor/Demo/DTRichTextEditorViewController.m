@@ -193,7 +193,6 @@
 		{
 			self.navigationItem.rightBarButtonItem.enabled = YES;
 			self.navigationItem.leftBarButtonItem.enabled = YES;
-			
 		}
 	}
 }
