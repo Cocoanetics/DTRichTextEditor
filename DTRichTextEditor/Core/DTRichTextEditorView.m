@@ -34,6 +34,8 @@
 
 @property (nonatomic, readwrite) UITextRange *markedTextRange;  // internal property writeable
 
+- (DTTextRange *)rangeForWordAtPosition:(DTTextPosition *)position;
+
 @end
 
 
@@ -194,6 +196,11 @@
 		targetRect = self.cursor.frame;
 	}
 	
+	if (!self.isFirstResponder)
+	{
+		[self becomeFirstResponder];
+	}
+	
 	UIMenuController *menuController = [UIMenuController sharedMenuController];
 	
 	UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Item" action:@selector(menuItemClicked:)];
@@ -313,7 +320,14 @@
 		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_selectedTextRange NSRangeValue]];
 		_selectionView.selectionRectangles = rects;
 		
-		_selectionView.dragHandlesVisible = YES;
+		if (self.editable)
+		{
+			_selectionView.dragHandlesVisible = YES;
+		}
+		else
+		{
+			_selectionView.dragHandlesVisible = NO;
+		}
 		
 		[_cursor removeFromSuperview];
 		
@@ -334,6 +348,19 @@
 	}
 }
 
+// in edit mode or if not firstResponder we select words
+- (void)selectWordAtPositionClosestToLocation:(CGPoint)location
+{
+	DTTextPosition *position = (id)[self closestPositionToPoint:location];
+	
+	NSLog(@"pos: %@", position);
+	
+	DTTextRange *wordRange = [self rangeForWordAtPosition:position];
+	
+	self.selectedTextRange = wordRange;
+}
+
+
 - (void)moveCursorToPositionClosestToLocation:(CGPoint)location
 {
 	[self.inputDelegate selectionWillChange:self];
@@ -350,23 +377,6 @@
 	}
 	
 	DTTextPosition *position = (id)[self closestPositionToPoint:location withinRange:constrainingRange];
-	
-	//	if ([_selectedTextRange length])
-	//	{
-	//		// existing selection constrains free movement
-	//		DTTextPosition *start = (id)_selectedTextRange.start;
-	//		DTTextPosition *end = (id)_selectedTextRange.end;
-	//		
-	//		if ([start compare:position] == NSOrderedDescending)
-	//		{
-	//			position = start;
-	//		}
-	//		
-	//		if ([position compare:end] == NSOrderedDescending)
-	//		{
-	//			position = end;
-	//		}
-	//	}
 	
 	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:position offset:0]];
 	
@@ -402,10 +412,10 @@
 	{
 		CGPoint loupeStartPoint;
 		CGRect rect = [_selectionView beginCaretRect];
-		loupeStartPoint= CGPointMake(CGRectGetMidX(rect), rect.origin.y);
+		loupeStartPoint = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
+		
 		_dragCursorStartMidPoint = CGRectCenter(rect);
 
-		
 		self.loupe.style = DTLoupeStyleRectangleWithArrow;
 		self.loupe.magnification = 0.5;
 		self.loupe.touchPoint = loupeStartPoint;
@@ -422,9 +432,11 @@
 		loupeStartPoint = CGRectCenter(rect);
 		_dragCursorStartMidPoint = CGRectCenter(rect);
 		
+		
 		self.loupe.style = DTLoupeStyleRectangleWithArrow;
 		self.loupe.magnification = 0.5;
 		self.loupe.touchPoint = loupeStartPoint;
+		self.loupe.touchPointOffset = CGPointMake(0, rect.origin.y - _dragCursorStartMidPoint.y);
 		[self.loupe presentLoupeFromLocation:loupeStartPoint];
 
 		return;
@@ -435,7 +447,15 @@
 	self.loupe.style = DTLoupeStyleCircle;
 	self.loupe.magnification = 1.2;
 	
-	[self moveCursorToPositionClosestToLocation:touchPoint];
+	if (self.editable)
+	{
+		[self moveCursorToPositionClosestToLocation:touchPoint];
+	}
+	else
+	{
+		[self selectWordAtPositionClosestToLocation:touchPoint];
+		_selectionView.dragHandlesVisible = NO;
+	}
 	
 	_loupe.touchPoint = touchPoint;
 	[_loupe presentLoupeFromLocation:touchPoint];
@@ -451,7 +471,15 @@
 		_loupe.seeThroughMode = NO;
 		
 		[self hideContextMenu];
-		[self moveCursorToPositionClosestToLocation:touchPoint];
+		
+		if (self.editable)
+		{
+			[self moveCursorToPositionClosestToLocation:touchPoint];
+		}
+		else
+		{
+			[self selectWordAtPositionClosestToLocation:touchPoint];
+		}
 		return;
 	}
 	
@@ -513,8 +541,17 @@
 {
 	if (_dragMode == DTDragModeCursor)
 	{
-		[_loupe dismissLoupeTowardsLocation:self.cursor.center];
-		_cursor.state = DTCursorStateBlinking;
+		if (self.editable)
+		{
+			[_loupe dismissLoupeTowardsLocation:self.cursor.center];
+			_cursor.state = DTCursorStateBlinking;
+		}
+		else
+		{
+			CGRect rect = [_selectionView beginCaretRect];
+			CGPoint point = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
+			[_loupe dismissLoupeTowardsLocation:point];
+		}
 	}
 	else if (_dragMode == DTDragModeLeftHandle)
 	{
@@ -586,9 +623,12 @@
 			[self becomeFirstResponder];
 		}
 		
-		CGPoint touchPoint = [gesture locationInView:self.contentView];
+		if (self.editable)
+		{
+			CGPoint touchPoint = [gesture locationInView:self.contentView];
+			[self moveCursorToPositionClosestToLocation:touchPoint];
+		}
 		
-		[self moveCursorToPositionClosestToLocation:touchPoint];
 		
 		[self unmarkText];
 		
@@ -625,27 +665,13 @@
 			
 			
 			[self presentLoupeWithTouchPoint:touchPoint];
-//			
-//			// normal round loupe
-//			self.loupe.style = DTLoupeStyleCircle;
-//			self.loupe.magnification = 1.2;
-//			
-//			_loupe.touchPoint = touchPoint;
-//			[_loupe presentLoupeFromLocation:touchPoint];
-//			
 			_cursor.state = DTCursorStateStatic;
 		}
 			
 		case UIGestureRecognizerStateChanged:
 		{
 			[self moveLoupeWithTouchPoint:touchPoint];
-			
-//			_loupe.touchPoint = touchPoint;
-//			_loupe.seeThroughMode = NO;
-//			
-//			[self hideContextMenu];
-//			[self moveCursorToPositionClosestToLocation:touchPoint];
-			
+
 			break;
 		}
 			
@@ -657,11 +683,7 @@
 		case UIGestureRecognizerStateCancelled:
 		{
 			[self dismissLoupeWithTouchPoint:touchPoint];
-//			[_loupe dismissLoupeTowardsLocation:self.cursor.center];
-//			
-//			_cursor.state = DTCursorStateBlinking;
-//			_dragMode = DTDragModeNone;
-			
+
 			break;
 		}
 			
@@ -873,6 +895,38 @@
 		return backRange;
     }
 	
+	
+	// we did not get a forward or backward range, like Word!|
+	DTTextPosition *previousPosition = (id)([tokenizer positionFromPosition:position
+																	 toBoundary:UITextGranularityWord 
+																	inDirection:UITextStorageDirectionBackward]);
+		
+	forRange = (id)[[self tokenizer] rangeEnclosingPosition:previousPosition withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionForward];
+    backRange = (id)[[self tokenizer] rangeEnclosingPosition:previousPosition withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionBackward];
+	
+	UITextRange *retRange = nil;
+	
+    if (forRange && backRange) 
+	{
+       retRange = [DTTextRange textRangeFromStart:[backRange start] toEnd:[backRange end]];
+    }
+	else if (forRange) 
+	{
+		retRange = forRange;
+    } 
+	else if (backRange) 
+	{
+		retRange = backRange;
+    }
+
+	// need to extend to include the previous position
+	
+	if (retRange)
+	{
+		// extend this range to go up to current position
+		return [DTTextRange textRangeFromStart:[retRange start] toEnd:position];
+	}
+	
 	return nil;
 }
 
@@ -880,23 +934,6 @@
 {
 	DTTextPosition *currentPosition = (DTTextPosition *)[_selectedTextRange start];
 	DTTextRange *wordRange = [self rangeForWordAtPosition:currentPosition];
-	
-	if (!wordRange)
-	{
-		// we did not get a forward or backward range, like Word!|
-		DTTextPosition *previousPosition = (id)([tokenizer positionFromPosition:currentPosition
-																	 toBoundary:UITextGranularityWord 
-																	inDirection:UITextStorageDirectionBackward]);
-		
-		wordRange = [self rangeForWordAtPosition:previousPosition];
-		
-		
-		if (wordRange)
-		{
-			// extend this range to go up to current position
-			wordRange = [DTTextRange textRangeFromStart:[wordRange start] toEnd:currentPosition];
-		}
-	}
 	
 	if (wordRange)
 	{
@@ -921,9 +958,6 @@
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
-	//	NSLog(@"canPerform: %@", NSStringFromSelector(action));
-	
-	
 	if (action == @selector(selectAll:))
 	{
 		if (([[_selectedTextRange start] isEqual:(id)[self beginningOfDocument]] && [[_selectedTextRange end] isEqual:(id)[self endOfDocument]]) || ![_selectedTextRange isEmpty])
@@ -954,6 +988,18 @@
 		// TODO: check pasteboard if there is something contained that can be pasted here
 		return NO;
 	}
+	
+//	if (action == @selector(copy:))
+//	{
+//		if (![_selectedTextRange isEmpty])
+//		{
+//			return YES;
+//		}
+//		else
+//		{
+//			return NO;
+//		}
+//	}
 	
 	return NO;
 }

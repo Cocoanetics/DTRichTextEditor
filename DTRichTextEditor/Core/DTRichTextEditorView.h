@@ -50,7 +50,6 @@ typedef enum
 	
   //  UITextSpellCheckingType spellCheckingType;
 	
-	UITapGestureRecognizer *tap;
     BOOL _editable;
 	
 	DTLoupeView *_loupe;
@@ -63,6 +62,8 @@ typedef enum
 	
 	CGPoint _dragCursorStartMidPoint;
 	CGPoint _touchDownPoint;
+	
+	UITapGestureRecognizer *tap;
 	UILongPressGestureRecognizer *longPressGesture;
 	UIPanGestureRecognizer *panGesture;
 }
