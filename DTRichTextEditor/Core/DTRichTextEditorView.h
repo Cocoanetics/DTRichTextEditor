@@ -99,8 +99,10 @@ typedef enum
 
 @interface DTRichTextEditorView (manipulation)
 
+- (DTTextRange *)rangeForWordAtPosition:(DTTextPosition *)position;
+
 - (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
-- (void)replaceRange:(UITextRange *)range withAttachment:(DTTextAttachment *)attachment;
+- (void)replaceRange:(UITextRange *)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph;
 
 - (void)toggleBoldInRange:(UITextRange *)range;
 - (void)toggleItalicInRange:(UITextRange *)range;
@@ -108,5 +110,8 @@ typedef enum
 
 - (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate;
 - (void)relayoutText;
+
+- (BOOL)pasteboardHasSuitableContentForPaste;
+- (NSString *)plainTextForRange:(UITextRange *)range;
 
 @end

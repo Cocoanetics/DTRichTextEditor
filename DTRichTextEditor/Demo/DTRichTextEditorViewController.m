@@ -118,7 +118,7 @@
 	attachment.originalSize = image.size;
 	attachment.contentType = DTTextAttachmentTypeImage;
 	
-	[richEditor replaceRange:lastSelection withAttachment:attachment];
+	[richEditor replaceRange:lastSelection withAttachment:attachment inParagraph:YES];
 }
 
 

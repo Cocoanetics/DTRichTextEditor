@@ -9,6 +9,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "DTAttributedTextContentView.h"
+#import "NSString+HTML.h"
 #import "DTCoreTextLayoutFrame+DTRichText.h"
 #import "NSMutableAttributedString+DTRichText.h"
 #import "NSDictionary+DTRichText.h"
@@ -37,9 +38,6 @@
 @property (nonatomic, readwrite) UITextRange *markedTextRange;  // internal property writeable
 
 @property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
-
-- (DTTextRange *)rangeForWordAtPosition:(DTTextPosition *)position;
-
 
 @end
 
@@ -864,73 +862,120 @@
 	return [super resignFirstResponder];
 }
 
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+	if (action == @selector(selectAll:))
+	{
+		if (([[_selectedTextRange start] isEqual:(id)[self beginningOfDocument]] && [[_selectedTextRange end] isEqual:(id)[self endOfDocument]]) || ![_selectedTextRange isEmpty])
+		{
+			return NO;	
+		}
+		else
+		{
+			return YES;
+		}
+	}
+	
+	if (action == @selector(select:))
+	{
+		// selection only possibly from cursor, not when already selection in place
+		if ([_selectedTextRange length])
+		{
+			return NO;
+		}
+		else
+		{
+			return YES;
+		}
+	}
+	
+	// stuff below needs a selection
+	if (!_selectedTextRange)
+	{
+		return NO;
+	}
+	
+	
+	if (action == @selector(paste:))
+	{
+		return [self pasteboardHasSuitableContentForPaste];
+	}
+	
+	// stuff below needs a selection with multiple chars
+	if ([_selectedTextRange isEmpty])
+	{
+		return NO;
+	}
+	
+	if (action == @selector(cut:))
+	{
+		return YES;
+	}
+
+	if (action == @selector(copy:))
+	{
+		return YES;
+	}
+	
+	
+	return NO;
+}
+
 - (void)cut:(id)sender
 {
+	if ([_selectedTextRange isEmpty])
+	{
+		return;
+	}
     
+	NSString *string = [self plainTextForRange:_selectedTextRange];
+	
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	[pasteboard setString:string];
+	
+	[self replaceRange:_selectedTextRange withText:@""];
 }
 
 - (void)copy:(id)sender
 {
+	if ([_selectedTextRange isEmpty])
+	{
+		return;
+	}
     
+	NSString *string = [self plainTextForRange:_selectedTextRange];
+	
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	[pasteboard setString:string];
+	
+//	NSAttributedString *attributedString = [self.internalAttributedText attributedSubstringFromRange:[_selectedTextRange NSRangeValue]];
+//	
+//	
+//	NSMutableData *theData = [NSMutableData data];
+//	NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:theData];
+//	
+//	[encoder encodeObject:attributedString forKey:@"attributedString"];
+//	[encoder finishEncoding];
+//	
+//	NSLog(@"%@", theData);
+//	
+//	[encoder release];
 }
 
 - (void)paste:(id)sender
 {
-    
-}
-
-- (DTTextRange *)rangeForWordAtPosition:(DTTextPosition *)position
-{
-	DTTextRange *forRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionForward];
-    DTTextRange *backRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionBackward];
-	
-    if (forRange && backRange) 
+	if (!_selectedTextRange)
 	{
-        DTTextRange *newRange = [DTTextRange textRangeFromStart:[backRange start] toEnd:[backRange end]];
-		return newRange;
-    }
-	else if (forRange) 
-	{
-		return forRange;
-    } 
-	else if (backRange) 
-	{
-		return backRange;
-    }
-	
-	
-	// we did not get a forward or backward range, like Word!|
-	DTTextPosition *previousPosition = (id)([tokenizer positionFromPosition:position
-																	 toBoundary:UITextGranularityWord 
-																	inDirection:UITextStorageDirectionBackward]);
-		
-	forRange = (id)[[self tokenizer] rangeEnclosingPosition:previousPosition withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionForward];
-    backRange = (id)[[self tokenizer] rangeEnclosingPosition:previousPosition withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionBackward];
-	
-	UITextRange *retRange = nil;
-	
-    if (forRange && backRange) 
-	{
-       retRange = [DTTextRange textRangeFromStart:[backRange start] toEnd:[backRange end]];
-    }
-	else if (forRange) 
-	{
-		retRange = forRange;
-    } 
-	else if (backRange) 
-	{
-		retRange = backRange;
-    }
-
-	// need to extend to include the previous position
-	
-	if (retRange)
-	{
-		// extend this range to go up to current position
-		return [DTTextRange textRangeFromStart:[retRange start] toEnd:position];
+		return;
 	}
 	
-	return nil;
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	NSString *string = [pasteboard string];
+	
+	if (string)
+	{
+		[self replaceRange:_selectedTextRange withText:string];
+	}
 }
 
 - (void)select:(id)sender
@@ -959,53 +1004,7 @@
 	
 }
 
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
-{
-	if (action == @selector(selectAll:))
-	{
-		if (([[_selectedTextRange start] isEqual:(id)[self beginningOfDocument]] && [[_selectedTextRange end] isEqual:(id)[self endOfDocument]]) || ![_selectedTextRange isEmpty])
-		{
-			return NO;	
-		}
-		else
-		{
-			return YES;
-		}
-	}
-	
-	if (action == @selector(select:))
-	{
-		// selection only possibly from cursor, not when already selection in place
-		if ([_selectedTextRange length])
-		{
-			return NO;
-		}
-		else
-		{
-			return YES;
-		}
-	}
-	
-	if (action == @selector(paste:))
-	{
-		// TODO: check pasteboard if there is something contained that can be pasted here
-		return NO;
-	}
-	
-//	if (action == @selector(copy:))
-//	{
-//		if (![_selectedTextRange isEmpty])
-//		{
-//			return YES;
-//		}
-//		else
-//		{
-//			return NO;
-//		}
-//	}
-	
-	return NO;
-}
+
 
 #pragma mark UIKeyInput Protocol
 - (BOOL)hasText
@@ -1605,6 +1604,8 @@
 		
 		[_markedTextRange release];
 		_markedTextRange = [markedTextRange copy];
+		
+		[self hideContextMenu];
 
 		[self didChangeValueForKey:@"markedTextRange"];
 	}
@@ -1695,16 +1696,70 @@
 
 @implementation DTRichTextEditorView (manipulation)
 
+- (DTTextRange *)rangeForWordAtPosition:(DTTextPosition *)position
+{
+	DTTextRange *forRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionForward];
+    DTTextRange *backRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionBackward];
+	
+    if (forRange && backRange) 
+	{
+        DTTextRange *newRange = [DTTextRange textRangeFromStart:[backRange start] toEnd:[backRange end]];
+		return newRange;
+    }
+	else if (forRange) 
+	{
+		return forRange;
+    } 
+	else if (backRange) 
+	{
+		return backRange;
+    }
+	
+	
+	// we did not get a forward or backward range, like Word!|
+	DTTextPosition *previousPosition = (id)([tokenizer positionFromPosition:position
+																 toBoundary:UITextGranularityWord 
+																inDirection:UITextStorageDirectionBackward]);
+	
+	forRange = (id)[[self tokenizer] rangeEnclosingPosition:previousPosition withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionForward];
+    backRange = (id)[[self tokenizer] rangeEnclosingPosition:previousPosition withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionBackward];
+	
+	UITextRange *retRange = nil;
+	
+    if (forRange && backRange) 
+	{
+		retRange = [DTTextRange textRangeFromStart:[backRange start] toEnd:[backRange end]];
+    }
+	else if (forRange) 
+	{
+		retRange = forRange;
+    } 
+	else if (backRange) 
+	{
+		retRange = backRange;
+    }
+	
+	// need to extend to include the previous position
+	
+	if (retRange)
+	{
+		// extend this range to go up to current position
+		return [DTTextRange textRangeFromStart:[retRange start] toEnd:position];
+	}
+	
+	return nil;
+}
+
 - (NSDictionary *)typingAttributesForRange:(DTTextRange *)range
 {
 	return [self.internalAttributedText typingAttributesForRange:[range NSRangeValue]];
 }
 
-- (void)replaceRange:(DTTextRange *)range withAttachment:(DTTextAttachment *)attachment
+- (void)replaceRange:(DTTextRange *)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph
 {
 	NSParameterAssert(range);
 	
-	[_internalAttributedText replaceRange:[range NSRangeValue] withAttachment:attachment inParagraph:YES];
+	[_internalAttributedText replaceRange:[range NSRangeValue] withAttachment:attachment inParagraph:inParagraph];
 	
 	self.attributedString = _internalAttributedText;
 	
@@ -1787,6 +1842,33 @@
 - (void)relayoutText
 {
 	[self.contentView relayoutText];
+}
+
+- (BOOL)pasteboardHasSuitableContentForPaste
+{
+	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+//	NSLog(@"%@", pasteboard.items);
+	
+	NSString *string = [pasteboard valueForPasteboardType:@"public.utf8-plain-text"];
+	if (string) return YES;
+	
+	return NO;
+}
+
+- (NSString *)plainTextForRange:(UITextRange *)range
+{
+	if (!range)
+	{
+		return nil;
+	}
+	
+	NSRange textRange = [(DTTextRange *)range NSRangeValue];
+	
+	NSString *tmpString = [[self.internalAttributedText string] substringWithRange:textRange];
+	
+	tmpString = [tmpString stringByReplacingOccurrencesOfString:UNICODE_OBJECT_PLACEHOLDER withString:@""];
+	
+	return tmpString;
 }
 
 @end
