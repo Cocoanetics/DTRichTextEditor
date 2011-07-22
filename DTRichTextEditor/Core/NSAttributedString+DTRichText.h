@@ -10,6 +10,7 @@
 
 @interface NSAttributedString (DTRichText)
 
-+ (NSAttributedString *)attributedStringWithImage:(UIImage *)image;
++ (NSAttributedString *)attributedStringWithImage:(UIImage *)image maxDisplaySize:(CGSize)maxDisplaySize;
++ (NSAttributedString *)attributedStringWithURL:(NSURL *)url;
 
 @end

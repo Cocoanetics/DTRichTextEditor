@@ -66,6 +66,9 @@
 	// disable this once you use your own image views
 	richEditor.contentView.shouldDrawImages = YES;
 	
+	// maximum size that images are displayed with
+	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
+	
 	// watch the selectedTextRange property
 	[richEditor addObserver:self forKeyPath:@"selectedTextRange" options:NSKeyValueObservingOptionNew context:self];
 }

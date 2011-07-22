@@ -946,6 +946,7 @@
 	NSString *string = [self plainTextForRange:_selectedTextRange];
 	
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	
 	[pasteboard setString:string];
 	
 //	NSAttributedString *attributedString = [self.internalAttributedText attributedSubstringFromRange:[_selectedTextRange NSRangeValue]];
@@ -970,6 +971,54 @@
 	}
 	
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+	
+	UIImage *image = [pasteboard image];
+	
+//	if (image)
+//	{
+//		NSAttributedString *tmpString = [NSAttributedString attributedStringWithImage:image maxDisplaySize:_maxImageDisplaySize];
+//		[self replaceRange:_selectedTextRange withText:tmpString];
+//
+//		return;
+//	}
+
+	if (image)
+	{
+		DTTextAttachment *attachment = [[DTTextAttachment alloc] init];
+		attachment.contentType = DTTextAttachmentTypeImage;
+		attachment.contentURL = [pasteboard URL];
+		attachment.contents = image;
+		attachment.originalSize = [image size];
+		
+		CGSize displaySize = image.size;
+		if (!CGSizeEqualToSize(_maxImageDisplaySize, CGSizeZero))
+		{
+			if (_maxImageDisplaySize.width < image.size.width || _maxImageDisplaySize.height < image.size.height)
+			{
+				displaySize = sizeThatFitsKeepingAspectRatio(image.size,_maxImageDisplaySize);
+			}
+		}
+		attachment.displaySize = displaySize;
+		
+		[self replaceRange:_selectedTextRange withAttachment:attachment inParagraph:NO];
+		
+		[attachment release];
+		
+		return;
+	}
+
+	NSURL *url = [pasteboard URL];
+	
+	if (url)
+	{
+		NSAttributedString *tmpString = [NSAttributedString attributedStringWithURL:url];
+		[self replaceRange:_selectedTextRange withText:tmpString];
+		
+		return;
+	}
+	
+	
+	
 	NSString *string = [pasteboard string];
 	
 	if (string)
@@ -1281,6 +1330,7 @@
 }
 
 @synthesize selectionAffinity = _selectionAffinity;
+@synthesize maxImageDisplaySize = _maxImageDisplaySize;
 
 
 
@@ -1847,11 +1897,23 @@
 - (BOOL)pasteboardHasSuitableContentForPaste
 {
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-//	NSLog(@"%@", pasteboard.items);
+	NSLog(@"%@", pasteboard.items);
 	
-	NSString *string = [pasteboard valueForPasteboardType:@"public.utf8-plain-text"];
-	if (string) return YES;
+	if ([pasteboard containsPasteboardTypes:UIPasteboardTypeListString])
+	{
+		return YES;
+	}
 	
+	if ([pasteboard containsPasteboardTypes:UIPasteboardTypeListImage])
+	{
+		return YES;
+	}
+
+	if ([pasteboard containsPasteboardTypes:UIPasteboardTypeListURL])
+	{
+		return YES;
+	}
+
 	return NO;
 }
 
@@ -1870,5 +1932,7 @@
 	
 	return tmpString;
 }
+
+;
 
 @end

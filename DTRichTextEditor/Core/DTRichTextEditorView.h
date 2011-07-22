@@ -67,6 +67,8 @@ typedef enum
 	UITapGestureRecognizer *tap;
 	UILongPressGestureRecognizer *longPressGesture;
 	UIPanGestureRecognizer *panGesture;
+	
+	CGSize _maxImageDisplaySize;
 }
 
 
@@ -77,6 +79,9 @@ typedef enum
 @property(nonatomic, assign) id<UITextInputDelegate> inputDelegate;
 @property (nonatomic, copy) NSDictionary *markedTextStyle;
 @property (nonatomic) UITextStorageDirection selectionAffinity;
+
+@property (nonatomic, assign) CGSize maxImageDisplaySize;
+
 
 @property (nonatomic, retain) DTCursorView *cursor;
 
