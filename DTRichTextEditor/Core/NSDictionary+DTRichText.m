@@ -16,6 +16,12 @@
 - (BOOL)isBold
 {
 	CTFontRef currentFont = (CTFontRef)[self objectForKey:(id)kCTFontAttributeName];
+	
+	if (!currentFont)
+	{
+		return NO;
+	}
+	
 	DTCoreTextFontDescriptor *desc = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
 	
 	return desc.boldTrait;
@@ -24,6 +30,12 @@
 - (BOOL)isItalic
 {
 	CTFontRef currentFont = (CTFontRef)[self objectForKey:(id)kCTFontAttributeName];
+	
+	if (!currentFont)
+	{
+		return NO;
+	}
+	
 	DTCoreTextFontDescriptor *desc = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
 	
 	return desc.italicTrait;

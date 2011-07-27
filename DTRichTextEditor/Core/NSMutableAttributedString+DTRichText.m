@@ -66,7 +66,7 @@
 			needsParagraphBefore = YES;
 		}
 	}
-
+	
 	if (range.location<[self length])
 	{
 		NSInteger index = range.location;
@@ -78,7 +78,7 @@
 			needsParagraphAfter = YES;
 		}
 	}
-
+	
 	NSMutableAttributedString *tmpAttributedString = [[[NSMutableAttributedString alloc] initWithString:@""] autorelease];
 	
 	if (needsParagraphBefore)
@@ -87,7 +87,7 @@
 		[tmpAttributedString appendAttributedString:formattedNL];
 		[formattedNL release];
 	}
-
+	
 	NSMutableDictionary *objectAttributes = [attributes mutableCopy];
 	
 	// need run delegate for sizing
@@ -97,21 +97,21 @@
 	
 	// add attachment
 	[objectAttributes setObject:attachment forKey:@"DTTextAttachment"];
-
+	
 	
 	NSAttributedString *tmpStr = [[NSAttributedString alloc] initWithString:UNICODE_OBJECT_PLACEHOLDER attributes:objectAttributes];
 	[tmpAttributedString appendAttributedString:tmpStr];
 	[tmpStr release];
 	
 	[objectAttributes release];
-
+	
 	if (needsParagraphAfter)
 	{
 		NSAttributedString *formattedNL = [[NSAttributedString alloc] initWithString:@"\n" attributes:attributes];
 		[tmpAttributedString appendAttributedString:formattedNL];
 		[formattedNL release];
 	}
-
+	
 	
 	[self replaceCharactersInRange:range withAttributedString:tmpAttributedString];
 	
@@ -140,32 +140,36 @@
     {
         NSMutableDictionary *attrs = [[self attributesAtIndex:index effectiveRange:&attrRange] mutableCopy];
 		CTFontRef currentFont = (CTFontRef)[attrs objectForKey:(id)kCTFontAttributeName];
-		DTCoreTextFontDescriptor *desc = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
 		
-		// need to replace name with family
-		CFStringRef family = CTFontCopyFamilyName(currentFont);
-		desc.fontFamily = (NSString *)family;
-		CFRelease(family);
-		
-		desc.fontName = nil;
-		
-		desc.boldTrait = !typingFontDescriptor.boldTrait;
-		CTFontRef newFont = [desc newMatchingFont];
-		[attrs setObject:(id)newFont forKey:(id)kCTFontAttributeName];
-		CFRelease(newFont);
-		
-		if (attrRange.location < range.location)
+		if (currentFont)
 		{
-			attrRange.length -= (range.location - attrRange.location);
-			attrRange.location = range.location;
+			DTCoreTextFontDescriptor *desc = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
+			
+			// need to replace name with family
+			CFStringRef family = CTFontCopyFamilyName(currentFont);
+			desc.fontFamily = (NSString *)family;
+			CFRelease(family);
+			
+			desc.fontName = nil;
+			
+			desc.boldTrait = !typingFontDescriptor.boldTrait;
+			CTFontRef newFont = [desc newMatchingFont];
+			[attrs setObject:(id)newFont forKey:(id)kCTFontAttributeName];
+			CFRelease(newFont);
+			
+			if (attrRange.location < range.location)
+			{
+				attrRange.length -= (range.location - attrRange.location);
+				attrRange.location = range.location;
+			}
+			
+			if (NSMaxRange(attrRange)>NSMaxRange(range))
+			{
+				attrRange.length = NSMaxRange(range) - attrRange.location;
+			}
+			
+			[self setAttributes:attrs range:attrRange];
 		}
-		
-		if (NSMaxRange(attrRange)>NSMaxRange(range))
-		{
-			attrRange.length = NSMaxRange(range) - attrRange.location;
-		}
-		
-		[self setAttributes:attrs range:attrRange];
 		
         index += attrRange.length;
     }
@@ -194,32 +198,36 @@
     {
         NSMutableDictionary *attrs = [[self attributesAtIndex:index effectiveRange:&attrRange] mutableCopy];
 		CTFontRef currentFont = (CTFontRef)[attrs objectForKey:(id)kCTFontAttributeName];
-		DTCoreTextFontDescriptor *desc = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
 		
-		// need to replace name with family
-		CFStringRef family = CTFontCopyFamilyName(currentFont);
-		desc.fontFamily = (NSString *)family;
-		CFRelease(family);
-		
-		desc.fontName = nil;
-		
-		desc.italicTrait = !typingFontDescriptor.italicTrait;
-		CTFontRef newFont = [desc newMatchingFont];
-		[attrs setObject:(id)newFont forKey:(id)kCTFontAttributeName];
-		CFRelease(newFont);
-		
-		if (attrRange.location < range.location)
+		if (currentFont)
 		{
-			attrRange.length -= (range.location - attrRange.location);
-			attrRange.location = range.location;
+			DTCoreTextFontDescriptor *desc = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
+			
+			// need to replace name with family
+			CFStringRef family = CTFontCopyFamilyName(currentFont);
+			desc.fontFamily = (NSString *)family;
+			CFRelease(family);
+			
+			desc.fontName = nil;
+			
+			desc.italicTrait = !typingFontDescriptor.italicTrait;
+			CTFontRef newFont = [desc newMatchingFont];
+			[attrs setObject:(id)newFont forKey:(id)kCTFontAttributeName];
+			CFRelease(newFont);
+			
+			if (attrRange.location < range.location)
+			{
+				attrRange.length -= (range.location - attrRange.location);
+				attrRange.location = range.location;
+			}
+			
+			if (NSMaxRange(attrRange)>NSMaxRange(range))
+			{
+				attrRange.length = NSMaxRange(range) - attrRange.location;
+			}
+			
+			[self setAttributes:attrs range:attrRange];
 		}
-		
-		if (NSMaxRange(attrRange)>NSMaxRange(range))
-		{
-			attrRange.length = NSMaxRange(range) - attrRange.location;
-		}
-		
-		[self setAttributes:attrs range:attrRange];
 		
         index += attrRange.length;
     }

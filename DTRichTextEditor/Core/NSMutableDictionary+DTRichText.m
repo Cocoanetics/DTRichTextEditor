@@ -14,6 +14,12 @@
 - (void)toggleBold
 {
 	CTFontRef currentFont = (CTFontRef)[self objectForKey:(id)kCTFontAttributeName];
+	
+	if (!currentFont)
+	{
+		return;
+	}
+	
 	DTCoreTextFontDescriptor *desc = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
 	
 	// need to replace name with family
@@ -33,6 +39,12 @@
 - (void)toggleItalic
 {
 	CTFontRef currentFont = (CTFontRef)[self objectForKey:(id)kCTFontAttributeName];
+	
+	if (!currentFont)
+	{
+		return;
+	}
+	
 	DTCoreTextFontDescriptor *desc = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
 	
 	// need to replace name with family

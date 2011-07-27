@@ -59,6 +59,7 @@ typedef enum
 	DTDragMode _dragMode;
 	BOOL _shouldReshowContextMenuAfterHide;
 	BOOL _shouldShowContextMenuAfterLoupeHide;
+	BOOL _canInteractWithPasteboard;
 	
 	CGPoint _dragCursorStartMidPoint;
 	CGPoint _touchDownPoint;
@@ -99,6 +100,8 @@ typedef enum
 - (void)replaceRange:(UITextRange *)range withText:(id)text;
 
 - (void)scrollCursorVisibleAnimated:(BOOL)animated;
+
+@property (nonatomic, assign) BOOL canInteractWithPasteboard;
 
 @end
 

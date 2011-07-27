@@ -895,6 +895,10 @@
 		return NO;
 	}
 	
+	if (!_canInteractWithPasteboard)
+	{
+		return NO;
+	}
 	
 	if (action == @selector(paste:))
 	{
@@ -1738,7 +1742,7 @@
 @synthesize cursor = _cursor;
 @synthesize selectionView = _selectionView;
 @synthesize overrideInsertionAttributes = _overrideInsertionAttributes;
-
+@synthesize canInteractWithPasteboard = _canInteractWithPasteboard;
 
 
 @end
