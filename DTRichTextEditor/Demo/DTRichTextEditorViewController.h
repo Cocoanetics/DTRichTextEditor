@@ -15,6 +15,8 @@
 	IBOutlet DTRichTextEditorView *richEditor;
 	
 	UITextRange *lastSelection;
+	
+	BOOL isDirty;
 }
 
 @end

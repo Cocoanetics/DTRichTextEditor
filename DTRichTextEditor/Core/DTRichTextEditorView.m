@@ -29,6 +29,10 @@
 #import "UIView+DT.h"
 #import "DTCoreTextFontDescriptor.h"
 
+
+NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextEditorTextDidBeginEditingNotification";
+
+
 @interface DTRichTextEditorView ()
 
 @property (nonatomic, retain) NSMutableAttributedString *internalAttributedText;
@@ -52,8 +56,6 @@
 #pragma mark Initialization
 - (void)setDefaults
 {
-	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
-	
 	_canInteractWithPasteboard = YES;
 	
 	// --- text input
@@ -1203,8 +1205,9 @@
 	
 	[self updateCursor];
 	[self scrollCursorVisibleAnimated:YES];
-	
-	NSLog(@"---%@---", [self.attributedString string]);
+
+	// send change notification
+	[[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidBeginEditingNotification object:self userInfo:nil];
 }
 
 #pragma mark Working with Marked and Selected Text 
@@ -1814,6 +1817,9 @@
 	
 	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:1]];
 	[self updateCursor];
+	
+	// send change notification
+	[[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidBeginEditingNotification object:self userInfo:nil];
 }
 
 - (void)toggleBoldInRange:(UITextRange *)range
@@ -1896,7 +1902,6 @@
 - (BOOL)pasteboardHasSuitableContentForPaste
 {
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	NSLog(@"%@", pasteboard.items);
 	
 	if ([pasteboard containsPasteboardTypes:UIPasteboardTypeListString])
 	{

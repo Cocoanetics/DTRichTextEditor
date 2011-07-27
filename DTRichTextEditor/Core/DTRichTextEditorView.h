@@ -12,6 +12,9 @@
 #import "DTAttributedTextContentView.h"
 #import "NSAttributedString+DTRichText.h"
 
+
+extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
+
 @class DTTextRange, DTTextPosition;
 @class DTCursorView;
 @class DTLoupeView;
