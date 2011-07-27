@@ -10,6 +10,7 @@
 
 #import "DTAttributedTextContentView.h"
 #import "NSString+HTML.h"
+#import "DTHTMLElement.h"
 #import "DTCoreTextLayoutFrame+DTRichText.h"
 #import "NSMutableAttributedString+DTRichText.h"
 #import "NSDictionary+DTRichText.h"
@@ -39,6 +40,8 @@
 
 @property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
 
+- (void) setDefaultText;
+
 @end
 
 
@@ -49,7 +52,9 @@
 #pragma mark Initialization
 - (void)setDefaults
 {
-	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+	
+	_canInteractWithPasteboard = YES;
 	
 	// --- text input
     self.autocapitalizationType = UITextAutocapitalizationTypeSentences;
@@ -65,6 +70,7 @@
 	// --- look
     self.backgroundColor = [UIColor whiteColor];
 	self.contentView.backgroundColor = [UIColor whiteColor];
+	self.contentView.edgeInsets = UIEdgeInsetsMake(20, 10, 10, 10);
 	self.editable = YES;
     self.selectionAffinity = UITextStorageDirectionForward;
 	self.userInteractionEnabled = YES; 	// for autocorrection candidate view
@@ -142,6 +148,9 @@
 	[longPressGesture release];
 	[panGesture release];
 	
+	[_defaultFontFamily release];
+	[_baseURL release];
+	
 	[super dealloc];
 }
 
@@ -168,12 +177,24 @@
 
 - (void)layoutSubviews
 {
+	if (!_internalAttributedText)
+	{
+		[self setDefaultText];
+	}
+	
 	[super layoutSubviews];
 	
 	if (self.isDragging && [_loupe isShowing] && _loupe.style == DTLoupeStyleCircle)
 	{
 		_loupe.seeThroughMode = YES;
 	}
+}
+
+- (void)setDefaultText
+{
+	// default needs to be just a \n, the style attributes of that are used for
+	// all subsequent insertions
+	[self setHTMLString:@"<p></p>"];
 }
 
 #pragma mark Menu
@@ -953,6 +974,8 @@
 	
 	[pasteboard setString:string];
 	
+	NSLog(@"%@", pasteboard.items);
+	
 //	NSAttributedString *attributedString = [self.internalAttributedText attributedSubstringFromRange:[_selectedTextRange NSRangeValue]];
 //	
 //	
@@ -1160,20 +1183,6 @@
 	
 	if ([text isKindOfClass:[NSString class]])
 	{
-		if ([typingAttributes objectForKey:@"DTTextAttachment"])
-		{
-			// has an attachment, we need a new dictionary
-			
-			NSMutableDictionary *tmpDict = [typingAttributes mutableCopy];
-			[tmpDict removeAttachment];
-			text = [[[NSAttributedString alloc] initWithString:text attributes:tmpDict] autorelease];
-			
-			[tmpDict release];
-		}
-	}
-	
-	if ([text isKindOfClass:[NSString class]])
-	{
 		// need to replace attributes with typing attributes
 		text = [[[NSAttributedString alloc] initWithString:text attributes:typingAttributes] autorelease];
 		
@@ -1192,27 +1201,10 @@
 	
 	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:[text length]]];
 	
-	
-	
-	//	if (_internalAttributedText)
-	//	{
-	//		[_internalAttributedText replaceCharactersInRange:myRange withString:text];
-	//		self.attributedString = _internalAttributedText;
-	//		
-	//		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:[text length]]];
-	//		//[self setSelectedTextRange:range];
-	//	}
-	//	else 
-	//	{
-	//		_internalAttributedText = [[NSMutableAttributedString alloc] initWithString:text];
-	//		self.attributedString = _internalAttributedText;
-	//		
-	//		// makes passed range a zombie!
-	//		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:(id)[self beginningOfDocument] offset:[text length]]];
-	//	}
-	
 	[self updateCursor];
 	[self scrollCursorVisibleAnimated:YES];
+	
+	NSLog(@"---%@---", [self.attributedString string]);
 }
 
 #pragma mark Working with Marked and Selected Text 
@@ -1334,8 +1326,12 @@
 }
 
 @synthesize selectionAffinity = _selectionAffinity;
-@synthesize maxImageDisplaySize = _maxImageDisplaySize;
 
+// overrides
+@synthesize maxImageDisplaySize = _maxImageDisplaySize;
+@synthesize defaultFontFamily = _defaultFontFamily;
+@synthesize baseURL = _baseURL;
+@synthesize textSizeMultiplier = _textSizeMultiplier;
 
 
 #pragma mark Computing Text Ranges and Text Positions
@@ -1636,7 +1632,6 @@
 	
 	_internalAttributedText = [newAttributedText retain];
 	
-	self.contentView.edgeInsets = UIEdgeInsetsMake(20, 10, 10, 10);
 	self.attributedString = _internalAttributedText;
 	[self.contentView relayoutText];
 	
@@ -1935,8 +1930,45 @@
 	tmpString = [tmpString stringByReplacingOccurrencesOfString:UNICODE_OBJECT_PLACEHOLDER withString:@""];
 	
 	return tmpString;
+};
+
+
+- (void)setHTMLString:(NSString *)string
+{
+	NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+	
+	NSAttributedString *attributedString = [[[NSAttributedString alloc] initWithHTML:data options:[self textDefaults] documentAttributes:NULL] autorelease];
+	
+	[self setAttributedText:attributedString];
 }
 
-;
+
+// pack the properties into a dictionary
+- (NSDictionary *)textDefaults
+{
+	NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
+	
+	if (!CGSizeEqualToSize(_maxImageDisplaySize, CGSizeZero))
+	{
+		[tmpDict setObject:[NSValue valueWithCGSize:_maxImageDisplaySize] forKey:DTMaxImageSize];
+	}
+	
+	if (_baseURL)
+	{
+		[tmpDict setObject:_baseURL forKey:NSBaseURLDocumentOption];
+	}
+	
+	if (_textSizeMultiplier)
+	{
+		[tmpDict setObject:[NSNumber numberWithFloat:_textSizeMultiplier] forKey:NSTextSizeMultiplierDocumentOption];
+	}
+	
+	if (_defaultFontFamily)
+	{
+		[tmpDict setObject:_defaultFontFamily forKey:DTDefaultFontFamily];
+	}
+	
+	return tmpDict;
+}
 
 @end

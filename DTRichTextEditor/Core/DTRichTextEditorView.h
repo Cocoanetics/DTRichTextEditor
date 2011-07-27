@@ -69,7 +69,11 @@ typedef enum
 	UILongPressGestureRecognizer *longPressGesture;
 	UIPanGestureRecognizer *panGesture;
 	
+	// overrides
 	CGSize _maxImageDisplaySize;
+	NSString *_defaultFontFamily;
+	NSURL *_baseURL;
+	CGFloat _textSizeMultiplier;
 }
 
 
@@ -82,6 +86,9 @@ typedef enum
 @property (nonatomic) UITextStorageDirection selectionAffinity;
 
 @property (nonatomic, assign) CGSize maxImageDisplaySize;
+@property (nonatomic, copy) NSString *defaultFontFamily;
+@property (nonatomic, copy) NSURL *baseURL;
+@property (nonatomic, assign) CGFloat textSizeMultiplier;
 
 
 @property (nonatomic, retain) DTCursorView *cursor;
@@ -121,5 +128,8 @@ typedef enum
 
 - (BOOL)pasteboardHasSuitableContentForPaste;
 - (NSString *)plainTextForRange:(UITextRange *)range;
+
+- (NSDictionary *)textDefaults;
+- (void)setHTMLString:(NSString *)string;
 
 @end

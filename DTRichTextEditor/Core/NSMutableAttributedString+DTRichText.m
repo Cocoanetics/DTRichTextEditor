@@ -42,7 +42,18 @@
 		return nil;
 	}
 	
-	return [self attributesAtIndex:index effectiveRange:NULL];
+	NSDictionary *attributes = [self attributesAtIndex:index effectiveRange:NULL];
+	
+	if ([attributes hasAttachment])
+	{
+		// make copy without attachment
+		NSMutableDictionary *tmpDict = [attributes mutableCopy];
+		[tmpDict removeAttachment];
+	
+		return [tmpDict autorelease];
+	}
+	
+	return attributes;
 }
 
 - (void)replaceRange:(NSRange)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph

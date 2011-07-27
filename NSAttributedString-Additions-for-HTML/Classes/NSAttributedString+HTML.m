@@ -328,7 +328,10 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 						{
 							// file in app bundle
 							NSString *path = [[NSBundle mainBundle] pathForResource:src ofType:nil];
-							imageURL = [NSURL fileURLWithPath:path];
+                            if (path) {
+                                // Prevent a crash if path turns up nil.
+                                imageURL = [NSURL fileURLWithPath:path];   
+                            }
 						}
 					}
 					
@@ -641,7 +644,7 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 					currentTag.fontDescriptor.pointSize *= 0.83;
 				}
 			}
-			else if ([tagName isEqualToString:@"pre"])
+			else if ([tagName isEqualToString:@"pre"] || [tagName isEqualToString:@"code"])
 			{
 				if (tagOpen)
 				{
@@ -848,7 +851,15 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 				// block items have to have a NL at the end.
 				if (![currentTag isInline] && ![currentTag isMeta] && ![[tmpString string] hasSuffix:@"\n"] && ![[tmpString string] hasSuffix:UNICODE_OBJECT_PLACEHOLDER])
 				{
-					[tmpString appendString:@"\n"];  // extends attributed area at end
+					if ([tmpString length])
+					{
+						[tmpString appendString:@"\n"];  // extends attributed area at end
+					}
+					else
+					{
+						currentTag.text = @"\n";
+						[tmpString appendAttributedString:[currentTag attributedString]];
+					}
 				}
 				
 				// check if this tag is indeed closing the currently open one

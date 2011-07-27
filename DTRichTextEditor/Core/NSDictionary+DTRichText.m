@@ -46,4 +46,9 @@
 	return [[self objectForKey:(id)kCTUnderlineStyleAttributeName] integerValue]!=kCTUnderlineStyleNone;
 }
 
+- (BOOL)hasAttachment
+{
+	return [self objectForKey:@"DTTextAttachment"]!=nil;
+}
+
 @end

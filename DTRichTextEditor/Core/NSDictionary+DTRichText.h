@@ -14,4 +14,6 @@
 - (BOOL)isItalic;
 - (BOOL)isUnderline;
 
+- (BOOL)hasAttachment;
+
 @end
