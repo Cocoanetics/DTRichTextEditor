@@ -56,7 +56,7 @@
 	
 	NSString *html = @"<p style=\"font-size:40;\"><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	
-	//[richEditor setHTMLString:html];
+	[richEditor setHTMLString:html];
 	
 	
 	UIBarButtonItem *photo = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];

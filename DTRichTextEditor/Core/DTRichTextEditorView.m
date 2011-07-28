@@ -44,7 +44,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 @property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
 
-- (void) setDefaultText;
+- (void)setDefaultText;
+- (void)showContextMenuFromSelection;
+- (void)hideContextMenu;
 
 @end
 
@@ -163,20 +165,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
     [self setDefaults];
 }
 
-//- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-//{
-//	UIView *hitView = [super hitTest:point withEvent:event];
-//	//	UIView *hitView = [self.contentView hitTest:point withEvent:event];
-//	
-//	//	if (!hitView)
-//	//	{
-//	//		hitView = [super hitTest:point withEvent:event];
-//	//	}
-//	
-//	// need to skip self hitTest or else we get an endless hitTest loop
-//	return hitView;
-//}
-
 - (void)layoutSubviews
 {
 	if (!_internalAttributedText)
@@ -186,9 +174,24 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	[super layoutSubviews];
 	
-	if (self.isDragging && [_loupe isShowing] && _loupe.style == DTLoupeStyleCircle)
+	if (self.isDragging || self.decelerating)
 	{
-		_loupe.seeThroughMode = YES;
+		if ([_loupe isShowing] && _loupe.style == DTLoupeStyleCircle)
+		{
+			_loupe.seeThroughMode = YES;
+		}
+		
+		if ([[UIMenuController sharedMenuController] isMenuVisible])
+		{
+			_shouldShowContextMenuAfterMovementEnded = YES;
+			
+			[self hideContextMenu];
+		}
+		
+		SEL selector = @selector(movementDidEnd);
+		
+		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
+		[self performSelector:selector withObject:nil afterDelay:0.5];
 	}
 }
 
@@ -209,6 +212,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		[menuController setMenuVisible:NO animated:YES];
 	}
+	
+	_contextMenuVisible = NO;
 }
 
 - (void)showContextMenuFromSelection
@@ -239,6 +244,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[menuController setMenuVisible:YES animated:YES];
 	
 	[resetMenuItem release];
+	
+	_contextMenuVisible = YES;
 }
 
 - (void)menuDidHide:(NSNotification *)notification
@@ -258,6 +265,15 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		_shouldShowContextMenuAfterLoupeHide = NO;
 		
 		[self performSelector:@selector(showContextMenuFromSelection) withObject:nil afterDelay:0.10];
+	}
+}
+
+- (void)movementDidEnd
+{
+	if (_shouldShowContextMenuAfterMovementEnded || _contextMenuVisible)
+	{
+		_shouldShowContextMenuAfterMovementEnded = NO;
+		[self showContextMenuFromSelection];
 	}
 }
 
@@ -323,9 +339,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		return;
 	}
 	
-	
-	
-	
 	// single cursor
 	if ([_selectedTextRange isEmpty])
 	{
@@ -348,7 +361,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_selectedTextRange NSRangeValue]];
 		_selectionView.selectionRectangles = rects;
 		
-		if (self.editable)
+		if (self.editable && !_markedTextRange)
 		{
 			_selectionView.dragHandlesVisible = YES;
 		}
@@ -385,8 +398,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 }
 
 
-- (void)moveCursorToPositionClosestToLocation:(CGPoint)location
+- (BOOL)moveCursorToPositionClosestToLocation:(CGPoint)location
 {
+	BOOL didMove = NO;
+	
 	[self.inputDelegate selectionWillChange:self];
 	
 	DTTextRange *constrainingRange = nil;
@@ -402,9 +417,17 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	DTTextPosition *position = (id)[self closestPositionToPoint:location withinRange:constrainingRange];
 	
+	if (![(DTTextPosition *)_selectedTextRange.start isEqual:position] && ![(DTTextPosition *)_selectedTextRange.end isEqual:position])
+	{
+		// tap on same position
+		didMove = YES;
+	}
+	
 	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:position offset:0]];
 	
 	[self.inputDelegate selectionDidChange:self];
+	
+	return didMove;
 }
 
 
@@ -429,7 +452,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 	else
 	{
-		_dragMode = DTDragModeCursor;
+		if (_markedTextRange)
+		{
+			_dragMode = DTDragModeCursorInsideMarking;
+		}
+		else
+		{
+			_dragMode = DTDragModeCursor;
+		}
 	}
 	
 	if (_dragMode == DTDragModeLeftHandle)
@@ -439,12 +469,12 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		loupeStartPoint = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
 		
 		_dragCursorStartMidPoint = CGRectCenter(rect);
-
+		
 		self.loupe.style = DTLoupeStyleRectangleWithArrow;
 		self.loupe.magnification = 0.5;
 		self.loupe.touchPoint = loupeStartPoint;
 		[self.loupe presentLoupeFromLocation:loupeStartPoint];
-
+		
 		return;
 	}
 	
@@ -462,12 +492,25 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		self.loupe.touchPoint = loupeStartPoint;
 		self.loupe.touchPointOffset = CGPointMake(0, rect.origin.y - _dragCursorStartMidPoint.y);
 		[self.loupe presentLoupeFromLocation:loupeStartPoint];
-
+		
 		return;
 	}
-
+	
+	if (_dragMode == DTDragModeCursorInsideMarking)
+	{
+		
+		self.loupe.style = DTLoupeStyleRectangleWithArrow;
+		self.loupe.magnification = 0.5;
+		
+		CGPoint loupeStartPoint = CGRectCenter(_cursor.frame);
+		
+		self.loupe.touchPoint = loupeStartPoint;
+		[self.loupe presentLoupeFromLocation:loupeStartPoint];
+		
+		return;
+	}
+	
 	// normal round loupe
-
 	self.loupe.style = DTLoupeStyleCircle;
 	self.loupe.magnification = 1.2;
 	
@@ -506,6 +549,20 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		}
 		return;
 	}
+	
+	if (_dragMode == DTDragModeCursorInsideMarking)
+	{
+		[self moveCursorToPositionClosestToLocation:touchPoint];
+		
+		_loupe.touchPoint = CGRectCenter(_cursor.frame);
+		_loupe.seeThroughMode = NO;
+		
+		[self hideContextMenu];
+		
+		return;
+	}
+	
+	
 	
 	CGPoint translation = touchPoint;
 	translation.x -= _touchDownPoint.x;
@@ -563,7 +620,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (void)dismissLoupeWithTouchPoint:(CGPoint)touchPoint
 {
-	if (_dragMode == DTDragModeCursor)
+	if (_dragMode == DTDragModeCursor || _dragMode == DTDragModeCursorInsideMarking)
 	{
 		if (self.editable)
 		{
@@ -595,7 +652,18 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	_dragMode = DTDragModeNone;	
 }
 
-
+- (void)removeMarkedTextCandidateView
+{
+	// remove invisible marking candidate view to avoid touch handling problems
+	// prevents "Warning: phrase boundary gesture handler is somehow installed when there is no marked text"
+	for (UIView *oneView in self.subviews)
+	{
+		if (![oneView isKindOfClass:[UIImageView class]] && oneView != contentView)
+		{
+			[oneView removeFromSuperview];
+		}
+	}
+}
 
 #pragma mark Notifications
 
@@ -650,13 +718,26 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		if (self.editable)
 		{
 			CGPoint touchPoint = [gesture locationInView:self.contentView];
-			[self moveCursorToPositionClosestToLocation:touchPoint];
+			
+			if (!_markedTextRange)
+			{
+				if ([self moveCursorToPositionClosestToLocation:touchPoint])
+				{
+					// did move
+					[self hideContextMenu];
+				}
+				else
+				{
+					// was same position as before
+					[self showContextMenuFromSelection];
+				}
+			}
+			[self unmarkText];
 		}
-		
-		
-		[self unmarkText];
-		
-		[self hideContextMenu];
+		else
+		{
+			[self hideContextMenu];
+		}
 	}
 }
 
@@ -695,19 +776,22 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		case UIGestureRecognizerStateChanged:
 		{
 			[self moveLoupeWithTouchPoint:touchPoint];
-
+			
 			break;
 		}
 			
 		case UIGestureRecognizerStateEnded:
 		{
-			_shouldShowContextMenuAfterLoupeHide = YES;
+			if (_dragMode != DTDragModeCursorInsideMarking)
+			{
+				_shouldShowContextMenuAfterLoupeHide = YES;
+			}
 		}
 			
 		case UIGestureRecognizerStateCancelled:
 		{
 			[self dismissLoupeWithTouchPoint:touchPoint];
-
+			
 			break;
 		}
 			
@@ -728,6 +812,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		{
 			[self presentLoupeWithTouchPoint:touchPoint];
 			
+			[self hideContextMenu];
+			
 			break;
 		}
 			
@@ -740,6 +826,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 			
 		case UIGestureRecognizerStateEnded:
 		{
+			_shouldShowContextMenuAfterLoupeHide = YES;
 			[self dismissLoupeWithTouchPoint:touchPoint];
 		}
 			
@@ -773,9 +860,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 //
 //	return YES;		
 //	
-//}
-
-//- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+//}//- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 //{
 //	if (gestureRecognizer == longPressGesture)
 //	{
@@ -804,31 +889,30 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 //	
 //	return YES;
 //}
+//}
 
-//
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-	//CGPoint touchPoint = [touch locationInView:self];	
+	CGPoint touchPoint = [touch locationInView:self];	
 	
 	if (gestureRecognizer == longPressGesture)
 	{
-//		if (![_selectionView dragHandlesVisible])
-//		{
-//			return YES;
-//		}
+		//		if (![_selectionView dragHandlesVisible])
+		//		{
+		//			return YES;
+		//		}
 		
 		//NSLog(@"%@ contains %@", NSStringFromCGRect(_selectionView.dragHandleLeft.frame), NSStringFromCGPoint(touchPoint));
 		
 		// selection and contentView have same coordinate system
-//		if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
-//		{
-//			return NO;
-//		}
-//		else if (CGRectContainsPoint(_selectionView.dragHandleRight.frame, touchPoint))
-//		{
-//			return NO;
-//		}
+		//		if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
+		//		{
+		//			return NO;
+		//		}
+		//		else if (CGRectContainsPoint(_selectionView.dragHandleRight.frame, touchPoint))
+		//		{
+		//			return NO;
+		//		}
 	}
 	
 	if (gestureRecognizer == panGesture)
@@ -837,11 +921,31 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		{
 			return NO;
 		}
+		
+		if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
+		{
+			_dragMode = DTDragModeLeftHandle;
+		}
+		else if (CGRectContainsPoint(_selectionView.dragHandleRight.frame, touchPoint))
+		{
+			_dragMode = DTDragModeRightHandle;
+		}
+		
+		
+		if (_dragMode == DTDragModeLeftHandle || _dragMode == DTDragModeRightHandle)
+		{
+			return YES;
+		}
+		else
+		{
+			return NO;
+		}
 	}
 	
 	//NSLog(@"YES");
 	return YES;
 }
+
 
 
 //- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
@@ -938,7 +1042,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		return YES;
 	}
-
+	
 	if (action == @selector(copy:))
 	{
 		return YES;
@@ -978,18 +1082,18 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	NSLog(@"%@", pasteboard.items);
 	
-//	NSAttributedString *attributedString = [self.internalAttributedText attributedSubstringFromRange:[_selectedTextRange NSRangeValue]];
-//	
-//	
-//	NSMutableData *theData = [NSMutableData data];
-//	NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:theData];
-//	
-//	[encoder encodeObject:attributedString forKey:@"attributedString"];
-//	[encoder finishEncoding];
-//	
-//	NSLog(@"%@", theData);
-//	
-//	[encoder release];
+	//	NSAttributedString *attributedString = [self.internalAttributedText attributedSubstringFromRange:[_selectedTextRange NSRangeValue]];
+	//	
+	//	
+	//	NSMutableData *theData = [NSMutableData data];
+	//	NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:theData];
+	//	
+	//	[encoder encodeObject:attributedString forKey:@"attributedString"];
+	//	[encoder finishEncoding];
+	//	
+	//	NSLog(@"%@", theData);
+	//	
+	//	[encoder release];
 }
 
 - (void)paste:(id)sender
@@ -1003,14 +1107,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	UIImage *image = [pasteboard image];
 	
-//	if (image)
-//	{
-//		NSAttributedString *tmpString = [NSAttributedString attributedStringWithImage:image maxDisplaySize:_maxImageDisplaySize];
-//		[self replaceRange:_selectedTextRange withText:tmpString];
-//
-//		return;
-//	}
-
+	//	if (image)
+	//	{
+	//		NSAttributedString *tmpString = [NSAttributedString attributedStringWithImage:image maxDisplaySize:_maxImageDisplaySize];
+	//		[self replaceRange:_selectedTextRange withText:tmpString];
+	//
+	//		return;
+	//	}
+	
 	if (image)
 	{
 		DTTextAttachment *attachment = [[DTTextAttachment alloc] init];
@@ -1035,7 +1139,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		return;
 	}
-
+	
 	NSURL *url = [pasteboard URL];
 	
 	if (url)
@@ -1175,7 +1279,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		// text could be nil, but that's not valid for replaceCharactersInRange
 		text = @"";
 	}
-
+	
 	NSDictionary *typingAttributes = self.overrideInsertionAttributes;
 	
 	if (!typingAttributes)
@@ -1205,7 +1309,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	[self updateCursor];
 	[self scrollCursorVisibleAnimated:YES];
-
+	
 	// send change notification
 	[[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidBeginEditingNotification object:self userInfo:nil];
 }
@@ -1234,6 +1338,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		_selectedTextRange = [newTextRange copy];
 		
 		[self updateCursor];
+		[self hideContextMenu];
 		
 		self.overrideInsertionAttributes = nil;
 		
@@ -1317,15 +1422,21 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (void)unmarkText
 {
+	if (!_markedTextRange)
+	{
+		return;
+	}
 	[inputDelegate selectionWillChange:self];
-
+	
 	self.markedTextRange = nil;
 	
 	[self updateCursor];
 	
 	// calling selectionDidChange makes the input candidate go away
-
+	
 	[inputDelegate selectionDidChange:self];
+	
+	[self removeMarkedTextCandidateView];
 }
 
 @synthesize selectionAffinity = _selectionAffinity;
@@ -1609,7 +1720,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 #pragma mark Returning the Text Input View
 - (UIView *)textInputView
 {
-	return (id)self.contentView;
+	return (id)self;
 }
 
 // not needed because there is a 1:1 relationship between positions and index in string
@@ -1658,7 +1769,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		_markedTextRange = [markedTextRange copy];
 		
 		[self hideContextMenu];
-
+		
 		[self didChangeValueForKey:@"markedTextRange"];
 	}
 }
@@ -1912,12 +2023,12 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		return YES;
 	}
-
+	
 	if ([pasteboard containsPasteboardTypes:UIPasteboardTypeListURL])
 	{
 		return YES;
 	}
-
+	
 	return NO;
 }
 
@@ -1974,6 +2085,17 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 	
 	return tmpDict;
+}
+
+- (void)setFrame:(CGRect)frame
+{
+	if ([[UIMenuController sharedMenuController] isMenuVisible])
+	{
+		_shouldShowContextMenuAfterMovementEnded = YES;
+		
+	}
+	
+	[super setFrame:frame];
 }
 
 @end

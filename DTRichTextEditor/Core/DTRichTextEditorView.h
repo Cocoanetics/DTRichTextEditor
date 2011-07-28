@@ -11,6 +11,7 @@
 #import "DTAttributedTextView.h"
 #import "DTAttributedTextContentView.h"
 #import "NSAttributedString+DTRichText.h"
+#import "DTSelectionGestureRecognizer.h"
 
 
 extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
@@ -25,7 +26,8 @@ typedef enum
 	DTDragModeNone = 0,
 	DTDragModeLeftHandle,
 	DTDragModeRightHandle,
-	DTDragModeCursor
+	DTDragModeCursor,
+	DTDragModeCursorInsideMarking
 } DTDragMode;
 
 
@@ -62,6 +64,7 @@ typedef enum
 	DTDragMode _dragMode;
 	BOOL _shouldReshowContextMenuAfterHide;
 	BOOL _shouldShowContextMenuAfterLoupeHide;
+	BOOL _shouldShowContextMenuAfterMovementEnded;
 	BOOL _canInteractWithPasteboard;
 	
 	CGPoint _dragCursorStartMidPoint;
@@ -71,6 +74,10 @@ typedef enum
 	UITapGestureRecognizer *tap;
 	UILongPressGestureRecognizer *longPressGesture;
 	UIPanGestureRecognizer *panGesture;
+	
+	DTSelectionGestureRecognizer *selectionGesture;
+	
+	BOOL _contextMenuVisible;
 	
 	// overrides
 	CGSize _maxImageDisplaySize;
