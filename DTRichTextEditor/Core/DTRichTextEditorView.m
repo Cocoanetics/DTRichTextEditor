@@ -183,7 +183,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		if ([[UIMenuController sharedMenuController] isMenuVisible])
 		{
-			_shouldShowContextMenuAfterMovementEnded = YES;
+			if (![_selectedTextRange isEmpty])
+			{
+				_shouldShowContextMenuAfterMovementEnded = YES;
+			}
 			
 			[self hideContextMenu];
 		}
