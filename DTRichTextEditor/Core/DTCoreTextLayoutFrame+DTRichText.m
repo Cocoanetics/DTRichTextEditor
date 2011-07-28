@@ -30,13 +30,15 @@
 	{
 		lastIndexRect = [self frameOfGlyphAtIndex:lastIndex];
 		
-		return CGRectMake(firstIndexRect.origin.x, firstIndexRect.origin.y, lastIndexRect.origin.x - firstIndexRect.origin.x, firstIndexRect.size.height);
+		DTCoreTextLayoutLine *line = [self.lines objectAtIndex:firstIndexLine];
+		
+		return CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, lastIndexRect.origin.x - firstIndexRect.origin.x, line.frame.size.height);
 	}
 	
 	// get until end of line
 	DTCoreTextLayoutLine *line = [self.lines objectAtIndex:firstIndexLine];
 	
-	return CGRectMake(roundf(firstIndexRect.origin.x), roundf(firstIndexRect.origin.y), roundf(line.frame.origin.x + line.frame.size.width - firstIndexRect.origin.x), roundf(firstIndexRect.size.height));
+	return CGRectMake(roundf(firstIndexRect.origin.x), roundf(line.frame.origin.y), roundf(line.frame.origin.x + line.frame.size.width - firstIndexRect.origin.x), roundf(line.frame.size.height));
 }
 
 - (NSArray *)selectionRectsForRange:(NSRange)range
@@ -76,12 +78,12 @@
 		{
 			// in same line
 			CGRect lastIndexRect = [self frameOfGlyphAtIndex:lastIndex];
-			rect =  CGRectMake(firstIndexRect.origin.x, firstIndexRect.origin.y, lastIndexRect.origin.x - firstIndexRect.origin.x, firstIndexRect.size.height);
+			rect =  CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, lastIndexRect.origin.x - firstIndexRect.origin.x, line.frame.size.height);
 		}
 		else 
 		{
 			// ending after this line
-			rect = CGRectMake(firstIndexRect.origin.x, firstIndexRect.origin.y, line.frame.origin.x + line.frame.size.width - firstIndexRect.origin.x, firstIndexRect.size.height);
+			rect = CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, line.frame.origin.x + line.frame.size.width - firstIndexRect.origin.x, line.frame.size.height);
 		}
 
 		[tmpArray addObject:[NSValue valueWithCGRect:rect]];

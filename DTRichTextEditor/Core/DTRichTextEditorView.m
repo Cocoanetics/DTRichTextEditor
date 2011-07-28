@@ -221,6 +221,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (void)showContextMenuFromSelection
 {
+	_contextMenuVisible = YES;
+	
 	CGRect targetRect;
 	
 	if ([_selectedTextRange length])
@@ -230,6 +232,12 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	else
 	{
 		targetRect = self.cursor.frame;
+	}
+	
+	if (![self selectionIsVisible])
+	{
+		// don't show it
+		return;
 	}
 	
 	if (!self.isFirstResponder)
@@ -247,8 +255,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[menuController setMenuVisible:YES animated:YES];
 	
 	[resetMenuItem release];
-	
-	_contextMenuVisible = YES;
 }
 
 - (void)menuDidHide:(NSNotification *)notification
@@ -349,7 +355,11 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		CGRect cursorFrame = [self caretRectForPosition:position];
 		cursorFrame.size.width = 3.0;
+		
+		[CATransaction begin];
+		[CATransaction setDisableActions:YES];
 		self.cursor.frame = cursorFrame;
+		[CATransaction commit];
 		
 		if (!_cursor.superview)
 		{
@@ -411,11 +421,17 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	if ([_markedTextRange length])
 	{
-		constrainingRange = _markedTextRange;
+		if ([self selectionIsVisible])
+		{
+			constrainingRange = _markedTextRange;
+		}
 	}
 	else if ([_selectedTextRange length])
 	{
-		constrainingRange =_selectedTextRange;
+		if ([self selectionIsVisible])
+		{
+			constrainingRange =_selectedTextRange;
+		}
 	}
 	
 	DTTextPosition *position = (id)[self closestPositionToPoint:location withinRange:constrainingRange];
@@ -1608,8 +1624,13 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	NSInteger index = position.location;
 	CGRect caretRect = [self.contentView.layoutFrame frameOfGlyphAtIndex:index];
 	
+	DTCoreTextLayoutLine *layoutLine = [self.contentView.layoutFrame lineContainingIndex:index];
+	
+	caretRect.origin.y = layoutLine.frame.origin.y;
+	caretRect.size.height = layoutLine.frame.size.height;
+	
 	caretRect.origin.x = roundf(caretRect.origin.x);
-	caretRect.origin.y = roundf(caretRect.origin.y);
+//	caretRect.origin.y = roundf(caretRect.origin.y);
 	
 	return caretRect;
 }
@@ -2099,6 +2120,37 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 	
 	[super setFrame:frame];
+}
+
+- (CGRect)visibleContentRect
+{
+	CGRect rect = self.bounds;
+	rect.size.height -= self.contentInset.bottom;
+	
+	return rect;
+}
+
+- (BOOL)selectionIsVisible
+{
+	CGRect visibleContentRect = [self visibleContentRect];
+	
+	CGRect targetRect;
+	
+	if ([_selectedTextRange length])
+	{
+		targetRect = [_selectionView selectionEnvelope];
+	}
+	else
+	{
+		targetRect = self.cursor.frame;
+	}
+	
+	if (!CGRectIntersectsRect(visibleContentRect, targetRect))
+	{
+		return NO;
+	}
+
+	return YES;
 }
 
 @end

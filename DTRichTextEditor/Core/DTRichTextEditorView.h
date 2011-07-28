@@ -142,4 +142,7 @@ typedef enum
 - (NSDictionary *)textDefaults;
 - (void)setHTMLString:(NSString *)string;
 
+- (CGRect)visibleContentRect;
+- (BOOL)selectionIsVisible;
+
 @end
