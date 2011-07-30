@@ -299,7 +299,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	if (!_cursor.superview)
 	{
-		[self addSubview:_cursor];
+		[self.contentView addSubview:_cursor];
 	}
 	
 	UIEdgeInsets reverseInsets = self.contentView.edgeInsets;
@@ -363,7 +363,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		if (!_cursor.superview)
 		{
-			[self addSubview:_cursor];
+			[self.contentView addSubview:_cursor];
 		}
 		
 		[self scrollCursorVisibleAnimated:YES];
@@ -677,7 +677,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// prevents "Warning: phrase boundary gesture handler is somehow installed when there is no marked text"
 	for (UIView *oneView in self.subviews)
 	{
-		if (![oneView isKindOfClass:[UIImageView class]] && oneView != contentView)
+		if (![oneView isKindOfClass:[UIImageView class]] && oneView != contentView && oneView != _cursor)
 		{
 			[oneView removeFromSuperview];
 		}
@@ -914,6 +914,15 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	CGPoint touchPoint = [touch locationInView:self];	
 	
+	// ignore touches on views that UITextInput adds
+	// those are added to self, user custom views are subviews of contentView
+	UIView *hitView = [self hitTest:touchPoint withEvent:nil];
+
+	if (hitView.superview == self && hitView != self.contentView)
+	{
+		return NO;
+	}
+
 	if (gestureRecognizer == longPressGesture)
 	{
 		//		if (![_selectionView dragHandlesVisible])
@@ -934,6 +943,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		//		}
 	}
 	
+
 	if (gestureRecognizer == panGesture)
 	{
 		if (![_selectionView dragHandlesVisible])
@@ -961,7 +971,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		}
 	}
 	
-	//NSLog(@"YES");
 	return YES;
 }
 
@@ -1098,8 +1107,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 	
 	[pasteboard setString:string];
-	
-	NSLog(@"%@", pasteboard.items);
 	
 	//	NSAttributedString *attributedString = [self.internalAttributedText attributedSubstringFromRange:[_selectedTextRange NSRangeValue]];
 	//	
@@ -1445,7 +1452,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		return;
 	}
-	[inputDelegate selectionWillChange:self];
+	[inputDelegate textWillChange:self];
 	
 	self.markedTextRange = nil;
 	
@@ -1453,7 +1460,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	// calling selectionDidChange makes the input candidate go away
 	
-	[inputDelegate selectionDidChange:self];
+	[inputDelegate textDidChange:self];
 	
 	[self removeMarkedTextCandidateView];
 }
