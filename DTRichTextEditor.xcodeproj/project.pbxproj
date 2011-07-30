@@ -77,6 +77,7 @@
 		A7DD238B13C449BC0015C604 /* kb-magnifier-ranged-lo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237A13C449BC0015C604 /* kb-magnifier-ranged-lo@2x.png */; };
 		A7DD238C13C449BC0015C604 /* kb-magnifier-ranged-mask.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237B13C449BC0015C604 /* kb-magnifier-ranged-mask.png */; };
 		A7DD238D13C449BC0015C604 /* kb-magnifier-ranged-mask@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7DD237C13C449BC0015C604 /* kb-magnifier-ranged-mask@2x.png */; };
+		A7DF69D313E3FCC700292700 /* DTCache.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DF69D213E3FCC700292700 /* DTCache.m */; };
 		A7F0C84313C326E900EBD027 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84213C326E900EBD027 /* UIKit.framework */; };
 		A7F0C84513C326E900EBD027 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84413C326E900EBD027 /* Foundation.framework */; };
 		A7F0C84713C326E900EBD027 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84613C326E900EBD027 /* CoreGraphics.framework */; };
@@ -198,6 +199,8 @@
 		A7DD237A13C449BC0015C604 /* kb-magnifier-ranged-lo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-magnifier-ranged-lo@2x.png"; sourceTree = "<group>"; };
 		A7DD237B13C449BC0015C604 /* kb-magnifier-ranged-mask.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-magnifier-ranged-mask.png"; sourceTree = "<group>"; };
 		A7DD237C13C449BC0015C604 /* kb-magnifier-ranged-mask@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "kb-magnifier-ranged-mask@2x.png"; sourceTree = "<group>"; };
+		A7DF69D113E3FCC700292700 /* DTCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTCache.h; path = "../../../../Open Source/NSAttributedString-Additions-for-HTML/Classes/DTCache.h"; sourceTree = "<group>"; };
+		A7DF69D213E3FCC700292700 /* DTCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTCache.m; path = "../../../../Open Source/NSAttributedString-Additions-for-HTML/Classes/DTCache.m"; sourceTree = "<group>"; };
 		A7F0C83E13C326E900EBD027 /* DTRichTextEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DTRichTextEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7F0C84213C326E900EBD027 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		A7F0C84413C326E900EBD027 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -266,6 +269,8 @@
 		A704273B13C37F3800EE0776 /* NSAttributedString-Additions-for-HTML */ = {
 			isa = PBXGroup;
 			children = (
+				A7DF69D113E3FCC700292700 /* DTCache.h */,
+				A7DF69D213E3FCC700292700 /* DTCache.m */,
 				A704276313C37F3800EE0776 /* CGUtils.h */,
 				A704276413C37F3800EE0776 /* CGUtils.m */,
 				A704276513C37F3800EE0776 /* DemoAppDelegate.h */,
@@ -570,6 +575,7 @@
 				A770831013D8860C001CA4AA /* NSMutableDictionary+DTRichText.m in Sources */,
 				A770831413D888BB001CA4AA /* NSDictionary+DTRichText.m in Sources */,
 				A76AB98013E161FF001C4153 /* DTSelectionGestureRecognizer.m in Sources */,
+				A7DF69D313E3FCC700292700 /* DTCache.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
