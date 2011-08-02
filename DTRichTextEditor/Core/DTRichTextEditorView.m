@@ -93,7 +93,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	//	//	doubletap.delegate = self;
 	//	//	[self.contentView addGestureRecognizer:doubletap];
 	
-	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	if (!panGesture)
 	{

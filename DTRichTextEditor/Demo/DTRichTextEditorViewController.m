@@ -49,14 +49,22 @@
 //	NSString *html = [perc stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
 	// defaults
-	richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
-	richEditor.defaultFontFamily = @"Times New Roman";
-	richEditor.textSizeMultiplier = 1.3;
+	//richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
+	richEditor.defaultFontFamily = @"Helvetica";
+	richEditor.textSizeMultiplier = 5;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
 	
-	NSString *html = @"<p style=\"font-size:40;\"><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
+//	NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	
-	[richEditor setHTMLString:html];
+	NSString *html = @"<img src=\"Oliver.jpg\">blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><img src=\"Oliver.jpg\"><br><br>";
+	
+	NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
+	NSAttributedString *attr = [[NSAttributedString alloc] initWithHTML:data options:[richEditor textDefaults] documentAttributes:NULL];
+	richEditor.attributedText = attr;
+
+	
+//	[richEditor setHTMLString:html];
+	richEditor.contentView.shouldDrawImages = YES;
 	
 	
 	UIBarButtonItem *photo = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];

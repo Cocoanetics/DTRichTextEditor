@@ -51,6 +51,7 @@
 		A704282013C37FEE00EE0776 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A704281C13C37FEE00EE0776 /* Icon@2x.png */; };
 		A704282113C37FEE00EE0776 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = A704281D13C37FEE00EE0776 /* MainWindow.xib */; };
 		A713992413C5A2B400722B67 /* DTTextSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = A713992313C5A2B400722B67 /* DTTextSelectionView.m */; };
+		A72060A813E83DD5007483D7 /* Oliver.jpg in Resources */ = {isa = PBXBuildFile; fileRef = A72060A713E83DD5007483D7 /* Oliver.jpg */; };
 		A76AB98013E161FF001C4153 /* DTSelectionGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = A76AB97F13E161FF001C4153 /* DTSelectionGestureRecognizer.m */; };
 		A76F897413C70073007B37C0 /* UIView+DT.m in Sources */ = {isa = PBXBuildFile; fileRef = A76F897313C70073007B37C0 /* UIView+DT.m */; };
 		A76F897F13C72F5B007B37C0 /* 43-film-roll.png in Resources */ = {isa = PBXBuildFile; fileRef = A76F897D13C72F5B007B37C0 /* 43-film-roll.png */; };
@@ -166,6 +167,7 @@
 		A704281D13C37FEE00EE0776 /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		A713992213C5A2B400722B67 /* DTTextSelectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTTextSelectionView.h; sourceTree = SOURCE_ROOT; };
 		A713992313C5A2B400722B67 /* DTTextSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTTextSelectionView.m; sourceTree = SOURCE_ROOT; };
+		A72060A713E83DD5007483D7 /* Oliver.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = Oliver.jpg; path = "NSAttributedString-Additions-for-HTML/Resources/Oliver.jpg"; sourceTree = SOURCE_ROOT; };
 		A76AB97E13E161FF001C4153 /* DTSelectionGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTSelectionGestureRecognizer.h; sourceTree = "<group>"; };
 		A76AB97F13E161FF001C4153 /* DTSelectionGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTSelectionGestureRecognizer.m; sourceTree = "<group>"; };
 		A76F897213C70073007B37C0 /* UIView+DT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+DT.h"; sourceTree = "<group>"; };
@@ -344,6 +346,7 @@
 		A76F897C13C72F40007B37C0 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				A72060A713E83DD5007483D7 /* Oliver.jpg */,
 				A76F897D13C72F5B007B37C0 /* 43-film-roll.png */,
 				A76F897E13C72F5B007B37C0 /* 43-film-roll@2x.png */,
 				A704281B13C37FEE00EE0776 /* Icon.png */,
@@ -521,6 +524,7 @@
 				A7DD238D13C449BC0015C604 /* kb-magnifier-ranged-mask@2x.png in Resources */,
 				A76F897F13C72F5B007B37C0 /* 43-film-roll.png in Resources */,
 				A76F898013C72F5B007B37C0 /* 43-film-roll@2x.png in Resources */,
+				A72060A813E83DD5007483D7 /* Oliver.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
