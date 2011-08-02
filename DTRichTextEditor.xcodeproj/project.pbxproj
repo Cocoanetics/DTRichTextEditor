@@ -239,8 +239,6 @@
 				A704273B13C37F3800EE0776 /* NSAttributedString-Additions-for-HTML */,
 				A713992013C5A27800722B67 /* DTTextSelectionView */,
 				A7DD236A13C449BC0015C604 /* DTLoupeView */,
-				A704271D13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.h */,
-				A704271E13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.m */,
 				A704271F13C37E9900EE0776 /* DTCursorView.h */,
 				A704272013C37E9900EE0776 /* DTCursorView.m */,
 				A704272313C37E9900EE0776 /* DTTextPosition.h */,
@@ -366,6 +364,8 @@
 				A76F898513C735E4007B37C0 /* NSAttributedString+DTRichText.m */,
 				A76F898713C751D5007B37C0 /* NSMutableAttributedString+DTRichText.h */,
 				A76F898813C751D5007B37C0 /* NSMutableAttributedString+DTRichText.m */,
+				A704271D13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.h */,
+				A704271E13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";

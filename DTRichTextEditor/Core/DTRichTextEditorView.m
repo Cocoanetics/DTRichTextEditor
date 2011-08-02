@@ -74,7 +74,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// --- look
     self.backgroundColor = [UIColor whiteColor];
 	self.contentView.backgroundColor = [UIColor whiteColor];
-	self.contentView.edgeInsets = UIEdgeInsetsMake(20, 10, 10, 10);
+	self.contentView.edgeInsets = UIEdgeInsetsMake(50, 50, 10, 10);
 	self.editable = YES;
     self.selectionAffinity = UITextStorageDirectionForward;
 	self.userInteractionEnabled = YES; 	// for autocorrection candidate view
@@ -176,6 +176,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	if (self.isDragging || self.decelerating)
 	{
+		NSLog(@"Move");
 		if ([_loupe isShowing] && _loupe.style == DTLoupeStyleCircle)
 		{
 			_loupe.seeThroughMode = YES;
@@ -1629,7 +1630,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 - (CGRect)caretRectForPosition:(DTTextPosition *)position
 {
 	NSInteger index = position.location;
-	CGRect caretRect = [self.contentView.layoutFrame frameOfGlyphAtIndex:index];
+	CGRect caretRect = [self.contentView.layoutFrame cursorRectAtIndex:index];
 	
 	DTCoreTextLayoutLine *layoutLine = [self.contentView.layoutFrame lineContainingIndex:index];
 	

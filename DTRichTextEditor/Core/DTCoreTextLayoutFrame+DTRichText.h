@@ -23,5 +23,6 @@
 
 - (NSInteger)closestIndexToPoint:(CGPoint)point;
 - (NSInteger)closestCursorIndexToPoint:(CGPoint)point;
+- (CGRect)cursorRectAtIndex:(NSInteger)index;
 
 @end

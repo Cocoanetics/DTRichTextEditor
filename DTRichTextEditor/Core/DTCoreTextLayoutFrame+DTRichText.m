@@ -23,12 +23,12 @@
 	NSInteger lastIndex = range.location + range.length;
 	NSInteger lastIndexLine = [self lineIndexForGlyphIndex:lastIndex];
 	
-	CGRect firstIndexRect = [self frameOfGlyphAtIndex:firstIndex];
+	CGRect firstIndexRect = [self cursorRectAtIndex:firstIndex];
 	CGRect lastIndexRect;
 	
 	if (lastIndexLine==firstIndexLine)
 	{
-		lastIndexRect = [self frameOfGlyphAtIndex:lastIndex];
+		lastIndexRect = [self cursorRectAtIndex:lastIndex];
 		
 		DTCoreTextLayoutLine *line = [self.lines objectAtIndex:firstIndexLine];
 		
@@ -70,14 +70,14 @@
 		
 		NSInteger firstIndexInLine = MIN(MAX(range.location, firstIndex), lastInRange);
 
-		CGRect firstIndexRect = [self frameOfGlyphAtIndex:firstIndexInLine];
+		CGRect firstIndexRect = [self cursorRectAtIndex:firstIndexInLine];
 		
 		CGRect rect;
 		
 		if (lastIndex < lastInRange)
 		{
 			// in same line
-			CGRect lastIndexRect = [self frameOfGlyphAtIndex:lastIndex];
+			CGRect lastIndexRect = [self cursorRectAtIndex:lastIndex];
 			rect =  CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, lastIndexRect.origin.x - firstIndexRect.origin.x, line.frame.size.height);
 		}
 		else 
@@ -104,7 +104,7 @@
 		return -1;
 	}
 	
-	CGRect currentRect = [self frameOfGlyphAtIndex:index];
+	CGRect currentRect = [self cursorRectAtIndex:index];
 	
 	DTCoreTextLayoutLine *line = [self.lines objectAtIndex:newLineIndex];
 	NSRange range = [line stringRange];
@@ -117,7 +117,7 @@
 	{
 		NSInteger testIndex = i + range.location;
 		
-		CGRect rect = [self frameOfGlyphAtIndex:testIndex];
+		CGRect rect = [self cursorRectAtIndex:testIndex];
 		
 		CGFloat horizDistance = fabs(rect.origin.x - currentRect.origin.x);
 		
@@ -147,7 +147,7 @@
 		return -1;
 	}
 	
-	CGRect currentRect = [self frameOfGlyphAtIndex:index];
+	CGRect currentRect = [self cursorRectAtIndex:index];
 	
 	DTCoreTextLayoutLine *line = [self.lines objectAtIndex:newLineIndex];
 	NSRange range = [line stringRange];
@@ -160,7 +160,7 @@
 	{
 		NSInteger testIndex = i + range.location;
 		
-		CGRect rect = [self frameOfGlyphAtIndex:testIndex];
+		CGRect rect = [self cursorRectAtIndex:testIndex];
 		
 		CGFloat horizDistance = fabs(rect.origin.x - currentRect.origin.x);
 		
@@ -193,7 +193,7 @@
 	{
 		NSInteger testIndex = i + range.location;
 		
-		CGRect rect = [self frameOfGlyphAtIndex:testIndex];
+		CGRect rect = [self cursorRectAtIndex:testIndex];
 		rect.size.width = 3.0;
 		
 		CGPoint center = CGPointMake(rect.origin.x + rect.size.width / 2.0, rect.origin.y + rect.size.height / 2.0);
@@ -226,7 +226,7 @@
 	
 	if (![lines count])
 	{
-		return -1;
+		return kCFNotFound;
 	}
 	
 	DTCoreTextLayoutLine *firstLine = [lines objectAtIndex:0];
@@ -277,30 +277,16 @@
 	
 	if (!closestLine)
 	{
-		return -1;
+		return kCFNotFound;
 	}
 	
-	// find the closest index in this line
-	NSInteger closestIndex = -1;
-	NSRange range = [closestLine stringRange];
+	NSInteger closestIndex = [closestLine stringIndexForPosition:point];
 	
-	closestDistance = CGFLOAT_MAX;
+	NSInteger maxIndex = NSMaxRange([closestLine stringRange])-1;
 	
-	for (int i=0; i<range.length; i++)
+	if (closestIndex > maxIndex)
 	{
-		NSInteger testIndex = i + range.location;
-		
-		CGRect rect = [closestLine frameOfGlyphAtIndex:i];
-		rect.size.width = 3.0;
-		CGFloat mid = CGRectGetMidX(rect);
-		
-		CGFloat horizDistance = fabs(point.x - mid);
-		
-		if (horizDistance < closestDistance)
-		{
-			closestDistance = horizDistance;
-			closestIndex = testIndex;
-		}
+		closestIndex = maxIndex;
 	}
 	
 	if (closestIndex>=0)
@@ -308,7 +294,25 @@
 		return closestIndex;
 	}
 	
-	return -1;
+	return kCFNotFound;
+}
+
+- (CGRect)cursorRectAtIndex:(NSInteger)index
+{
+	DTCoreTextLayoutLine *line = [self lineContainingIndex:index];
+	
+	if (!line)
+	{
+		return CGRectZero;
+	}
+	
+	CGFloat offset = [line offsetForStringIndex:index];
+	
+	CGRect rect = line.frame;
+	rect.size.width = 3.0;
+	rect.origin.x += offset;
+	
+	return rect;
 }
 
 @end
