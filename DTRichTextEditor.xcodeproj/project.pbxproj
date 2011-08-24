@@ -52,6 +52,9 @@
 		A704282113C37FEE00EE0776 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = A704281D13C37FEE00EE0776 /* MainWindow.xib */; };
 		A713992413C5A2B400722B67 /* DTTextSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = A713992313C5A2B400722B67 /* DTTextSelectionView.m */; };
 		A72060A813E83DD5007483D7 /* Oliver.jpg in Resources */ = {isa = PBXBuildFile; fileRef = A72060A713E83DD5007483D7 /* Oliver.jpg */; };
+		A74BEFD3140516A5004A9491 /* DTAttributedTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A74BEFCE140516A5004A9491 /* DTAttributedTextCell.m */; };
+		A74BEFD4140516A5004A9491 /* DTCSSListStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = A74BEFD0140516A5004A9491 /* DTCSSListStyle.m */; };
+		A74BEFD5140516A5004A9491 /* DTWebVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = A74BEFD2140516A5004A9491 /* DTWebVideoView.m */; };
 		A76AB98013E161FF001C4153 /* DTSelectionGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = A76AB97F13E161FF001C4153 /* DTSelectionGestureRecognizer.m */; };
 		A76F897413C70073007B37C0 /* UIView+DT.m in Sources */ = {isa = PBXBuildFile; fileRef = A76F897313C70073007B37C0 /* UIView+DT.m */; };
 		A76F897F13C72F5B007B37C0 /* 43-film-roll.png in Resources */ = {isa = PBXBuildFile; fileRef = A76F897D13C72F5B007B37C0 /* 43-film-roll.png */; };
@@ -168,6 +171,12 @@
 		A713992213C5A2B400722B67 /* DTTextSelectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTTextSelectionView.h; sourceTree = SOURCE_ROOT; };
 		A713992313C5A2B400722B67 /* DTTextSelectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTTextSelectionView.m; sourceTree = SOURCE_ROOT; };
 		A72060A713E83DD5007483D7 /* Oliver.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = Oliver.jpg; path = "NSAttributedString-Additions-for-HTML/Resources/Oliver.jpg"; sourceTree = SOURCE_ROOT; };
+		A74BEFCD140516A5004A9491 /* DTAttributedTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTAttributedTextCell.h; sourceTree = "<group>"; };
+		A74BEFCE140516A5004A9491 /* DTAttributedTextCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTAttributedTextCell.m; sourceTree = "<group>"; };
+		A74BEFCF140516A5004A9491 /* DTCSSListStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTCSSListStyle.h; sourceTree = "<group>"; };
+		A74BEFD0140516A5004A9491 /* DTCSSListStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTCSSListStyle.m; sourceTree = "<group>"; };
+		A74BEFD1140516A5004A9491 /* DTWebVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTWebVideoView.h; sourceTree = "<group>"; };
+		A74BEFD2140516A5004A9491 /* DTWebVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTWebVideoView.m; sourceTree = "<group>"; };
 		A76AB97E13E161FF001C4153 /* DTSelectionGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTSelectionGestureRecognizer.h; sourceTree = "<group>"; };
 		A76AB97F13E161FF001C4153 /* DTSelectionGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTSelectionGestureRecognizer.m; sourceTree = "<group>"; };
 		A76F897213C70073007B37C0 /* UIView+DT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+DT.h"; sourceTree = "<group>"; };
@@ -269,6 +278,12 @@
 		A704273B13C37F3800EE0776 /* NSAttributedString-Additions-for-HTML */ = {
 			isa = PBXGroup;
 			children = (
+				A74BEFCD140516A5004A9491 /* DTAttributedTextCell.h */,
+				A74BEFCE140516A5004A9491 /* DTAttributedTextCell.m */,
+				A74BEFCF140516A5004A9491 /* DTCSSListStyle.h */,
+				A74BEFD0140516A5004A9491 /* DTCSSListStyle.m */,
+				A74BEFD1140516A5004A9491 /* DTWebVideoView.h */,
+				A74BEFD2140516A5004A9491 /* DTWebVideoView.m */,
 				A7DF69D113E3FCC700292700 /* DTCache.h */,
 				A7DF69D213E3FCC700292700 /* DTCache.m */,
 				A704276313C37F3800EE0776 /* CGUtils.h */,
@@ -580,6 +595,9 @@
 				A770831413D888BB001CA4AA /* NSDictionary+DTRichText.m in Sources */,
 				A76AB98013E161FF001C4153 /* DTSelectionGestureRecognizer.m in Sources */,
 				A7DF69D313E3FCC700292700 /* DTCache.m in Sources */,
+				A74BEFD3140516A5004A9491 /* DTAttributedTextCell.m in Sources */,
+				A74BEFD4140516A5004A9491 /* DTCSSListStyle.m in Sources */,
+				A74BEFD5140516A5004A9491 /* DTWebVideoView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

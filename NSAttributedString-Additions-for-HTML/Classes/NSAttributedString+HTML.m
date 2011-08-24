@@ -20,6 +20,8 @@
 #import "DTTextAttachment.h"
 
 #import "DTHTMLElement.h"
+#import "DTCSSListStyle.h"
+
 #import "DTCoreTextFontDescriptor.h"
 #import "DTCoreTextParagraphStyle.h"
 
@@ -40,6 +42,9 @@ NSString *DTDefaultLinkColor = @"DTDefaultLinkColor";
 NSString *DTDefaultLinkDecoration = @"DTDefaultLinkDecoration";
 NSString *DTDefaultTextAlignment = @"DTDefaultTextAlignment";
 NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
+NSString *DTDefaultFirstLineHeadIndent = @"DTDefaultFirstLineHeadIndent";
+NSString *DTDefaultHeadIndent = @"DTDefaultHeadIndent";
+
 
 @implementation NSAttributedString (HTML)
 
@@ -71,9 +76,6 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 		CFStringEncoding cfEncoding = CFStringConvertIANACharSetNameToEncoding((CFStringRef)textEncodingName);
 		encoding = CFStringConvertEncodingToNSStringEncoding(cfEncoding);
 	}
-	
-	// custom option to limit image size
-	NSValue *maxImageSizeValue = [options objectForKey:DTMaxImageSize];
 	
 	// custom option to scale text
 	CGFloat textScale = [[options objectForKey:NSTextSizeMultiplierDocumentOption] floatValue];
@@ -168,6 +170,18 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 		defaultParagraphStyle.textAlignment = [defaultTextAlignmentNum integerValue];
 	}
 	
+	NSNumber *defaultFirstLineHeadIndent = [options objectForKey:DTDefaultFirstLineHeadIndent];
+	if (defaultFirstLineHeadIndent)
+	{
+		defaultParagraphStyle.firstLineIndent = [defaultFirstLineHeadIndent integerValue];
+	}
+	
+	NSNumber *defaultHeadIndent = [options objectForKey:DTDefaultHeadIndent];
+	if (defaultHeadIndent)
+	{
+		defaultParagraphStyle.headIndent = [defaultHeadIndent integerValue];
+	}
+
 	DTHTMLElement *defaultTag = [[[DTHTMLElement alloc] init] autorelease];
 	defaultTag.fontDescriptor = defaultFontDescriptor;
 	defaultTag.paragraphStyle = defaultParagraphStyle;
@@ -187,6 +201,7 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 			defaultTag.textColor = [UIColor colorWithHTMLName:defaultColor];
 		}
 	}
+
 	
 	DTHTMLElement *currentTag = defaultTag; // our defaults are the root
 	
@@ -208,7 +223,6 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 		
 		if ([scanner scanHTMLTag:&tagName attributes:&tagAttributesDict isOpen:&tagOpen isClosed:&immediatelyClosed] && tagName)
 		{
-			
 			if ([tagName isMetaTag])
 			{
 				continue;
@@ -221,10 +235,11 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 				currentTag = [[currentTag copy] autorelease];
 				currentTag.tagName = tagName;
 				currentTag.textScale = textScale;
+				currentTag.attributes = tagAttributesDict;
 				[parent addChild:currentTag];
 				
 				// convert CSS Styles into our own style
-				NSString *styleString = [tagAttributesDict objectForKey:@"style"];
+				NSString *styleString = [currentTag attributeForKey:@"style"];
 				
 				if (styleString)
 				{
@@ -239,7 +254,7 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 				
 				
 				// direction
-				NSString *direction = [tagAttributesDict objectForKey:@"dir"];
+				NSString *direction = [currentTag attributeForKey:@"dir"];
 				
 				if (direction)
 				{
@@ -272,125 +287,18 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 					needsNewLineBefore = YES;
 				}
 				
-				NSString *src = [tagAttributesDict objectForKey:@"src"];
+				// hide contents of recognized tag
+				currentTag.tagContentInvisible = YES;
 				
-				NSURL *imageURL = nil;
-				UIImage *decodedImage = nil;
+				// make appropriate attachment
+				DTTextAttachment *attachment = [DTTextAttachment textAttachmentWithElement:currentTag options:options];
 				
-				// get size of width/height if it's not in style
-				CGSize imageSize = currentTag.size;
-				
-				if (!imageSize.width)
-				{
-					imageSize.width = [[tagAttributesDict objectForKey:@"width"] floatValue];
-				}
-				
-				if (!imageSize.height)
-				{
-					imageSize.height = [[tagAttributesDict objectForKey:@"height"] floatValue];
-				}
-				
-				// decode data URL
-				if ([src hasPrefix:@"data:"])
-				{
-					NSRange range = [src rangeOfString:@"base64,"];
-					
-					if (range.length)
-					{
-						NSString *encodedData = [src substringFromIndex:range.location + range.length];
-						NSData *decodedData = [NSData dataFromBase64String:encodedData];
-						
-						decodedImage = [UIImage imageWithData:decodedData];
-						
-						if (!imageSize.width)
-						{
-							imageSize.width = decodedImage.size.width;
-						}
-						
-						if (!imageSize.height)
-						{
-							imageSize.height = decodedImage.size.height;
-						}
-					}
-				}
-				else // normal URL
-				{
-					imageURL = [NSURL URLWithString:src];
-					
-					if (![imageURL scheme])
-					{
-						// possibly a relative url
-						if (baseURL)
-						{
-							imageURL = [NSURL URLWithString:src relativeToURL:baseURL];
-						}
-						else
-						{
-							// file in app bundle
-							NSString *path = [[NSBundle mainBundle] pathForResource:src ofType:nil];
-                            if (path) {
-                                // Prevent a crash if path turns up nil.
-                                imageURL = [NSURL fileURLWithPath:path];   
-                            }
-						}
-					}
-					
-					if (!imageSize.width || !imageSize.height)
-					{
-						// inspect local file
-						if ([imageURL isFileURL])
-						{
-							UIImage *image = [UIImage imageWithContentsOfFile:[imageURL path]];
-							
-							if (!imageSize.width)
-							{
-								imageSize.width = image.size.width;
-							}
-							
-							if (!imageSize.height)
-							{
-								imageSize.height = image.size.height;
-							}
-						}
-						else
-						{
-							// remote image, we have to relayout once this size is known
-							imageSize = CGSizeMake(1, 1); // one pixel so that loading is triggered
-						}
-					}
-				}
-				
-				CGSize adjustedSize = imageSize;
-				
-				// option DTMaxImageSize
-				if (maxImageSizeValue)
-				{
-					CGSize maxImageSize = [maxImageSizeValue CGSizeValue];
-					
-					if (maxImageSize.width < imageSize.width || maxImageSize.height < imageSize.height)
-					{
-						adjustedSize = sizeThatFitsKeepingAspectRatio(imageSize,maxImageSize);
-					}
-				}
-				
-				DTTextAttachment *attachment = [[DTTextAttachment alloc] init];
-				attachment.contentURL = imageURL;
-				attachment.originalSize = imageSize;
-				attachment.displaySize = adjustedSize;
-				attachment.attributes = tagAttributesDict;
-				attachment.contents = decodedImage;
+				// add it to tag
+				currentTag.textAttachment = attachment;
 				
 				// to avoid much too much space before the image
 				currentTag.paragraphStyle.lineHeightMultiple = 1;
-				
-				// we copy the link because we might need for it making the custom view
-				if (currentTag.link)
-				{
-					attachment.hyperLinkURL = currentTag.link;
-				}
-				
-				currentTag.textAttachment = attachment;
-				
+
 				if (needsNewLineBefore)
 				{
 					if ([tmpString length] && ![[tmpString string] hasSuffix:@"\n"])
@@ -401,16 +309,8 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 					needsNewLineBefore = NO;
 				}
 				
-				[tmpString appendAttributedString:[currentTag attributedString]];
-				[attachment release];
-				
-#if ALLOW_IPHONE_SPECIAL_CASES
-				// workaround, make float images blocks because we have no float
-				if (currentTag.floatStyle || attachment.displaySize.height > 2.0 * currentTag.fontDescriptor.pointSize || ![currentTag isContainedInBlockElement])
-				{
-					[tmpString appendString:@"\n" withParagraphStyle:currentTag.paragraphStyle];
-				}
-#endif
+				// add it to output
+				[tmpString appendAttributedString:[currentTag attributedString]];				
 			}
 			else if ([tagName isEqualToString:@"blockquote"] && tagOpen)
 			{
@@ -418,52 +318,21 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 				currentTag.paragraphStyle.firstLineIndent = currentTag.paragraphStyle.headIndent;
 				currentTag.paragraphStyle.paragraphSpacing = defaultFontDescriptor.pointSize;
 			}
-			else if ([tagName isEqualToString:@"video"] && tagOpen)
+			else if (([tagName isEqualToString:@"iframe"] || [tagName isEqualToString:@"video"] || [tagName isEqualToString:@"object"]) && tagOpen)
 			{
 				// hide contents of recognized tag
 				currentTag.tagContentInvisible = YES;
+
+				// make appropriate attachment
+				DTTextAttachment *attachment = [DTTextAttachment textAttachmentWithElement:currentTag options:options];
 				
-				// get size of width/height if it's not in style
-				CGSize imageSize = currentTag.size;
-				
-				if (!imageSize.width)
-				{
-					imageSize.width = [[tagAttributesDict objectForKey:@"width"] floatValue];
-				}
-				
-				if (!imageSize.height)
-				{
-					imageSize.height = [[tagAttributesDict objectForKey:@"height"] floatValue];
-				}
-				
-				// if we still have no size then we use standard size
-				if (!imageSize.width || !imageSize.height)
-				{
-					imageSize = CGSizeMake(300, 225);
-				}
-				
-				// option DTMaxImageSize
-				if (maxImageSizeValue)
-				{
-					CGSize maxImageSize = [maxImageSizeValue CGSizeValue];
-					
-					if (maxImageSize.width < imageSize.width || maxImageSize.height < imageSize.height)
-					{
-						imageSize = sizeThatFitsKeepingAspectRatio(imageSize,maxImageSize);
-					}
-				}
-				
-				DTTextAttachment *attachment = [[[DTTextAttachment alloc] init] autorelease];
-				attachment.contentURL = [NSURL URLWithString:[tagAttributesDict objectForKey:@"src"]];
-				attachment.contentType = DTTextAttachmentTypeVideoURL;
-				attachment.originalSize = imageSize;
-				attachment.attributes = tagAttributesDict;
-				
+				// add it to tag
 				currentTag.textAttachment = attachment;
 				
 				// to avoid much too much space before the image
 				currentTag.paragraphStyle.lineHeightMultiple = 1;
 				
+				// add it to output
 				[tmpString appendAttributedString:[currentTag attributedString]];
 			}
 			else if ([tagName isEqualToString:@"a"])
@@ -482,7 +351,7 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 					}
 					
 					// remove line breaks and whitespace in links
-					NSString *cleanString = [[tagAttributesDict objectForKey:@"href"] stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+					NSString *cleanString = [[currentTag attributeForKey:@"href"] stringByReplacingOccurrencesOfString:@"\n" withString:@""];
 					cleanString = [cleanString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 					
 					NSURL *link = [NSURL URLWithString:cleanString];
@@ -519,7 +388,7 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 					
 					DTHTMLElement *counterElement = currentTag.parent;
 					
-					NSNumber *valueNum = [tagAttributesDict objectForKey:@"value"];
+					NSString *valueNum = [currentTag attributeForKey:@"value"];
 					if (valueNum)
 					{
 						NSInteger value = [valueNum integerValue];
@@ -579,7 +448,12 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 			{
 				if (tagOpen)
 				{
-					NSNumber *valueNum = [tagAttributesDict objectForKey:@"start"];
+					if (!currentTag.listStyle)
+					{
+						currentTag.listStyle = [DTCSSListStyle decimalListStyle];
+					}
+					
+					NSString *valueNum = [currentTag attributeForKey:@"start"];
 					if (valueNum)
 					{
 						NSInteger value = [valueNum integerValue];
@@ -604,6 +478,12 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 			{
 				if (tagOpen)
 				{
+					if (!currentTag.listStyle)
+					{
+						currentTag.listStyle = [DTCSSListStyle discListStyle];
+					}
+
+					
 					needsNewLineBefore = YES;
 					
 					currentTag.listCounter = 0;
@@ -768,7 +648,7 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 			{
 				if (tagOpen)
 				{
-					NSInteger size = [[tagAttributesDict objectForKey:@"size"] intValue];
+					NSInteger size = [[currentTag attributeForKey:@"size"] intValue];
 					
 					switch (size) 
 					{
@@ -796,14 +676,14 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 							break;
 					}
 					
-					NSString *face = [tagAttributesDict objectForKey:@"face"];
+					NSString *face = [currentTag attributeForKey:@"face"];
 					
 					if (face)
 					{
 						currentTag.fontDescriptor.fontName = face;
 					}
 					
-					NSString *color = [tagAttributesDict objectForKey:@"color"];
+					NSString *color = [currentTag attributeForKey:@"color"];
 					
 					if (color)
 					{
@@ -837,11 +717,11 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 			else if (!tagOpen)
 			{
 				// block items have to have a NL at the end.
-				if (![currentTag isInline] && ![currentTag isMeta] && ![[tmpString string] hasSuffix:@"\n"] && ![[tmpString string] hasSuffix:UNICODE_OBJECT_PLACEHOLDER])
+				if (![currentTag isInline] && ![currentTag isMeta] && ![[tmpString string] hasSuffix:@"\n"] /* && ![[tmpString string] hasSuffix:UNICODE_OBJECT_PLACEHOLDER] */)
 				{
 					if ([tmpString length])
 					{
-						[tmpString appendString:@"\n"];  // extends attributed area at end
+						[tmpString appendNakedString:@"\n"];  // extends attributed area at end
 					}
 					else
 					{
@@ -955,7 +835,7 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 					// if we start a list, then we wait until we have actual text
 					if (needsListItemStart && [tagContents length] > 0 && ![tagContents isEqualToString:@" "])
 					{
-						NSAttributedString *prefixString = [currentTag prefixForListItemWithCounter:currentTag.listCounter];
+						NSAttributedString *prefixString = [currentTag prefixForListItem];
 						
 						if (prefixString)
 						{
@@ -1174,6 +1054,11 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 			
 			NSString *subString = [[plainString substringWithRange:effectiveRange] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 			
+			if (!subString)
+			{
+				continue;
+			}
+			
 			DTTextAttachment *attachment = [attributes objectForKey:@"DTTextAttachment"];
 			
 			
@@ -1292,8 +1177,6 @@ NSString *DTDefaultLineHeightMultiplier = @"DTDefaultLineHeightMultiplier";
 		
 		[retString appendFormat:@"</%@>\n", blockElement];
 	}
-	
-	//NSLog(@"%@", retString);
 	
 	return retString;
 }

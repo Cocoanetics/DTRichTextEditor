@@ -14,6 +14,7 @@
 
 #import "DTLinkButton.h"
 #import "DTLazyImageView.h"
+#import "DTWebVideoView.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -51,10 +52,6 @@
 		UIBarButtonItem *debug = [[[UIBarButtonItem alloc] initWithTitle:@"Debug Frames" style:UIBarButtonItemStyleBordered target:self action:@selector(debugButton:)] autorelease];
 		NSArray *toolbarItems = [NSArray arrayWithObjects:spacer, debug, nil];
 		[self setToolbarItems:toolbarItems];
-		
-		
-		// register notifications
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(lazyImageDidFinishLoading:) name:@"DTLazyImageViewDidFinishLoading" object:nil];
 	}
 	return self;
 }
@@ -133,7 +130,9 @@
 	NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
 	
 	// Create attributed string from HTML
-	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithFloat:1.0], NSTextSizeMultiplierDocumentOption, [NSValue valueWithCGSize:CGSizeMake(200, 150)], DTMaxImageSize,
+	CGSize maxImageSize = CGSizeMake(self.view.bounds.size.width - 20.0, self.view.bounds.size.height - 20.0);
+	
+	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithFloat:1.0], NSTextSizeMultiplierDocumentOption, [NSValue valueWithCGSize:maxImageSize], DTMaxImageSize,
 													 @"Times New Roman", DTDefaultFontFamily,  @"purple", DTDefaultLinkColor, nil]; // @"green",DTDefaultTextColor,
 	
 	NSAttributedString *string = [[NSAttributedString alloc] initWithHTML:data options:options documentAttributes:NULL];
@@ -332,6 +331,7 @@
 	{
 		// if the attachment has a hyperlinkURL then this is currently ignored
 		DTLazyImageView *imageView = [[[DTLazyImageView alloc] initWithFrame:frame] autorelease];
+		imageView.delegate = self;
 		if (attachment.contents)
 		{
 			imageView.image = attachment.contents;
@@ -341,6 +341,13 @@
 		imageView.url = attachment.contentURL;
 		
 		return imageView;
+	}
+	else if (attachment.contentType == DTTextAttachmentTypeIframe)
+	{
+		DTWebVideoView *videoView = [[[DTWebVideoView alloc] initWithFrame:frame] autorelease];
+		videoView.attachment = attachment;
+		
+		return videoView;
 	}
 	
 	return nil;
@@ -385,12 +392,11 @@
 	[self.view setNeedsDisplay];
 }
 
-#pragma mark Notifications
-- (void)lazyImageDidFinishLoading:(NSNotification *)notification
-{
-	NSDictionary *userInfo = [notification userInfo];
-	NSURL *url = [userInfo objectForKey:@"ImageURL"];
-	CGSize imageSize = [[userInfo objectForKey:@"ImageSize"] CGSizeValue];
+#pragma mark DTLazyImageViewDelegate
+
+- (void)lazyImageView:(DTLazyImageView *)lazyImageView didChangeImageSize:(CGSize)size {
+	NSURL *url = lazyImageView.url;
+	CGSize imageSize = size;
 	
 	NSPredicate *pred = [NSPredicate predicateWithFormat:@"contentURL == %@", url];
 	
