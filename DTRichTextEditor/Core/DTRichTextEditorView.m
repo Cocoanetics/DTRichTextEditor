@@ -388,9 +388,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 			[self.contentView addSubview:_cursor];
 		}
 		
-		SEL selector = @selector(_scrollCursorVisible);
-		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
-		[self performSelector:selector withObject:nil afterDelay:0.3];
+		[self _scrollCursorVisible];
+//		SEL selector = @selector(_scrollCursorVisible);
+//		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
+//		[self performSelector:selector withObject:nil afterDelay:0.3];
 	}
 	else
 	{
@@ -1856,8 +1857,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	self.attributedString = _internalAttributedText;
 	[self.contentView relayoutText];
-	
-	//[self updateCursor];
 }
 
 - (NSAttributedString *)attributedText
