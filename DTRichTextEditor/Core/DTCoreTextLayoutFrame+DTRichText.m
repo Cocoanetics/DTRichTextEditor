@@ -18,10 +18,10 @@
 - (CGRect)firstRectForRange:(NSRange)range
 {
 	NSInteger firstIndex = range.location;
-	NSInteger firstIndexLine = [self lineIndexForGlyphIndex:firstIndex];
+	DTCoreTextLayoutLine *firstIndexLine = [self lineContainingIndex:firstIndex];
 	
 	NSInteger lastIndex = range.location + range.length;
-	NSInteger lastIndexLine = [self lineIndexForGlyphIndex:lastIndex];
+	DTCoreTextLayoutLine *lastIndexLine = [self lineContainingIndex:lastIndex];
 	
 	CGRect firstIndexRect = [self cursorRectAtIndex:firstIndex];
 	CGRect lastIndexRect;
@@ -30,15 +30,11 @@
 	{
 		lastIndexRect = [self cursorRectAtIndex:lastIndex];
 		
-		DTCoreTextLayoutLine *line = [self.lines objectAtIndex:firstIndexLine];
-		
-		return CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, lastIndexRect.origin.x - firstIndexRect.origin.x, line.frame.size.height);
+		return CGRectMake(firstIndexRect.origin.x, firstIndexLine.frame.origin.y, lastIndexRect.origin.x - firstIndexRect.origin.x, firstIndexLine.frame.size.height);
 	}
 	
 	// get until end of line
-	DTCoreTextLayoutLine *line = [self.lines objectAtIndex:firstIndexLine];
-	
-	return CGRectMake(roundf(firstIndexRect.origin.x), roundf(line.frame.origin.y), roundf(line.frame.origin.x + line.frame.size.width - firstIndexRect.origin.x), roundf(line.frame.size.height));
+	return CGRectMake(roundf(firstIndexRect.origin.x), roundf(firstIndexLine.frame.origin.y), roundf(firstIndexLine.frame.origin.x + firstIndexLine.frame.size.width - firstIndexRect.origin.x), roundf(firstIndexLine.frame.size.height));
 }
 
 - (NSArray *)selectionRectsForRange:(NSRange)range
