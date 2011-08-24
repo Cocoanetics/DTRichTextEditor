@@ -1838,7 +1838,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 #pragma mark Properties
 - (void)setAttributedText:(NSAttributedString *)newAttributedText
 {
-	self.internalAttributedText = [[newAttributedText mutableCopy] autorelease];
+	if (newAttributedText)
+	{
+		self.internalAttributedText = [[newAttributedText mutableCopy] autorelease];
+	}
+	else
+	{
+		[self setDefaultText];
+	}
 }
 
 - (void)setInternalAttributedText:(NSMutableAttributedString *)newAttributedText

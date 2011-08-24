@@ -27,8 +27,7 @@ typedef enum
 	DTDragModeLeftHandle,
 	DTDragModeRightHandle,
 	DTDragModeCursor,
-	DTDragModeCursorInsideMarking,
-	DTDragModeWord
+	DTDragModeCursorInsideMarking
 } DTDragMode;
 
 
