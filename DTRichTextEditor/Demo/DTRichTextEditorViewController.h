@@ -10,13 +10,14 @@
 #import "DTRichTextEditorView.h"
 
 
-@interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate> {
+@interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate, DTAttributedTextContentViewDelegate> {
 
 	IBOutlet DTRichTextEditorView *richEditor;
 	
 	UITextRange *lastSelection;
 	
 	BOOL isDirty;
+    UIPopoverController *popover;
 }
 
 @end

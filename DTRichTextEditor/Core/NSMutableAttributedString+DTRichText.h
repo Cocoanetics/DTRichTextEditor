@@ -16,7 +16,8 @@
 - (NSDictionary *)typingAttributesForRange:(NSRange)range;
 
 // convenience method to insert an attachment
-- (void)replaceRange:(NSRange)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph;
+// returns the length of the replacement string
+- (NSUInteger)replaceRange:(NSRange)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph;
 
 // convenience methods to toggline simple styles
 - (void)toggleBoldInRange:(NSRange)range;

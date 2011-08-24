@@ -50,6 +50,7 @@
 
 	// defaults
 	//richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
+    richEditor.textDelegate = self;
 	richEditor.defaultFontFamily = @"Helvetica";
 	richEditor.textSizeMultiplier = 1.5;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
@@ -65,7 +66,7 @@
 	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 //	[richEditor setHTMLString:html];
-	richEditor.contentView.shouldDrawImages = YES;
+	richEditor.contentView.shouldDrawImages = NO;
 	
 	
 	UIBarButtonItem *photo = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];
@@ -120,6 +121,10 @@
 	[richEditor removeObserver:self forKeyPath:@"selectedTextRange"];
 	
 	[lastSelection release];
+    
+    popover.delegate = nil;
+    [popover release];
+    
     [super dealloc];
 }
 
@@ -139,7 +144,7 @@
 	attachment.originalSize = image.size;
 	attachment.contentType = DTTextAttachmentTypeImage;
 	
-	[richEditor replaceRange:lastSelection withAttachment:attachment inParagraph:YES];
+	[richEditor replaceRange:richEditor.selectedTextRange withAttachment:attachment inParagraph:YES];
 }
 
 
@@ -150,7 +155,9 @@
 	NSURL *imageURL = [info valueForKey:UIImagePickerControllerReferenceURL];
     ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
     {
-        CGImageRef iref = [myasset thumbnail];
+        ALAssetRepresentation *representation = [myasset defaultRepresentation];
+        
+        CGImageRef iref = [representation fullScreenImage];
         if (iref) {
             UIImage *theThumbnail = [UIImage imageWithCGImage:iref];
 			[self replaceCurrentSelectionWithPhoto:theThumbnail];
@@ -171,7 +178,15 @@
                       failureBlock:failureblock];
     }
 	
-    [self dismissModalViewControllerAnimated:YES];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+	{
+        [popover dismissPopoverAnimated:YES];
+        [popover release], popover = nil;
+    }
+    else
+    {
+        [self dismissModalViewControllerAnimated:YES];
+    }
 }
 
 - (void)insertPhoto:(UIBarButtonItem *)sender
@@ -191,7 +206,7 @@
 	
 	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 	{
-		UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:picker];
+		popover = [[UIPopoverController alloc] initWithContentViewController:picker];
 		popover.delegate = self;
 		[popover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 	}
@@ -203,7 +218,7 @@
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
 {
-	[popoverController release];
+    [popover release], popover = nil;
 }
 
 - (void)toggleBold:(UIBarButtonItem *)sender
@@ -216,7 +231,7 @@
 - (void)textChanged:(NSNotification *)notification
 {
 	isDirty = YES;
-	NSLog(@"Text Changed");
+	//NSLog(@"Text Changed");
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -238,5 +253,30 @@
 		}
 	}
 }
+
+#pragma mark - DTAttributedTextContentViewDelegate
+
+- (UIView *)attributedTextContentView:(DTAttributedTextContentView *)attributedTextContentView viewForAttachment:(DTTextAttachment *)attachment frame:(CGRect)frame
+{
+  //  NSDictionary *attributes = attachment.attributes;
+    if (attachment.contentType == DTTextAttachmentTypeImage)
+	{
+     //   NSString *imgClass = [attributes objectForKey:@"class"];
+     //   if (imgClass && [imgClass rangeOfString:@"BMClass"].length)
+        {
+            UIImageView *immediateImageView = [[[UIImageView alloc] initWithFrame:frame] autorelease];
+            immediateImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
+            if ([attachment.contents isKindOfClass:[UIImage class]])
+                immediateImageView.image = attachment.contents;
+            else
+                NSLog(@"NotesViewController viewForAttachment attachment.contents not UIImage: %@", [attachment.contents class]);
+            return immediateImageView;
+        }
+        
+	}
+	
+	return nil;
+}
+
 
 @end

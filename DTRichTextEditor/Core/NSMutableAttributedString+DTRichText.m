@@ -56,7 +56,7 @@
 	return attributes;
 }
 
-- (void)replaceRange:(NSRange)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph
+- (NSUInteger)replaceRange:(NSRange)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph
 {
 	NSMutableDictionary *attributes = [[self typingAttributesForRange:range] mutableCopy];
 	
@@ -127,6 +127,8 @@
 	[self replaceCharactersInRange:range withAttributedString:tmpAttributedString];
 	
 	[attributes release];
+    
+    return [tmpAttributedString length];
 }
 
 - (void)toggleBoldInRange:(NSRange)range

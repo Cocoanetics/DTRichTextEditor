@@ -186,7 +186,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	if (self.isDragging || self.decelerating)
 	{
-		NSLog(@"Move");
 		if ([_loupe isShowing] && _loupe.style == DTLoupeStyleCircle)
 		{
 			_loupe.seeThroughMode = YES;
@@ -354,6 +353,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (void)updateCursor
 {
+    NSLog(@"update %@", self.selectedTextRange);
 	// re-add cursor
 	DTTextPosition *position = (id)self.selectedTextRange.start;
 	
@@ -1128,6 +1128,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	if (action == @selector(paste:))
 	{
+        if (!_keyboardIsShowing)
+        {
+            return NO;
+        }
 		return [self pasteboardHasSuitableContentForPaste];
 	}
 	
@@ -1139,6 +1143,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	if (action == @selector(cut:))
 	{
+        if (!_keyboardIsShowing)
+        {
+            return NO;
+        }
 		return YES;
 	}
 	
@@ -2039,11 +2047,11 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	NSParameterAssert(range);
 	
-	[_internalAttributedText replaceRange:[range NSRangeValue] withAttachment:attachment inParagraph:inParagraph];
+	NSUInteger replacementLength = [_internalAttributedText replaceRange:[range NSRangeValue] withAttachment:attachment inParagraph:inParagraph];
 	
 	self.attributedString = _internalAttributedText;
 	
-	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:1]];
+	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:replacementLength]];
 	[self updateCursor];
 	
 	// send change notification
