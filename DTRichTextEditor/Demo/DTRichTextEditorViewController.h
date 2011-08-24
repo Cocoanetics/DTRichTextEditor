@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "DTRichTextEditorView.h"
-
+#import "DTCache.h"
 
 @interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate, DTAttributedTextContentViewDelegate> {
 
@@ -18,7 +18,10 @@
 	
 	BOOL isDirty;
     UIPopoverController *popover;
+    
+    DTCache *_imageViewCache;
 }
 
+@property (nonatomic, retain) DTCache *imageViewCache;
 @end
 

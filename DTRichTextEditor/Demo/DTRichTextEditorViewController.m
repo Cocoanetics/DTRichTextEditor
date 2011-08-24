@@ -17,21 +17,21 @@
 
 
 /*
-// The designated initializer. Override to perform setup that is required before the view is loaded.
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-*/
+ // The designated initializer. Override to perform setup that is required before the view is loaded.
+ - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+ self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+ if (self) {
+ // Custom initialization
+ }
+ return self;
+ }
+ */
 
 /*
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
-- (void)loadView {
-}
-*/
+ // Implement loadView to create a view hierarchy programmatically, without using a nib.
+ - (void)loadView {
+ }
+ */
 
 - (void)viewDidAppear:(BOOL)animated
 {
@@ -44,10 +44,10 @@
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-//	NSString *perc = @"%3Cp%3EAB%3C/p%3E%3Cp%3E%3Cimg%20type=%221%22%20src=%22images/NOTES_BM_UNCLEAR_A.png%22%20alt=%22%22%20name=%22%20%22%20value=%222011-07-27T08:11:58.118%23-1%23-1%22%20class=%22BMClass%22%20style=%22width:16px;height:16px;%22%20/%3E%3C/p%3E%3Cp%3ECD%3C/p%3E%3Cp%3E%3Cimg%20type=%221%22%20src=%22images/NOTES_BM_UNCLEAR_A.png%22%20name=%22%20%22%20alt=%22%22%20value=%222011-07-26T08:28:42.176%23-1%23-1%22%20class=%22BMClass%22%20style=%22width:16px;height:16px;%22%20/%3E%3C/p%3E";
-//	NSString *html = [perc stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-
+    
+    //	NSString *perc = @"%3Cp%3EAB%3C/p%3E%3Cp%3E%3Cimg%20type=%221%22%20src=%22images/NOTES_BM_UNCLEAR_A.png%22%20alt=%22%22%20name=%22%20%22%20value=%222011-07-27T08:11:58.118%23-1%23-1%22%20class=%22BMClass%22%20style=%22width:16px;height:16px;%22%20/%3E%3C/p%3E%3Cp%3ECD%3C/p%3E%3Cp%3E%3Cimg%20type=%221%22%20src=%22images/NOTES_BM_UNCLEAR_A.png%22%20name=%22%20%22%20alt=%22%22%20value=%222011-07-26T08:28:42.176%23-1%23-1%22%20class=%22BMClass%22%20style=%22width:16px;height:16px;%22%20/%3E%3C/p%3E";
+    //	NSString *html = [perc stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    
 	// defaults
 	//richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
     richEditor.textDelegate = self;
@@ -55,17 +55,17 @@
 	richEditor.textSizeMultiplier = 1.5;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
 	
-//	NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
+    //	NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	
 	NSString *html = @"<img src=\"Oliver.jpg\">blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><img src=\"Oliver.jpg\"><br><br>";
 	
 	NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
 	NSAttributedString *attr = [[NSAttributedString alloc] initWithHTML:data options:[richEditor textDefaults] documentAttributes:NULL];
 	richEditor.attributedText = attr;
-
+    
 	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
-//	[richEditor setHTMLString:html];
+    //	[richEditor setHTMLString:html];
 	richEditor.contentView.shouldDrawImages = NO;
 	
 	
@@ -96,7 +96,7 @@
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     // Return YES for supported orientations
-//    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    //    return (interfaceOrientation == UIInterfaceOrientationPortrait);
 	return YES;
 }
 
@@ -124,6 +124,8 @@
     
     popover.delegate = nil;
     [popover release];
+    
+    [_imageViewCache release];
     
     [super dealloc];
 }
@@ -258,25 +260,44 @@
 
 - (UIView *)attributedTextContentView:(DTAttributedTextContentView *)attributedTextContentView viewForAttachment:(DTTextAttachment *)attachment frame:(CGRect)frame
 {
-  //  NSDictionary *attributes = attachment.attributes;
+    NSNumber *cacheKey = [NSNumber numberWithUnsignedInteger:[attachment hash]];
+    
+    UIImageView *imageView = [self.imageViewCache objectForKey:cacheKey];
+    
+    if (imageView)
+    {
+        return imageView;
+    }
+    
     if (attachment.contentType == DTTextAttachmentTypeImage)
 	{
-     //   NSString *imgClass = [attributes objectForKey:@"class"];
-     //   if (imgClass && [imgClass rangeOfString:@"BMClass"].length)
+        imageView = [[[UIImageView alloc] initWithFrame:frame] autorelease];
+        if ([attachment.contents isKindOfClass:[UIImage class]])
         {
-            UIImageView *immediateImageView = [[[UIImageView alloc] initWithFrame:frame] autorelease];
-            immediateImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin;
-            if ([attachment.contents isKindOfClass:[UIImage class]])
-                immediateImageView.image = attachment.contents;
-            else
-                NSLog(@"NotesViewController viewForAttachment attachment.contents not UIImage: %@", [attachment.contents class]);
-            return immediateImageView;
+            imageView.image = attachment.contents;
         }
         
-	}
+        [self.imageViewCache setObject:imageView forKey:cacheKey];
+        
+        return imageView;
+    }
+    
 	
 	return nil;
 }
 
+#pragma mark Properties
+
+- (DTCache *)imageViewCache
+{
+    if (!_imageViewCache)
+    {
+        _imageViewCache = [[DTCache alloc] init];
+    }
+    
+    return _imageViewCache;
+}
+
+@synthesize imageViewCache = _imageViewCache;
 
 @end
