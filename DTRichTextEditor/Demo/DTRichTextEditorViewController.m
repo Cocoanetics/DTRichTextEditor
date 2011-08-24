@@ -48,22 +48,21 @@
 //	NSString *perc = @"%3Cp%3EAB%3C/p%3E%3Cp%3E%3Cimg%20type=%221%22%20src=%22images/NOTES_BM_UNCLEAR_A.png%22%20alt=%22%22%20name=%22%20%22%20value=%222011-07-27T08:11:58.118%23-1%23-1%22%20class=%22BMClass%22%20style=%22width:16px;height:16px;%22%20/%3E%3C/p%3E%3Cp%3ECD%3C/p%3E%3Cp%3E%3Cimg%20type=%221%22%20src=%22images/NOTES_BM_UNCLEAR_A.png%22%20name=%22%20%22%20alt=%22%22%20value=%222011-07-26T08:28:42.176%23-1%23-1%22%20class=%22BMClass%22%20style=%22width:16px;height:16px;%22%20/%3E%3C/p%3E";
 //	NSString *html = [perc stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
-	
 	// defaults
 	//richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
 	richEditor.defaultFontFamily = @"Helvetica";
-	richEditor.textSizeMultiplier = 7.0;
+	richEditor.textSizeMultiplier = 1.5;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
 	
 //	NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	
-	NSString *html = @"blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>";
+	NSString *html = @"<img src=\"Oliver.jpg\">blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><br><br>blaba<br><img src=\"Oliver.jpg\"><br><br>";
 	
 	NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
 	NSAttributedString *attr = [[NSAttributedString alloc] initWithHTML:data options:[richEditor textDefaults] documentAttributes:NULL];
 	richEditor.attributedText = attr;
 
-	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 //	[richEditor setHTMLString:html];
 	richEditor.contentView.shouldDrawImages = YES;

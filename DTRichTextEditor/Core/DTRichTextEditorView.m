@@ -2016,7 +2016,17 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (NSDictionary *)typingAttributesForRange:(DTTextRange *)range
 {
-	return [self.internalAttributedText typingAttributesForRange:[range NSRangeValue]];
+	NSDictionary *attributes = [self.internalAttributedText typingAttributesForRange:[range NSRangeValue]];
+	
+	CTFontRef font = (CTFontRef)[attributes objectForKey:(id)kCTFontAttributeName];
+	
+	// if there's no font, then substitute it from our defaults
+	if (!font)
+	{
+		
+	}
+	
+	return attributes;
 }
 
 - (void)replaceRange:(DTTextRange *)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph

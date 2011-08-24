@@ -16,3 +16,6 @@
 #else
 #define DT_USE_THREAD_SAFE_INITIALIZATION
 #endif
+
+// for inserting text we need a font also on images
+#define DT_ADD_FONT_ON_ATTACHMENTS
