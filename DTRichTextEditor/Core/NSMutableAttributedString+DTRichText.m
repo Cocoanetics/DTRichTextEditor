@@ -70,21 +70,21 @@
 	{
 		NSInteger index = range.location-1;
 		
-		NSString *character = [[self string] substringWithRange:NSMakeRange(index, 1)];
+		unichar character = [[self string] characterAtIndex:index];
 		
-		if (![character isEqualToString:@"\n"])
+		if (character != '\n')
 		{
 			needsParagraphBefore = YES;
 		}
 	}
 	
-	if (range.location<[self length])
+	if (range.location+range.length<[self length])
 	{
-		NSInteger index = range.location;
+		NSUInteger index = range.location+range.length;
 		
-		NSString *character = [[self string] substringWithRange:NSMakeRange(index, 1)];
+        unichar character = [[self string] characterAtIndex:index];
 		
-		if (![character isEqualToString:@"\n"])
+		if (character != '\n')
 		{
 			needsParagraphAfter = YES;
 		}

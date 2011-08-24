@@ -1900,8 +1900,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	self.selectionView.frame = self.contentView.frame;
 	[self updateCursor];
-	
-	
 }
 
 - (DTLoupeView *)loupe
