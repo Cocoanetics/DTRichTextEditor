@@ -1998,14 +1998,13 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		return backRange;
     }
 	
-	
 	// we did not get a forward or backward range, like Word!|
-	DTTextPosition *previousPosition = (id)([tokenizer positionFromPosition:position
-																 toBoundary:UITextGranularityWord 
-																inDirection:UITextStorageDirectionBackward]);
+//	DTTextPosition *previousPosition = (id)([tokenizer positionFromPosition:position
+//																 toBoundary:UITextGranularityWord 
+//																inDirection:UITextStorageDirectionBackward]);
 	
-	forRange = (id)[[self tokenizer] rangeEnclosingPosition:previousPosition withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionForward];
-    backRange = (id)[[self tokenizer] rangeEnclosingPosition:previousPosition withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionBackward];
+	forRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityLine inDirection:UITextStorageDirectionForward];
+    backRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityLine inDirection:UITextStorageDirectionBackward];
 	
 	UITextRange *retRange = nil;
 	
