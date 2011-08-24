@@ -702,7 +702,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// prevents "Warning: phrase boundary gesture handler is somehow installed when there is no marked text"
 	for (UIView *oneView in self.subviews)
 	{
-		if (![oneView isKindOfClass:[UIImageView class]] && oneView != contentView && oneView != _cursor)
+		if (![oneView isKindOfClass:[UIImageView class]] && oneView != contentView && oneView != _cursor && oneView != _selectionView)
 		{
 			[oneView removeFromSuperview];
 		}
@@ -1409,6 +1409,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 	
 	self.attributedString = _internalAttributedText;
+    
+    // need to call extra because we control layouting
+    [self setNeedsLayout];
 	
 	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:[text length]]];
 	
@@ -1855,6 +1858,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		[self setDefaultText];
 	}
+    
+    [self setNeedsLayout];
 }
 
 - (void)setInternalAttributedText:(NSMutableAttributedString *)newAttributedText
@@ -1864,7 +1869,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	_internalAttributedText = [newAttributedText retain];
 	
 	self.attributedString = _internalAttributedText;
-	[self.contentView relayoutText];
+    // triggers relayout
 }
 
 - (NSAttributedString *)attributedText
@@ -1925,7 +1930,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	if (!_selectionView)
 	{
 		_selectionView = [[DTTextSelectionView alloc] initWithTextView:self.contentView];
-		[self.contentView addSubview:_selectionView];
+		[self addSubview:_selectionView];
 	}
 	
 	return _selectionView;
@@ -2050,6 +2055,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	NSUInteger replacementLength = [_internalAttributedText replaceRange:[range NSRangeValue] withAttachment:attachment inParagraph:inParagraph];
 	
 	self.attributedString = _internalAttributedText;
+    // triggers relayout
 	
 	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:replacementLength]];
 	[self updateCursor];
