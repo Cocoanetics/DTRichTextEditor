@@ -18,7 +18,6 @@ static NSMutableDictionary *_fontOverrides = nil;
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_4_3
 static dispatch_semaphore_t fontLock;
 #else
-#include <pthread.h>
 static pthread_mutex_t fontLock;
 #endif
 

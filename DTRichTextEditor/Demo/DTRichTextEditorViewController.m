@@ -49,7 +49,7 @@
 //	NSString *html = [perc stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
 
 	// defaults
-	richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
+	//richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
 	richEditor.defaultFontFamily = @"Courier New";
 	richEditor.textSizeMultiplier = 5;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
@@ -79,7 +79,7 @@
 	[bold release];
 	
 	// disable this once you use your own image views
-	richEditor.contentView.shouldDrawImages = YES;
+	//richEditor.contentView.shouldDrawImages = YES;
 	
 	
 	// watch the selectedTextRange property
