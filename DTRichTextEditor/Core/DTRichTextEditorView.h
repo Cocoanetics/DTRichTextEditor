@@ -27,7 +27,8 @@ typedef enum
 	DTDragModeLeftHandle,
 	DTDragModeRightHandle,
 	DTDragModeCursor,
-	DTDragModeCursorInsideMarking
+	DTDragModeCursorInsideMarking,
+	DTDragModeWord
 } DTDragMode;
 
 
@@ -67,11 +68,15 @@ typedef enum
 	BOOL _shouldShowContextMenuAfterMovementEnded;
 	BOOL _canInteractWithPasteboard;
 	
+	BOOL _showsKeyboardWhenBecomingFirstResponder;
+	BOOL _keyboardIsShowing;
+	
 	CGPoint _dragCursorStartMidPoint;
 	CGPoint _touchDownPoint;
 	NSDictionary *_overrideInsertionAttributes;
 	
-	UITapGestureRecognizer *tap;
+	UITapGestureRecognizer *tapGesture;
+	UITapGestureRecognizer *doubleTapGesture;
 	UILongPressGestureRecognizer *longPressGesture;
 	UIPanGestureRecognizer *panGesture;
 	

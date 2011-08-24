@@ -59,6 +59,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 - (void)setDefaults
 {
 	_canInteractWithPasteboard = YES;
+	_showsKeyboardWhenBecomingFirstResponder = YES;
 	
 	// --- text input
     self.autocapitalizationType = UITextAutocapitalizationTypeSentences;
@@ -80,20 +81,24 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	self.userInteractionEnabled = YES; 	// for autocorrection candidate view
 	
 	// --- gestures
-	if (!tap)
+	if (!doubleTapGesture)
 	{
-		tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
-		tap.delegate = self;
-		[self addGestureRecognizer:tap];
+		doubleTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
+		doubleTapGesture.delegate = self;
+		doubleTapGesture.numberOfTapsRequired = 2;
+		doubleTapGesture.numberOfTouchesRequired = 1;
+		[self addGestureRecognizer:doubleTapGesture];
 	}
 	
-	//	//	
-	//	//	UITapGestureRecognizer *doubletap = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubletapped:)] autorelease];
-	//	//	doubletap.numberOfTapsRequired = 2;
-	//	//	doubletap.delegate = self;
-	//	//	[self.contentView addGestureRecognizer:doubletap];
-	
-	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+	if (!tapGesture)
+	{
+		tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+		tapGesture.delegate = self;
+		tapGesture.numberOfTapsRequired = 1;
+		tapGesture.numberOfTouchesRequired = 1;
+		[tapGesture requireGestureRecognizerToFail:doubleTapGesture];
+		[self addGestureRecognizer:tapGesture];
+	}
 	
 	if (!panGesture)
 	{
@@ -149,6 +154,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[_cursor release];
 	[_selectionView release];
 	
+	[tapGesture release];
+	[doubleTapGesture release];
 	[longPressGesture release];
 	[panGesture release];
 	
@@ -243,7 +250,17 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	if (!self.isFirstResponder)
 	{
+		BOOL previousState = _showsKeyboardWhenBecomingFirstResponder;
+		
+		if (!_keyboardIsShowing)
+		{
+			// prevent keyboard from showing if it is not visible
+			_showsKeyboardWhenBecomingFirstResponder = NO;
+		}
+		
 		[self becomeFirstResponder];
+		
+		_showsKeyboardWhenBecomingFirstResponder = previousState;
 	}
 	
 	UIMenuController *menuController = [UIMenuController sharedMenuController];
@@ -345,6 +362,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		// remove selection
 		_selectionView.selectionRectangles = nil;
+		_selectionView.dragHandlesVisible = NO;
 		
 		return;
 	}
@@ -367,7 +385,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 			[self.contentView addSubview:_cursor];
 		}
 		
-		[self scrollCursorVisibleAnimated:YES];
+		SEL selector = @selector(_scrollCursorVisible);
+		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
+		[self performSelector:selector withObject:nil afterDelay:0.3];
 	}
 	else
 	{
@@ -559,7 +579,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		[self hideContextMenu];
 		
-		if (self.editable)
+		if (self.editable && _keyboardIsShowing)
 		{
 			[self moveCursorToPositionClosestToLocation:touchPoint];
 		}
@@ -715,28 +735,42 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	self.contentInset = UIEdgeInsetsMake(0, 0, coveredFrame.size.height, 0);
 	self.scrollIndicatorInsets = self.contentInset;
 	
-	[self performSelector:@selector(_scrollCursorVisible) withObject:nil afterDelay:0.3];
+	SEL selector = @selector(_scrollCursorVisible);
+	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
+	[self performSelector:selector withObject:nil afterDelay:0.3];
+	
+	_keyboardIsShowing = YES;
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
 	self.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
 	self.scrollIndicatorInsets = self.contentInset;
+	
+	_keyboardIsShowing = NO;
 }
 
 
 #pragma mark Gestures
 - (void)handleTap:(UITapGestureRecognizer *)gesture
 {
+	NSLog(@"single");
 	if (gesture.state == UIGestureRecognizerStateRecognized)
 	{
 		if (![self isFirstResponder] && [self canBecomeFirstResponder])
 		{
+			_keyboardIsShowing = YES;
 			[self becomeFirstResponder];
 		}
 		
 		if (self.editable)
 		{
+			if (!_keyboardIsShowing && ![_selectedTextRange isEmpty])
+			{
+				[self resignFirstResponder];
+				return;
+			}
+			
 			CGPoint touchPoint = [gesture locationInView:self.contentView];
 			
 			if (!_markedTextRange)
@@ -761,6 +795,30 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 }
 
+- (void)handleDoubleTap:(UITapGestureRecognizer *)gesture
+{
+	NSLog(@"double");
+	
+	if (gesture.state == UIGestureRecognizerStateRecognized)
+	{
+		CGPoint touchPoint = [gesture locationInView:self.contentView];
+
+		DTTextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
+		
+		DTTextRange *wordRange = [self rangeForWordAtPosition:position];
+		
+		if (wordRange)
+		{
+			[self hideContextMenu];
+			
+			[self setSelectedTextRange:wordRange];
+			_showsKeyboardWhenBecomingFirstResponder = NO;
+			[self showContextMenuFromSelection];
+			_showsKeyboardWhenBecomingFirstResponder = YES;
+		}
+	}
+}
+
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture 
 {
 	CGPoint touchPoint = [gesture locationInView:self.contentView];
@@ -769,12 +827,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		case UIGestureRecognizerStateBegan:
 		{
-			if (![self isFirstResponder] && [self canBecomeFirstResponder])
-			{
-				[self becomeFirstResponder];
-			}
+//			if (_keyboardIsShowing && ![self isFirstResponder] && [self canBecomeFirstResponder])
+//			{
+//				[self becomeFirstResponder];
+//			}
 			
 			// selection and self have same coordinate system
+//			if (_keyboardIsShowing)
+//			{
 			if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
 			{
 				_dragMode = DTDragModeLeftHandle;
@@ -787,7 +847,12 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 			{
 				_dragMode = DTDragModeCursor;
 			}
-			
+//			}
+//			else
+//			{
+//				_dragMode = DTDragModeWord;
+//			}
+//			
 			
 			[self presentLoupeWithTouchPoint:touchPoint];
 			_cursor.state = DTCursorStateStatic;
@@ -1015,6 +1080,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// this removes cursor and selections
 	
 	self.selectedTextRange = nil;
+
 	return [super resignFirstResponder];
 }
 
@@ -2159,6 +2225,12 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 
 	return YES;
+}
+
+- (BOOL)isEditable
+{
+	// return NO if we don't want keyboard to show e.g. context menu only on double tap
+	return _editable && _showsKeyboardWhenBecomingFirstResponder;
 }
 
 @end
