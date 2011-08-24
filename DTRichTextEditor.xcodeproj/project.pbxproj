@@ -55,6 +55,7 @@
 		A74BEFE6140519CD004A9491 /* DTAttributedTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A74BEFE1140519CD004A9491 /* DTAttributedTextCell.m */; };
 		A74BEFE7140519CD004A9491 /* DTCSSListStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = A74BEFE3140519CD004A9491 /* DTCSSListStyle.m */; };
 		A74BEFE8140519CD004A9491 /* DTWebVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = A74BEFE5140519CD004A9491 /* DTWebVideoView.m */; };
+		A74BEFEB140521F1004A9491 /* DTTiledLayerWithoutFade.m in Sources */ = {isa = PBXBuildFile; fileRef = A74BEFEA140521F1004A9491 /* DTTiledLayerWithoutFade.m */; };
 		A76AB98013E161FF001C4153 /* DTSelectionGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = A76AB97F13E161FF001C4153 /* DTSelectionGestureRecognizer.m */; };
 		A76F897413C70073007B37C0 /* UIView+DT.m in Sources */ = {isa = PBXBuildFile; fileRef = A76F897313C70073007B37C0 /* UIView+DT.m */; };
 		A76F897F13C72F5B007B37C0 /* 43-film-roll.png in Resources */ = {isa = PBXBuildFile; fileRef = A76F897D13C72F5B007B37C0 /* 43-film-roll.png */; };
@@ -177,6 +178,8 @@
 		A74BEFE3140519CD004A9491 /* DTCSSListStyle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTCSSListStyle.m; path = Classes/DTCSSListStyle.m; sourceTree = "<group>"; };
 		A74BEFE4140519CD004A9491 /* DTWebVideoView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTWebVideoView.h; path = Classes/DTWebVideoView.h; sourceTree = "<group>"; };
 		A74BEFE5140519CD004A9491 /* DTWebVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTWebVideoView.m; path = Classes/DTWebVideoView.m; sourceTree = "<group>"; };
+		A74BEFE9140521F1004A9491 /* DTTiledLayerWithoutFade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTTiledLayerWithoutFade.h; sourceTree = "<group>"; };
+		A74BEFEA140521F1004A9491 /* DTTiledLayerWithoutFade.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTTiledLayerWithoutFade.m; sourceTree = "<group>"; };
 		A76AB97E13E161FF001C4153 /* DTSelectionGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTSelectionGestureRecognizer.h; sourceTree = "<group>"; };
 		A76AB97F13E161FF001C4153 /* DTSelectionGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTSelectionGestureRecognizer.m; sourceTree = "<group>"; };
 		A76F897213C70073007B37C0 /* UIView+DT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+DT.h"; sourceTree = "<group>"; };
@@ -381,6 +384,8 @@
 				A76F898813C751D5007B37C0 /* NSMutableAttributedString+DTRichText.m */,
 				A704271D13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.h */,
 				A704271E13C37E9900EE0776 /* DTCoreTextLayoutFrame+DTRichText.m */,
+				A74BEFE9140521F1004A9491 /* DTTiledLayerWithoutFade.h */,
+				A74BEFEA140521F1004A9491 /* DTTiledLayerWithoutFade.m */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -598,6 +603,7 @@
 				A74BEFE6140519CD004A9491 /* DTAttributedTextCell.m in Sources */,
 				A74BEFE7140519CD004A9491 /* DTCSSListStyle.m in Sources */,
 				A74BEFE8140519CD004A9491 /* DTWebVideoView.m in Sources */,
+				A74BEFEB140521F1004A9491 /* DTTiledLayerWithoutFade.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

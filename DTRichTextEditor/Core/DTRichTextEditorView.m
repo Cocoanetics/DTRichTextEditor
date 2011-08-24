@@ -28,6 +28,7 @@
 #import "CGUtils.h"
 #import "UIView+DT.h"
 #import "DTCoreTextFontDescriptor.h"
+#import "DTTiledLayerWithoutFade.h"
 
 
 NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextEditorTextDidBeginEditingNotification";
@@ -167,6 +168,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (void)awakeFromNib
 {
+	[DTAttributedTextContentView setLayerClass:[DTTiledLayerWithoutFade class]];
+
     [super awakeFromNib];
     
     [self setDefaults];
