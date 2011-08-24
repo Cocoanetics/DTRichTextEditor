@@ -50,7 +50,7 @@
 
 	// defaults
 	richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
-	richEditor.defaultFontFamily = @"Helvetica";
+	richEditor.defaultFontFamily = @"Courier New";
 	richEditor.textSizeMultiplier = 5;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
 	
@@ -62,6 +62,7 @@
 	NSAttributedString *attr = [[NSAttributedString alloc] initWithHTML:data options:[richEditor textDefaults] documentAttributes:NULL];
 	richEditor.attributedText = attr;
 
+	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 //	[richEditor setHTMLString:html];
 //	richEditor.contentView.shouldDrawImages = YES;
@@ -187,7 +188,22 @@
 	UIImagePickerController *picker = [[[UIImagePickerController alloc] init] autorelease];
 	picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	picker.delegate = self;
-	[self presentModalViewController:picker animated:YES];
+	
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+	{
+		UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:picker];
+		popover.delegate = self;
+		[popover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+	}
+	else
+	{
+		[self presentModalViewController:picker animated:YES];
+	}
+}
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
+	[popoverController release];
 }
 
 - (void)toggleBold:(UIBarButtonItem *)sender

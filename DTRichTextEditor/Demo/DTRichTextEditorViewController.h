@@ -10,7 +10,7 @@
 #import "DTRichTextEditorView.h"
 
 
-@interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate> {
+@interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate> {
 
 	IBOutlet DTRichTextEditorView *richEditor;
 	
