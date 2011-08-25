@@ -41,7 +41,8 @@
 
 - (id)initWithStart:(UITextPosition  *)start end:(UITextPosition *)end
 {
-	if (self = [super init])
+	self = [super init];
+	if (self)
 	{
 		if ([(DTTextPosition *)start compare:end] == NSOrderedDescending)
 		{
@@ -60,7 +61,8 @@
 
 - (id)initWithNSRange:(NSRange)range
 {
-	if (self = [super init])
+	self = [super init];
+	if (self)
 	{
 		_start = [[DTTextPosition alloc] initWithLocation:range.location];
 		_end = [[DTTextPosition alloc] initWithLocation:range.location + range.length];

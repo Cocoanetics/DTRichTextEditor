@@ -62,6 +62,7 @@
 	NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
 	NSAttributedString *attr = [[NSAttributedString alloc] initWithHTML:data options:[richEditor textDefaults] documentAttributes:NULL];
 	richEditor.attributedText = attr;
+	[attr release];
     
 	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	

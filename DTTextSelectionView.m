@@ -264,7 +264,7 @@
 	if (_cursorColor != cursorColor)
 	{
 		[_cursorColor release];
-		cursorColor = [_cursorColor retain];
+		_cursorColor = [_cursorColor retain];
 		
 		[self setNeedsDisplay];
 	}

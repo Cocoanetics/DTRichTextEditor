@@ -24,7 +24,9 @@
 
 - (id)initWithLocation:(NSInteger)location
 {
-	if (self = [super init])
+	self = [super init];
+	
+	if (self)
 	{
 		_location = location;
 	}

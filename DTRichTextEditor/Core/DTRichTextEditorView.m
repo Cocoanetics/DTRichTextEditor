@@ -62,6 +62,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	_canInteractWithPasteboard = YES;
 	_showsKeyboardWhenBecomingFirstResponder = YES;
 	
+	self.contentView.shouldLayoutCustomSubviews = YES;
+	
 	// --- text input
     self.autocapitalizationType = UITextAutocapitalizationTypeSentences;
     self.autocorrectionType = UITextAutocorrectionTypeDefault;
