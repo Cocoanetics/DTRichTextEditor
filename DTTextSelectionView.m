@@ -102,9 +102,6 @@
 
 - (void)layoutSubviewsInRect:(CGRect)rect
 {
-   // NSLog(@"layout: %@ reusable: %d", NSStringFromCGRect(rect), [_reusableViews count]);
-    
-    
     NSArray *selectionRectangles;
     
     if (CGRectIsInfinite(rect))
@@ -128,9 +125,11 @@
         {
             // view exists, resize 
             UIView *rectView = [currentRectangleViews objectAtIndex:i];
-            rectView.frame = rect;
             
-          //  NSLog(@"adjust: %@",  NSStringFromCGRect(rectView.frame));
+            if (!CGRectEqualToRect(rectView.frame, rect))
+            {
+                rectView.frame = rect;
+            }
         }
         else
         {
@@ -139,24 +138,21 @@
             
             rectView = [self dequeueReusableView];
             
-            if (!rectView)
+            if (rectView)
             {
-                rectView = [[[UIView alloc] initWithFrame:rect] autorelease];
-                rectView.userInteractionEnabled = NO;
+                rectView.frame = rect;
             }
             else
             {
-                rectView.frame = rect;
+                rectView = [[[UIView alloc] initWithFrame:rect] autorelease];
+                rectView.userInteractionEnabled = NO;
             }
                 
             rectView.backgroundColor = [self currentSelectionColor];
             
             [self.selectionRectangleViews insertObject:rectView atIndex:0];
             [self insertSubview:rectView atIndex:0];
-            
-          //  NSLog(@"new: %@",  NSStringFromCGRect(rectView.frame));
-
-        }
+         }
     }
     
     // remove views that are too many
@@ -168,18 +164,31 @@
         
         [rectView removeFromSuperview];
         [self.selectionRectangleViews removeObject:rectView];
-        
-      //  NSLog(@"remove: %@", NSStringFromCGRect(rectView.frame));
-    }
+     }
     
     // position carets
     self.beginCaretView.frame = self.beginCaretRect;
-    self.endCaretView.frame = self.endCaretRect;    
+    self.endCaretView.frame = self.endCaretRect;
+    
+    if (_dragHandlesVisible)
+    {
+        _beginCaretView.hidden = NO;
+        _endCaretView.hidden = NO;
+    }
+    else
+    {
+        _beginCaretView.hidden = YES;
+        _endCaretView.hidden = YES;
+    }
 }
 
+
+// also called from adjustdraghandles
 - (void)layoutSubviews
 {
     [super layoutSubviews];
+    
+    //NSLog(@"layout");
     
     //[self layoutSubviewsInRect:CGRectInfinite];
 }
@@ -349,7 +358,12 @@
 	{
 		_style = style;
 		
-		[self setNeedsDisplay];
+		//[self setNeedsDisplay];
+        
+        for (UIView *oneView in self.selectionRectangleViews)
+        {
+            oneView.backgroundColor = [self currentSelectionColor];
+        }
 	}
 }
 
@@ -415,7 +429,6 @@
 		[_selectionRectangles release];
 		_selectionRectangles = [selectionRectangles retain];
 		
-		[self adjustDragHandles];
 		
 		if (_selectionRectangles)
 		{
@@ -423,12 +436,15 @@
 			//[self setNeedsDisplay];
             //[self setNeedsLayout];
             CGRect superRect = [self.superview bounds];
-            [self setNeedsDisplayInRect:superRect];
+            [self layoutSubviewsInRect:superRect];
 		}
 		else
 		{
 			self.alpha = 0;
 		}
+        
+        [self adjustDragHandles];
+
 	}
 }
 

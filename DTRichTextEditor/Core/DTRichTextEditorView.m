@@ -593,6 +593,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		else
 		{
 			[self selectWordAtPositionClosestToLocation:touchPoint];
+            _selectionView.dragHandlesVisible = NO;
 		}
 		return;
 	}
@@ -874,6 +875,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 			if (_dragMode != DTDragModeCursorInsideMarking)
 			{
 				_shouldShowContextMenuAfterLoupeHide = YES;
+                _selectionView.dragHandlesVisible = YES;
 			}
 		}
 			
