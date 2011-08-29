@@ -28,6 +28,11 @@ typedef enum
 	BOOL _dragHandlesVisible;
 	
 	NSArray *_selectionRectangles;
+    NSMutableArray *_selectionRectangleViews;
+    NSMutableSet *_reusableViews;
+    
+    UIView *_beginCaretView;
+    UIView *_endCaretView;
 	
 	UIView *_textView;
 	
@@ -53,6 +58,8 @@ typedef enum
 
 - (CGRect)beginCaretRect;
 - (CGRect)endCaretRect;
+
+- (void)layoutSubviewsInRect:(CGRect)rect;
 
 - (CGRect)selectionEnvelope;
 

@@ -185,6 +185,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 	
 	[super layoutSubviews];
+    
+    [_selectionView layoutSubviewsInRect:self.bounds];
 	
 	if (self.isDragging || self.decelerating)
 	{
@@ -355,7 +357,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (void)updateCursor
 {
-    NSLog(@"update %@", self.selectedTextRange);
 	// re-add cursor
 	DTTextPosition *position = (id)self.selectedTextRange.start;
 	
@@ -760,7 +761,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 #pragma mark Gestures
 - (void)handleTap:(UITapGestureRecognizer *)gesture
 {
-	NSLog(@"single");
 	if (gesture.state == UIGestureRecognizerStateRecognized)
 	{
 		if (![self isFirstResponder] && [self canBecomeFirstResponder])
@@ -803,8 +803,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (void)handleDoubleTap:(UITapGestureRecognizer *)gesture
 {
-	NSLog(@"double");
-	
 	if (gesture.state == UIGestureRecognizerStateRecognized)
 	{
 		CGPoint touchPoint = [gesture locationInView:self.contentView];
@@ -1409,6 +1407,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		[self.internalAttributedText replaceCharactersInRange:myRange withAttributedString:text];
 	}
+    
+    // if it's just one character remaining then set text defaults on this
+    if ([[self.internalAttributedText string] isEqualToString:@"\n"])
+    {
+        NSDictionary *typingDefaults = [self defaultAttributes];
+        
+        [self.internalAttributedText setAttributes:typingDefaults range:NSMakeRange(0, 1)];
+    }
 	
 	self.attributedString = _internalAttributedText;
     
@@ -1419,6 +1425,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	[self updateCursor];
 	[self scrollCursorVisibleAnimated:YES];
+    
+    
 	
 	// send change notification
 	[[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidBeginEditingNotification object:self userInfo:nil];
@@ -2032,6 +2040,33 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	return nil;
 }
 
+
+- (NSDictionary *)defaultAttributes
+{
+    NSDictionary *defaults = [self textDefaults];
+    NSString *fontFamily = [defaults objectForKey:DTDefaultFontFamily];
+    
+    CGFloat multiplier = [[defaults objectForKey:NSTextSizeMultiplierDocumentOption] floatValue];
+    
+    if (!multiplier)
+    {
+        multiplier = 1.0;
+    }
+    
+    DTCoreTextFontDescriptor *desc = [[[DTCoreTextFontDescriptor alloc] init] autorelease];
+    desc.fontFamily = fontFamily;
+    desc.pointSize = 12.0 * multiplier;
+    
+    CTFontRef defaultFont = [desc newMatchingFont];
+    
+    NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+    [(NSMutableDictionary *)attributes setObject:(id)defaultFont forKey:(id)kCTFontAttributeName];
+    
+    CFRelease(defaultFont);  
+    
+    return attributes;
+}
+
 - (NSDictionary *)typingAttributesForRange:(DTTextRange *)range
 {
 	NSDictionary *attributes = [self.internalAttributedText typingAttributesForRange:[range NSRangeValue]];
@@ -2041,7 +2076,26 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// if there's no font, then substitute it from our defaults
 	if (!font)
 	{
-		
+        NSDictionary *defaults = [self textDefaults];
+        NSString *fontFamily = [defaults objectForKey:DTDefaultFontFamily];
+        
+        CGFloat multiplier = [[defaults objectForKey:NSTextSizeMultiplierDocumentOption] floatValue];
+        
+        if (!multiplier)
+        {
+            multiplier = 1.0;
+        }
+        
+        DTCoreTextFontDescriptor *desc = [[[DTCoreTextFontDescriptor alloc] init] autorelease];
+        desc.fontFamily = fontFamily;
+        desc.pointSize = 12.0 * multiplier;
+        
+        CTFontRef defaultFont = [desc newMatchingFont];
+        
+        attributes = [NSMutableDictionary dictionaryWithDictionary:attributes];
+        [(NSMutableDictionary *)attributes setObject:(id)defaultFont forKey:(id)kCTFontAttributeName];
+        
+        CFRelease(defaultFont);
 	}
 	
 	return attributes;
@@ -2213,6 +2267,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		[tmpDict setObject:_defaultFontFamily forKey:DTDefaultFontFamily];
 	}
+    else
+    {
+		[tmpDict setObject:@"Times New Roman" forKey:DTDefaultFontFamily];
+    }
 	
 	return tmpDict;
 }

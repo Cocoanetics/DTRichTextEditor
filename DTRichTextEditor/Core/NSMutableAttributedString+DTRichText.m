@@ -135,6 +135,11 @@
 {
 	// first character determines current boldness
 	NSDictionary *currentAttributes = [self typingAttributesForRange:range];
+    
+    if (!currentAttributes)
+    {
+        return;
+    }
 	
 	CTFontRef currentFont = (CTFontRef)[currentAttributes objectForKey:(id)kCTFontAttributeName];
 	DTCoreTextFontDescriptor *typingFontDescriptor = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
@@ -193,6 +198,11 @@
 {
 	// first character determines current italic status
 	NSDictionary *currentAttributes = [self typingAttributesForRange:range];
+    
+    if (!currentAttributes)
+    {
+        return;
+    }
 	
 	CTFontRef currentFont = (CTFontRef)[currentAttributes objectForKey:(id)kCTFontAttributeName];
 	DTCoreTextFontDescriptor *typingFontDescriptor = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
@@ -250,6 +260,11 @@
 {
 	// first character determines current italic status
 	NSDictionary *currentAttributes = [self typingAttributesForRange:range];
+    
+    if (!currentAttributes)
+    {
+        return;
+    }
 	
 	BOOL isUnderline = [currentAttributes objectForKey:(id)kCTUnderlineStyleAttributeName]!=nil;
 	

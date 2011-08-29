@@ -130,6 +130,7 @@ typedef enum
 
 - (DTTextRange *)rangeForWordAtPosition:(DTTextPosition *)position;
 
+- (NSDictionary *)defaultAttributes;
 - (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
 - (void)replaceRange:(UITextRange *)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph;
 

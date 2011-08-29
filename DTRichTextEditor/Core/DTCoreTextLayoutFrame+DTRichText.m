@@ -47,13 +47,11 @@
 	
 	
 	NSMutableArray *tmpArray = [NSMutableArray array];
-
+    
 	
 	NSInteger numberOfLines = [self.lines count];
 	if (firstIndexLine>=numberOfLines || lastIndexLine>=numberOfLines)
 	{
-		NSLog(@"Problem!");
-		
 		lastIndexLine = MIN(numberOfLines-1, lastIndexLine);
 	}
 	
@@ -65,25 +63,27 @@
 		NSInteger lastInRange = range.location + range.length;
 		
 		NSInteger firstIndexInLine = MIN(MAX(range.location, firstIndex), lastInRange);
-
+        
 		CGRect firstIndexRect = [self cursorRectAtIndex:firstIndexInLine];
 		
 		CGRect rect;
 		
-		if (lastIndex < lastInRange)
-		{
-			// in same line
-			CGRect lastIndexRect = [self cursorRectAtIndex:lastIndex];
-			rect =  CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, lastIndexRect.origin.x - firstIndexRect.origin.x, line.frame.size.height);
-		}
-		else 
-		{
-			// ending after this line
-			rect = CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, line.frame.origin.x + line.frame.size.width - firstIndexRect.origin.x, line.frame.size.height);
-		}
-
-		[tmpArray addObject:[NSValue valueWithCGRect:rect]];
-
+        if (lastIndex > range.location)
+        {
+            if (lastIndex < lastInRange)
+            {
+                // in same line
+                CGRect lastIndexRect = [self cursorRectAtIndex:lastIndex];
+                rect =  CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, lastIndexRect.origin.x - firstIndexRect.origin.x, line.frame.size.height);
+            }
+            else 
+            {
+                // ending after this line
+                rect = CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, line.frame.origin.x + self.frame.size.width - firstIndexRect.origin.x, line.frame.size.height);
+            }
+            
+            [tmpArray addObject:[NSValue valueWithCGRect:rect]];
+        }
 	}
 	
 	return [NSArray arrayWithArray:tmpArray];
@@ -93,7 +93,7 @@
 {
 	NSInteger lineIndex = [self lineIndexForGlyphIndex:index];
 	NSInteger newLineIndex = lineIndex - offset;
-
+    
 	
 	if (newLineIndex<0)
 	{
@@ -107,7 +107,7 @@
 	
 	NSInteger closestIndex = -1;
 	CGFloat closestDistance = CGFLOAT_MAX;
-
+    
 	
 	for (int i=0; i<range.length; i++)
 	{
@@ -181,7 +181,7 @@
 - (NSInteger)closestIndexToPoint:(CGPoint)point
 {
 	NSRange range = [self visibleStringRange];
-
+    
 	NSInteger closestIndex = -1;
 	CGFloat closestDistance = CGFLOAT_MAX;
 	
@@ -197,7 +197,7 @@
 		
 		CGFloat dx = center.x - point.x;
 		CGFloat dy = center.y - point.y;
-
+        
 		CGFloat distance = sqrtf(dx*dx + dy*dy);
 		
 		if (distance < closestDistance)
