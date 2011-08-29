@@ -256,6 +256,17 @@
 
 - (void)adjustDragHandles
 {
+    if (_dragHandlesVisible && [_selectionRectangles count])
+    {
+        self.dragHandleLeft.alpha = 1.0;
+        self.dragHandleRight.alpha = 1.0;
+    }
+    else
+    {
+        self.dragHandleLeft.alpha = 0;
+        self.dragHandleRight.alpha = 0;
+    }
+    
 	if (![_selectionRectangles count])
 	{
 		return;
@@ -402,18 +413,7 @@
 	{
 		_dragHandlesVisible = dragHandlesVisible;
 		
-		if (_dragHandlesVisible)
-		{
-			[self adjustDragHandles];
-				
-				_dragHandleLeft.alpha = 1.0;
-				_dragHandleRight.alpha = 1.0;
-		}
-		else
-		{
-			_dragHandleLeft.alpha = 0;
-			_dragHandleRight.alpha = 0;
-		}
+        [self adjustDragHandles];
 	}
 }
 

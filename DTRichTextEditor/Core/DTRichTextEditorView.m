@@ -713,6 +713,57 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 }
 
+- (void)extendSelectionToIncludeWordInDirection:(UITextStorageDirection)direction
+{
+    if (direction == UITextStorageDirectionForward)
+    {
+        if ([[self tokenizer] isPosition:_selectedTextRange.end atBoundary:UITextGranularityWord inDirection:UITextStorageDirectionForward])
+        {
+            // already at end of word
+            return;
+        }
+        
+        
+        UITextPosition *newEnd = (id)[[self tokenizer] positionFromPosition:_selectedTextRange.end
+                                                             toBoundary:UITextGranularityWord
+                                                            inDirection:UITextStorageDirectionForward];
+        
+        if (!newEnd)
+        {
+            // no word boundary after position
+            return;
+        }
+        
+        DTTextRange *newRange = [DTTextRange textRangeFromStart:_selectedTextRange.start toEnd:newEnd];
+        
+        [self setSelectedTextRange:newRange];
+    }
+    else if (direction == UITextStorageDirectionBackward)
+    {
+        if ([[self tokenizer] isPosition:_selectedTextRange.start atBoundary:UITextGranularityWord inDirection:UITextStorageDirectionBackward])
+        {
+            // already at end of word
+            return;
+        }
+        
+        
+        UITextPosition *newStart = (id)[[self tokenizer] positionFromPosition:_selectedTextRange.start
+                                                                 toBoundary:UITextGranularityWord
+                                                                inDirection:UITextStorageDirectionBackward];
+        
+        if (!newStart)
+        {
+            // no word boundary before position
+            return;
+        }
+        
+        DTTextRange *newRange = [DTTextRange textRangeFromStart:newStart toEnd:_selectedTextRange.end];
+        
+        [self setSelectedTextRange:newRange];
+    }
+        
+}
+
 #pragma mark Notifications
 
 - (void)cursorDidBlink:(NSNotification *)notification
@@ -865,6 +916,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 			
 		case UIGestureRecognizerStateChanged:
 		{
+            _lastCursorMovementTimestamp = [[NSDate date] timeIntervalSinceReferenceDate];
 			[self moveLoupeWithTouchPoint:touchPoint];
 			
 			break;
@@ -874,6 +926,20 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		{
 			if (_dragMode != DTDragModeCursorInsideMarking)
 			{
+                NSTimeInterval delta = [[NSDate date] timeIntervalSinceReferenceDate] - _lastCursorMovementTimestamp;
+                
+                if (delta < 0.5)
+                {
+                    if (_dragMode == DTDragModeLeftHandle)
+                    {
+                        [self extendSelectionToIncludeWordInDirection:UITextStorageDirectionBackward];
+                    }
+                    else if (_dragMode == DTDragModeRightHandle)
+                    {
+                        [self extendSelectionToIncludeWordInDirection:UITextStorageDirectionForward];
+                    }
+                }
+                
 				_shouldShowContextMenuAfterLoupeHide = YES;
                 _selectionView.dragHandlesVisible = YES;
 			}
@@ -911,12 +977,27 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		case UIGestureRecognizerStateChanged:
 		{
 			[self moveLoupeWithTouchPoint:touchPoint];
+            _lastCursorMovementTimestamp = [[NSDate date] timeIntervalSinceReferenceDate];
 			
 			break;
 		}
 			
 		case UIGestureRecognizerStateEnded:
 		{
+            NSTimeInterval delta = [[NSDate date] timeIntervalSinceReferenceDate] - _lastCursorMovementTimestamp;
+            
+            if (delta < 0.5)
+            {
+                if (_dragMode == DTDragModeLeftHandle)
+                {
+                    [self extendSelectionToIncludeWordInDirection:UITextStorageDirectionBackward];
+                }
+                else if (_dragMode == DTDragModeRightHandle)
+                {
+                    [self extendSelectionToIncludeWordInDirection:UITextStorageDirectionForward];
+                }
+            }
+
 			_shouldShowContextMenuAfterLoupeHide = YES;
 			[self dismissLoupeWithTouchPoint:touchPoint];
 		}

@@ -82,6 +82,7 @@ typedef enum
 	DTSelectionGestureRecognizer *selectionGesture;
 	
 	BOOL _contextMenuVisible;
+    NSTimeInterval _lastCursorMovementTimestamp;
 	
 	// overrides
 	CGSize _maxImageDisplaySize;
