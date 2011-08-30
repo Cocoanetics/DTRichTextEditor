@@ -60,17 +60,6 @@
 	[super dealloc];
 }
 
-//- (void)removeSubviewsOutsideRect:(CGRect)rect
-//{
-//	NSSet *allCustomViews = [NSSet setWithSet:customViews];
-//	for (UIView *customView in self.subviews)
-//	{
-//		if (CGRectGetMinY(customView.frame)> CGRectGetMaxY(rect) || CGRectGetMaxY(customView.frame) < CGRectGetMinY(rect))
-//		{
-//		}
-//	}
-//}
-
 - (NSArray *)selectionRectanglesVisibleInRect:(CGRect)rect
 {
 	NSMutableArray *tmpArray = [NSMutableArray arrayWithCapacity:[self.selectionRectangles count]];
@@ -152,7 +141,7 @@
                 
             rectView.backgroundColor = [self currentSelectionColor];
             
-            [self.selectionRectangleViews insertObject:rectView atIndex:0];
+            [self.selectionRectangleViews addObject:rectView];
             [self insertSubview:rectView atIndex:0];
          }
     }
@@ -519,6 +508,12 @@
 {
 	if (_selectionRectangles != selectionRectangles)
 	{
+		// no animation if the number of rectanbles does not match previous one
+		if ([_selectionRectangles count] != [selectionRectangles count])
+		{
+			animated = NO;
+		}
+		
 		[_selectionRectangles release];
 		_selectionRectangles = [selectionRectangles retain];
 		

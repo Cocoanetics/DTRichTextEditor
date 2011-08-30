@@ -1130,33 +1130,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	return YES;
 }
 
-
-
-//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-//{
-//	NSLog(@"simultaneous ====> %@ and %@", NSStringFromClass([gestureRecognizer class]), NSStringFromClass([otherGestureRecognizer class]));
-//
-//	return YES;
-//}
-
-
-
-#pragma mark -
-#pragma mark Debugging
-//- (void)addSubview:(UIView *)view
-//{
-//    NSLog(@"addSubview: %@", view);
-//    [super addSubview:view];
-//}
-
-//- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
-//{
-//	UIView *hitView = [super hitTest:point withEvent:event];
-//	
-//	NSLog(@"hitView: %@", hitView);
-//	return hitView;
-//}
-
 #pragma mark -
 #pragma mark UIResponder
 
@@ -1387,6 +1360,11 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (void)insertText:(NSString *)text
 {
+	if ([text isEqualToString:@"\n"])
+	{
+		text = UNICODE_LINE_FEED;
+	}
+	
 	if (!text)
 	{
 		text = @"";
@@ -1441,7 +1419,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[self hideContextMenu];
 }
 
-#pragma mark -
 #pragma mark UITextInput Protocol
 #pragma mark -
 #pragma mark Replacing and Returning Text
@@ -1629,12 +1606,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 }
 
 
+
 - (void)unmarkText
 {
 	if (!_markedTextRange)
 	{
 		return;
 	}
+
 	[inputDelegate textWillChange:self];
 	
 	self.markedTextRange = nil;
@@ -1642,7 +1621,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[self updateCursorAnimated:NO];
 	
 	// calling selectionDidChange makes the input candidate go away
-	
 	[inputDelegate textDidChange:self];
 	
 	[self removeMarkedTextCandidateView];
@@ -1812,15 +1790,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 - (CGRect)caretRectForPosition:(DTTextPosition *)position
 {
 	NSInteger index = position.location;
-	CGRect caretRect = [self.contentView.layoutFrame cursorRectAtIndex:index];
 	
 	DTCoreTextLayoutLine *layoutLine = [self.contentView.layoutFrame lineContainingIndex:index];
-	
-	caretRect.origin.y = layoutLine.frame.origin.y;
+
+	CGRect caretRect = [self.contentView.layoutFrame cursorRectAtIndex:index];
+
 	caretRect.size.height = layoutLine.frame.size.height;
-	
 	caretRect.origin.x = roundf(caretRect.origin.x);
-//	caretRect.origin.y = roundf(caretRect.origin.y);
+	caretRect.origin.y = layoutLine.frame.origin.y;
 	
 	return caretRect;
 }
@@ -2097,13 +2074,30 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		return backRange;
     }
 	
-	// we did not get a forward or backward range, like Word!|
-//	DTTextPosition *previousPosition = (id)([tokenizer positionFromPosition:position
-//																 toBoundary:UITextGranularityWord 
-//																inDirection:UITextStorageDirectionBackward]);
+	// treat image as word, left side of image selects it
+	NSAttributedString *characterString = [self.internalAttributedText attributedSubstringFromRange:NSMakeRange(position.location, 1)];
 	
-	forRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityLine inDirection:UITextStorageDirectionForward];
-    backRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityLine inDirection:UITextStorageDirectionBackward];
+	if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:@"DTTextAttachment"])
+	{
+		return [DTTextRange textRangeFromStart:position toEnd:[position textPositionWithOffset:1]];
+	}
+	
+	// we did not get a forward or backward range, like Word!|
+	DTTextPosition *previousPosition = (id)([tokenizer positionFromPosition:position
+																 toBoundary:UITextGranularityCharacter
+																inDirection:UITextStorageDirectionBackward]);
+	
+	
+	// treat image as word, right side of image selects it
+	characterString = [self.internalAttributedText attributedSubstringFromRange:NSMakeRange(previousPosition.location, 1)];
+	
+	if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:@"DTTextAttachment"])
+	{
+		return [DTTextRange textRangeFromStart:previousPosition toEnd:[previousPosition textPositionWithOffset:1]];
+	}
+	
+	forRange = (id)[[self tokenizer] rangeEnclosingPosition:previousPosition withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionForward];
+    backRange = (id)[[self tokenizer] rangeEnclosingPosition:previousPosition withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionBackward];
 	
 	UITextRange *retRange = nil;
 	
@@ -2121,7 +2115,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
     }
 	
 	// need to extend to include the previous position
-	
 	if (retRange)
 	{
 		// extend this range to go up to current position
@@ -2201,7 +2194,15 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	self.attributedString = _internalAttributedText;
     // triggers relayout
 	
-	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:replacementLength]];
+	if (_keyboardIsShowing)
+	{
+		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:replacementLength]];
+	}
+	else
+	{
+		[self setSelectedTextRange:nil animated:NO];
+	}
+	
 	[self updateCursorAnimated:NO];
 	
 	// send change notification
