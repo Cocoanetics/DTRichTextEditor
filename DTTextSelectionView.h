@@ -51,6 +51,8 @@ typedef enum
 @property (nonatomic, retain) UIColor *cursorColor;
 
 
+- (void)setSelectionRectangles:(NSArray *)selectionRectangles animated:(BOOL)animated;
+
 
 - (id)initWithTextView:(UIView *)view;
 

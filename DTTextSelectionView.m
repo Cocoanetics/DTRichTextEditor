@@ -9,6 +9,8 @@
 #import "DTTextSelectionView.h"
 #import <QuartzCore/QuartzCore.h>
 
+#define SELECTION_ANIMATION_DURATION 0.25
+
 @interface DTTextSelectionView ()
 
 @property (nonatomic, retain) NSMutableArray *selectionRectangleViews;
@@ -254,17 +256,24 @@
     }
 }
 
-- (void)adjustDragHandles
+- (void)adjustDragHandlesAnimated:(BOOL)animated
 {
+	// show/hide handles
     if (_dragHandlesVisible && [_selectionRectangles count])
     {
-        self.dragHandleLeft.alpha = 1.0;
-        self.dragHandleRight.alpha = 1.0;
+        self.dragHandleLeft.hidden = NO;
+        self.dragHandleRight.hidden = NO;
+
+		_beginCaretView.hidden = NO;
+		_endCaretView.hidden = NO;
     }
     else
     {
-        self.dragHandleLeft.alpha = 0;
-        self.dragHandleRight.alpha = 0;
+        self.dragHandleLeft.hidden = YES;
+        self.dragHandleRight.hidden = YES;
+		
+		_beginCaretView.hidden = YES;
+		_endCaretView.hidden = YES;
     }
     
 	if (![_selectionRectangles count])
@@ -275,19 +284,37 @@
 	CGRect firstRect = [self beginCaretRect];
 	CGRect lastRect = [self endCaretRect];
 	
+	// position carets
+	self.beginCaretView.frame = firstRect;
+	self.endCaretView.frame = lastRect;
+	
 	if (!CGRectIsNull(firstRect) && !CGRectIsNull(lastRect))
 	{
 		// might be called in animation block and we don't want handles to fly around
-		[CATransaction begin];
-		[CATransaction setDisableActions:YES];
+		if (animated)
+		{
+			[UIView beginAnimations:nil context:nil];
+			[UIView setAnimationDuration:SELECTION_ANIMATION_DURATION];
+			[UIView setAnimationBeginsFromCurrentState:YES];
+		}
+		else
+		{
+			[CATransaction begin];
+			[CATransaction setDisableActions:YES];
+		}
 		
-		[self.superview addSubview:self.dragHandleLeft];
 		_dragHandleLeft.center = CGPointMake(CGRectGetMidX(firstRect), firstRect.origin.y - 5.0);
-		
-		[self.superview addSubview:self.dragHandleRight];
 		_dragHandleRight.center = CGPointMake(CGRectGetMidX(lastRect), CGRectGetMaxY(lastRect) + 9.0);
 		
-		[CATransaction commit];
+		
+		if (animated)
+		{
+			[UIView commitAnimations];
+		}
+		else
+		{
+			[CATransaction commit];
+		}
 	}
 }
 
@@ -386,7 +413,9 @@
 		_dragHandleLeft.userInteractionEnabled = NO;
 		_dragHandleLeft.image = [UIImage imageNamed:@"kb-drag-dot.png"];
 		_dragHandleLeft.contentMode = UIViewContentModeCenter;
-		_dragHandleLeft.alpha = 0;
+		_dragHandleLeft.hidden = YES;
+		
+		[self.superview addSubview:_dragHandleLeft];
 	}
 	
 	return _dragHandleLeft;
@@ -400,7 +429,9 @@
 		_dragHandleRight.userInteractionEnabled = NO;
 		_dragHandleRight.image = [UIImage imageNamed:@"kb-drag-dot.png"];
 		_dragHandleRight.contentMode = UIViewContentModeCenter;
-		_dragHandleRight.alpha = 0;
+		_dragHandleRight.hidden = YES;
+		
+		[self.superview addSubview:_dragHandleRight];
 	}
 	
 	return _dragHandleRight;
@@ -413,39 +444,13 @@
 	{
 		_dragHandlesVisible = dragHandlesVisible;
 		
-        [self adjustDragHandles];
+        [self adjustDragHandlesAnimated:NO];
 	}
 }
 
 - (void)setDragHandlesVisible:(BOOL)dragHandlesVisible
 {
 	[self setDragHandlesVisible:dragHandlesVisible animated:NO];
-}
-
-- (void)setSelectionRectangles:(NSArray *)selectionRectangles
-{
-	if (_selectionRectangles != selectionRectangles)
-	{
-		[_selectionRectangles release];
-		_selectionRectangles = [selectionRectangles retain];
-		
-		
-		if (_selectionRectangles)
-		{
-			self.alpha = 1;
-			//[self setNeedsDisplay];
-            //[self setNeedsLayout];
-            CGRect superRect = [self.superview bounds];
-            [self layoutSubviewsInRect:superRect];
-		}
-		else
-		{
-			self.alpha = 0;
-		}
-        
-        [self adjustDragHandles];
-
-	}
 }
 
 - (UIColor *)cursorColor
@@ -510,6 +515,46 @@
     return _endCaretView;
 }
 
+- (void)setSelectionRectangles:(NSArray *)selectionRectangles animated:(BOOL)animated
+{
+	if (_selectionRectangles != selectionRectangles)
+	{
+		[_selectionRectangles release];
+		_selectionRectangles = [selectionRectangles retain];
+		
+
+		if (animated)
+		{
+			[UIView beginAnimations:@"Selection" context:nil];
+			[UIView setAnimationDuration:SELECTION_ANIMATION_DURATION];
+			[UIView setAnimationBeginsFromCurrentState:YES];
+		}
+		
+		if (_selectionRectangles)
+		{
+			self.alpha = 1;
+
+            CGRect superRect = [self.superview bounds];
+            [self layoutSubviewsInRect:superRect];
+		}
+		else
+		{
+			self.alpha = 0;
+		}
+        
+        [self adjustDragHandlesAnimated:animated];
+		
+		if (animated)
+		{
+			[UIView commitAnimations];
+		}
+	}
+}
+
+- (void)setSelectionRectangles:(NSArray *)selectionRectangles
+{
+	[self setSelectionRectangles:selectionRectangles animated:NO];
+}
 
 @synthesize selectionRectangles = _selectionRectangles;
 @synthesize selectionRectangleViews = _selectionRectangleViews;

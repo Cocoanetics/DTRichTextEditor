@@ -63,6 +63,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	_showsKeyboardWhenBecomingFirstResponder = YES;
 	
 	self.contentView.shouldLayoutCustomSubviews = YES;
+	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	// --- text input
     self.autocapitalizationType = UITextAutocapitalizationTypeSentences;
@@ -355,7 +356,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[self scrollCursorVisibleAnimated:YES];
 }
 
-- (void)updateCursor
+- (void)updateCursorAnimated:(BOOL)animated
 {
 	// re-add cursor
 	DTTextPosition *position = (id)self.selectedTextRange.start;
@@ -400,7 +401,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		self.selectionView.style = DTTextSelectionStyleSelection;
 		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_selectedTextRange NSRangeValue]];
-		_selectionView.selectionRectangles = rects;
 		
 		if (self.editable && !_markedTextRange)
 		{
@@ -410,7 +410,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		{
 			_selectionView.dragHandlesVisible = NO;
 		}
+
+		[_selectionView setSelectionRectangles:rects animated:animated];
 		
+		// no cursor
 		[_cursor removeFromSuperview];
 		
 		return;
@@ -736,7 +739,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
         
         DTTextRange *newRange = [DTTextRange textRangeFromStart:_selectedTextRange.start toEnd:newEnd];
         
-        [self setSelectedTextRange:newRange];
+        [self setSelectedTextRange:newRange animated:YES];
     }
     else if (direction == UITextStorageDirectionBackward)
     {
@@ -759,7 +762,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
         
         DTTextRange *newRange = [DTTextRange textRangeFromStart:newStart toEnd:_selectedTextRange.end];
         
-        [self setSelectedTextRange:newRange];
+        [self setSelectedTextRange:newRange animated:YES];
     }
         
 }
@@ -1506,7 +1509,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:[text length]]];
 	
-	[self updateCursor];
+	[self updateCursorAnimated:NO];
 	[self scrollCursorVisibleAnimated:YES];
     
     
@@ -1529,7 +1532,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	return (id)_selectedTextRange;
 }
 
-- (void)setSelectedTextRange:(DTTextRange *)newTextRange
+- (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated
 {
 	if (_selectedTextRange != newTextRange)
 	{
@@ -1538,13 +1541,18 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		_selectedTextRange = [newTextRange copy];
 		
-		[self updateCursor];
+		[self updateCursorAnimated:animated];
 		[self hideContextMenu];
 		
 		self.overrideInsertionAttributes = nil;
 		
 		[self didChangeValueForKey:@"selectedTextRange"];
 	}
+}
+
+- (void)setSelectedTextRange:(DTTextRange *)newTextRange
+{
+	[self setSelectedTextRange:newTextRange animated:NO];
 }
 
 - (UITextRange *)markedTextRange
@@ -1610,7 +1618,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// set new marked range
 	self.markedTextRange = [[[DTTextRange alloc]  initWithNSRange:NSMakeRange(startOfReplaceRange.location, [markedText length])] autorelease];
 	
-	[self updateCursor];
+	[self updateCursorAnimated:NO];
 	
 	[self didChangeValueForKey:@"markedTextRange"];
 }
@@ -1631,7 +1639,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	self.markedTextRange = nil;
 	
-	[self updateCursor];
+	[self updateCursorAnimated:NO];
 	
 	// calling selectionDidChange makes the input candidate go away
 	
@@ -1992,7 +2000,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[super setContentSize:newContentSize];
 	
 	self.selectionView.frame = self.contentView.frame;
-	[self updateCursor];
+	[self updateCursorAnimated:NO];
 }
 
 - (DTLoupeView *)loupe
@@ -2194,7 +2202,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
     // triggers relayout
 	
 	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:replacementLength]];
-	[self updateCursor];
+	[self updateCursorAnimated:NO];
 	
 	// send change notification
 	[[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidBeginEditingNotification object:self userInfo:nil];

@@ -123,6 +123,9 @@ typedef enum
 
 - (void)scrollCursorVisibleAnimated:(BOOL)animated;
 
+- (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated;
+
+
 @property (nonatomic, assign) BOOL canInteractWithPasteboard;
 
 @end
