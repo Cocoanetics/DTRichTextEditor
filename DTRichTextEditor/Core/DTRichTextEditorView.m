@@ -63,7 +63,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	_showsKeyboardWhenBecomingFirstResponder = YES;
 	
 	self.contentView.shouldLayoutCustomSubviews = YES;
-	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	// --- text input
     self.autocapitalizationType = UITextAutocapitalizationTypeSentences;
