@@ -499,6 +499,9 @@
 /* Begin PBXProject section */
 		A7F0C83513C326E900EBD027 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
 			buildConfigurationList = A7F0C83813C326E900EBD027 /* Build configuration list for PBXProject "DTRichTextEditor" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
