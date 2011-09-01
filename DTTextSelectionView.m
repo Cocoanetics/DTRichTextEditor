@@ -457,7 +457,7 @@
 	if (_cursorColor != cursorColor)
 	{
 		[_cursorColor release];
-		_cursorColor = [_cursorColor retain];
+		_cursorColor = [cursorColor retain];
         
        _beginCaretView.backgroundColor = _cursorColor;
         _endCaretView.backgroundColor = _cursorColor;

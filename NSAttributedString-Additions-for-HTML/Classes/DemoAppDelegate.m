@@ -9,16 +9,12 @@
 #import "DemoAppDelegate.h"
 #import "DemoSnippetsViewController.h"
 
-#import "NSAttributedString+HTML.h"
-
 @implementation DemoAppDelegate
 
 @synthesize window = _window;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions 
 {   
-	NSAttributedString *str = [[NSAttributedString alloc] initWithHTML:nil options:nil documentAttributes:nil];
-	
 	// Create window
 	_window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	
