@@ -63,7 +63,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	_showsKeyboardWhenBecomingFirstResponder = YES;
 	
 	self.contentView.shouldLayoutCustomSubviews = YES;
-	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	// --- text input
     self.autocapitalizationType = UITextAutocapitalizationTypeSentences;
@@ -324,7 +323,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	if (!_cursor.superview)
 	{
-		[self.contentView addSubview:_cursor];
+		[self addSubview:_cursor];
 	}
 	
 	UIEdgeInsets reverseInsets = self.contentView.edgeInsets;
@@ -389,7 +388,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		if (!_cursor.superview)
 		{
-			[self.contentView addSubview:_cursor];
+			[self addSubview:_cursor];
 		}
 		
 		[self _scrollCursorVisible];
@@ -1014,59 +1013,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 }
 
-
-
-- (void)doubletapped:(UITapGestureRecognizer *)gesture
-{
-	if (gesture.state == UIGestureRecognizerStateRecognized)
-	{
-		contentView.drawDebugFrames = !contentView.drawDebugFrames;
-	}
-}
-
-//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-//{
-//	if (gestureRecognizer == panGesture && otherGestureRecognizer == longPressGesture)
-//	{
-//		return YES;
-//	}
-//
-//	//NSLog(@"%@ - %@", [gestureRecognizer class], [otherGestureRecognizer class]);
-//
-//	return YES;		
-//	
-//}//- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-//{
-//	if (gestureRecognizer == longPressGesture)
-//	{
-//		if (_dragMode == DTDragModeNone)
-//		{
-//			return YES;
-//		}
-//		else
-//		{
-//			return NO;
-//		}
-//	}
-//	
-//	if (gestureRecognizer == panGesture)
-//	{
-//		if (_dragMode == DTDragModeNone)
-//		{
-//			return YES;
-//		}
-//		else
-//		{
-//			return NO;
-//		}
-//	}
-//	
-//	
-//	return YES;
-//}
-//}
-
--(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
 	CGPoint touchPoint = [touch locationInView:self];	
 	
@@ -1995,7 +1942,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	if (!_cursor)
 	{
 		_cursor = [[DTCursorView alloc] initWithFrame:CGRectZero];
-		[self.contentView addSubview:_cursor];
+		[self addSubview:_cursor];
 	}
 	
 	return _cursor;
@@ -2190,9 +2137,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	NSParameterAssert(range);
 	
 	NSUInteger replacementLength = [_internalAttributedText replaceRange:[range NSRangeValue] withAttachment:attachment inParagraph:inParagraph];
-	
+
+	// need to notify input delegate to remove autocorrection candidate view if present
+	[inputDelegate textWillChange:self];
+
 	self.attributedString = _internalAttributedText;
     // triggers relayout
+	
+	[inputDelegate textDidChange:self];
 	
 	if (_keyboardIsShowing)
 	{
