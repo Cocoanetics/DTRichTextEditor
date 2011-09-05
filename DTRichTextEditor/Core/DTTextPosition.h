@@ -3,7 +3,7 @@
 //  DTRichTextEditor
 //
 //  Created by Oliver Drobnik on 1/23/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -11,18 +11,18 @@
 
 @interface DTTextPosition : UITextPosition <NSCopying>
 {
-	NSInteger _location;
+	NSUInteger _location;
 }
 
-+ (DTTextPosition *)textPositionWithLocation:(NSInteger)location;
++ (DTTextPosition *)textPositionWithLocation:(NSUInteger)location;
 
-- (id)initWithLocation:(NSInteger)location;
+- (id)initWithLocation:(NSUInteger)location;
 
 - (NSComparisonResult)compare:(id)object;
 - (BOOL)isEqual:(DTTextPosition *)aPosition;
 
 - (DTTextPosition *)textPositionWithOffset:(NSInteger)offset;
 
-@property (nonatomic, assign) NSInteger location;
+@property (nonatomic, assign) NSUInteger location;
 
 @end

@@ -3,7 +3,7 @@
 //  DTRichTextEditor
 //
 //  Created by Oliver Drobnik on 1/23/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
 #import <QuartzCore/QuartzCore.h>
@@ -2011,6 +2011,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 @end
 
 
+#pragma mark Manipulation Methods
+
 @implementation DTRichTextEditorView (manipulation)
 
 - (DTTextRange *)rangeForWordAtPosition:(DTTextPosition *)position
@@ -2376,6 +2378,21 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	// return NO if we don't want keyboard to show e.g. context menu only on double tap
 	return _editable && _showsKeyboardWhenBecomingFirstResponder;
+}
+
+@end
+
+#pragma mark CoreText Functions
+
+@implementation DTRichTextEditorView (CoreText)
+
+- (DTCoreTextLayoutLine *)layoutLineContainingTextPosition:(DTTextPosition *)textPosition
+{
+	// get index
+	NSUInteger index = textPosition.location;
+
+	// get line from layout frame
+	return [self.contentView.layoutFrame lineContainingIndex:index];
 }
 
 @end

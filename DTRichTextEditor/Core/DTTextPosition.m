@@ -3,7 +3,7 @@
 //  DTRichTextEditor
 //
 //  Created by Oliver Drobnik on 1/23/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
 #import "DTTextPosition.h"
@@ -12,17 +12,12 @@
 @implementation DTTextPosition
 
 
-+ (DTTextPosition *)textPositionWithLocation:(NSInteger)location
++ (DTTextPosition *)textPositionWithLocation:(NSUInteger)location
 {
-	if (location<0)
-	{
-		return nil;
-	}
-	
 	return [[[DTTextPosition alloc] initWithLocation:location] autorelease];
 }
 
-- (id)initWithLocation:(NSInteger)location
+- (id)initWithLocation:(NSUInteger)location
 {
 	self = [super init];
 	

@@ -3,7 +3,7 @@
 //  DTRichTextEditor
 //
 //  Created by Oliver Drobnik on 7/8/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

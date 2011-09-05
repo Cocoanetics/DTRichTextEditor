@@ -3,7 +3,7 @@
 //  DTRichTextEditor
 //
 //  Created by Oliver Drobnik on 1/23/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -20,6 +20,7 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
 @class DTCursorView;
 @class DTLoupeView;
 @class DTTextSelectionView;
+
 
 typedef enum
 {
@@ -130,6 +131,8 @@ typedef enum
 
 @end
 
+
+
 @interface DTRichTextEditorView (manipulation)
 
 - (DTTextRange *)rangeForWordAtPosition:(DTTextPosition *)position;
@@ -153,5 +156,16 @@ typedef enum
 
 - (CGRect)visibleContentRect;
 - (BOOL)selectionIsVisible;
+
+@end
+
+
+#pragma mark CoreText
+
+@class DTCoreTextLayoutLine;
+
+@interface DTRichTextEditorView (CoreText)
+
+- (DTCoreTextLayoutLine *)layoutLineContainingTextPosition:(DTTextPosition *)textPosition;
 
 @end
