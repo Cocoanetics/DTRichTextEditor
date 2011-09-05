@@ -66,22 +66,33 @@
     
 	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
-    	[richEditor setHTMLString:html];
+	[richEditor setHTMLString:html];
+	
+	// image as drawn by your custom views which you return in the delegate method
 	richEditor.contentView.shouldDrawImages = NO;
 	
 	
-	UIBarButtonItem *photo = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];
-	photo.enabled = NO;
-	self.navigationItem.rightBarButtonItem = photo;
-	[photo release];
+	photoButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];
+	photoButton.enabled = NO;
 	
-	UIBarButtonItem *bold = [[UIBarButtonItem alloc] initWithTitle:@"Bold" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleBold:)];
-	bold.enabled = NO;
-	self.navigationItem.leftBarButtonItem = bold;
-	[bold release];
+	boldButton = [[UIBarButtonItem alloc] initWithTitle:@"B" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleBold:)];
+	boldButton.enabled = NO;
+
+	italicButton = [[UIBarButtonItem alloc] initWithTitle:@"I" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleItalic:)];
+	italicButton.enabled = NO;
+
+	underlineButton = [[UIBarButtonItem alloc] initWithTitle:@"U" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleUnderline:)];
+	underlineButton.enabled = NO;
+
+	UIBarButtonItem *spacer = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease];
 	
 	// disable this once you use your own image views
 	//richEditor.contentView.shouldDrawImages = YES;
+	
+	toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
+	richEditor.inputAccessoryView = toolbar;
+	
+	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, spacer, photoButton, nil]];
 	
 	
 	// watch the selectedTextRange property
@@ -126,6 +137,12 @@
     popover.delegate = nil;
     [popover release];
     
+	[boldButton release];
+	[italicButton release];
+	[underlineButton release];
+	[photoButton release];
+	[toolbar release];
+	
     [_imageViewCache release];
     
     [super dealloc];
@@ -230,6 +247,17 @@
 	[richEditor toggleBoldInRange:range];
 }
 
+- (void)toggleItalic:(UIBarButtonItem *)sender
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	[richEditor toggleItalicInRange:range];
+}
+- (void)toggleUnderline:(UIBarButtonItem *)sender
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	[richEditor toggleUnderlineInRange:range];
+}
+
 #pragma mark Notifications
 - (void)textChanged:(NSNotification *)notification
 {
@@ -246,13 +274,17 @@
 		// disable photo/bold button if there is no selection
 		if (newRange == [NSNull null])
 		{
-			self.navigationItem.leftBarButtonItem.enabled = NO;
-			self.navigationItem.rightBarButtonItem.enabled = NO;
+			for (UIBarButtonItem *oneItem in toolbar.items)
+			{
+				oneItem.enabled = NO;
+			}
 		}
 		else
 		{
-			self.navigationItem.rightBarButtonItem.enabled = YES;
-			self.navigationItem.leftBarButtonItem.enabled = YES;
+			for (UIBarButtonItem *oneItem in toolbar.items)
+			{
+				oneItem.enabled = YES;
+			}
 		}
 	}
 }

@@ -56,6 +56,7 @@
 		A74BEFE7140519CD004A9491 /* DTCSSListStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = A74BEFE3140519CD004A9491 /* DTCSSListStyle.m */; };
 		A74BEFE8140519CD004A9491 /* DTWebVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = A74BEFE5140519CD004A9491 /* DTWebVideoView.m */; };
 		A74BEFEB140521F1004A9491 /* DTTiledLayerWithoutFade.m in Sources */ = {isa = PBXBuildFile; fileRef = A74BEFEA140521F1004A9491 /* DTTiledLayerWithoutFade.m */; };
+		A75C5A6714151A5C00BDB380 /* DTCSSStylesheet.m in Sources */ = {isa = PBXBuildFile; fileRef = A75C5A6614151A5C00BDB380 /* DTCSSStylesheet.m */; };
 		A76AB98013E161FF001C4153 /* DTSelectionGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = A76AB97F13E161FF001C4153 /* DTSelectionGestureRecognizer.m */; };
 		A76F897413C70073007B37C0 /* UIView+DT.m in Sources */ = {isa = PBXBuildFile; fileRef = A76F897313C70073007B37C0 /* UIView+DT.m */; };
 		A76F897F13C72F5B007B37C0 /* 43-film-roll.png in Resources */ = {isa = PBXBuildFile; fileRef = A76F897D13C72F5B007B37C0 /* 43-film-roll.png */; };
@@ -180,6 +181,8 @@
 		A74BEFE5140519CD004A9491 /* DTWebVideoView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTWebVideoView.m; path = Classes/DTWebVideoView.m; sourceTree = "<group>"; };
 		A74BEFE9140521F1004A9491 /* DTTiledLayerWithoutFade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTTiledLayerWithoutFade.h; sourceTree = "<group>"; };
 		A74BEFEA140521F1004A9491 /* DTTiledLayerWithoutFade.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTTiledLayerWithoutFade.m; sourceTree = "<group>"; };
+		A75C5A6514151A5C00BDB380 /* DTCSSStylesheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTCSSStylesheet.h; path = Classes/DTCSSStylesheet.h; sourceTree = "<group>"; };
+		A75C5A6614151A5C00BDB380 /* DTCSSStylesheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DTCSSStylesheet.m; path = Classes/DTCSSStylesheet.m; sourceTree = "<group>"; };
 		A76AB97E13E161FF001C4153 /* DTSelectionGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTSelectionGestureRecognizer.h; sourceTree = "<group>"; };
 		A76AB97F13E161FF001C4153 /* DTSelectionGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTSelectionGestureRecognizer.m; sourceTree = "<group>"; };
 		A76F897213C70073007B37C0 /* UIView+DT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+DT.h"; sourceTree = "<group>"; };
@@ -281,6 +284,8 @@
 		A704273B13C37F3800EE0776 /* NSAttributedString-Additions-for-HTML */ = {
 			isa = PBXGroup;
 			children = (
+				A75C5A6514151A5C00BDB380 /* DTCSSStylesheet.h */,
+				A75C5A6614151A5C00BDB380 /* DTCSSStylesheet.m */,
 				A74BEFE0140519CD004A9491 /* DTAttributedTextCell.h */,
 				A74BEFE1140519CD004A9491 /* DTAttributedTextCell.m */,
 				A74BEFE2140519CD004A9491 /* DTCSSListStyle.h */,
@@ -501,6 +506,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = Cocoanetics;
 			};
 			buildConfigurationList = A7F0C83813C326E900EBD027 /* Build configuration list for PBXProject "DTRichTextEditor" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -607,6 +613,7 @@
 				A74BEFE7140519CD004A9491 /* DTCSSListStyle.m in Sources */,
 				A74BEFE8140519CD004A9491 /* DTWebVideoView.m in Sources */,
 				A74BEFEB140521F1004A9491 /* DTTiledLayerWithoutFade.m in Sources */,
+				A75C5A6714151A5C00BDB380 /* DTCSSStylesheet.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

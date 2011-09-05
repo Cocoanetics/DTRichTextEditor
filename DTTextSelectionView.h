@@ -26,6 +26,7 @@ typedef enum
 	DTTextSelectionStyle _style;
 	
 	BOOL _dragHandlesVisible;
+	BOOL _showsDragHandlesForSelection;
 	
 	NSArray *_selectionRectangles;
     NSMutableArray *_selectionRectangleViews;
@@ -44,6 +45,7 @@ typedef enum
 
 @property (nonatomic, assign) DTTextSelectionStyle style;
 @property (nonatomic, assign) BOOL dragHandlesVisible;
+@property (nonatomic, assign) BOOL showsDragHandlesForSelection;
 
 @property (nonatomic, retain) UIImageView *dragHandleLeft;
 @property (nonatomic, retain) UIImageView *dragHandleRight;

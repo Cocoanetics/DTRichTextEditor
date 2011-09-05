@@ -11,6 +11,7 @@
 #import "DTAttributedTextContentView.h"
 #import "NSString+HTML.h"
 #import "DTHTMLElement.h"
+#import "DTCoreTextLayoutFrame.h"
 #import "DTCoreTextLayoutFrame+DTRichText.h"
 #import "NSMutableAttributedString+DTRichText.h"
 #import "NSDictionary+DTRichText.h"
@@ -401,14 +402,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		self.selectionView.style = DTTextSelectionStyleSelection;
 		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_selectedTextRange NSRangeValue]];
 		
-		if (self.editable && !_markedTextRange)
-		{
-			_selectionView.dragHandlesVisible = YES;
-		}
-		else
-		{
-			_selectionView.dragHandlesVisible = NO;
-		}
+//		if (self.editable && !_markedTextRange)
+//		{
+//			_selectionView.showsDragHandlesForSelection = YES;
+//		}
+//		else
+//		{
+//			_selectionView.dragHandlesVisible = NO;
+//		}
 
 		[_selectionView setSelectionRectangles:rects animated:animated];
 		
@@ -674,8 +675,15 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		if (self.editable)
 		{
-			[_loupe dismissLoupeTowardsLocation:self.cursor.center];
-			_cursor.state = DTCursorStateBlinking;
+			if (_keyboardIsShowing)
+			{
+				[_loupe dismissLoupeTowardsLocation:self.cursor.center];
+				_cursor.state = DTCursorStateBlinking;
+			}
+			else
+			{
+				[_loupe dismissLoupeTowardsLocation:touchPoint];
+			}
 		}
 		else
 		{
@@ -820,6 +828,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		if (![self isFirstResponder] && [self canBecomeFirstResponder])
 		{
 			_keyboardIsShowing = YES;
+			self.selectionView.showsDragHandlesForSelection	= YES;
 			[self becomeFirstResponder];
 		}
 		
@@ -885,33 +894,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		case UIGestureRecognizerStateBegan:
 		{
-//			if (_keyboardIsShowing && ![self isFirstResponder] && [self canBecomeFirstResponder])
-//			{
-//				[self becomeFirstResponder];
-//			}
-			
-			// selection and self have same coordinate system
-//			if (_keyboardIsShowing)
-//			{
-			if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
-			{
-				_dragMode = DTDragModeLeftHandle;
-			}
-			else if (CGRectContainsPoint(_selectionView.dragHandleRight.frame, touchPoint))
-			{
-				_dragMode = DTDragModeRightHandle;
-			}
-			else
-			{
-				_dragMode = DTDragModeCursor;
-			}
-//			}
-//			else
-//			{
-//				_dragMode = DTDragModeWord;
-//			}
-//			
-			
 			[self presentLoupeWithTouchPoint:touchPoint];
 			_cursor.state = DTCursorStateStatic;
 		}
@@ -943,7 +925,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
                 }
                 
 				_shouldShowContextMenuAfterLoupeHide = YES;
-                _selectionView.dragHandlesVisible = YES;
+               // _selectionView.showsDragHandlesForSelection = YES;
 			}
 		}
 			
@@ -1087,8 +1069,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (BOOL)resignFirstResponder
 {
+	// selecting via long press does not show handles
+	_selectionView.showsDragHandlesForSelection	= NO;
+
 	// this removes cursor and selections
-	
 	self.selectedTextRange = nil;
 
 	return [super resignFirstResponder];
@@ -1981,6 +1965,48 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 }
 
 
+- (UIView *)inputView
+{
+	if (_keyboardIsShowing)
+	{
+		return _inputView;
+	}
+	
+	return nil;
+}
+
+- (void)setInputView:(UIView *)inputView
+{
+	if (_inputView != inputView)
+	{
+		[_inputView release];
+		
+		_inputView = [inputView retain];
+	}
+}
+
+
+- (UIView *)inputAccessoryView
+{
+	if (_keyboardIsShowing)
+	{
+		return _inputAccessoryView;
+	}
+	
+	return nil;
+}
+
+- (void)setInputAccessoryView:(UIView *)inputAccessoryView
+{
+	if (_inputAccessoryView != inputAccessoryView)
+	{
+		[_inputAccessoryView release];
+		
+		_inputAccessoryView = [inputAccessoryView retain];
+	}
+}
+
+
 
 @synthesize internalAttributedText = _internalAttributedText;
 
@@ -1990,6 +2016,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 @synthesize editable = _editable;
 
+@synthesize inputView = _inputView;
+@synthesize inputAccessoryView = _inputAccessoryView;
 
 #pragma mark UITextInputTraits Protocol
 @synthesize autocapitalizationType;
@@ -2004,6 +2032,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 @synthesize loupe = _loupe;
 @synthesize cursor = _cursor;
 @synthesize selectionView = _selectionView;
+
 @synthesize overrideInsertionAttributes = _overrideInsertionAttributes;
 @synthesize canInteractWithPasteboard = _canInteractWithPasteboard;
 
@@ -2403,6 +2432,13 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 	// get line from layout frame
 	return [self.contentView.layoutFrame lineContainingIndex:index];
+}
+
+- (NSArray *)visibleLayoutLines
+{
+	CGRect visibleRect = self.bounds;
+	
+	return [self.contentView.layoutFrame linesVisibleInRect:visibleRect];
 }
 
 @end

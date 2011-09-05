@@ -62,6 +62,9 @@ typedef enum
 	DTCursorView *_cursor;
 	DTTextSelectionView *_selectionView;
 	
+	UIView *_inputView;
+	UIView *_inputAccessoryView;
+	
 	DTDragMode _dragMode;
 	BOOL _shouldReshowContextMenuAfterHide;
 	BOOL _shouldShowContextMenuAfterLoupeHide;
@@ -108,6 +111,9 @@ typedef enum
 
 
 @property (nonatomic, retain) DTCursorView *cursor;
+
+@property (retain, readwrite) UIView *inputView;
+@property (retain, readwrite) UIView *inputAccessoryView;
 
 // UITextInputTraits
 @property(nonatomic) UITextAutocapitalizationType autocapitalizationType;
@@ -169,5 +175,6 @@ typedef enum
 - (NSUInteger)numberOfLayoutLines;
 - (DTCoreTextLayoutLine *)layoutLineAtIndex:(NSUInteger)lineIndex;
 - (DTCoreTextLayoutLine *)layoutLineContainingTextPosition:(DTTextPosition *)textPosition;
+- (NSArray *)visibleLayoutLines;
 
 @end

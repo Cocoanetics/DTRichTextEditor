@@ -20,6 +20,15 @@
     UIPopoverController *popover;
     
     DTCache *_imageViewCache;
+	
+	
+	// demonstrating inputAccessoryView
+	UIToolbar *toolbar;
+	UIBarButtonItem *photoButton;
+	
+	UIBarButtonItem *boldButton;
+	UIBarButtonItem *italicButton;
+	UIBarButtonItem *underlineButton;
 }
 
 @property (nonatomic, retain) DTCache *imageViewCache;
