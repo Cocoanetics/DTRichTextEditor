@@ -2386,6 +2386,16 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 @implementation DTRichTextEditorView (CoreText)
 
+- (NSUInteger)numberOfLayoutLines
+{
+	return [self.contentView.layoutFrame.lines count];
+}
+
+- (DTCoreTextLayoutLine *)layoutLineAtIndex:(NSUInteger)lineIndex
+{
+	return [self.contentView.layoutFrame.lines objectAtIndex:lineIndex];
+}
+
 - (DTCoreTextLayoutLine *)layoutLineContainingTextPosition:(DTTextPosition *)textPosition
 {
 	// get index

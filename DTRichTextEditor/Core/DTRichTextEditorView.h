@@ -166,6 +166,8 @@ typedef enum
 
 @interface DTRichTextEditorView (CoreText)
 
+- (NSUInteger)numberOfLayoutLines;
+- (DTCoreTextLayoutLine *)layoutLineAtIndex:(NSUInteger)lineIndex;
 - (DTCoreTextLayoutLine *)layoutLineContainingTextPosition:(DTTextPosition *)textPosition;
 
 @end
