@@ -1215,15 +1215,15 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 	
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	
-	NSLog(@"%@", [pasteboard pasteboardTypes]);
-	
-	
-	NSData *data = [pasteboard dataForPasteboardType:@"Apple Web Archive pasteboard type"];
-	
-	NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-	NSString *path = [documentsDirectory stringByAppendingPathComponent:@"output.data"];
-	[data writeToFile:path atomically:YES];
+//	
+//	NSLog(@"%@", [pasteboard pasteboardTypes]);
+//	
+//	
+//	NSData *data = [pasteboard dataForPasteboardType:@"Apple Web Archive pasteboard type"];
+//	
+//	NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+//	NSString *path = [documentsDirectory stringByAppendingPathComponent:@"output.data"];
+//	[data writeToFile:path atomically:YES];
 	
 	//NSLog(@"%@", data);
 	
