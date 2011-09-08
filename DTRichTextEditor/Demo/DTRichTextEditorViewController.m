@@ -164,7 +164,7 @@
 	attachment.originalSize = image.size;
 	attachment.contentType = DTTextAttachmentTypeImage;
 	
-	[richEditor replaceRange:richEditor.selectedTextRange withAttachment:attachment inParagraph:YES];
+	[richEditor replaceRange:lastSelection withAttachment:attachment inParagraph:YES];
 }
 
 
@@ -271,6 +271,8 @@
 	{
 		id newRange = [change objectForKey:NSKeyValueChangeNewKey];
 		
+		NSLog(@"%@", change);
+
 		// disable photo/bold button if there is no selection
 		if (newRange == [NSNull null])
 		{
@@ -285,6 +287,9 @@
 			{
 				oneItem.enabled = YES;
 			}
+			
+			[lastSelection release];
+			lastSelection = [richEditor.selectedTextRange retain];
 		}
 	}
 }

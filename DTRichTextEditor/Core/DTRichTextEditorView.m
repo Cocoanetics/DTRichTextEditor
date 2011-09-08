@@ -1079,6 +1079,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	return [super resignFirstResponder];
 }
 
+- (BOOL)becomeFirstResponder
+{
+	// we need input accessory and input view to show
+	_keyboardIsShowing = YES;
+	
+	return [super becomeFirstResponder];
+}
+
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
 	if (action == @selector(selectAll:))
