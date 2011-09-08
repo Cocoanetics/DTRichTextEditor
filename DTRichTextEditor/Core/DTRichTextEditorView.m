@@ -1879,6 +1879,12 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 #pragma mark Properties
 - (void)setAttributedText:(NSAttributedString *)newAttributedText
 {
+	// setting new text should remove all selections
+	[self unmarkText];
+	
+	self.selectedTextRange = nil;
+	
+	
 	if (newAttributedText)
 	{
 		NSMutableAttributedString *tmpString = [[newAttributedText mutableCopy] autorelease];

@@ -271,8 +271,6 @@
 	{
 		id newRange = [change objectForKey:NSKeyValueChangeNewKey];
 		
-		NSLog(@"%@", change);
-
 		// disable photo/bold button if there is no selection
 		if (newRange == [NSNull null])
 		{
