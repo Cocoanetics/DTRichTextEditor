@@ -27,7 +27,6 @@
 #import "DTCoreTextParagraphStyle.h"
 
 #import "CGUtils.h"
-#import "NSData+Base64.h"
 #import "NSString+UTF8Cleaner.h"
 
 // standard options
@@ -123,6 +122,9 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 	// the combined style sheet for entire document
 	DTCSSStylesheet *styleSheet = [[[DTCSSStylesheet alloc] init] autorelease]; 
 	
+	// default list styles
+	[styleSheet parseStyleBlock:@"ul {list-style:disc;} ol {list-style:decimal;}"];
+	
 	// for performance we will return this mutable string
 	NSMutableAttributedString *tmpString = [[NSMutableAttributedString alloc] init];
 	
@@ -211,7 +213,7 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 	{
 		defaultParagraphStyle.listIndent = [defaultListIndent integerValue];
 	}
-
+	
 	DTHTMLElement *defaultTag = [[[DTHTMLElement alloc] init] autorelease];
 	defaultTag.fontDescriptor = defaultFontDescriptor;
 	defaultTag.paragraphStyle = defaultParagraphStyle;
@@ -231,7 +233,7 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 			defaultTag.textColor = [UIColor colorWithHTMLName:defaultColor];
 		}
 	}
-
+	
 	
 	DTHTMLElement *currentTag = defaultTag; // our defaults are the root
 	
@@ -287,9 +289,9 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 					[currentTag applyStyleDictionary:mergedStyles];
 				}
 				
-//				// convert CSS Styles into our own style
+				// convert CSS Styles into our own style
 //				NSString *styleString = [currentTag attributeForKey:@"style"];
-//				
+//								
 //				if (styleString)
 //				{
 //					[currentTag parseStyleString:styleString];
@@ -351,7 +353,7 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 				// specifiying line height interfers with correct positioning
 				currentTag.paragraphStyle.minimumLineHeight = 0;
 				currentTag.paragraphStyle.maximumLineHeight = 0;
-
+				
 				if (needsNewLineBefore)
 				{
 					if ([tmpString length] && ![[tmpString string] hasSuffix:@"\n"])
@@ -375,7 +377,7 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 			{
 				// hide contents of recognized tag
 				currentTag.tagContentInvisible = YES;
-
+				
 				// make appropriate attachment
 				DTTextAttachment *attachment = [DTTextAttachment textAttachmentWithElement:currentTag options:options];
 				
@@ -437,8 +439,7 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 			{
 				if (tagOpen)
 				{
-					// have inherit the correct list counter from parent
-					
+					// have inherited the correct list counter from parent
 					DTHTMLElement *counterElement = currentTag.parent;
 					
 					NSString *valueNum = [currentTag attributeForKey:@"value"];
@@ -456,11 +457,11 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 					currentTag.paragraphStyle.firstLineIndent = currentTag.paragraphStyle.headIndent;
 					currentTag.paragraphStyle.headIndent += currentTag.paragraphStyle.listIndent;
 					
+					// first tab is to right-align bullet, numbering against
 					CGFloat tabOffset = currentTag.paragraphStyle.headIndent - 5.0*textScale;
-					if(tabOffset > 20.0f) // I have no idea what an appropriate value is for this
-					{
-						[currentTag.paragraphStyle addTabStopAtPosition:tabOffset alignment:kCTRightTextAlignment];
-					}
+					[currentTag.paragraphStyle addTabStopAtPosition:tabOffset alignment:kCTRightTextAlignment];
+					
+					// second tab is for the beginning of first line after bullet
 					[currentTag.paragraphStyle addTabStopAtPosition:currentTag.paragraphStyle.headIndent alignment:	kCTLeftTextAlignment];			
 				}
 				else 
@@ -495,11 +496,6 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 			{
 				if (tagOpen)
 				{
-					if (!currentTag.listStyle)
-					{
-						currentTag.listStyle = [DTCSSListStyle decimalListStyle];
-					}
-					
 					NSString *valueNum = [currentTag attributeForKey:@"start"];
 					if (valueNum)
 					{
@@ -525,12 +521,6 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 			{
 				if (tagOpen)
 				{
-					if (!currentTag.listStyle)
-					{
-						currentTag.listStyle = [DTCSSListStyle discListStyle];
-					}
-
-					
 					needsNewLineBefore = YES;
 					
 					currentTag.listCounter = 0;
@@ -973,9 +963,12 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 		
 		DTTextAttachment *attachment = [attributes objectForKey:@"DTTextAttachment"];
 		
-		if (attachment && [predicate evaluateWithObject:attachment])
+		if (attachment)
 		{
-			[tmpArray addObject:attachment];
+			if ([predicate evaluateWithObject:attachment])
+			{
+				[tmpArray addObject:attachment];
+			}
 		}
 		
 		index += range.length;
@@ -1008,7 +1001,7 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 	for (NSString *oneParagraph in paragraphs)
 	{
 		NSRange paragraphRange = NSMakeRange(location, [oneParagraph length]);
-
+		
 		// skip empty paragraph at end
 		if (oneParagraph == [paragraphs lastObject] && !paragraphRange.length)
 		{
@@ -1105,9 +1098,10 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 			
 			if (attachment)
 			{
+				NSString *urlString;
+				
 				if (attachment.contentURL)
 				{
-					NSString *urlString;
 					
 					if ([attachment.contentURL isFileURL])
 					{
@@ -1128,53 +1122,66 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 					{
 						urlString = [attachment.contentURL relativeString];
 					}
-
-					// write appropriate tag
-					if (attachment.contentType == DTTextAttachmentTypeVideoURL)
-					{
-						[retString appendFormat:@"<video src=\"%@\"", urlString];
-					}
-					else if (attachment.contentType == DTTextAttachmentTypeImage)
-					{
-						[retString appendFormat:@"<img src=\"%@\"", urlString];
-					}
-
-					
-					// build a HTML 5 conformant size style if set
-					NSMutableString *styleString = [NSMutableString string];
-					
-					if (attachment.originalSize.width>0)
-					{
-						[styleString appendFormat:@"width:%.0fpx;", attachment.originalSize.width];
-					}
-
-					if (attachment.originalSize.height>0)
-					{
-						[styleString appendFormat:@"height:%.0fpx;", attachment.originalSize.height];
-					}
-
-					if ([styleString length])
-					{
-						[retString appendFormat:@" style=\"%@\"", styleString];
-					}
-					
-					// attach the attributes dictionary
-					NSMutableDictionary *tmpAttributes = [[attachment.attributes mutableCopy] autorelease];
-					
-					// remove src and style, we already have that
-					[tmpAttributes removeObjectForKey:@"src"];
-					[tmpAttributes removeObjectForKey:@"style"];
-					
-					for (NSString *oneKey in [tmpAttributes allKeys])
-					{
-						oneKey = [oneKey stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-						NSString *value = [[tmpAttributes objectForKey:oneKey] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-						[retString appendFormat:@" %@=\"%@\"", oneKey, value];
-					}
-					
-					// end
-					[retString appendString:@" />"];
 				}
+				else
+				{
+					if (attachment.contentType == DTTextAttachmentTypeImage && attachment.contents)
+					{
+						urlString = [attachment dataURLRepresentation];
+					}
+					else
+					{
+						// no valid image remote or local
+						continue;
+					}
+				}
+				
+				// write appropriate tag
+				if (attachment.contentType == DTTextAttachmentTypeVideoURL)
+				{
+					[retString appendFormat:@"<video src=\"%@\"", urlString];
+				}
+				else if (attachment.contentType == DTTextAttachmentTypeImage)
+				{
+					[retString appendFormat:@"<img src=\"%@\"", urlString];
+				}
+				
+				
+				// build a HTML 5 conformant size style if set
+				NSMutableString *styleString = [NSMutableString string];
+				
+				if (attachment.originalSize.width>0)
+				{
+					[styleString appendFormat:@"width:%.0fpx;", attachment.originalSize.width];
+				}
+				
+				if (attachment.originalSize.height>0)
+				{
+					[styleString appendFormat:@"height:%.0fpx;", attachment.originalSize.height];
+				}
+				
+				if ([styleString length])
+				{
+					[retString appendFormat:@" style=\"%@\"", styleString];
+				}
+				
+				// attach the attributes dictionary
+				NSMutableDictionary *tmpAttributes = [[attachment.attributes mutableCopy] autorelease];
+				
+				// remove src and style, we already have that
+				[tmpAttributes removeObjectForKey:@"src"];
+				[tmpAttributes removeObjectForKey:@"style"];
+				
+				for (NSString *oneKey in [tmpAttributes allKeys])
+				{
+					oneKey = [oneKey stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+					NSString *value = [[tmpAttributes objectForKey:oneKey] stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+					[retString appendFormat:@" %@=\"%@\"", oneKey, value];
+				}
+				
+				// end
+				[retString appendString:@" />"];
+				
 				
 				continue;
 			}
@@ -1257,6 +1264,13 @@ NSString *DTDefaultListIndent = @"DTDefaultListIndent";
 	}
 	
 	return retString;
+}
+
+- (NSString *)plainTextString
+{
+	NSString *tmpString = [self string];
+	
+	return [tmpString stringByReplacingOccurrencesOfString:UNICODE_OBJECT_PLACEHOLDER withString:@""];
 }
 
 @end
