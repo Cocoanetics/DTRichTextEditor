@@ -13,6 +13,7 @@
 #import "DTHTMLElement.h"
 #import "DTCoreTextLayoutFrame.h"
 #import "DTCoreTextLayoutFrame+DTRichText.h"
+#import "NSMutableAttributedString+HTML.h"
 #import "NSMutableAttributedString+DTRichText.h"
 #import "NSDictionary+DTRichText.h"
 #import "NSMutableDictionary+DTRichText.h"
@@ -1200,7 +1201,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 //	
-//	NSLog(@"%@", [pasteboard pasteboardTypes]);
+	NSLog(@"%@", [pasteboard pasteboardTypes]);
 //	
 //	
 //	NSData *data = [pasteboard dataForPasteboardType:@"Apple Web Archive pasteboard type"];
@@ -1872,7 +1873,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	if (newAttributedText)
 	{
-		self.internalAttributedText = [[newAttributedText mutableCopy] autorelease];
+		NSMutableAttributedString *tmpString = [[newAttributedText mutableCopy] autorelease];
+		
+		if (![[tmpString string] hasSuffix:@"\n"])
+		{
+			[tmpString appendString:@"\n"];
+		}
+		
+		self.internalAttributedText = tmpString;
 	}
 	else
 	{
