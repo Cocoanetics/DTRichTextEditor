@@ -44,7 +44,7 @@ static NSString * const WebResourceResponseKey = @"WebResourceResponse";
 	data = [dictionary objectForKey:WebResourceDataKey];
 	frameName = [dictionary objectForKey:WebResourceFrameNameKey]; 
 	mimeType = [dictionary objectForKey:WebResourceMIMETypeKey];
-	url = [dictionary objectForKey:WebResourceURLKey];
+	url = [NSURL URLWithString:[dictionary objectForKey:WebResourceURLKey]];
 	textEncodingName = [dictionary objectForKey:WebResourceTextEncodingNameKey];
 	
 	// if we wanted to, here's the decoded response
@@ -108,6 +108,11 @@ static NSString * const WebResourceResponseKey = @"WebResourceResponse";
 	if (_textEncodingName)
 	{
 		[tmpDict setObject:_textEncodingName forKey:WebResourceTextEncodingNameKey];
+	}
+	
+	if (_url)
+	{
+		[tmpDict setObject:[_url absoluteString] forKey:WebResourceURLKey];
 	}
 	
 	// ignoring the NSURLResponse for now

@@ -69,7 +69,7 @@
 	[richEditor setHTMLString:html];
 	
 	// image as drawn by your custom views which you return in the delegate method
-	richEditor.contentView.shouldDrawImages = NO;
+	richEditor.contentView.shouldDrawImages = YES;
 	
 	
 	photoButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];

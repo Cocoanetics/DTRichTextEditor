@@ -32,6 +32,11 @@
 #import "DTCoreTextFontDescriptor.h"
 #import "DTTiledLayerWithoutFade.h"
 
+#import "DTWebArchive.h"
+#import "NSAttributedString+DTWebArchive.h"
+#import "UIPasteboard+DTWebArchive.h"
+#import "NSDictionary+Data.h"
+
 
 NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextEditorTextDidBeginEditingNotification";
 
@@ -173,7 +178,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 - (void)awakeFromNib
 {
 	[DTAttributedTextContentView setLayerClass:[DTTiledLayerWithoutFade class]];
-
+	
     [super awakeFromNib];
     
     [self setDefaults];
@@ -394,24 +399,24 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		}
 		
 		[self _scrollCursorVisible];
-//		SEL selector = @selector(_scrollCursorVisible);
-//		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
-//		[self performSelector:selector withObject:nil afterDelay:0.3];
+		//		SEL selector = @selector(_scrollCursorVisible);
+		//		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
+		//		[self performSelector:selector withObject:nil afterDelay:0.3];
 	}
 	else
 	{
 		self.selectionView.style = DTTextSelectionStyleSelection;
 		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_selectedTextRange NSRangeValue]];
 		
-//		if (self.editable && !_markedTextRange)
-//		{
-//			_selectionView.showsDragHandlesForSelection = YES;
-//		}
-//		else
-//		{
-//			_selectionView.dragHandlesVisible = NO;
-//		}
-
+		//		if (self.editable && !_markedTextRange)
+		//		{
+		//			_selectionView.showsDragHandlesForSelection = YES;
+		//		}
+		//		else
+		//		{
+		//			_selectionView.dragHandlesVisible = NO;
+		//		}
+		
 		[_selectionView setSelectionRectangles:rects animated:animated];
 		
 		// no cursor
@@ -736,8 +741,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
         
         
         UITextPosition *newEnd = (id)[[self tokenizer] positionFromPosition:_selectedTextRange.end
-                                                             toBoundary:UITextGranularityWord
-                                                            inDirection:UITextStorageDirectionForward];
+																 toBoundary:UITextGranularityWord
+																inDirection:UITextStorageDirectionForward];
         
         if (!newEnd)
         {
@@ -759,8 +764,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
         
         
         UITextPosition *newStart = (id)[[self tokenizer] positionFromPosition:_selectedTextRange.start
-                                                                 toBoundary:UITextGranularityWord
-                                                                inDirection:UITextStorageDirectionBackward];
+																   toBoundary:UITextGranularityWord
+																  inDirection:UITextStorageDirectionBackward];
         
         if (!newStart)
         {
@@ -772,7 +777,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
         
         [self setSelectedTextRange:newRange animated:YES];
     }
-        
+	
 }
 
 #pragma mark Notifications
@@ -870,7 +875,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	if (gesture.state == UIGestureRecognizerStateRecognized)
 	{
 		CGPoint touchPoint = [gesture locationInView:self.contentView];
-
+		
 		DTTextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
 		
 		DTTextRange *wordRange = [self rangeForWordAtPosition:position];
@@ -926,7 +931,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
                 }
                 
 				_shouldShowContextMenuAfterLoupeHide = YES;
-               // _selectionView.showsDragHandlesForSelection = YES;
+				// _selectionView.showsDragHandlesForSelection = YES;
 			}
 		}
 			
@@ -982,7 +987,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
                     [self extendSelectionToIncludeWordInDirection:UITextStorageDirectionForward];
                 }
             }
-
+			
 			_shouldShowContextMenuAfterLoupeHide = YES;
 			[self dismissLoupeWithTouchPoint:touchPoint];
 		}
@@ -1003,12 +1008,12 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// ignore touches on views that UITextInput adds
 	// those are added to self, user custom views are subviews of contentView
 	UIView *hitView = [self hitTest:touchPoint withEvent:nil];
-
+	
 	if (hitView.superview == self && hitView != self.contentView)
 	{
 		return NO;
 	}
-
+	
 	if (gestureRecognizer == longPressGesture)
 	{
 		//		if (![_selectionView dragHandlesVisible])
@@ -1029,7 +1034,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		//		}
 	}
 	
-
+	
 	if (gestureRecognizer == panGesture)
 	{
 		if (![_selectionView dragHandlesVisible])
@@ -1072,17 +1077,17 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	// selecting via long press does not show handles
 	_selectionView.showsDragHandlesForSelection	= NO;
-
+	
 	// this removes cursor and selections
 	self.selectedTextRange = nil;
-
+	
 	return [super resignFirstResponder];
 }
 
 - (BOOL)becomeFirstResponder
 {
 	// we need input accessory and input view to show
-	_keyboardIsShowing = YES;
+	//_keyboardIsShowing = YES;
 	
 	return [super becomeFirstResponder];
 }
@@ -1165,11 +1170,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		return;
 	}
     
-	NSString *string = [self plainTextForRange:_selectedTextRange];
+	// first step is identical with copy
+	[self copy:sender];
 	
-	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	[pasteboard setString:string];
-	
+	// second set is removing what was copied
 	[self replaceRange:_selectedTextRange withText:@""];
 }
 
@@ -1179,25 +1183,29 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		return;
 	}
-    
-	NSString *string = [self plainTextForRange:_selectedTextRange];
 	
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 	
-	[pasteboard setString:string];
+	NSRange selectedRange = [_selectedTextRange NSRangeValue];
 	
-	//	NSAttributedString *attributedString = [self.internalAttributedText attributedSubstringFromRange:[_selectedTextRange NSRangeValue]];
-	//	
-	//	
-	//	NSMutableData *theData = [NSMutableData data];
-	//	NSKeyedArchiver *encoder = [[NSKeyedArchiver alloc] initForWritingWithMutableData:theData];
-	//	
-	//	[encoder encodeObject:attributedString forKey:@"attributedString"];
-	//	[encoder finishEncoding];
-	//	
-	//	NSLog(@"%@", theData);
-	//	
-	//	[encoder release];
+	if ([_selectedTextRange.end isEqual:[self endOfDocument]])
+	{
+		// we also want the ending paragraph mark
+		selectedRange.length ++;
+	}
+	
+	NSAttributedString *attributedString = [self.internalAttributedText attributedSubstringFromRange:selectedRange];
+	
+	// plain text omits attachments and format
+	NSString *plainText = [attributedString plainTextString];
+	
+	// web archive contains rich text
+	DTWebArchive *webArchive = [attributedString webArchive];
+	NSData *data = [[webArchive dictionaryRepresentation] dataRepresentation];
+	
+	// set multiple formats at the same time
+	NSArray *items = [NSArray arrayWithObjects:[NSDictionary dictionaryWithObjectsAndKeys:data, WebArchivePboardType, plainText, @"public.utf8-plain-text", nil], nil];
+	[pasteboard setItems:items];
 }
 
 - (void)paste:(id)sender
@@ -1208,15 +1216,15 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 	
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-//	
+	//	
 	NSLog(@"%@", [pasteboard pasteboardTypes]);
-//	
-//	
-//	NSData *data = [pasteboard dataForPasteboardType:@"Apple Web Archive pasteboard type"];
-//	
-//	NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-//	NSString *path = [documentsDirectory stringByAppendingPathComponent:@"output.data"];
-//	[data writeToFile:path atomically:YES];
+	//	
+	//	
+	//	NSData *data = [pasteboard dataForPasteboardType:@"Apple Web Archive pasteboard type"];
+	//	
+	//	NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+	//	NSString *path = [documentsDirectory stringByAppendingPathComponent:@"output.data"];
+	//	[data writeToFile:path atomically:YES];
 	
 	//NSLog(@"%@", data);
 	
@@ -1266,6 +1274,16 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 	
 	
+	DTWebArchive *webArchive = [pasteboard webArchive];
+	
+	if (webArchive)
+	{
+		NSAttributedString *attrString = [[[NSAttributedString alloc] initWithWebArchive:webArchive options:[self textDefaults] documentAttributes:NULL] autorelease];
+		
+		[self replaceRange:_selectedTextRange withText:attrString];
+		
+		return;
+	}
 	
 	NSString *string = [pasteboard string];
 	
@@ -1311,9 +1329,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (void)insertText:(NSString *)text
 {
-	if ([text isEqualToString:@"\n"])
+	if (_replaceParagraphsWithLineFeeds)
 	{
-		text = UNICODE_LINE_FEED;
+		text = [text stringByReplacingOccurrencesOfString:@"\n" withString:UNICODE_LINE_FEED];
 	}
 	
 	if (!text)
@@ -1417,7 +1435,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	else if ([text isKindOfClass:[NSAttributedString class]])
 	{
 		// need to replace attributes with typing attributes
-		text = [[[NSAttributedString alloc] initWithString:[text string] attributes:typingAttributes] autorelease];
+		//		text = [[[NSAttributedString alloc] initWithString:[text string] attributes:typingAttributes] autorelease];
+		//		
+		//		[self.internalAttributedText replaceCharactersInRange:myRange withAttributedString:text];
 		
 		[self.internalAttributedText replaceCharactersInRange:myRange withAttributedString:text];
 	}
@@ -1462,20 +1482,33 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated
 {
-	if (_selectedTextRange != newTextRange)
+	// check if the selected range fits with the attributed text
+	DTTextPosition *start = (DTTextPosition *)newTextRange.start;
+	DTTextPosition *end = (DTTextPosition *)newTextRange.end;
+	
+	if ([end compare:(DTTextPosition *)[self endOfDocument]] == NSOrderedDescending)
 	{
-		[self willChangeValueForKey:@"selectedTextRange"];
-		[_selectedTextRange release];
-		
-		_selectedTextRange = [newTextRange copy];
-		
-		[self updateCursorAnimated:animated];
-		[self hideContextMenu];
-		
-		self.overrideInsertionAttributes = nil;
-		
-		[self didChangeValueForKey:@"selectedTextRange"];
+		end = (DTTextPosition *)[self endOfDocument];
 	}
+	
+	if ([start compare:end] == NSOrderedDescending)
+	{
+		start = end;
+	}
+	
+	newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
+	
+	[self willChangeValueForKey:@"selectedTextRange"];
+	[_selectedTextRange release];
+	
+	_selectedTextRange = [newTextRange copy];
+	
+	[self updateCursorAnimated:animated];
+	[self hideContextMenu];
+	
+	self.overrideInsertionAttributes = nil;
+	
+	[self didChangeValueForKey:@"selectedTextRange"];
 }
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange
@@ -1564,7 +1597,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		return;
 	}
-
+	
 	[inputDelegate textWillChange:self];
 	
 	self.markedTextRange = nil;
@@ -1743,9 +1776,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	NSInteger index = position.location;
 	
 	DTCoreTextLayoutLine *layoutLine = [self.contentView.layoutFrame lineContainingIndex:index];
-
+	
 	CGRect caretRect = [self.contentView.layoutFrame cursorRectAtIndex:index];
-
+	
 	caretRect.size.height = layoutLine.frame.size.height;
 	caretRect.origin.x = roundf(caretRect.origin.x);
 	caretRect.origin.y = layoutLine.frame.origin.y;
@@ -1882,8 +1915,12 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// setting new text should remove all selections
 	[self unmarkText];
 	
-	self.selectedTextRange = nil;
-	
+	// make sure that the selected text range stays valid
+	BOOL needsAdjustSelection = NO;
+	if (NSMaxRange([_selectedTextRange NSRangeValue]) > [newAttributedText length])
+	{
+		needsAdjustSelection = YES;
+	}
 	
 	if (newAttributedText)
 	{
@@ -1902,6 +1939,11 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
     
     [self setNeedsLayout];
+	
+	if (needsAdjustSelection)
+	{
+		self.selectedTextRange = _selectedTextRange;
+	}
 }
 
 - (void)setInternalAttributedText:(NSMutableAttributedString *)newAttributedText
@@ -1918,8 +1960,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	return [[[NSAttributedString alloc] initWithAttributedString:_internalAttributedText] autorelease];
 }
-
-#pragma mark Properties
 
 - (void)setMarkedTextRange:(UITextRange *)markedTextRange
 {
@@ -1989,7 +2029,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (UIView *)inputView
 {
-	if (_keyboardIsShowing)
+	if (_keyboardIsShowing || _showsKeyboardWhenBecomingFirstResponder)
 	{
 		return _inputView;
 	}
@@ -2010,7 +2050,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (UIView *)inputAccessoryView
 {
-	if (_keyboardIsShowing)
+	if (_keyboardIsShowing || _showsKeyboardWhenBecomingFirstResponder)
 	{
 		return _inputAccessoryView;
 	}
@@ -2056,7 +2096,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 @synthesize selectionView = _selectionView;
 
 @synthesize overrideInsertionAttributes = _overrideInsertionAttributes;
+
 @synthesize canInteractWithPasteboard = _canInteractWithPasteboard;
+@synthesize replaceParagraphsWithLineFeeds = _replaceParagraphsWithLineFeeds;
 
 
 @end
@@ -2201,10 +2243,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	NSParameterAssert(range);
 	
 	NSUInteger replacementLength = [_internalAttributedText replaceRange:[range NSRangeValue] withAttachment:attachment inParagraph:inParagraph];
-
+	
 	// need to notify input delegate to remove autocorrection candidate view if present
 	[inputDelegate textWillChange:self];
-
+	
 	self.attributedString = _internalAttributedText;
     // triggers relayout
 	
@@ -2321,6 +2363,11 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		return YES;
 	}
 	
+	if ([pasteboard webArchive])
+	{
+		return YES;
+	}
+	
 	return NO;
 }
 
@@ -2421,7 +2468,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		return NO;
 	}
-
+	
 	return YES;
 }
 
@@ -2430,6 +2477,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// return NO if we don't want keyboard to show e.g. context menu only on double tap
 	return _editable && _showsKeyboardWhenBecomingFirstResponder;
 }
+
+
 
 @end
 
@@ -2451,7 +2500,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	// get index
 	NSUInteger index = textPosition.location;
-
+	
 	// get line from layout frame
 	return [self.contentView.layoutFrame lineContainingIndex:index];
 }

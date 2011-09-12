@@ -34,6 +34,15 @@ typedef enum
 
 @interface DTRichTextEditorView : DTAttributedTextView <UITextInputTraits, UITextInput, DTAttributedTextContentViewDelegate, UIGestureRecognizerDelegate>
 {
+	// customization options available as properties
+	BOOL _editable;
+	BOOL _replaceParagraphsWithLineFeeds;
+	BOOL _canInteractWithPasteboard;
+
+	UIView *_inputView;
+	UIView *_inputAccessoryView;
+	
+	// private stuff
 	NSMutableAttributedString *_internalAttributedText;
 	
 	id<UITextInputTokenizer> tokenizer;
@@ -54,22 +63,18 @@ typedef enum
 	UIReturnKeyType returnKeyType;                       // default is UIReturnKeyDefault (See note under UIReturnKeyType enum)
     BOOL secureTextEntry;                                // default is NO
 	
+	// not enabled, that's new as of iOS5
   //  UITextSpellCheckingType spellCheckingType;
-	
-    BOOL _editable;
 	
 	DTLoupeView *_loupe;
 	DTCursorView *_cursor;
 	DTTextSelectionView *_selectionView;
 	
-	UIView *_inputView;
-	UIView *_inputAccessoryView;
 	
 	DTDragMode _dragMode;
 	BOOL _shouldReshowContextMenuAfterHide;
 	BOOL _shouldShowContextMenuAfterLoupeHide;
 	BOOL _shouldShowContextMenuAfterMovementEnded;
-	BOOL _canInteractWithPasteboard;
 	
 	BOOL _showsKeyboardWhenBecomingFirstResponder;
 	BOOL _keyboardIsShowing;
@@ -97,6 +102,7 @@ typedef enum
 
 
 @property(nonatomic,getter=isEditable) BOOL editable;
+@property(nonatomic, assign) BOOL replaceParagraphsWithLineFeeds;
 
 @property (nonatomic, copy) NSAttributedString *attributedText;
 
