@@ -388,8 +388,7 @@
 				A75C6CDB1419154200AEE350 /* LICENSE */,
 				A75C6CDC1419154200AEE350 /* Readme.markdown */,
 			);
-			name = DTWebArchive;
-			path = "../../../../Open Source/NSAttributedString-Additions-for-HTML/DTWebArchive";
+			path = DTWebArchive;
 			sourceTree = "<group>";
 		};
 		A75C6CBF1419154200AEE350 /* Core */ = {

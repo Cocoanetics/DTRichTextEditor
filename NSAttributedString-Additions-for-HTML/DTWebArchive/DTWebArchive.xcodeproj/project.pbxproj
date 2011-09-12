@@ -1,0 +1,337 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A71CDA9214111EEF000E602A /* UIPasteboard+DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A71CDA9114111EEF000E602A /* UIPasteboard+DTWebArchive.m */; };
+		A73FA68C1410D3B5009B4411 /* DTWebResource.m in Sources */ = {isa = PBXBuildFile; fileRef = A73FA68B1410D3B5009B4411 /* DTWebResource.m */; };
+		A73FA6971410DF69009B4411 /* YouTubeFrame.plist in Resources */ = {isa = PBXBuildFile; fileRef = A73FA6961410DF69009B4411 /* YouTubeFrame.plist */; };
+		A73FA69C14111236009B4411 /* OneImage.plist in Resources */ = {isa = PBXBuildFile; fileRef = A73FA69B14111236009B4411 /* OneImage.plist */; };
+		A73FA6A014111A6D009B4411 /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = A73FA69E14111A6D009B4411 /* MainWindow.xib */; };
+		A73FA6A114111A6D009B4411 /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A73FA69F14111A6D009B4411 /* RootViewController.xib */; };
+		A7697CD41410CC6400F25129 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7697CD31410CC6400F25129 /* UIKit.framework */; };
+		A7697CD61410CC6400F25129 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7697CD51410CC6400F25129 /* Foundation.framework */; };
+		A7697CD81410CC6400F25129 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7697CD71410CC6400F25129 /* CoreGraphics.framework */; };
+		A7697CDE1410CC6400F25129 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = A7697CDC1410CC6400F25129 /* InfoPlist.strings */; };
+		A7697CE01410CC6400F25129 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A7697CDF1410CC6400F25129 /* main.m */; };
+		A7697CE41410CC6400F25129 /* DTWebArchiveAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A7697CE31410CC6400F25129 /* DTWebArchiveAppDelegate.m */; };
+		A7697CEA1410CC6400F25129 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A7697CE91410CC6400F25129 /* RootViewController.m */; };
+		A7697CF71410CC9200F25129 /* DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A7697CF61410CC9200F25129 /* DTWebArchive.m */; };
+		A7697CF91410CEAB00F25129 /* Simple.plist in Resources */ = {isa = PBXBuildFile; fileRef = A7697CF81410CEAB00F25129 /* Simple.plist */; };
+		A7697CFC1410D05700F25129 /* NSDictionary+Data.m in Sources */ = {isa = PBXBuildFile; fileRef = A7697CFB1410D05700F25129 /* NSDictionary+Data.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A71CDA9014111EEF000E602A /* UIPasteboard+DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIPasteboard+DTWebArchive.h"; path = "../../../../Open Source/DTWebArchive/DTWebArchive/Core/UIPasteboard+DTWebArchive.h"; sourceTree = "<group>"; };
+		A71CDA9114111EEF000E602A /* UIPasteboard+DTWebArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIPasteboard+DTWebArchive.m"; path = "../../../../Open Source/DTWebArchive/DTWebArchive/Core/UIPasteboard+DTWebArchive.m"; sourceTree = "<group>"; };
+		A73FA68A1410D3B5009B4411 /* DTWebResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTWebResource.h; sourceTree = "<group>"; };
+		A73FA68B1410D3B5009B4411 /* DTWebResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTWebResource.m; sourceTree = "<group>"; };
+		A73FA6961410DF69009B4411 /* YouTubeFrame.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = YouTubeFrame.plist; sourceTree = "<group>"; };
+		A73FA69B14111236009B4411 /* OneImage.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = OneImage.plist; sourceTree = "<group>"; };
+		A73FA69E14111A6D009B4411 /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
+		A73FA69F14111A6D009B4411 /* RootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RootViewController.xib; sourceTree = "<group>"; };
+		A7697CCF1410CC6400F25129 /* DTWebArchive.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DTWebArchive.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7697CD31410CC6400F25129 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		A7697CD51410CC6400F25129 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		A7697CD71410CC6400F25129 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		A7697CDB1410CC6400F25129 /* DTWebArchive-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DTWebArchive-Info.plist"; sourceTree = "<group>"; };
+		A7697CDD1410CC6400F25129 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		A7697CDF1410CC6400F25129 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A7697CE11410CC6400F25129 /* DTWebArchive-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DTWebArchive-Prefix.pch"; sourceTree = "<group>"; };
+		A7697CE21410CC6400F25129 /* DTWebArchiveAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DTWebArchiveAppDelegate.h; sourceTree = "<group>"; };
+		A7697CE31410CC6400F25129 /* DTWebArchiveAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DTWebArchiveAppDelegate.m; sourceTree = "<group>"; };
+		A7697CE81410CC6400F25129 /* RootViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RootViewController.h; sourceTree = "<group>"; };
+		A7697CE91410CC6400F25129 /* RootViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RootViewController.m; sourceTree = "<group>"; };
+		A7697CF51410CC9200F25129 /* DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTWebArchive.h; sourceTree = "<group>"; };
+		A7697CF61410CC9200F25129 /* DTWebArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTWebArchive.m; sourceTree = "<group>"; };
+		A7697CF81410CEAB00F25129 /* Simple.plist */ = {isa = PBXFileReference; lastKnownFileType = file.bplist; path = Simple.plist; sourceTree = "<group>"; };
+		A7697CFA1410D05700F25129 /* NSDictionary+Data.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Data.h"; sourceTree = "<group>"; };
+		A7697CFB1410D05700F25129 /* NSDictionary+Data.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Data.m"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A7697CCC1410CC6400F25129 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7697CD41410CC6400F25129 /* UIKit.framework in Frameworks */,
+				A7697CD61410CC6400F25129 /* Foundation.framework in Frameworks */,
+				A7697CD81410CC6400F25129 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A73FA69D14111239009B4411 /* Test Files */ = {
+			isa = PBXGroup;
+			children = (
+				A73FA69B14111236009B4411 /* OneImage.plist */,
+				A73FA6961410DF69009B4411 /* YouTubeFrame.plist */,
+				A7697CF81410CEAB00F25129 /* Simple.plist */,
+			);
+			name = "Test Files";
+			path = Test;
+			sourceTree = "<group>";
+		};
+		A7697CC41410CC6400F25129 = {
+			isa = PBXGroup;
+			children = (
+				A7697CD91410CC6400F25129 /* DTWebArchive */,
+				A7697CD21410CC6400F25129 /* Frameworks */,
+				A7697CD01410CC6400F25129 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A7697CD01410CC6400F25129 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A7697CCF1410CC6400F25129 /* DTWebArchive.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A7697CD21410CC6400F25129 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A7697CD31410CC6400F25129 /* UIKit.framework */,
+				A7697CD51410CC6400F25129 /* Foundation.framework */,
+				A7697CD71410CC6400F25129 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A7697CD91410CC6400F25129 /* DTWebArchive */ = {
+			isa = PBXGroup;
+			children = (
+				A73FA69D14111239009B4411 /* Test Files */,
+				A7697CF41410CC7B00F25129 /* Demo */,
+				A7697CF31410CC7300F25129 /* Core */,
+				A7697CDA1410CC6400F25129 /* Supporting Files */,
+			);
+			path = DTWebArchive;
+			sourceTree = "<group>";
+		};
+		A7697CDA1410CC6400F25129 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A7697CDB1410CC6400F25129 /* DTWebArchive-Info.plist */,
+				A7697CDC1410CC6400F25129 /* InfoPlist.strings */,
+				A7697CDF1410CC6400F25129 /* main.m */,
+				A7697CE11410CC6400F25129 /* DTWebArchive-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A7697CF31410CC7300F25129 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				A7697CF51410CC9200F25129 /* DTWebArchive.h */,
+				A7697CF61410CC9200F25129 /* DTWebArchive.m */,
+				A73FA68A1410D3B5009B4411 /* DTWebResource.h */,
+				A73FA68B1410D3B5009B4411 /* DTWebResource.m */,
+				A7697CFA1410D05700F25129 /* NSDictionary+Data.h */,
+				A7697CFB1410D05700F25129 /* NSDictionary+Data.m */,
+				A71CDA9014111EEF000E602A /* UIPasteboard+DTWebArchive.h */,
+				A71CDA9114111EEF000E602A /* UIPasteboard+DTWebArchive.m */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		A7697CF41410CC7B00F25129 /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				A73FA69E14111A6D009B4411 /* MainWindow.xib */,
+				A7697CE21410CC6400F25129 /* DTWebArchiveAppDelegate.h */,
+				A7697CE31410CC6400F25129 /* DTWebArchiveAppDelegate.m */,
+				A7697CE81410CC6400F25129 /* RootViewController.h */,
+				A7697CE91410CC6400F25129 /* RootViewController.m */,
+				A73FA69F14111A6D009B4411 /* RootViewController.xib */,
+			);
+			path = Demo;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A7697CCE1410CC6400F25129 /* DTWebArchive */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A7697CF01410CC6400F25129 /* Build configuration list for PBXNativeTarget "DTWebArchive" */;
+			buildPhases = (
+				A7697CCB1410CC6400F25129 /* Sources */,
+				A7697CCC1410CC6400F25129 /* Frameworks */,
+				A7697CCD1410CC6400F25129 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DTWebArchive;
+			productName = DTWebArchive;
+			productReference = A7697CCF1410CC6400F25129 /* DTWebArchive.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A7697CC61410CC6400F25129 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = A7697CC91410CC6400F25129 /* Build configuration list for PBXProject "DTWebArchive" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A7697CC41410CC6400F25129;
+			productRefGroup = A7697CD01410CC6400F25129 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A7697CCE1410CC6400F25129 /* DTWebArchive */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A7697CCD1410CC6400F25129 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7697CDE1410CC6400F25129 /* InfoPlist.strings in Resources */,
+				A7697CF91410CEAB00F25129 /* Simple.plist in Resources */,
+				A73FA6971410DF69009B4411 /* YouTubeFrame.plist in Resources */,
+				A73FA69C14111236009B4411 /* OneImage.plist in Resources */,
+				A73FA6A014111A6D009B4411 /* MainWindow.xib in Resources */,
+				A73FA6A114111A6D009B4411 /* RootViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A7697CCB1410CC6400F25129 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A7697CE01410CC6400F25129 /* main.m in Sources */,
+				A7697CE41410CC6400F25129 /* DTWebArchiveAppDelegate.m in Sources */,
+				A7697CEA1410CC6400F25129 /* RootViewController.m in Sources */,
+				A7697CF71410CC9200F25129 /* DTWebArchive.m in Sources */,
+				A7697CFC1410D05700F25129 /* NSDictionary+Data.m in Sources */,
+				A73FA68C1410D3B5009B4411 /* DTWebResource.m in Sources */,
+				A71CDA9214111EEF000E602A /* UIPasteboard+DTWebArchive.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A7697CDC1410CC6400F25129 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A7697CDD1410CC6400F25129 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A7697CEE1410CC6400F25129 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		A7697CEF1410CC6400F25129 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A7697CF11410CC6400F25129 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "DTWebArchive/DTWebArchive-Prefix.pch";
+				INFOPLIST_FILE = "DTWebArchive/DTWebArchive-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		A7697CF21410CC6400F25129 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "DTWebArchive/DTWebArchive-Prefix.pch";
+				INFOPLIST_FILE = "DTWebArchive/DTWebArchive-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A7697CC91410CC6400F25129 /* Build configuration list for PBXProject "DTWebArchive" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7697CEE1410CC6400F25129 /* Debug */,
+				A7697CEF1410CC6400F25129 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A7697CF01410CC6400F25129 /* Build configuration list for PBXNativeTarget "DTWebArchive" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A7697CF11410CC6400F25129 /* Debug */,
+				A7697CF21410CC6400F25129 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A7697CC61410CC6400F25129 /* Project object */;
+}
