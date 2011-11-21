@@ -1399,6 +1399,13 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	DTTextRange *myRange = (DTTextRange *)range;
 	NSRange rangeValue = [myRange NSRangeValue];
 	
+	// on iOS 5 the upper end of the range might be "unbounded" (NSIntegerMax)
+	if (NSMaxRange(rangeValue)>[bareText length])
+	{
+		return [bareText substringFromIndex:rangeValue.location];
+	}
+	
+	// otherwise return this part of the string			
 	return [bareText substringWithRange:rangeValue];
 }
 
