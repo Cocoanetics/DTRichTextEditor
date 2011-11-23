@@ -6,6 +6,7 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
+#import "NSAttributedString+DTRichText.h"
 #import "NSMutableAttributedString+DTRichText.h"
 #import "NSMutableAttributedString+HTML.h"
 #import "NSMutableDictionary+DTRichText.h"
@@ -19,42 +20,6 @@
 
 
 @implementation NSMutableAttributedString (DTRichText)
-
-- (NSDictionary *)typingAttributesForRange:(NSRange)range
-{
-	NSInteger index = 0;
-	
-	if (range.length)
-	{
-		// range = first character of range
-		index = range.location;
-	}
-	else
-	{
-		if (range.location>0)
-		{
-			index = range.location - 1;
-		}
-	}
-	
-	if (index >= [self length])
-	{
-		return nil;
-	}
-	
-	NSDictionary *attributes = [self attributesAtIndex:index effectiveRange:NULL];
-	
-	if ([attributes hasAttachment])
-	{
-		// make copy without attachment
-		NSMutableDictionary *tmpDict = [attributes mutableCopy];
-		[tmpDict removeAttachment];
-	
-		return [tmpDict autorelease];
-	}
-	
-	return attributes;
-}
 
 - (NSUInteger)replaceRange:(NSRange)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph
 {

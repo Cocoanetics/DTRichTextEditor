@@ -10,7 +10,16 @@
 
 @interface NSAttributedString (DTRichText)
 
+// the attributes that are used if typing starts at this position
+- (NSDictionary *)typingAttributesForRange:(NSRange)range;
+
+// create an attributed string with text attachment
 + (NSAttributedString *)attributedStringWithImage:(UIImage *)image maxDisplaySize:(CGSize)maxDisplaySize;
+
+// create attributed string with hyperlink
 + (NSAttributedString *)attributedStringWithURL:(NSURL *)url;
+
+// for debugging
+- (NSString *)dumpString;
 
 @end

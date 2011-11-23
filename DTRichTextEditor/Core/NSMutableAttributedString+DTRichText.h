@@ -12,9 +12,6 @@
 
 @interface NSMutableAttributedString (DTRichText)
 
-// the attributes that are used if typing starts at this position
-- (NSDictionary *)typingAttributesForRange:(NSRange)range;
-
 // convenience method to insert an attachment
 // returns the length of the replacement string
 - (NSUInteger)replaceRange:(NSRange)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph;
