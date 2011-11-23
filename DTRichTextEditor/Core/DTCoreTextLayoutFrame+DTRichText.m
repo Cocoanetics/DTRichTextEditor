@@ -103,34 +103,9 @@
 	CGRect currentRect = [self cursorRectAtIndex:index];
 	
 	DTCoreTextLayoutLine *line = [self.lines objectAtIndex:newLineIndex];
-	NSRange range = [line stringRange];
+	NSInteger closestIndex = [line stringIndexForPosition:CGPointMake(currentRect.origin.x, line.frame.origin.y)];
 	
-	NSInteger closestIndex = -1;
-	CGFloat closestDistance = CGFLOAT_MAX;
-    
-	
-	for (int i=0; i<range.length; i++)
-	{
-		NSInteger testIndex = i + range.location;
-		
-		CGRect rect = [self cursorRectAtIndex:testIndex];
-		
-		CGFloat horizDistance = fabs(rect.origin.x - currentRect.origin.x);
-		
-		if (horizDistance < closestDistance)
-		{
-			closestDistance = horizDistance;
-			closestIndex = testIndex;
-		}
-	}
-	
-	if (closestIndex>=0)
-	{
-		return closestIndex;
-	}
-	
-	
-	return -1;
+	return closestIndex;
 }
 
 - (NSInteger)indexForPositionDownwardsFromIndex:(NSInteger)index offset:(NSInteger)offset
@@ -146,34 +121,9 @@
 	CGRect currentRect = [self cursorRectAtIndex:index];
 	
 	DTCoreTextLayoutLine *line = [self.lines objectAtIndex:newLineIndex];
-	NSRange range = [line stringRange];
+	NSInteger closestIndex = [line stringIndexForPosition:CGPointMake(currentRect.origin.x, line.frame.origin.y)];
 	
-	NSInteger closestIndex = -1;
-	CGFloat closestDistance = CGFLOAT_MAX;
-	
-	
-	for (int i=0; i<range.length; i++)
-	{
-		NSInteger testIndex = i + range.location;
-		
-		CGRect rect = [self cursorRectAtIndex:testIndex];
-		
-		CGFloat horizDistance = fabs(rect.origin.x - currentRect.origin.x);
-		
-		if (horizDistance < closestDistance)
-		{
-			closestDistance = horizDistance;
-			closestIndex = testIndex;
-		}
-	}
-	
-	if (closestIndex>0)
-	{
-		return closestIndex;
-	}
-	
-	
-	return -1;
+	return closestIndex;
 }
 
 
