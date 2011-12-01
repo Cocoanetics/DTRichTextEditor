@@ -58,7 +58,7 @@
     NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	
     
-	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	[richEditor setHTMLString:html];
 	

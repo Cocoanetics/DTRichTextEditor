@@ -1951,15 +1951,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 			[tmpString appendString:@"\n"];
 		}
 		
-//		[self.mutableLayoutFrame setAttributedString:tmpString];
-//		[self.contentView setNeedsDisplay];
-//		[self.contentView sizeToFit];
-		
-		self.contentView.layer.borderColor = [UIColor redColor].CGColor;
-		self.contentView.layer.borderWidth = 2.0;
-		
 		[super setAttributedString:tmpString];
-		//self.internalAttributedText = tmpString;
 		
 		[self.contentView sizeToFit];
 	}
@@ -1976,22 +1968,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 }
 
-//- (void)setInternalAttributedText:(NSMutableAttributedString *)newAttributedText
-//{
-//	
-//	
-//	[_internalAttributedText autorelease];
-//	
-//	_internalAttributedText = [newAttributedText retain];
-//	
-//	self.attributedString = _internalAttributedText;
-//    // triggers relayout
-//}
-
 - (NSAttributedString *)attributedText
 {
-//	return [[[NSAttributedString alloc] initWithAttributedString:_internalAttributedText] autorelease];
-	
 	return self.contentView.layoutFrame.attributedStringFragment;
 }
 
