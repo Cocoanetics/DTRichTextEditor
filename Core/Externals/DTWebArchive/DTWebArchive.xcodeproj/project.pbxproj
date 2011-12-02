@@ -30,7 +30,6 @@
 		A74352F214867A2700F4C766 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A74352EB14867A2700F4C766 /* main.m */; };
 		A74352F314867A2700F4C766 /* RootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A74352ED14867A2700F4C766 /* RootViewController.m */; };
 		A743530B14867ACD00F4C766 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7697CD51410CC6400F25129 /* Foundation.framework */; };
-		A743531614867B0400F4C766 /* DTWebArchive-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = A743531514867B0400F4C766 /* DTWebArchive-Prefix.pch */; };
 		A743531914867B3600F4C766 /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A743530A14867ACD00F4C766 /* libDTWebArchive.a */; };
 		A743531A14867B5900F4C766 /* DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A74352D014867A1C00F4C766 /* DTWebArchive.m */; };
 		A743531B14867B5900F4C766 /* DTWebResource.m in Sources */ = {isa = PBXBuildFile; fileRef = A74352D214867A1C00F4C766 /* DTWebResource.m */; };
@@ -213,7 +212,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A743531614867B0400F4C766 /* DTWebArchive-Prefix.pch in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
