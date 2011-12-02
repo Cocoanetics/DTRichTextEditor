@@ -20,7 +20,7 @@
 
 - (void)relayoutText
 {
-//	SYNCHRONIZE_START(self.layoutLock)
+	//SYNCHRONIZE_START(self.selfLock)
 	{
 		// Make sure we actually have a superview before attempting to relayout the text.
 		if (self.superview) 
@@ -48,15 +48,15 @@
 			[self setNeedsLayout];
 		}
 	}
-//	SYNCHRONIZE_END(self.layoutLock)
+	//SYNCHRONIZE_END(self.selfLock)
 }
 
 
 - (DTCoreTextLayoutFrame *)layoutFrame
 {
-//	SYNCHRONIZE_START(self.layoutLock)
+	if (!_layoutFrame)
 	{
-		if (!_layoutFrame)
+		SYNCHRONIZE_START(self.selfLock)
 		{
 			CGRect rect = UIEdgeInsetsInsetRect(self.bounds, edgeInsets);
 			rect.size.height = CGFLOAT_OPEN_HEIGHT; // necessary height set as soon as we know it.
@@ -70,25 +70,38 @@
 				[self setNeedsDisplay];
 			}
 		}
+		SYNCHRONIZE_END(self.selfLock)
 	}
-//	SYNCHRONIZE_END(self.layoutLock)
 	
 	return _layoutFrame;
 }
 
 - (void)setAttributedString:(NSAttributedString *)attributedString
 {
-	if (_attributedString != attributedString)
+	DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
+	
+	BOOL needsRelayout = NO;
+	
+	SYNCHRONIZE_START(self.selfLock)
 	{
-		[_attributedString release];
-		
-		[(DTMutableCoreTextLayoutFrame *)self.layoutFrame setAttributedString:attributedString];
-		
-		_attributedString = [self.layoutFrame.attributedStringFragment retain];
-		
-		// new layout invalidates all positions for custom views
-		[self removeAllCustomViews];
-		
+		if (_attributedString != attributedString)
+		{
+			[_attributedString release];
+			
+			[layoutFrame setAttributedString:attributedString];
+			
+			_attributedString = [layoutFrame.attributedStringFragment retain];
+			
+			// new layout invalidates all positions for custom views
+			[self removeAllCustomViews];
+			
+			needsRelayout = YES;
+		}
+	}
+	SYNCHRONIZE_END(self.selfLock)
+	
+	if (needsRelayout)
+	{
 		[self relayoutText];
 	}
 }
@@ -118,23 +131,25 @@
 // incremental layouting
 - (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text
 {
-//	SYNCHRONIZE_START(self.layoutLock)
+	DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
+	
+	SYNCHRONIZE_START(self.selfLock)
 	{
-		[(DTMutableCoreTextLayoutFrame *)self.layoutFrame replaceTextInRange:range withText:text];
+		[layoutFrame replaceTextInRange:range withText:text];
 		
 		// remove attachment custom views that are no longer needed
 		[self setNeedsRemoveObsoleteAttachmentViews:YES];
 		
 		// remove all link custom views
 		[self removeAllCustomViewsForLinks];
-		
-		// relayout / redraw
-		[self setNeedsDisplay];
-		
-		// size might have changed
-		[self sizeToFit];
 	}
-//	SYNCHRONIZE_END(self.layoutLock)
+	SYNCHRONIZE_END(self.selfLock)
+	
+	// relayout / redraw
+	[self setNeedsDisplay];
+	
+	// size might have changed
+	[self sizeToFit];
 }
 
 - (void)removeAttachmentCustomViewsNoLongerInLayoutFrame

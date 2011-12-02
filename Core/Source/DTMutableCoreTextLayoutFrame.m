@@ -1,4 +1,4 @@
-//
+	//
 //  DTMutableCoreTextLayoutFrame.m
 //  DTRichTextEditor
 //
@@ -62,7 +62,7 @@
 	DTCoreTextLayoutFrame *tmpFrame = [tmpLayouter layoutFrameWithRect:rect range:allTextRange];
 	
 	// transfer the lines
-	[_lines release];
+	[_lines autorelease];
 	_lines = [tmpFrame.lines copy];
 	
 	[tmpLayouter release];
@@ -257,7 +257,7 @@
 	}
 	
     // save 
-	[_lines release];
+	[_lines autorelease];
     _lines = [tmpArray copy];
 	
 	// correct the overall frame size
