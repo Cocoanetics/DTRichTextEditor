@@ -54,7 +54,8 @@
 	richEditor.defaultFontFamily = @"Helvetica";
 	richEditor.textSizeMultiplier = 2.2;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
-	
+    richEditor.autocorrectionType = UITextAutocorrectionTypeNo;
+    
     NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	
     

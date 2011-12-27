@@ -18,9 +18,13 @@
 
 @implementation DTMutableCoreTextLayoutFrame
 
+@synthesize shouldRebuildLines;
+
 - (id)initWithFrame:(CGRect)frame attributedString:(NSAttributedString *)attributedString
 {
 	self = [super init];
+    
+    shouldRebuildLines =  YES;
 	
 	if (self)
 	{
@@ -78,7 +82,7 @@
 - (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text
 {
 	NSString *plainText = [_attributedStringFragment string];
-	
+
 	// get beginning and end of paragraph containing the replaced range
 	NSUInteger parBeginIndex;
 	NSUInteger parEndIndex;
@@ -173,13 +177,15 @@
     
 	// get baseline origin of first line, all lines need to be shifted down by that
 	CGFloat baselineOffset = 0;
+    NSUInteger insertionPoint = 0;
 	
-	if (paragraphs.location>0)
+	if (paragraphs.location > 0)
 	{
 		NSArray *preParaLines = [self linesInParagraphAtIndex:paragraphs.location-1];
 		
 		DTCoreTextLayoutLine *lineBefore = [preParaLines lastObject];
-		
+		insertionPoint = [_lines indexOfObject:lineBefore] + 1; 
+        
 		if ([tmpFrame.lines count])
 		{
 			DTCoreTextLayoutLine *firstInsertedLine = [tmpFrame.lines objectAtIndex:0];
@@ -193,7 +199,7 @@
 	// remove the changed lines
     NSMutableArray *tmpArray = [[self.lines mutableCopy] autorelease];
     
-    for (NSInteger index=paragraphs.location; index<NSMaxRange(paragraphs); index++)
+    for (NSInteger index=paragraphs.location; index < NSMaxRange(paragraphs); index++)
     {
 		
         NSArray *lines = [self linesInParagraphAtIndex:index];
@@ -204,7 +210,7 @@
 	[_paragraphRanges release], _paragraphRanges = nil;
 	
     // insert layouted lines
-    NSUInteger insertionIndex = paragraphs.location;
+    NSUInteger insertionIndex = insertionPoint; //([tmpArray count] > 0 ? paragraphs.location + 1 : paragraphs.location); // ***HACK, was paragraphs.location, this hack fixed the following bug. Open sample app, start typing until you line wrap, tap enter, start typing <-- this would cause layouting issues
 	CGFloat previousBaselineY;
 	DTCoreTextLayoutLine *previousLine = nil;
 	
@@ -271,7 +277,10 @@
 - (void)setFrame:(CGRect)frame
 {
 	_frame = frame;
-	[self relayoutText];
+    
+    if (shouldRebuildLines) {
+        [self relayoutText];
+    }
 }
 
 

@@ -26,7 +26,7 @@
 		if (self.superview) 
 		{
 			// update the layout
-			[(DTMutableCoreTextLayoutFrame*)self.layoutFrame relayoutText];
+			//[(DTMutableCoreTextLayoutFrame*)self.layoutFrame relayoutText];
 			
 			// remove all links because they might have merged or split
 			[self removeAllCustomViewsForLinks];
@@ -149,7 +149,9 @@
 	[self setNeedsDisplay];
 	
 	// size might have changed
+    layoutFrame.shouldRebuildLines = NO;
 	[self sizeToFit];
+    layoutFrame.shouldRebuildLines = YES;
 }
 
 - (void)removeAttachmentCustomViewsNoLongerInLayoutFrame

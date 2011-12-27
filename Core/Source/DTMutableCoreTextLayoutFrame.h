@@ -11,7 +11,10 @@
 @interface DTMutableCoreTextLayoutFrame : DTCoreTextLayoutFrame
 {
 	UIEdgeInsets _edgeInsets; // space between frame edges and text
+    BOOL shouldRebuildLines;
 }
+
+@property (nonatomic, assign) BOOL shouldRebuildLines;
 
 // default initializer
 - (id)initWithFrame:(CGRect)frame attributedString:(NSAttributedString *)attributedString;
