@@ -17,6 +17,7 @@
 #import "NSString+HTML.h"
 
 #import "DTCoreTextFontDescriptor.h"
+#import "DTCoreTextConstants.h"
 
 
 @implementation NSMutableAttributedString (DTRichText)

@@ -190,7 +190,8 @@
 		{
 			DTCoreTextLayoutLine *firstInsertedLine = [tmpFrame.lines objectAtIndex:0];
 			
-			CGFloat insertionBaselineOrigin = lineBefore.baselineOrigin.y + [firstInsertedLine lineHeight] + [lineBefore paragraphSpacing];
+			CGFloat insertedLineHeight = firstInsertedLine.ascent + firstInsertedLine.descent + [firstInsertedLine calculatedLeading];
+			CGFloat insertionBaselineOrigin = lineBefore.baselineOrigin.y + insertedLineHeight + [lineBefore paragraphSpacing];
 			baselineOffset = insertionBaselineOrigin - firstInsertedLine.baselineOrigin.y;
 		}
 	}

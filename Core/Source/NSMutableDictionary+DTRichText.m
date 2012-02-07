@@ -6,6 +6,7 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
+#import <CoreText/CoreText.h>
 #import "NSMutableDictionary+DTRichText.h"
 #import "DTCoreTextFontDescriptor.h"
 

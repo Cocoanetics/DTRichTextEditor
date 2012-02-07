@@ -10,11 +10,18 @@
 #import "DTMutableCoreTextLayoutFrame.h"
 #import "DTCoreTextLayoutFrame.h"
 
+
+// Commented code useful to find deadlocks
+#define SYNCHRONIZE_START(lock) /* NSLog(@"LOCK: FUNC=%s Line=%d", __func__, __LINE__), */dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);
+#define SYNCHRONIZE_END(lock) dispatch_semaphore_signal(lock) /*, NSLog(@"UN-LOCK")*/;
+
+
 @interface DTRichTextEditorContentView ()
 
 - (void)removeAttachmentCustomViewsNoLongerInLayoutFrame;
 
 @end
+
 
 @implementation DTRichTextEditorContentView
 
