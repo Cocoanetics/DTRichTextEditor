@@ -78,7 +78,7 @@
 {
 	[self removeObjectForKey:(id)kCTRunDelegateAttributeName];
 	[self removeObjectForKey:@"DTAttachmentParagraphSpacing"];
-	[self removeObjectForKey:@"DTTextAttachment"];
+	[self removeObjectForKey:NSAttachmentAttributeName];
 }
 
 @end

@@ -2147,7 +2147,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// treat image as word, left side of image selects it
 	NSAttributedString *characterString = [self.contentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:NSMakeRange(position.location, 1)];
 	
-	if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:@"DTTextAttachment"])
+	if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:NSAttachmentAttributeName])
 	{
 		return [DTTextRange textRangeFromStart:position toEnd:[position textPositionWithOffset:1]];
 	}
@@ -2161,7 +2161,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// treat image as word, right side of image selects it
 	characterString = [self.contentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:NSMakeRange(previousPosition.location, 1)];
 	
-	if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:@"DTTextAttachment"])
+	if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:NSAttachmentAttributeName])
 	{
 		return [DTTextRange textRangeFromStart:previousPosition toEnd:[previousPosition textPositionWithOffset:1]];
 	}
@@ -2310,7 +2310,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	CFRelease(embeddedObjectRunDelegate);
 	
 	// add attachment
-	[objectAttributes setObject:attachment forKey:@"DTTextAttachment"];
+	[objectAttributes setObject:attachment forKey:NSAttachmentAttributeName];
 	
 	
 	NSAttributedString *tmpStr = [[NSAttributedString alloc] initWithString:UNICODE_OBJECT_PLACEHOLDER attributes:objectAttributes];

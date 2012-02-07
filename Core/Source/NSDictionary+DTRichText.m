@@ -48,7 +48,7 @@
 
 - (BOOL)hasAttachment
 {
-	return [self objectForKey:@"DTTextAttachment"]!=nil;
+	return [self objectForKey:NSAttachmentAttributeName]!=nil;
 }
 
 @end

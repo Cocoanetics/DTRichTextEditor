@@ -73,7 +73,7 @@
 	CFRelease(embeddedObjectRunDelegate);
 	
 	// add attachment
-	[objectAttributes setObject:attachment forKey:@"DTTextAttachment"];
+	[objectAttributes setObject:attachment forKey:NSAttachmentAttributeName];
 	
 	
 	NSAttributedString *tmpStr = [[NSAttributedString alloc] initWithString:UNICODE_OBJECT_PLACEHOLDER attributes:objectAttributes];
