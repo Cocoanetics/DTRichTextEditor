@@ -265,8 +265,11 @@
 				oneItem.enabled = YES;
 			}
 			
-			[lastSelection release];
-			lastSelection = [richEditor.selectedTextRange retain];
+			if (richEditor.selectedTextRange.start)
+			{
+				[lastSelection release];
+				lastSelection = [richEditor.selectedTextRange retain];
+			}
 		}
 	}
 }
