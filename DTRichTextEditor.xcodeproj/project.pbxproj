@@ -21,6 +21,10 @@
 		A74351631486772100F4C766 /* DTRichTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351591486772100F4C766 /* DTRichTextEditorViewController.m */; };
 		A74351641486772100F4C766 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A743515A1486772100F4C766 /* main.m */; };
 		A7470F7814E2A5F10015477A /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FF8814E2939600BF8CCD /* libDTLoupe.a */; };
+		A7470F7914E2A6920015477A /* DTLoupe.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A7D8FF8A14E2939600BF8CCD /* DTLoupe.bundle */; };
+		A7470F8214E2A6D90015477A /* libDTCoreText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FEBA14E14E4500BF8CCD /* libDTCoreText.a */; };
+		A7470F8314E2A6D90015477A /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FF8814E2939600BF8CCD /* libDTLoupe.a */; };
+		A7470F8414E2A6D90015477A /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7235AA61487A9C100C9F926 /* libDTWebArchive.a */; };
 		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
 		A7D728651487C2F300A22742 /* NSAttributedString+DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D728641487C2F300A22742 /* NSAttributedString+DTWebArchive.m */; };
 		A7D728941487C46600A22742 /* DTWebResource+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D728931487C46600A22742 /* DTWebResource+DTRichText.m */; };
@@ -48,8 +52,6 @@
 		A7D728F71487D1B500A22742 /* DTRichTextEditorContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351271486771700F4C766 /* DTRichTextEditorContentView.m */; };
 		A7D728F81487D1B500A22742 /* DTRichTextEditorView.h in Headers */ = {isa = PBXBuildFile; fileRef = A74351281486771700F4C766 /* DTRichTextEditorView.h */; settings = {ATTRIBUTES = (); }; };
 		A7D728F91487D1B500A22742 /* DTRichTextEditorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351291486771700F4C766 /* DTRichTextEditorView.m */; };
-		A7D728FA1487D1B500A22742 /* DTSelectionGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = A743512A1486771700F4C766 /* DTSelectionGestureRecognizer.h */; settings = {ATTRIBUTES = (); }; };
-		A7D728FB1487D1B500A22742 /* DTSelectionGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = A743512B1486771700F4C766 /* DTSelectionGestureRecognizer.m */; };
 		A7D728FC1487D1B500A22742 /* DTTextPosition.h in Headers */ = {isa = PBXBuildFile; fileRef = A743512C1486771700F4C766 /* DTTextPosition.h */; settings = {ATTRIBUTES = (); }; };
 		A7D728FD1487D1B500A22742 /* DTTextPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = A743512D1486771700F4C766 /* DTTextPosition.m */; };
 		A7D728FE1487D1B500A22742 /* DTTextRange.h in Headers */ = {isa = PBXBuildFile; fileRef = A743512E1486771700F4C766 /* DTTextRange.h */; settings = {ATTRIBUTES = (); }; };
@@ -68,8 +70,6 @@
 		A7D7292C1487D97C00A22742 /* DTRichTextEditorContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351271486771700F4C766 /* DTRichTextEditorContentView.m */; };
 		A7D7292D1487D97C00A22742 /* DTRichTextEditorView.h in Headers */ = {isa = PBXBuildFile; fileRef = A74351281486771700F4C766 /* DTRichTextEditorView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7D7292E1487D97C00A22742 /* DTRichTextEditorView.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351291486771700F4C766 /* DTRichTextEditorView.m */; };
-		A7D7292F1487D97C00A22742 /* DTSelectionGestureRecognizer.h in Headers */ = {isa = PBXBuildFile; fileRef = A743512A1486771700F4C766 /* DTSelectionGestureRecognizer.h */; settings = {ATTRIBUTES = (); }; };
-		A7D729301487D97C00A22742 /* DTSelectionGestureRecognizer.m in Sources */ = {isa = PBXBuildFile; fileRef = A743512B1486771700F4C766 /* DTSelectionGestureRecognizer.m */; };
 		A7D729311487D97C00A22742 /* DTTextPosition.h in Headers */ = {isa = PBXBuildFile; fileRef = A743512C1486771700F4C766 /* DTTextPosition.h */; settings = {ATTRIBUTES = (); }; };
 		A7D729321487D97C00A22742 /* DTTextPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = A743512D1486771700F4C766 /* DTTextPosition.m */; };
 		A7D729331487D97C00A22742 /* DTTextRange.h in Headers */ = {isa = PBXBuildFile; fileRef = A743512E1486771700F4C766 /* DTTextRange.h */; settings = {ATTRIBUTES = (); }; };
@@ -103,6 +103,34 @@
 			proxyType = 2;
 			remoteGlobalIDString = A743530A14867ACD00F4C766;
 			remoteInfo = "Static Library";
+		};
+		A7470F7A14E2A6C70015477A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A743530914867ACD00F4C766;
+			remoteInfo = "Static Library";
+		};
+		A7470F7C14E2A6C70015477A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A70F11DD148632CD009202BF;
+			remoteInfo = "Static Library";
+		};
+		A7470F7E14E2A6C70015477A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7D8FEE314E1693300BF8CCD;
+			remoteInfo = "Static Library";
+		};
+		A7470F8014E2A6C70015477A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7D8FF5A14E17A6600BF8CCD;
+			remoteInfo = "Resource Bundle";
 		};
 		A7A83B001487AAA7006BCBE1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -223,8 +251,6 @@
 		A74351271486771700F4C766 /* DTRichTextEditorContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorContentView.m; sourceTree = "<group>"; };
 		A74351281486771700F4C766 /* DTRichTextEditorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditorView.h; sourceTree = "<group>"; };
 		A74351291486771700F4C766 /* DTRichTextEditorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorView.m; sourceTree = "<group>"; };
-		A743512A1486771700F4C766 /* DTSelectionGestureRecognizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTSelectionGestureRecognizer.h; sourceTree = "<group>"; };
-		A743512B1486771700F4C766 /* DTSelectionGestureRecognizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTSelectionGestureRecognizer.m; sourceTree = "<group>"; };
 		A743512C1486771700F4C766 /* DTTextPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTTextPosition.h; sourceTree = "<group>"; };
 		A743512D1486771700F4C766 /* DTTextPosition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTTextPosition.m; sourceTree = "<group>"; };
 		A743512E1486771700F4C766 /* DTTextRange.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTTextRange.h; sourceTree = "<group>"; };
@@ -287,6 +313,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7470F8214E2A6D90015477A /* libDTCoreText.a in Frameworks */,
+				A7470F8314E2A6D90015477A /* libDTLoupe.a in Frameworks */,
+				A7470F8414E2A6D90015477A /* libDTWebArchive.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -355,8 +384,6 @@
 				A74351271486771700F4C766 /* DTRichTextEditorContentView.m */,
 				A74351281486771700F4C766 /* DTRichTextEditorView.h */,
 				A74351291486771700F4C766 /* DTRichTextEditorView.m */,
-				A743512A1486771700F4C766 /* DTSelectionGestureRecognizer.h */,
-				A743512B1486771700F4C766 /* DTSelectionGestureRecognizer.m */,
 				A743512C1486771700F4C766 /* DTTextPosition.h */,
 				A743512D1486771700F4C766 /* DTTextPosition.m */,
 				A743512E1486771700F4C766 /* DTTextRange.h */,
@@ -503,7 +530,6 @@
 				A7D728F41487D1B500A22742 /* DTRichTextCategories.h in Headers */,
 				A7D728F61487D1B500A22742 /* DTRichTextEditorContentView.h in Headers */,
 				A7D728F81487D1B500A22742 /* DTRichTextEditorView.h in Headers */,
-				A7D728FA1487D1B500A22742 /* DTSelectionGestureRecognizer.h in Headers */,
 				A7D728FC1487D1B500A22742 /* DTTextPosition.h in Headers */,
 				A7D728FE1487D1B500A22742 /* DTTextRange.h in Headers */,
 				A7D729001487D1B500A22742 /* DTTextSelectionView.h in Headers */,
@@ -520,7 +546,6 @@
 				A7D729291487D97C00A22742 /* DTRichTextCategories.h in Headers */,
 				A7D7292B1487D97C00A22742 /* DTRichTextEditorContentView.h in Headers */,
 				A7D7292D1487D97C00A22742 /* DTRichTextEditorView.h in Headers */,
-				A7D7292F1487D97C00A22742 /* DTSelectionGestureRecognizer.h in Headers */,
 				A7D729311487D97C00A22742 /* DTTextPosition.h in Headers */,
 				A7D729331487D97C00A22742 /* DTTextRange.h in Headers */,
 				A7D729351487D97C00A22742 /* DTTextSelectionView.h in Headers */,
@@ -564,6 +589,10 @@
 			buildRules = (
 			);
 			dependencies = (
+				A7470F7B14E2A6C70015477A /* PBXTargetDependency */,
+				A7470F7D14E2A6C70015477A /* PBXTargetDependency */,
+				A7470F7F14E2A6C70015477A /* PBXTargetDependency */,
+				A7470F8114E2A6C70015477A /* PBXTargetDependency */,
 			);
 			name = "Static Framework";
 			productName = DTRichTextEditor;
@@ -712,6 +741,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7470F7914E2A6920015477A /* DTLoupe.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -777,7 +807,6 @@
 				A7D728F51487D1B500A22742 /* DTRichTextCategories.m in Sources */,
 				A7D728F71487D1B500A22742 /* DTRichTextEditorContentView.m in Sources */,
 				A7D728F91487D1B500A22742 /* DTRichTextEditorView.m in Sources */,
-				A7D728FB1487D1B500A22742 /* DTSelectionGestureRecognizer.m in Sources */,
 				A7D728FD1487D1B500A22742 /* DTTextPosition.m in Sources */,
 				A7D728FF1487D1B500A22742 /* DTTextRange.m in Sources */,
 				A7D729011487D1B500A22742 /* DTTextSelectionView.m in Sources */,
@@ -794,7 +823,6 @@
 				A7D7292A1487D97C00A22742 /* DTRichTextCategories.m in Sources */,
 				A7D7292C1487D97C00A22742 /* DTRichTextEditorContentView.m in Sources */,
 				A7D7292E1487D97C00A22742 /* DTRichTextEditorView.m in Sources */,
-				A7D729301487D97C00A22742 /* DTSelectionGestureRecognizer.m in Sources */,
 				A7D729321487D97C00A22742 /* DTTextPosition.m in Sources */,
 				A7D729341487D97C00A22742 /* DTTextRange.m in Sources */,
 				A7D729361487D97C00A22742 /* DTTextSelectionView.m in Sources */,
@@ -817,6 +845,26 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		A7470F7B14E2A6C70015477A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Static Library";
+			targetProxy = A7470F7A14E2A6C70015477A /* PBXContainerItemProxy */;
+		};
+		A7470F7D14E2A6C70015477A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Static Library";
+			targetProxy = A7470F7C14E2A6C70015477A /* PBXContainerItemProxy */;
+		};
+		A7470F7F14E2A6C70015477A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Static Library";
+			targetProxy = A7470F7E14E2A6C70015477A /* PBXContainerItemProxy */;
+		};
+		A7470F8114E2A6C70015477A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Resource Bundle";
+			targetProxy = A7470F8014E2A6C70015477A /* PBXContainerItemProxy */;
+		};
 		A7A83B011487AAA7006BCBE1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Static Library";

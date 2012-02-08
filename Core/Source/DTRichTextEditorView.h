@@ -11,7 +11,6 @@
 #import "DTAttributedTextView.h"
 #import "DTAttributedTextContentView.h"
 #import "NSAttributedString+DTRichText.h"
-#import "DTSelectionGestureRecognizer.h"
 
 
 extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
@@ -87,8 +86,6 @@ typedef enum
 	UITapGestureRecognizer *doubleTapGesture;
 	UILongPressGestureRecognizer *longPressGesture;
 	UIPanGestureRecognizer *panGesture;
-	
-	DTSelectionGestureRecognizer *selectionGesture;
 	
 	BOOL _contextMenuVisible;
     NSTimeInterval _lastCursorMovementTimestamp;
