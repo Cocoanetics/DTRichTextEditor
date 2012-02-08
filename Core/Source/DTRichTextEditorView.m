@@ -27,11 +27,11 @@
 #import "DTTextRange.h"
 
 #import "DTCursorView.h"
+#import "DTLoupeView.h"
 #import "DTCoreTextLayouter.h"
 
 #import "DTTextSelectionView.h"
 #import "CGUtils.h"
-#import "UIView+DT.h"
 #import "DTCoreTextFontDescriptor.h"
 #import "DTTiledLayerWithoutFade.h"
 
