@@ -20,6 +20,7 @@
 		A74351621486772100F4C766 /* DTRichTextEditorAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351571486772100F4C766 /* DTRichTextEditorAppDelegate.m */; };
 		A74351631486772100F4C766 /* DTRichTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351591486772100F4C766 /* DTRichTextEditorViewController.m */; };
 		A74351641486772100F4C766 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A743515A1486772100F4C766 /* main.m */; };
+		A7470F7814E2A5F10015477A /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FF8814E2939600BF8CCD /* libDTLoupe.a */; };
 		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
 		A7D728651487C2F300A22742 /* NSAttributedString+DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D728641487C2F300A22742 /* NSAttributedString+DTWebArchive.m */; };
 		A7D728941487C46600A22742 /* DTWebResource+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D728931487C46600A22742 /* DTWebResource+DTRichText.m */; };
@@ -276,6 +277,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7470F7814E2A5F10015477A /* libDTLoupe.a in Frameworks */,
 				A7D8FEC714E1570000BF8CCD /* libDTCoreText.a in Frameworks */,
 				A7D8FEC814E1570000BF8CCD /* libDTWebArchive.a in Frameworks */,
 			);
