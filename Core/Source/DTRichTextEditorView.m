@@ -8,6 +8,8 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#import "DTLoupeView.h"
+
 #import "DTAttributedTextContentView.h"
 #import "NSString+HTML.h"
 #import "DTHTMLElement.h"
@@ -27,7 +29,6 @@
 #import "DTCursorView.h"
 #import "DTCoreTextLayouter.h"
 
-#import "DTLoupeView.h"
 #import "DTTextSelectionView.h"
 #import "CGUtils.h"
 #import "UIView+DT.h"
