@@ -9,6 +9,7 @@
 #import <CoreText/CoreText.h>
 #import "NSMutableDictionary+DTRichText.h"
 #import "DTCoreTextFontDescriptor.h"
+#import "DTCoreTextConstants.h"
 
 @implementation NSMutableDictionary (DTRichText)
 
