@@ -26,8 +26,6 @@
 		A7470F8314E2A6D90015477A /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FF8814E2939600BF8CCD /* libDTLoupe.a */; };
 		A7470F8414E2A6D90015477A /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7235AA61487A9C100C9F926 /* libDTWebArchive.a */; };
 		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
-		A7D728651487C2F300A22742 /* NSAttributedString+DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D728641487C2F300A22742 /* NSAttributedString+DTWebArchive.m */; };
-		A7D728941487C46600A22742 /* DTWebResource+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D728931487C46600A22742 /* DTWebResource+DTRichText.m */; };
 		A7D728E21487D1B500A22742 /* NSAttributedString+DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D728631487C2F300A22742 /* NSAttributedString+DTWebArchive.h */; settings = {ATTRIBUTES = (); }; };
 		A7D728E31487D1B500A22742 /* NSAttributedString+DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D728641487C2F300A22742 /* NSAttributedString+DTWebArchive.m */; };
 		A7D728E41487D1B500A22742 /* DTCoreTextLayoutFrame+DTRichText.h in Headers */ = {isa = PBXBuildFile; fileRef = A743511E1486771700F4C766 /* DTCoreTextLayoutFrame+DTRichText.h */; settings = {ATTRIBUTES = (); }; };
@@ -132,13 +130,6 @@
 			remoteGlobalIDString = A7D8FF5A14E17A6600BF8CCD;
 			remoteInfo = "Resource Bundle";
 		};
-		A7A83B001487AAA7006BCBE1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A743530914867ACD00F4C766;
-			remoteInfo = "Static Library";
-		};
 		A7D729211487D5DD00A22742 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */;
@@ -181,13 +172,6 @@
 			remoteGlobalIDString = A7949A5814CC456000A8CCDE;
 			remoteInfo = MacUnitTest;
 		};
-		A7D8FEBF14E14F7200BF8CCD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A70F11DD148632CD009202BF;
-			remoteInfo = "Static Library";
-		};
 		A7D8FEC314E14FA300BF8CCD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7F0C83513C326E900EBD027 /* Project object */;
@@ -222,13 +206,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = A7D8FF5A14E17A6600BF8CCD;
 			remoteInfo = "Resource Bundle";
-		};
-		A7D8FF8D14E293D700BF8CCD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A7D8FEE314E1693300BF8CCD;
-			remoteInfo = "Static Library";
 		};
 /* End PBXContainerItemProxy section */
 
@@ -610,11 +587,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				A7D8FF8E14E293D700BF8CCD /* PBXTargetDependency */,
 				A7D8FF8C14E293D200BF8CCD /* PBXTargetDependency */,
 				A7D8FEC414E14FA300BF8CCD /* PBXTargetDependency */,
-				A7D8FEC014E14F7200BF8CCD /* PBXTargetDependency */,
-				A7A83B011487AAA7006BCBE1 /* PBXTargetDependency */,
 			);
 			name = "Demo App";
 			productName = DTRichTextEditor;
@@ -837,8 +811,6 @@
 				A74351621486772100F4C766 /* DTRichTextEditorAppDelegate.m in Sources */,
 				A74351631486772100F4C766 /* DTRichTextEditorViewController.m in Sources */,
 				A74351641486772100F4C766 /* main.m in Sources */,
-				A7D728651487C2F300A22742 /* NSAttributedString+DTWebArchive.m in Sources */,
-				A7D728941487C46600A22742 /* DTWebResource+DTRichText.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -865,20 +837,10 @@
 			name = "Resource Bundle";
 			targetProxy = A7470F8014E2A6C70015477A /* PBXContainerItemProxy */;
 		};
-		A7A83B011487AAA7006BCBE1 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Static Library";
-			targetProxy = A7A83B001487AAA7006BCBE1 /* PBXContainerItemProxy */;
-		};
 		A7D729221487D5DD00A22742 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Static Library";
 			targetProxy = A7D729211487D5DD00A22742 /* PBXContainerItemProxy */;
-		};
-		A7D8FEC014E14F7200BF8CCD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Static Library";
-			targetProxy = A7D8FEBF14E14F7200BF8CCD /* PBXContainerItemProxy */;
 		};
 		A7D8FEC414E14FA300BF8CCD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -889,11 +851,6 @@
 			isa = PBXTargetDependency;
 			name = "Resource Bundle";
 			targetProxy = A7D8FF8B14E293D200BF8CCD /* PBXContainerItemProxy */;
-		};
-		A7D8FF8E14E293D700BF8CCD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Static Library";
-			targetProxy = A7D8FF8D14E293D700BF8CCD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
