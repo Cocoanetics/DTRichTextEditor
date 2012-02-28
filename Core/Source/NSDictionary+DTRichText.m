@@ -16,7 +16,7 @@
 
 - (BOOL)isBold
 {
-	CTFontRef currentFont = (CTFontRef)[self objectForKey:(id)kCTFontAttributeName];
+	CTFontRef currentFont = (__bridge CTFontRef)[self objectForKey:(id)kCTFontAttributeName];
 	
 	if (!currentFont)
 	{
@@ -30,7 +30,7 @@
 
 - (BOOL)isItalic
 {
-	CTFontRef currentFont = (CTFontRef)[self objectForKey:(id)kCTFontAttributeName];
+	CTFontRef currentFont = (__bridge CTFontRef)[self objectForKey:(id)kCTFontAttributeName];
 	
 	if (!currentFont)
 	{

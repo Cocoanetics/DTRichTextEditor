@@ -51,18 +51,20 @@
 	// defaults
 	//richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
     richEditor.textDelegate = self;
-//	richEditor.defaultFontFamily = @"Helvetica";
+	richEditor.defaultFontFamily = @"Helvetica";
 	//richEditor.textSizeMultiplier = 2.2;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
     richEditor.autocorrectionType = UITextAutocorrectionTypeNo;
     
 //    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	
-	NSString *html = @"<p><span style=\"font-size:20px\">This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text.</span></p>";
+//	NSString *html = @"<p><span style=\"font-size:20px\">This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text.</span></p>";
+	
+	//	NSString *html = @"<p></p>";
     
 	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
-	[richEditor setHTMLString:html];
+	//[richEditor setHTMLString:html];
 	
 	// image as drawn by your custom views which you return in the delegate method
 	richEditor.contentView.shouldDrawImages = NO;
@@ -138,7 +140,7 @@
 	}
 	
 	// make an attachment
-	DTTextAttachment *attachment = [[[DTTextAttachment alloc] init] autorelease];
+	DTTextAttachment *attachment = [[DTTextAttachment alloc] init];
 	attachment.contents = (id)image;
 	attachment.displaySize = image.size;
 	attachment.originalSize = image.size;
@@ -172,7 +174,7 @@
 	
     if(imageURL)
     {
-        ALAssetsLibrary* assetslibrary = [[[ALAssetsLibrary alloc] init] autorelease];
+        ALAssetsLibrary* assetslibrary = [[ALAssetsLibrary alloc] init];
         [assetslibrary assetForURL:imageURL 
                        resultBlock:resultblock
                       failureBlock:failureblock];
@@ -181,7 +183,7 @@
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 	{
         [popover dismissPopoverAnimated:YES];
-        [popover release], popover = nil;
+        popover = nil;
     }
     else
     {
@@ -192,15 +194,14 @@
 - (void)insertPhoto:(UIBarButtonItem *)sender
 {
 	// preserve last selection because this goes away when editor loses firstResponder
-	[lastSelection release];
-	lastSelection = [richEditor.selectedTextRange retain];
+	lastSelection = richEditor.selectedTextRange;
 	
 	if (!lastSelection)
 	{
 		return;
 	}
 	
-	UIImagePickerController *picker = [[[UIImagePickerController alloc] init] autorelease];
+	UIImagePickerController *picker = [[UIImagePickerController alloc] init];
 	picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	picker.delegate = self;
 	
@@ -218,7 +219,7 @@
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
 {
-    [popover release], popover = nil;
+    popover = nil;
 }
 
 - (void)toggleBold:(UIBarButtonItem *)sender
@@ -268,8 +269,7 @@
 			
 			if (richEditor.selectedTextRange.start)
 			{
-				[lastSelection release];
-				lastSelection = [richEditor.selectedTextRange retain];
+				lastSelection = richEditor.selectedTextRange;
 			}
 		}
 	}
@@ -291,7 +291,7 @@
     
     if (attachment.contentType == DTTextAttachmentTypeImage)
 	{
-        imageView = [[[UIImageView alloc] initWithFrame:frame] autorelease];
+        imageView = [[UIImageView alloc] initWithFrame:frame];
         if ([attachment.contents isKindOfClass:[UIImage class]])
         {
             imageView.image = attachment.contents;

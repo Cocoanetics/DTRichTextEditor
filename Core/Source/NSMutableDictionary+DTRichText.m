@@ -15,7 +15,7 @@
 
 - (void)toggleBold
 {
-	CTFontRef currentFont = (CTFontRef)[self objectForKey:(id)kCTFontAttributeName];
+	CTFontRef currentFont = (__bridge CTFontRef)[self objectForKey:(id)kCTFontAttributeName];
 	
 	if (!currentFont)
 	{
@@ -26,7 +26,7 @@
 	
 	// need to replace name with family
 	CFStringRef family = CTFontCopyFamilyName(currentFont);
-	desc.fontFamily = (NSString *)family;
+	desc.fontFamily = (__bridge NSString *)family;
 	CFRelease(family);
 	
 	desc.fontName = nil;
@@ -34,13 +34,13 @@
 	desc.boldTrait = !desc.boldTrait;
 
 	CTFontRef newFont = [desc newMatchingFont];
-	[self setObject:(id)newFont forKey:(id)kCTFontAttributeName];
+	[self setObject:(__bridge id)newFont forKey:(id)kCTFontAttributeName];
 	CFRelease(newFont);
 }
 
 - (void)toggleItalic
 {
-	CTFontRef currentFont = (CTFontRef)[self objectForKey:(id)kCTFontAttributeName];
+	CTFontRef currentFont = (__bridge CTFontRef)[self objectForKey:(id)kCTFontAttributeName];
 	
 	if (!currentFont)
 	{
@@ -51,7 +51,7 @@
 	
 	// need to replace name with family
 	CFStringRef family = CTFontCopyFamilyName(currentFont);
-	desc.fontFamily = (NSString *)family;
+	desc.fontFamily = (__bridge NSString *)family;
 	CFRelease(family);
 	
 	desc.fontName = nil;
@@ -59,7 +59,7 @@
 	desc.italicTrait = !desc.italicTrait;
 	
 	CTFontRef newFont = [desc newMatchingFont];
-	[self setObject:(id)newFont forKey:(id)kCTFontAttributeName];
+	[self setObject:(__bridge id)newFont forKey:(id)kCTFontAttributeName];
 	CFRelease(newFont);
 }
 

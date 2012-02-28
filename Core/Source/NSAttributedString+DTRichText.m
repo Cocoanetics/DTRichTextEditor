@@ -51,7 +51,7 @@
 		NSMutableDictionary *tmpDict = [attributes mutableCopy];
 		[tmpDict removeAttachment];
 		
-		return [tmpDict autorelease];
+		return tmpDict;
 	}
 	
 	return attributes;
@@ -59,7 +59,7 @@
 
 + (NSAttributedString *)attributedStringWithImage:(UIImage *)image maxDisplaySize:(CGSize)maxDisplaySize
 {
-	DTTextAttachment *attachment = [[[DTTextAttachment alloc] init] autorelease];
+	DTTextAttachment *attachment = [[DTTextAttachment alloc] init];
 	attachment.contents = (id)image;
 	attachment.originalSize = image.size;
 	attachment.contentType = DTTextAttachmentTypeImage;
@@ -74,7 +74,7 @@
 	}
 	attachment.displaySize = displaySize;
 	
-	DTHTMLElement *element = [[[DTHTMLElement alloc] init] autorelease];
+	DTHTMLElement *element = [[DTHTMLElement alloc] init];
 	element.textAttachment = attachment;
 	
 	return [element attributedString];
@@ -82,7 +82,7 @@
 
 + (NSAttributedString *)attributedStringWithURL:(NSURL *)url
 {
-	DTHTMLElement *element = [[[DTHTMLElement alloc] init] autorelease];
+	DTHTMLElement *element = [[DTHTMLElement alloc] init];
 	element.link = url;
 	element.underlineStyle = kCTUnderlineStyleSingle;
 	element.textColor = [UIColor blueColor];

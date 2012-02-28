@@ -42,24 +42,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-	[_cursorColor release];
-	
-	[_dragHandleLeft release];
-	[_dragHandleRight release];
-    
-    [_selectionRectangles release];
-    [_selectionRectangleViews release];
-    
-    [_beginCaretView release];
-    [_endCaretView release];
-    
-    [_reusableViews release];
-	
-	[super dealloc];
-}
-
 - (NSArray *)selectionRectanglesVisibleInRect:(CGRect)rect
 {
 	NSMutableArray *tmpArray = [NSMutableArray arrayWithCapacity:[self.selectionRectangles count]];
@@ -104,7 +86,7 @@
         selectionRectangles = [self selectionRectanglesVisibleInRect:rect];
     }
     
-    NSArray *currentRectangleViews = [[self.selectionRectangleViews mutableCopy] autorelease];
+    NSArray *currentRectangleViews = [self.selectionRectangleViews mutableCopy];
     
     int i=0;
     
@@ -135,7 +117,7 @@
             }
             else
             {
-                rectView = [[[UIView alloc] initWithFrame:rect] autorelease];
+                rectView = [[UIView alloc] initWithFrame:rect];
                 rectView.userInteractionEnabled = NO;
             }
                 
@@ -324,62 +306,15 @@
 
 - (UIView *)dequeueReusableView
 {
-    UIView *view = [[_reusableViews anyObject] retain];
+    UIView *view = [_reusableViews anyObject];
     
     if (view)
     {
         [_reusableViews removeObject:view];
     }
     
-    return [view autorelease];
+    return view;
 }
-
-#pragma mark Drawing
-//- (void)drawRect:(CGRect)rect
-//{
-//	if (![_selectionRectangles count])
-//	{
-//		// nothing to draw
-//		return;
-//	}
-//	
-//	
-//	CGContextRef ctx = UIGraphicsGetCurrentContext();
-//	
-//	// set color based on style
-//	switch (_style) 
-//	{
-//		case DTTextSelectionStyleSelection:
-//		{
-//			CGContextSetRGBFillColor(ctx, 0, 0.338, 0.652, 0.204);
-//			break;
-//		}
-//			
-//		case DTTextSelectionStyleMarking:
-//		{
-//			CGContextSetRGBFillColor(ctx, 0, 0.652, 0.338, 0.204);
-//			break;
-//		}
-//	}
-//	
-//	// draw all these rectangles
-//	for (NSValue *value in _selectionRectangles)
-//	{
-//		CGRect rect = [value CGRectValue];
-//		CGContextFillRect(ctx, rect);
-//	}
-//	
-//	// draw selection carets at beginning and end of selection
-//	if (_dragHandlesVisible)
-//	{
-//		CGContextSetFillColorWithColor(ctx, self.cursorColor.CGColor);
-//		CGContextFillRect(ctx, [self beginCaretRect]);
-//		
-//		CGContextFillRect(ctx, [self endCaretRect]);
-//	}
-//}
-
-
 
 #pragma mark Properties
 
@@ -450,7 +385,7 @@
 {
 	if (!_cursorColor)
 	{
-		_cursorColor = [[UIColor colorWithRed:66.07/255.0 green:107.0/255.0 blue:242.0/255.0 alpha:1.0] retain];
+		_cursorColor = [UIColor colorWithRed:66.07/255.0 green:107.0/255.0 blue:242.0/255.0 alpha:1.0];
 	}
 	
 	return _cursorColor;
@@ -460,8 +395,7 @@
 {
 	if (_cursorColor != cursorColor)
 	{
-		[_cursorColor release];
-		_cursorColor = [cursorColor retain];
+		_cursorColor = cursorColor;
         
        _beginCaretView.backgroundColor = _cursorColor;
         _endCaretView.backgroundColor = _cursorColor;
@@ -518,8 +452,7 @@
 			animated = NO;
 		}
 		
-		[_selectionRectangles release];
-		_selectionRectangles = [selectionRectangles retain];
+		_selectionRectangles = selectionRectangles;
 		
 
 		if (animated)

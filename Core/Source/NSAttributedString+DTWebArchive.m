@@ -93,15 +93,14 @@
 			{
 				DTWebResource *resource = [[DTWebResource alloc] initWithData:data URL:oneAttachment.contentURL MIMEType:@"image/png" textEncodingName:nil frameName:nil];
 				[subresources addObject:resource];
-				[resource release];
 			}
 		}
 	}
 	
-	DTWebResource *mainResource = [[[DTWebResource alloc] initWithData:data URL:nil MIMEType:@"text/html" textEncodingName:@"UTF8" frameName:nil] autorelease];
+	DTWebResource *mainResource = [[DTWebResource alloc] initWithData:data URL:nil MIMEType:@"text/html" textEncodingName:@"UTF8" frameName:nil];
 	DTWebArchive *newArchive = [[DTWebArchive alloc] initWithMainResource:mainResource subresources:subresources subframeArchives:nil];
 	
-	return [newArchive autorelease];
+	return newArchive;
 }
 
 

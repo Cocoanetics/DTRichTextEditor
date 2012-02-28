@@ -45,7 +45,7 @@ typedef enum
 //	NSMutableAttributedString *_internalAttributedText;
 	
 	id<UITextInputTokenizer> tokenizer;
-	id<UITextInputDelegate> inputDelegate;
+	__unsafe_unretained id<UITextInputDelegate> inputDelegate;
 	NSDictionary *markedTextStyle;
 	
 	DTTextRange *_selectedTextRange;

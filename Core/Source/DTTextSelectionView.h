@@ -35,7 +35,7 @@ typedef enum
     UIView *_beginCaretView;
     UIView *_endCaretView;
 	
-	UIView *_textView;
+	__unsafe_unretained UIView *_textView;
 	
 	UIColor *_cursorColor;
 }

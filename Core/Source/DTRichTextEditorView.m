@@ -156,28 +156,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 - (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	
-	[_selectedTextRange release];
-	[_markedTextRange release];
-	[_loupe release];
-	
-//	[_internalAttributedText release];
-	[markedTextStyle release];
-	
-	[_overrideInsertionAttributes release];
-	
-	[_cursor release];
-	[_selectionView release];
-	
-	[tapGesture release];
-	[doubleTapGesture release];
-	[longPressGesture release];
-	[panGesture release];
-	
-	[_defaultFontFamily release];
-	[_baseURL release];
-	
-	[super dealloc];
 }
 
 - (void)awakeFromNib
@@ -229,7 +207,15 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	// default needs to be just a \n, the style attributes of that are used for
 	// all subsequent insertions
-	[self setHTMLString:@"<p></p>"];
+	//[self setHTMLString:@"<p></p>"];
+	
+	// TO DO: fix above so that there is only one NL output
+	//---- begin workaround
+	NSData *data = [@"<p>a</p>" dataUsingEncoding:NSUTF8StringEncoding];
+	NSAttributedString *attributedString = [[NSAttributedString alloc] initWithHTML:data options:[self textDefaults] documentAttributes:NULL];
+	attributedString = [attributedString attributedSubstringFromRange:NSMakeRange(1, 1)];
+	[self setAttributedText:attributedString];
+	// ----- end workaround 
 }
 
 // we want our special content view that uses mutable layout frames
@@ -290,14 +276,12 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	UIMenuController *menuController = [UIMenuController sharedMenuController];
 	
-	UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Item" action:@selector(menuItemClicked:)];
+//	UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Item" action:@selector(menuItemClicked:)];
 	
 	//NSAssert([self becomeFirstResponder], @"Sorry, UIMenuController will not work with %@ since it cannot become first responder", self);
 	//[menuController setMenuItems:[NSArray arrayWithObject:resetMenuItem]];
 	[menuController setTargetRect:targetRect inView:self];
 	[menuController setMenuVisible:YES animated:YES];
-	
-	[resetMenuItem release];
 }
 
 - (void)menuDidHide:(NSNotification *)notification
@@ -1270,8 +1254,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		[self replaceRange:_selectedTextRange withAttachment:attachment inParagraph:NO];
 		
-		[attachment release];
-		
 		return;
 	}
 	
@@ -1290,7 +1272,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	if (webArchive)
 	{
-		NSAttributedString *attrString = [[[NSAttributedString alloc] initWithWebArchive:webArchive options:[self textDefaults] documentAttributes:NULL] autorelease];
+		NSAttributedString *attrString = [[NSAttributedString alloc] initWithWebArchive:webArchive options:[self textDefaults] documentAttributes:NULL];
 		
 		[self replaceRange:_selectedTextRange withText:attrString];
 		
@@ -1427,9 +1409,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	NSRange myRange = [range NSRangeValue];
 	
-	// otherwise this turns into zombie
-	[[range retain] autorelease];
-	
 	if (!text)
 	{
 		// text could be nil, but that's not valid for replaceCharactersInRange
@@ -1446,7 +1425,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	if ([text isKindOfClass:[NSString class]])
 	{
 		// need to replace attributes with typing attributes
-		text = [[[NSAttributedString alloc] initWithString:text attributes:typingAttributes] autorelease];
+		text = [[NSAttributedString alloc] initWithString:text attributes:typingAttributes];
 	}
 
 	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:myRange withText:text];
@@ -1510,7 +1489,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
 	
 	[self willChangeValueForKey:@"selectedTextRange"];
-	[_selectedTextRange release];
 	
 	_selectedTextRange = [newTextRange copy];
 	
@@ -1588,7 +1566,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	DTTextPosition *startOfReplaceRange = (DTTextPosition *)replaceRange.start;
 	
 	// set new marked range
-	self.markedTextRange = [[[DTTextRange alloc]  initWithNSRange:NSMakeRange(startOfReplaceRange.location, [markedText length])] autorelease];
+	self.markedTextRange = [[DTTextRange alloc]  initWithNSRange:NSMakeRange(startOfReplaceRange.location, [markedText length])];
 	
 	[self updateCursorAnimated:NO];
 	
@@ -1888,19 +1866,18 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	/* TODO: Return typingAttributes, if position is the same as the insertion point? */
 	
 	NSMutableDictionary *uiStyles = [ctStyles mutableCopy];
-	[uiStyles autorelease];
 	
-	CTFontRef ctFont = (CTFontRef)[ctStyles objectForKey:(id)kCTFontAttributeName];
+	CTFontRef ctFont = (__bridge CTFontRef)[ctStyles objectForKey:(id)kCTFontAttributeName];
 	if (ctFont) 
 	{
 		/* As far as I can tell, the name that UIFont wants is the PostScript name of the font. (It's undocumented, of course. RADAR 7881781 / 7241008) */
 		CFStringRef fontName = CTFontCopyPostScriptName(ctFont);
-		UIFont *uif = [UIFont fontWithName:(id)fontName size:CTFontGetSize(ctFont)];
+		UIFont *uif = [UIFont fontWithName:(__bridge id)fontName size:CTFontGetSize(ctFont)];
 		CFRelease(fontName);
 		[uiStyles setObject:uif forKey:UITextInputTextFontKey];
 	}
 	
-	CGColorRef cgColor = (CGColorRef)[ctStyles objectForKey:(id)kCTForegroundColorAttributeName];
+	CGColorRef cgColor = (__bridge CGColorRef)[ctStyles objectForKey:(id)kCTForegroundColorAttributeName];
 	if (cgColor)
 		[uiStyles setObject:[UIColor colorWithCGColor:cgColor] forKey:UITextInputTextColorKey];
 	
@@ -1945,7 +1922,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	if (newAttributedText)
 	{
-		NSMutableAttributedString *tmpString = [[newAttributedText mutableCopy] autorelease];
+		NSMutableAttributedString *tmpString = [newAttributedText mutableCopy];
 		
 		if (![[tmpString string] hasSuffix:@"\n"])
 		{
@@ -1980,7 +1957,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		[self willChangeValueForKey:@"markedTextRange"];
 		
-		[_markedTextRange release];
 		_markedTextRange = [markedTextRange copy];
 		
 		[self hideContextMenu];
@@ -2060,9 +2036,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	if (_inputView != inputView)
 	{
-		[_inputView release];
-		
-		_inputView = [inputView retain];
+		_inputView = inputView;
 	}
 }
 
@@ -2081,9 +2055,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	if (_inputAccessoryView != inputAccessoryView)
 	{
-		[_inputAccessoryView release];
-		
-		_inputAccessoryView = [inputAccessoryView retain];
+		_inputAccessoryView = inputAccessoryView;
 	}
 }
 
@@ -2208,14 +2180,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
         multiplier = 1.0;
     }
     
-    DTCoreTextFontDescriptor *desc = [[[DTCoreTextFontDescriptor alloc] init] autorelease];
+    DTCoreTextFontDescriptor *desc = [[DTCoreTextFontDescriptor alloc] init];
     desc.fontFamily = fontFamily;
     desc.pointSize = 12.0 * multiplier;
     
     CTFontRef defaultFont = [desc newMatchingFont];
     
     NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-    [(NSMutableDictionary *)attributes setObject:(id)defaultFont forKey:(id)kCTFontAttributeName];
+    [(NSMutableDictionary *)attributes setObject:(__bridge id)defaultFont forKey:(id)kCTFontAttributeName];
     
     CFRelease(defaultFont);  
     
@@ -2226,7 +2198,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	NSDictionary *attributes = [self.contentView.layoutFrame.attributedStringFragment typingAttributesForRange:[range NSRangeValue]];
 	
-	CTFontRef font = (CTFontRef)[attributes objectForKey:(id)kCTFontAttributeName];
+	CTFontRef font = (__bridge CTFontRef)[attributes objectForKey:(id)kCTFontAttributeName];
 	
 	// if there's no font, then substitute it from our defaults
 	if (!font)
@@ -2241,14 +2213,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
             multiplier = 1.0;
         }
         
-        DTCoreTextFontDescriptor *desc = [[[DTCoreTextFontDescriptor alloc] init] autorelease];
+        DTCoreTextFontDescriptor *desc = [[DTCoreTextFontDescriptor alloc] init];
         desc.fontFamily = fontFamily;
         desc.pointSize = 12.0 * multiplier;
         
         CTFontRef defaultFont = [desc newMatchingFont];
         
         attributes = [NSMutableDictionary dictionaryWithDictionary:attributes];
-        [(NSMutableDictionary *)attributes setObject:(id)defaultFont forKey:(id)kCTFontAttributeName];
+        [(NSMutableDictionary *)attributes setObject:(__bridge id)defaultFont forKey:(id)kCTFontAttributeName];
         
         CFRelease(defaultFont);
 	}
@@ -2294,20 +2266,19 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		}
 	}
 	
-	NSMutableAttributedString *tmpAttributedString = [[[NSMutableAttributedString alloc] initWithString:@""] autorelease];
+	NSMutableAttributedString *tmpAttributedString = [[NSMutableAttributedString alloc] initWithString:@""];
 	
 	if (needsParagraphBefore)
 	{
 		NSAttributedString *formattedNL = [[NSAttributedString alloc] initWithString:@"\n" attributes:attributes];
 		[tmpAttributedString appendAttributedString:formattedNL];
-		[formattedNL release];
 	}
 	
 	NSMutableDictionary *objectAttributes = [attributes mutableCopy];
 	
 	// need run delegate for sizing
 	CTRunDelegateRef embeddedObjectRunDelegate = createEmbeddedObjectRunDelegate((id)attachment);
-	[objectAttributes setObject:(id)embeddedObjectRunDelegate forKey:(id)kCTRunDelegateAttributeName];
+	[objectAttributes setObject:(__bridge id)embeddedObjectRunDelegate forKey:(id)kCTRunDelegateAttributeName];
 	CFRelease(embeddedObjectRunDelegate);
 	
 	// add attachment
@@ -2316,15 +2287,11 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	NSAttributedString *tmpStr = [[NSAttributedString alloc] initWithString:UNICODE_OBJECT_PLACEHOLDER attributes:objectAttributes];
 	[tmpAttributedString appendAttributedString:tmpStr];
-	[tmpStr release];
-	
-	[objectAttributes release];
 	
 	if (needsParagraphAfter)
 	{
 		NSAttributedString *formattedNL = [[NSAttributedString alloc] initWithString:@"\n" attributes:attributes];
 		[tmpAttributedString appendAttributedString:formattedNL];
-		[formattedNL release];
 	}
 	
 	NSUInteger replacementLength = [tmpAttributedString length];
@@ -2333,8 +2300,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[inputDelegate textWillChange:self];
 	
 	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:textRange withText:tmpAttributedString];
-	
-	[attributes release];
 	
 	[inputDelegate textDidChange:self];
 	
@@ -2366,14 +2331,13 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		}
 		[tmpDict toggleBold];
 		self.overrideInsertionAttributes = tmpDict;
-		[tmpDict release];
 	}
 	else
 	{
 		NSRange styleRange = [(DTTextRange *)range NSRangeValue];
 		
 		// get fragment that is to be made bold
-		NSMutableAttributedString *fragment = [[[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy] autorelease];
+		NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
 		
 		// make entire frament bold
 		[fragment toggleBoldInRange:NSMakeRange(0, [fragment length])];
@@ -2399,14 +2363,13 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		}
 		[tmpDict toggleItalic];
 		self.overrideInsertionAttributes = tmpDict;
-		[tmpDict release];
 	}
 	else
 	{
 		NSRange styleRange = [(DTTextRange *)range NSRangeValue];
 		
 		// get fragment that is to be made italic
-		NSMutableAttributedString *fragment = [[[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy] autorelease];
+		NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
 		
 		// make entire frament bold
 		[fragment toggleItalicInRange:NSMakeRange(0, [fragment length])];
@@ -2435,14 +2398,13 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		}
 		[tmpDict toggleUnderline];
 		self.overrideInsertionAttributes = tmpDict;
-		[tmpDict release];
 	}
 	else
 	{
 		NSRange styleRange = [(DTTextRange *)range NSRangeValue];
 		
 		// get fragment that is to be made bold
-		NSMutableAttributedString *fragment = [[[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy] autorelease];
+		NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
 		
 		// make entire frament bold
 		[fragment toggleUnderlineInRange:NSMakeRange(0, [fragment length])];
@@ -2517,7 +2479,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
 	
-	NSAttributedString *attributedString = [[[NSAttributedString alloc] initWithHTML:data options:[self textDefaults] documentAttributes:NULL] autorelease];
+	NSAttributedString *attributedString = [[NSAttributedString alloc] initWithHTML:data options:[self textDefaults] documentAttributes:NULL];
 	
 	[self setAttributedText:attributedString];
 }
@@ -2551,7 +2513,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
     {
 		[tmpDict setObject:@"Times New Roman" forKey:DTDefaultFontFamily];
     }
-	
+		
 	return tmpDict;
 }
 

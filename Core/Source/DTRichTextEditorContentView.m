@@ -93,11 +93,9 @@
 	{
 		if (_attributedString != attributedString)
 		{
-			[_attributedString release];
-			
 			[layoutFrame setAttributedString:attributedString];
 			
-			_attributedString = [layoutFrame.attributedStringFragment retain];
+			_attributedString = layoutFrame.attributedStringFragment;
 			
 			// new layout invalidates all positions for custom views
 			[self removeAllCustomViews];
@@ -165,7 +163,7 @@
 {
 	NSArray *attachmentsInFrame = [self.layoutFrame textAttachments];
 	
-	NSMutableArray *attachmentKeys = [[[customViewsForAttachmentsIndex allKeys] mutableCopy] autorelease];
+	NSMutableArray *attachmentKeys = [[customViewsForAttachmentsIndex allKeys] mutableCopy];
 	
 	// remove all keys that are still in frame
 	for (DTTextAttachment *oneAttachment in [NSSet setWithArray:attachmentsInFrame])

@@ -27,7 +27,6 @@ NSString * const DTCursorViewDidBlink = @"DTCursorViewDidBlink";
 - (void)dealloc 
 {
 	[blinkingTimer invalidate], blinkingTimer = nil;
-    [super dealloc];
 }
 
 - (void)setTimerForNextBlink

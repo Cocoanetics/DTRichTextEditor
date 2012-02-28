@@ -49,7 +49,6 @@
 {
 	if (attributedString != _attributedStringFragment)
 	{
-		[_attributedStringFragment release];
 		_attributedStringFragment = [attributedString mutableCopy];
 		
 		[self relayoutText];
@@ -66,17 +65,14 @@
 	DTCoreTextLayoutFrame *tmpFrame = [tmpLayouter layoutFrameWithRect:rect range:allTextRange];
 	
 	// transfer the lines
-	[_lines autorelease];
 	_lines = [tmpFrame.lines copy];
-	
-	[tmpLayouter release];
 	
 	// correct the overall frame size
 	DTCoreTextLayoutLine *lastLine = [_lines lastObject];
 	_frame.size.height = ceilf((CGRectGetMaxY(lastLine.frame) - _frame.origin.y + 1.5));
 	
 	// some attachments might have been overwritten, so we force refresh of the attachments list
-	[_textAttachments release], _textAttachments = nil;
+	_textAttachments = nil;
 }
 
 
@@ -128,7 +124,7 @@
     // we need to append a prefix or suffix
     if (prefix || suffix)
     {
-        NSMutableAttributedString *tmpString = [[[NSMutableAttributedString alloc] init] autorelease];
+        NSMutableAttributedString *tmpString = [[NSMutableAttributedString alloc] init];
         
         if (prefix)
         {
@@ -173,8 +169,6 @@
 	
 	NSArray *relayoutedLines = tmpFrame.lines;
 	
-	[tmpLayouter release];
-    
     NSUInteger insertionIndex = 0;
 	
 	if (paragraphs.location > 0)
@@ -187,7 +181,7 @@
 	
 	
 	// remove the changed lines
-    NSMutableArray *tmpArray = [[self.lines mutableCopy] autorelease];
+    NSMutableArray *tmpArray = [self.lines mutableCopy];
     
     for (NSInteger index=paragraphs.location; index < NSMaxRange(paragraphs); index++)
     {
@@ -197,7 +191,7 @@
     }
 	
 	// remove paragraph ranges
-	[_paragraphRanges release], _paragraphRanges = nil;
+	_paragraphRanges = nil;
 	
 
 	DTCoreTextLayoutLine *previousLine = nil;
@@ -230,9 +224,11 @@
 		}
 		
         [tmpArray insertObject:oneLine atIndex:insertionIndex];
+
         insertionIndex++;
 		
 		previousLine = oneLine;
+		
     }
     
 	BOOL firstLineAfterInsert = YES;
@@ -255,26 +251,39 @@
 			firstLineAfterInsert = NO;
 		}
 		
-		CGPoint baselineOrigin =  [oneLine baselineOriginToPositionAfterLine:previousLine];
+		CGPoint baselineOrigin =  oneLine.baselineOrigin;
 		baselineOrigin.y += linesAfterinsertedLinesBaselineOffset.y;
 		oneLine.baselineOrigin = baselineOrigin;
 		
 		previousLine = oneLine;
 		insertionIndex++;
 	}
-	
 	// make sure that all string ranges are continuous
 	NSInteger nextIndex = 0;
+	
+	previousLine = nil;
 	
 	for (DTCoreTextLayoutLine *oneLine in tmpArray)
 	{
 		[oneLine adjustStringRangeToStartAtIndex:nextIndex];
+
+		if (previousLine)
+		{
+			CGPoint baselineOrigin = oneLine.baselineOrigin;
+			CGPoint newOrigin = [oneLine baselineOriginToPositionAfterLine:previousLine];
+			
+			if (baselineOrigin.y != newOrigin.y)
+			{
+				oneLine.baselineOrigin = newOrigin;
+			}
+		}
 		
 		nextIndex = NSMaxRange([oneLine stringRange]);
+		
+		previousLine = oneLine;
 	}
 	
     // save 
-	[_lines autorelease];
     _lines = [tmpArray copy];
 	
 	// correct the overall frame size
@@ -282,7 +291,7 @@
 	_frame.size.height = ceilf((CGRectGetMaxY(lastLine.frame) - _frame.origin.y + 1.5));
 	
 	// some attachments might have been overwritten, so we force refresh of the attachments list
-	[_textAttachments release], _textAttachments = nil;
+	_textAttachments = nil;
 }
 
 - (void)setFrame:(CGRect)frame

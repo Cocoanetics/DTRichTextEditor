@@ -27,7 +27,7 @@
 
 + (DTTextRange *)textRangeFromStart:(UITextPosition *)start toEnd:(UITextPosition *)end
 {
-	DTTextRange *range = [[[DTTextRange alloc] initWithStart:start end:end] autorelease];
+	DTTextRange *range = [[DTTextRange alloc] initWithStart:start end:end];
 	
 	return range;
 }
@@ -69,14 +69,6 @@
 	}
 	
 	return self;
-}
-
-- (void)dealloc
-{
-    [_start release];
-    [_end release];
-    
-    [super dealloc];
 }
 
 - (BOOL)isEmpty

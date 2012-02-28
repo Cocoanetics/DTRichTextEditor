@@ -14,7 +14,7 @@
 
 + (DTTextPosition *)textPositionWithLocation:(NSUInteger)location
 {
-	return [[[DTTextPosition alloc] initWithLocation:location] autorelease];
+	return [[DTTextPosition alloc] initWithLocation:location];
 }
 
 - (id)initWithLocation:(NSUInteger)location
