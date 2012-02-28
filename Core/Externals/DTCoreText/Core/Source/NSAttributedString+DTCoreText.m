@@ -8,11 +8,14 @@
 
 #import "NSAttributedString+DTCoreText.h"
 
+#import "DTCoreTextConstants.h"
+
 #import "DTColor+HTML.h"
 #import "NSString+HTML.h"
 #import "DTTextAttachment.h"
 #import "DTCoreTextParagraphStyle.h"
 #import "DTCoreTextFontDescriptor.h"
+#import "DTCSSListStyle.h"
 
 #if TARGET_OS_IPHONE
 #import "NSAttributedString+HTML.h"
@@ -20,16 +23,7 @@
 
 @implementation NSAttributedString (DTCoreText)
 
-#pragma mark Convenience Methods
-
-+ (NSAttributedString *)attributedStringWithHTML:(NSData *)data options:(NSDictionary *)options
-{
-	NSAttributedString *attrString = [[NSAttributedString alloc] initWithHTML:data options:options documentAttributes:NULL];
-	
-	return attrString;
-}
-
-#pragma mark Utlities
+#pragma mark Text Attachments
 - (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate
 {
 	NSMutableArray *tmpArray = [NSMutableArray array];
@@ -62,7 +56,265 @@
 	return nil;
 }
 
+
+#pragma mark Calculating Ranges
+
+- (NSInteger)itemNumberInTextList:(DTCSSListStyle *)list atIndex:(NSUInteger)location
+{
+	NSRange effectiveRange;
+	NSArray *textListsAtIndex = [self attribute:DTTextListsAttribute atIndex:location effectiveRange:&effectiveRange];
+	
+	if (!textListsAtIndex)
+	{
+		return 0;
+	}
+	
+	// get outermost list
+	DTCSSListStyle *outermostList = [textListsAtIndex objectAtIndex:0];
+	
+	// get the range of all lists
+	NSRange totalRange = [self rangeOfTextList:outermostList atIndex:location];
+	
+	// get naked NSString
+    NSString *string = [[self string] substringWithRange:totalRange];
+	
+    // entire string
+    NSRange range = NSMakeRange(0, [string length]);
+	
+	NSMutableDictionary *countersPerList = [NSMutableDictionary dictionary];
+	
+	
+    [string enumerateSubstringsInRange:range options:NSStringEnumerationByParagraphs usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop)
+     {
+		 NSRange actualRange = substringRange;
+		 actualRange.location += totalRange.location;
+		 
+		 NSRange paragraphListRange;
+		 NSArray *textLists = [self attribute:DTTextListsAttribute atIndex:substringRange.location + totalRange.location effectiveRange:&paragraphListRange];
+		 
+		 DTCSSListStyle *currentEffectiveList = [textLists lastObject];
+		 
+		 NSNumber *key = [NSNumber numberWithInteger:[currentEffectiveList hash]]; // hash defaults to address
+		 NSNumber *currentCounterNum = [countersPerList objectForKey:key];
+		 
+		 NSInteger currentCounter=0;
+		 
+		 if (!currentCounterNum)
+		 {
+			 currentCounter = currentEffectiveList.startingItemNumber;
+		 }
+		 else
+		 {
+			 currentCounter = [currentCounterNum integerValue]+1;
+		 }
+		 
+		 currentCounterNum = [NSNumber numberWithInteger:currentCounter];
+		 [countersPerList setObject:currentCounterNum forKey:key];
+		 
+		 if (NSLocationInRange(location, actualRange))
+		 {
+			 *stop = YES;
+		 }
+     }
+     ];
+	
+	NSNumber *key = [NSNumber numberWithInteger:[list hash]]; // hash defaults to address
+	NSNumber *currentCounterNum = [countersPerList objectForKey:key];
+	
+	return [currentCounterNum integerValue];
+}
+
+- (NSRange)rangeOfTextList:(DTCSSListStyle *)list atIndex:(NSUInteger)location
+{
+	NSInteger searchIndex = location;
+	
+	NSArray *textListsAtIndex;
+	NSInteger minFoundIndex = NSIntegerMax;
+	NSInteger maxFoundIndex = 0;
+	
+	BOOL foundList = NO;
+	
+	do 
+	{
+		NSRange effectiveRange;
+		textListsAtIndex = [self attribute:DTTextListsAttribute atIndex:searchIndex effectiveRange:&effectiveRange];
+		
+		if([textListsAtIndex containsObject:list])
+		{
+			foundList = YES;
+			
+			searchIndex = effectiveRange.location;
+			
+			minFoundIndex = MIN(minFoundIndex, searchIndex);
+			maxFoundIndex = MAX(maxFoundIndex, NSMaxRange(effectiveRange));
+		}
+		
+		if (!searchIndex || !foundList)
+		{
+			// reached beginning of string
+			break;
+		}
+		
+		searchIndex--;
+	} 
+	while (foundList && searchIndex>0);
+	
+	// if we didn't find the list at all, return 
+	if (!foundList)
+	{
+		return NSMakeRange(0, NSNotFound);
+	}
+	
+	// now search forward
+	
+	searchIndex = maxFoundIndex;
+	
+	while (searchIndex < [self length])
+	{
+		NSRange effectiveRange;
+		textListsAtIndex = [self attribute:DTTextListsAttribute atIndex:searchIndex effectiveRange:&effectiveRange];
+		
+		foundList = [textListsAtIndex containsObject:list];
+		
+		if (!foundList)
+		{
+			break;
+		}
+		
+		searchIndex = NSMaxRange(effectiveRange);
+		
+		minFoundIndex = MIN(minFoundIndex, effectiveRange.location);
+		maxFoundIndex = MAX(maxFoundIndex, NSMaxRange(effectiveRange));
+	}
+	
+	return NSMakeRange(minFoundIndex, maxFoundIndex-minFoundIndex);
+}
+
 #pragma mark HTML Encoding
+
+
+- (NSString *)_tagRepresentationForListStyle:(DTCSSListStyle *)listStyle closingTag:(BOOL)closingTag
+{
+	BOOL isOrdered = NO;
+	
+	NSString *typeString = nil;
+	
+	switch (listStyle.type) 
+	{
+		case DTCSSListStyleTypeInherit:
+		case DTCSSListStyleTypeDisc:
+		{
+			typeString = @"disc";
+			isOrdered = NO;
+			break;
+		}
+			
+		case DTCSSListStyleTypeCircle:
+		{
+			typeString = @"circle";
+			isOrdered = NO;
+			break;
+		}
+			
+		case DTCSSListStyleTypePlus:
+		{
+			typeString = @"plus";
+			isOrdered = NO;
+			break;
+		}
+			
+		case DTCSSListStyleTypeUnderscore:
+		{
+			typeString = @"underscore";
+			isOrdered = NO;
+			break;
+		}
+			
+		case DTCSSListStyleTypeImage: 
+		{
+			typeString = @"image";
+			isOrdered = NO;
+			break;
+		}
+			
+		case DTCSSListStyleTypeDecimal:
+		{
+			typeString = @"decimal";
+			isOrdered = YES;
+			break;
+		}
+			
+		case DTCSSListStyleTypeDecimalLeadingZero:
+		{
+			typeString = @"decimal-leading-zero";
+			isOrdered = YES;
+			break;
+		}
+			
+		case DTCSSListStyleTypeUpperAlpha:
+		{
+			typeString = @"upper-alpha";
+			isOrdered = YES;
+			break;
+		}
+			
+		case DTCSSListStyleTypeUpperLatin:
+		{
+			typeString = @"upper-latin";
+			isOrdered = YES;
+			break;
+		}
+			
+		case DTCSSListStyleTypeLowerAlpha:
+		{
+			typeString = @"lower-alpha";
+			isOrdered = YES;
+			break;
+		}
+			
+		case DTCSSListStyleTypeLowerLatin:
+		{
+			typeString = @"lower-latin";
+			isOrdered = YES;
+			break;
+		}
+			
+		default:
+			break;
+	}
+	
+	if (closingTag)
+	{
+		if (isOrdered)
+		{
+			return @"</ol>";
+		}
+		else
+		{
+			return @"</ul>";
+		}
+	}
+	else
+	{
+		if (listStyle.position == DTCSSListStylePositionInside)
+		{
+			typeString = [typeString stringByAppendingString:@" inside"];
+		}
+		else if (listStyle.position == DTCSSListStylePositionOutside)
+		{
+			typeString = [typeString stringByAppendingString:@" outside"];
+		}
+		
+		if (isOrdered)
+		{
+			return [NSString stringWithFormat:@"<ol style=\"list-style='%@';\">", typeString];
+		}
+		else
+		{
+			return [NSString stringWithFormat:@"<ul style=\"list-style='%@';\">", typeString];
+		}
+	}
+}
 
 // TO DO: aggregate common styles (like font) into one span
 // TO DO: correctly encode LI/OL/UL
@@ -79,14 +331,18 @@
 	
 	NSInteger location = 0;
 	
+	NSArray *previousListStyles = nil;
+	
 	for (NSString *oneParagraph in paragraphs)
 	{
 		NSRange paragraphRange = NSMakeRange(location, [oneParagraph length]);
 		
+		BOOL needsToRemovePrefix = NO;
+		
 		// skip empty paragraph at end
 		if (oneParagraph == [paragraphs lastObject] && !paragraphRange.length)
 		{
-			break;
+			continue;
 		}
 		
 		BOOL fontIsBlockLevel = NO;
@@ -104,6 +360,11 @@
 		location = location + paragraphRange.length + 1;
 		
 		NSDictionary *paraAttributes = [self attributesAtIndex:paragraphRange.location effectiveRange:NULL];
+		
+		// lets see if we have a list style
+		NSArray *currentListStyles = [paraAttributes objectForKey:DTTextListsAttribute];
+		
+		DTCSSListStyle *effectiveListStyle = [currentListStyles lastObject];
 		
 		CTParagraphStyleRef paraStyle = (__bridge CTParagraphStyleRef)[paraAttributes objectForKey:(id)kCTParagraphStyleAttributeName];
 		NSString *paraStyleString = nil;
@@ -136,25 +397,65 @@
 		
 		NSString *blockElement;
 		
-		NSNumber *headerLevel = [paraAttributes objectForKey:@"DTHeaderLevel"];
+		// close until we are at current or nil
+		if ([previousListStyles count]>[currentListStyles count])
+		{
+			NSMutableArray *closingStyles = [previousListStyles mutableCopy];
+			
+			do 
+			{
+				DTCSSListStyle *closingStyle = [closingStyles lastObject];
+				
+				if (closingStyle == effectiveListStyle)
+				{
+					break;
+				}
+				
+				// end of a list block
+				[retString appendString:[self _tagRepresentationForListStyle:closingStyle closingTag:YES]];
+				[retString appendString:@"\n"];
+				
+				[closingStyles removeLastObject];
+				
+				previousListStyles = closingStyles;
+			}
+			while ([closingStyles count]);
+		}
+		
+		if (effectiveListStyle)
+		{
+			// next text needs to have list prefix removed
+			needsToRemovePrefix = YES;
+			
+			if (![previousListStyles containsObject:effectiveListStyle])
+			{
+				// beginning of a list block
+				[retString appendString:[self _tagRepresentationForListStyle:effectiveListStyle closingTag:NO]];
+				[retString appendString:@"\n"];
+			}
+			
+			blockElement = @"li";
+		}
+		else
+		{
+			blockElement = @"p";
+		}
+		
+		NSNumber *headerLevel = [paraAttributes objectForKey:DTHeaderLevelAttribute];
 		
 		if (headerLevel)
 		{
 			blockElement = [NSString stringWithFormat:@"h%d", [headerLevel integerValue]];
 		}
-		else
+		
+		if ([paragraphs lastObject] == oneParagraph)
 		{
-			blockElement = @"p";
+			// last paragraph in string
 			
-			if ([paragraphs lastObject] == oneParagraph)
+			if (![plainString hasSuffix:@"\n"])
 			{
-				// last paragraph in string
-				
-				if (![plainString hasSuffix:@"\n"])
-				{
-					// not a whole paragraph, so we don't put it in P
-					blockElement = @"span";
-				}
+				// not a whole paragraph, so we don't put it in P
+				blockElement = @"span";
 			}
 		}
 		
@@ -175,10 +476,24 @@
 		{
 			NSDictionary *attributes = [self attributesAtIndex:index longestEffectiveRange:&effectiveRange inRange:paragraphRange];
 			
+			NSString *plainSubString =[plainString substringWithRange:effectiveRange];
+			
+			if (effectiveListStyle && needsToRemovePrefix)
+			{
+				NSInteger counter = [self itemNumberInTextList:effectiveListStyle atIndex:index];
+				NSString *prefix = [effectiveListStyle prefixWithCounter:counter];
+				
+				if ([plainSubString hasPrefix:prefix])
+				{
+					plainSubString = [plainSubString substringFromIndex:[prefix length]];
+				}
+				
+				needsToRemovePrefix = NO;
+			}
+			
 			index += effectiveRange.length;
 			
-			
-			NSString *subString = [[plainString substringWithRange:effectiveRange] stringByAddingHTMLEntities];
+			NSString *subString = [plainSubString stringByAddingHTMLEntities];
 			
 			if (!subString)
 			{
@@ -329,7 +644,7 @@
 				fontStyle = [fontStyle stringByAppendingFormat:@"color:#%@;", [color htmlHexString]];
 			}
 			
-			CGColorRef backgroundColor = (__bridge CGColorRef)[attributes objectForKey:@"DTBackgroundColor"];
+			CGColorRef backgroundColor = (__bridge CGColorRef)[attributes objectForKey:DTBackgroundColorAttribute];
 			if (backgroundColor)
 			{
 				DTColor *color = [DTColor colorWithCGColor:backgroundColor];
@@ -345,7 +660,7 @@
 			else
 			{
 				// there can be no underline and strike-through at the same time
-				NSNumber *strikout = [attributes objectForKey:@"DTStrikeOut"];
+				NSNumber *strikout = [attributes objectForKey:DTStrikeOutAttribute];
 				if ([strikout boolValue])
 				{
 					fontStyle = [fontStyle stringByAppendingString:@"text-decoration:line-through;"];
@@ -353,7 +668,7 @@
 			}
 			
 			
-			NSURL *url = [attributes objectForKey:@"DTLink"];
+			NSURL *url = [attributes objectForKey:DTLinkAttribute];
 			
 			if (url)
 			{
@@ -380,6 +695,28 @@
 		}
 		
 		[retString appendFormat:@"</%@>\n", blockElement];
+		
+		
+		// end of paragraph loop
+		previousListStyles = [currentListStyles copy];
+	}
+	
+	// close list if still open
+	if ([previousListStyles count])
+	{
+		NSMutableArray *closingStyles = [previousListStyles mutableCopy];
+		
+		do 
+		{
+			DTCSSListStyle *closingStyle = [closingStyles lastObject];
+			
+			// end of a list block
+			[retString appendString:[self _tagRepresentationForListStyle:closingStyle closingTag:YES]];
+			[retString appendString:@"\n"];
+			
+			[closingStyles removeLastObject];
+		}
+		while ([closingStyles count]);
 	}
 	
 	return retString;

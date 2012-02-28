@@ -10,6 +10,10 @@
 #import "CGUtils.h"
 #import "DTColor+HTML.h"
 
+// constant for notification
+NSString *DTLinkButtonDidHighlightNotification = @"DTLinkButtonDidHighlightNotification";
+
+
 @interface DTLinkButton ()
 
 - (void)highlightNotification:(NSNotification *)notification;
@@ -19,8 +23,8 @@
 
 @implementation DTLinkButton
 {
-	NSURL *_url;
-    NSString *_guid;
+	NSURL *_URL;
+    NSString *_GUID;
 	
 	CGSize _minimumHitSize;
 }
@@ -34,7 +38,7 @@
 		self.enabled = YES;
 		self.opaque = NO;
 		
-		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(highlightNotification:) name:@"DTLinkButtonDidHighlight" object:nil];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(highlightNotification:) name:DTLinkButtonDidHighlightNotification object:nil];
 	}
 	
 	
@@ -60,12 +64,6 @@
 		UIBezierPath *roundedPath = [UIBezierPath bezierPathWithRoundedRect:imageRect cornerRadius:3.0f];
 		CGContextSetGrayFillColor(ctx, 0.73f, 0.4f);
 		[roundedPath fill];							 
-		
-//		CGPathRef roundedRectPath = newPathForRoundedRect(imageRect, 3.0, YES, YES);
-//		CGContextAddPath(ctx, roundedRectPath);
-//		CGContextFillPath(ctx);
-//		
-//		CGPathRelease(roundedRectPath);
 	}
 }
 
@@ -111,7 +109,7 @@
 	
 	NSString *guid = [userInfo objectForKey:@"GUID"];
 	
-	if ([guid isEqualToString:_guid])
+	if ([guid isEqualToString:_GUID])
 	{
 		BOOL highlighted = [[userInfo objectForKey:@"Highlighted"] boolValue];
 		[super setHighlighted:highlighted];
@@ -130,11 +128,11 @@
 	
 	
 	// notify other parts of the same link
-	if (_guid)
+	if (_GUID)
 	{
-		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:highlighted], @"Highlighted", _guid, @"GUID", nil];
+		NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:highlighted], @"Highlighted", _GUID, @"GUID", nil];
 		
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"DTLinkButtonDidHighlight" object:self userInfo:userInfo];
+		[[NSNotificationCenter defaultCenter] postNotificationName:DTLinkButtonDidHighlightNotification object:self userInfo:userInfo];
 	}
 }
 
@@ -164,8 +162,8 @@
 	
 }
 
-@synthesize url = _url;
-@synthesize guid = _guid;
+@synthesize URL = _URL;
+@synthesize GUID = _GUID;
 
 @synthesize minimumHitSize = _minimumHitSize;
 
