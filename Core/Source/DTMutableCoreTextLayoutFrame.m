@@ -79,6 +79,7 @@
 	[_textAttachments release], _textAttachments = nil;
 }
 
+
 - (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text
 {
 	NSString *plainText = [_attributedStringFragment string];
@@ -163,37 +164,25 @@
 	// make this replacement in our local copy
 	[(NSMutableAttributedString *)_attributedStringFragment replaceCharactersInRange:range withAttributedString:text];
     
-	
-	// prepare an attributed global string that has this modification
-	//[self.layouter setAttributedString:mergedAttributedString shouldLayout:NO];
-	//[mergedAttributedString release];
-    
     // layout the new paragraph text
     DTCoreTextLayouter *tmpLayouter = [[DTCoreTextLayouter alloc] initWithAttributedString:modifiedParagraphText];
     CGRect rect = self.frame;
     rect.size.height = CGFLOAT_OPEN_HEIGHT;
     NSRange allTextRange = NSMakeRange(0, 0);
     DTCoreTextLayoutFrame *tmpFrame = [tmpLayouter layoutFrameWithRect:rect range:allTextRange];
+	
+	NSArray *relayoutedLines = tmpFrame.lines;
+	
+	[tmpLayouter release];
     
-	// get baseline origin of first line, all lines need to be shifted down by that
-	CGFloat baselineOffset = 0;
-    NSUInteger insertionPoint = 0;
+    NSUInteger insertionIndex = 0;
 	
 	if (paragraphs.location > 0)
 	{
 		NSArray *preParaLines = [self linesInParagraphAtIndex:paragraphs.location-1];
 		
 		DTCoreTextLayoutLine *lineBefore = [preParaLines lastObject];
-		insertionPoint = [_lines indexOfObject:lineBefore] + 1; 
-        
-		if ([tmpFrame.lines count])
-		{
-			DTCoreTextLayoutLine *firstInsertedLine = [tmpFrame.lines objectAtIndex:0];
-			
-			CGFloat insertedLineHeight = firstInsertedLine.ascent + firstInsertedLine.descent + [firstInsertedLine calculatedLeading];
-			CGFloat insertionBaselineOrigin = lineBefore.baselineOrigin.y + insertedLineHeight + [lineBefore paragraphSpacing];
-			baselineOffset = insertionBaselineOrigin - firstInsertedLine.baselineOrigin.y;
-		}
+		insertionIndex = [_lines indexOfObject:lineBefore] + 1; 
 	}
 	
 	
@@ -210,23 +199,35 @@
 	// remove paragraph ranges
 	[_paragraphRanges release], _paragraphRanges = nil;
 	
-    // insert layouted lines
-    NSUInteger insertionIndex = insertionPoint; //([tmpArray count] > 0 ? paragraphs.location + 1 : paragraphs.location); // ***HACK, was paragraphs.location, this hack fixed the following bug. Open sample app, start typing until you line wrap, tap enter, start typing <-- this would cause layouting issues
-	CGFloat previousBaselineY;
+
 	DTCoreTextLayoutLine *previousLine = nil;
+	
+	// the amount that the relayouted lines need to be shifted down
+	CGPoint insertedLinesBaselineOffset = CGPointZero;
+	
+	if (insertionIndex>0)
+	{
+		// if there is a line before this one we base ourselfs off that
+		previousLine = [tmpArray objectAtIndex:insertionIndex-1];
+		
+		DTCoreTextLayoutLine *firstNewLine = [relayoutedLines objectAtIndex:0];
+
+		CGPoint oldBaselineOrigin = firstNewLine.baselineOrigin;
+		CGPoint newBaselineOrigin = [firstNewLine baselineOriginToPositionAfterLine:previousLine];
+		
+		insertedLinesBaselineOffset.y = newBaselineOrigin.y - oldBaselineOrigin.y;
+	}
 	
 	// determine how much the range has to be shifted
     for (DTCoreTextLayoutLine *oneLine in tmpFrame.lines)
     {
-		// shift down the baseline to be after previous paragraph
-		if (baselineOffset)
+		// only shift down if there are lines before it
+		if (insertedLinesBaselineOffset.y!=0.0f)
 		{
-			CGPoint baseLineOrigin = oneLine.baselineOrigin;
-			baseLineOrigin.y += baselineOffset;
-			oneLine.baselineOrigin = baseLineOrigin;
+			CGPoint baselineOrigin = oneLine.baselineOrigin;
+			baselineOrigin.y += insertedLinesBaselineOffset.y;
+			oneLine.baselineOrigin = baselineOrigin;
 		}
-		
-		previousBaselineY = oneLine.baselineOrigin.y;
 		
         [tmpArray insertObject:oneLine atIndex:insertionIndex];
         insertionIndex++;
@@ -234,19 +235,28 @@
 		previousLine = oneLine;
     }
     
-    [tmpLayouter release];
-	
+	BOOL firstLineAfterInsert = YES;
+	CGPoint linesAfterinsertedLinesBaselineOffset = CGPointZero;
+
 	// move down lines after the re-layouted lines
-	
-	insertionIndex=1;
-	previousLine = [tmpArray objectAtIndex:0];
-	
 	while (insertionIndex<[tmpArray count]) 
 	{
 		DTCoreTextLayoutLine *oneLine = [tmpArray objectAtIndex:insertionIndex];
-		CGPoint baselineOrigin = previousLine.baselineOrigin;
 		
-		baselineOrigin.y += ceilf([previousLine paragraphSpacing] + previousLine.descent + oneLine.ascent + [oneLine calculatedLeading]);
+		if (firstLineAfterInsert)
+		{
+			// first line determines shift down
+			CGPoint oldBaselineOrigin = oneLine.baselineOrigin;
+			CGPoint newBaselineOrigin = [oneLine baselineOriginToPositionAfterLine:previousLine];
+			
+			linesAfterinsertedLinesBaselineOffset.y = newBaselineOrigin.y - oldBaselineOrigin.y;
+			
+			// we got our offset now
+			firstLineAfterInsert = NO;
+		}
+		
+		CGPoint baselineOrigin =  [oneLine baselineOriginToPositionAfterLine:previousLine];
+		baselineOrigin.y += linesAfterinsertedLinesBaselineOffset.y;
 		oneLine.baselineOrigin = baselineOrigin;
 		
 		previousLine = oneLine;
