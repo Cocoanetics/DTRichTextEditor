@@ -9,6 +9,7 @@
 #import "DTRichTextEditorViewController.h"
 #import "NSAttributedString+HTML.h"
 #import "NSAttributedString+DTRichText.h"
+#import "DTCoreText.h"
 
 #import <AssetsLibrary/AssetsLibrary.h>
 
@@ -83,11 +84,17 @@
 	justifyAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"J" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleJustify:)];
 	
 	UIBarButtonItem *spacer2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-		
+
+	orderedListButton = [[UIBarButtonItem alloc] initWithTitle:@"1." style:UIBarButtonItemStyleBordered target:self action:@selector(toggleOrderedList:)];
+	unorderedListButton = [[UIBarButtonItem alloc] initWithTitle:@"+" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleUnorderedList:)];
+
+	UIBarButtonItem *spacer3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+
+	
 	toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
 	richEditor.inputAccessoryView = toolbar;
 	
-	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, photoButton, nil]];
+	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, orderedListButton, unorderedListButton, spacer3, photoButton, nil]];
 	
 	// watch the selectedTextRange property
 	[richEditor addObserver:self forKeyPath:@"selectedTextRange" options:NSKeyValueObservingOptionNew context:nil];
@@ -263,6 +270,25 @@
 	[richEditor applyTextAlignment:kCTJustifiedTextAlignment toParagraphsContainingRange:range];
 }
 
+- (void)toggleUnorderedList:(UIBarButtonItem *)sender
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	
+	DTCSSListStyle *listStyle = [[DTCSSListStyle alloc] init];
+	listStyle.type = DTCSSListStyleTypeDisc;
+	
+	[richEditor toggleListStyle:listStyle inRange:range];
+}
+
+- (void)toggleOrderedList:(UIBarButtonItem *)sender
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	
+	DTCSSListStyle *listStyle = [[DTCSSListStyle alloc] init];
+	listStyle.type = DTCSSListStyleTypeDecimal;
+	
+	[richEditor toggleListStyle:listStyle inRange:range];
+}
 
 #pragma mark Notifications
 - (void)textChanged:(NSNotification *)notification

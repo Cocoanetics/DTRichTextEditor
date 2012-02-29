@@ -35,6 +35,10 @@
 	UIBarButtonItem *centerAlignButton;
 	UIBarButtonItem *rightAlignButton;
 	UIBarButtonItem *justifyAlignButton;
+	
+	// lists
+	UIBarButtonItem *unorderedListButton;
+	UIBarButtonItem *orderedListButton;
 }
 
 @property (nonatomic, retain) NSCache *imageViewCache;
