@@ -207,15 +207,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	// default needs to be just a \n, the style attributes of that are used for
 	// all subsequent insertions
-	//[self setHTMLString:@"<p></p>"];
-	
-	// TO DO: fix above so that there is only one NL output
-	//---- begin workaround
-	NSData *data = [@"<p>a</p>" dataUsingEncoding:NSUTF8StringEncoding];
-	NSAttributedString *attributedString = [[NSAttributedString alloc] initWithHTML:data options:[self textDefaults] documentAttributes:NULL];
-	attributedString = [attributedString attributedSubstringFromRange:NSMakeRange(1, 1)];
-	[self setAttributedText:attributedString];
-	// ----- end workaround 
+	[self setHTMLString:@"<p></p>"];
 }
 
 // we want our special content view that uses mutable layout frames
