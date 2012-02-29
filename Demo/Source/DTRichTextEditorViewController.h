@@ -25,9 +25,16 @@
 	UIToolbar *toolbar;
 	UIBarButtonItem *photoButton;
 	
+	// font toggling
 	UIBarButtonItem *boldButton;
 	UIBarButtonItem *italicButton;
 	UIBarButtonItem *underlineButton;
+	
+	// paragraph alignment buttons
+	UIBarButtonItem *leftAlignButton;
+	UIBarButtonItem *centerAlignButton;
+	UIBarButtonItem *rightAlignButton;
+	UIBarButtonItem *justifyAlignButton;
 }
 
 @property (nonatomic, retain) NSCache *imageViewCache;

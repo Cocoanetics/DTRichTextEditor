@@ -45,26 +45,19 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //	NSString *perc = @"%3Cp%3EAB%3C/p%3E%3Cp%3E%3Cimg%20type=%221%22%20src=%22images/NOTES_BM_UNCLEAR_A.png%22%20alt=%22%22%20name=%22%20%22%20value=%222011-07-27T08:11:58.118%23-1%23-1%22%20class=%22BMClass%22%20style=%22width:16px;height:16px;%22%20/%3E%3C/p%3E%3Cp%3ECD%3C/p%3E%3Cp%3E%3Cimg%20type=%221%22%20src=%22images/NOTES_BM_UNCLEAR_A.png%22%20name=%22%20%22%20alt=%22%22%20value=%222011-07-26T08:28:42.176%23-1%23-1%22%20class=%22BMClass%22%20style=%22width:16px;height:16px;%22%20/%3E%3C/p%3E";
-    //	NSString *html = [perc stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    
 	// defaults
-	//richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
+	richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
     richEditor.textDelegate = self;
 	richEditor.defaultFontFamily = @"Helvetica";
-	//richEditor.textSizeMultiplier = 2.2;
+	richEditor.textSizeMultiplier = 2.2;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
     richEditor.autocorrectionType = UITextAutocorrectionTypeNo;
     
-//    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
+    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	
-//	NSString *html = @"<p><span style=\"font-size:20px\">This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text. This is some test text.</span></p>";
+//	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
-	//	NSString *html = @"<p></p>";
-    
-	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
-	
-	//[richEditor setHTMLString:html];
+	[richEditor setHTMLString:html];
 	
 	// image as drawn by your custom views which you return in the delegate method
 	richEditor.contentView.shouldDrawImages = NO;
@@ -83,12 +76,18 @@
 	underlineButton.enabled = NO;
 
 	UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+	
+	leftAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"L" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleLeft:)];
+	centerAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"C" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleCenter:)];
+	rightAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"R" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleRight:)];
+	justifyAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"J" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleJustify:)];
+	
+	UIBarButtonItem *spacer2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 		
 	toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
 	richEditor.inputAccessoryView = toolbar;
 	
-	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, spacer, photoButton, nil]];
-	
+	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, photoButton, nil]];
 	
 	// watch the selectedTextRange property
 	[richEditor addObserver:self forKeyPath:@"selectedTextRange" options:NSKeyValueObservingOptionNew context:nil];
@@ -233,11 +232,37 @@
 	UITextRange *range = richEditor.selectedTextRange;
 	[richEditor toggleItalicInRange:range];
 }
+
 - (void)toggleUnderline:(UIBarButtonItem *)sender
 {
 	UITextRange *range = richEditor.selectedTextRange;
 	[richEditor toggleUnderlineInRange:range];
 }
+
+- (void)toggleLeft:(UIBarButtonItem *)sender
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	[richEditor applyTextAlignment:kCTLeftTextAlignment toParagraphsContainingRange:range];
+}
+
+- (void)toggleCenter:(UIBarButtonItem *)sender
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	[richEditor applyTextAlignment:kCTCenterTextAlignment toParagraphsContainingRange:range];
+}
+
+- (void)toggleRight:(UIBarButtonItem *)sender
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	[richEditor applyTextAlignment:kCTRightTextAlignment toParagraphsContainingRange:range];
+}
+
+- (void)toggleJustify:(UIBarButtonItem *)sender
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	[richEditor applyTextAlignment:kCTJustifiedTextAlignment toParagraphsContainingRange:range];
+}
+
 
 #pragma mark Notifications
 - (void)textChanged:(NSNotification *)notification
