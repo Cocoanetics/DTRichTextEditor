@@ -6,7 +6,7 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "DTCoreText.h"
 
 @class DTTextAttachment;
 
@@ -20,5 +20,8 @@
 - (void)toggleBoldInRange:(NSRange)range;
 - (void)toggleItalicInRange:(NSRange)range;
 - (void)toggleUnderlineInRange:(NSRange)range;
+
+// convenience method to set text alignment on entire paragraphs
+- (void)adjustTextAlignment:(CTTextAlignment)alignment inRange:(NSRange)range;
 
 @end

@@ -17,7 +17,10 @@
 #import "NSString+HTML.h"
 
 #import "DTCoreTextFontDescriptor.h"
+#import "DTCoreTextParagraphStyle.h"
 #import "DTCoreTextConstants.h"
+
+#import <CoreText/CoreText.h>
 
 
 @implementation NSMutableAttributedString (DTRichText)
@@ -26,6 +29,8 @@
 {
 	NSMutableDictionary *attributes = [[self typingAttributesForRange:range] mutableCopy];
 	
+	[self beginEditing];
+
 	// just in case if there is an attachment at the insertion point
 	[attributes removeAttachment];
 	
@@ -88,6 +93,8 @@
 	
 	[self replaceCharactersInRange:range withAttributedString:tmpAttributedString];
 	
+	[self endEditing];
+
     return [tmpAttributedString length];
 }
 
@@ -100,6 +107,8 @@
     {
         return;
     }
+	
+	[self beginEditing];
 	
 	CTFontRef currentFont = (__bridge CTFontRef)[currentAttributes objectForKey:(id)kCTFontAttributeName];
 	DTCoreTextFontDescriptor *typingFontDescriptor = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
@@ -151,6 +160,8 @@
 		
         index += attrRange.length;
     }
+	
+	[self endEditing];
 }
 
 
@@ -163,7 +174,9 @@
     {
         return;
     }
-	
+
+	[self beginEditing];
+
 	CTFontRef currentFont = (__bridge CTFontRef)[currentAttributes objectForKey:(id)kCTFontAttributeName];
 	DTCoreTextFontDescriptor *typingFontDescriptor = [DTCoreTextFontDescriptor fontDescriptorForCTFont:currentFont];
 	
@@ -214,10 +227,14 @@
 		
         index += attrRange.length;
     }
+	
+	[self endEditing];
 }
 
 - (void)toggleUnderlineInRange:(NSRange)range
 {
+	[self beginEditing];
+	
 	// first character determines current italic status
 	NSDictionary *currentAttributes = [self typingAttributesForRange:range];
     
@@ -257,7 +274,28 @@
 		[self setAttributes:attrs range:attrRange];
 		
         index += attrRange.length;
-    }	
+    }
+	
+	[self endEditing];
 }
+
+
+- (void)adjustTextAlignment:(CTTextAlignment)alignment inRange:(NSRange)range
+{
+	[self beginEditing];
+	
+	[self enumerateAttribute:(id)kCTParagraphStyleAttributeName inRange:range options:0
+				  usingBlock:^(id value, NSRange range, BOOL *stop) {
+					  CTParagraphStyleRef paragraphStyle = (__bridge CTParagraphStyleRef)value;
+					  
+					  DTCoreTextParagraphStyle *para = [[DTCoreTextParagraphStyle alloc] initWithCTParagraphStyle:paragraphStyle];
+					  para.alignment = alignment;
+					  
+					  CTParagraphStyleRef newParagraphStyle = [para createCTParagraphStyle];
+					  [self addAttribute:(id)kCTParagraphStyleAttributeName value:CFBridgingRelease(newParagraphStyle) range:range];
+				  }];
+}
+
+
 
 @end

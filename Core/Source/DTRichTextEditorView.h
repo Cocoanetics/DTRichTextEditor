@@ -154,6 +154,8 @@ typedef enum
 - (void)toggleItalicInRange:(UITextRange *)range;
 - (void)toggleUnderlineInRange:(UITextRange *)range;
 
+- (void)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range;
+
 - (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate;
 - (void)relayoutText;
 

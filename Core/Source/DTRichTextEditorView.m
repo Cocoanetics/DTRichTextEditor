@@ -12,6 +12,7 @@
 
 #import "DTAttributedTextContentView.h"
 #import "NSString+HTML.h"
+#import "NSString+Paragraphs.h"
 #import "DTHTMLElement.h"
 #import "DTCoreTextLayoutFrame.h"
 #import "DTCoreTextLayoutFrame+DTRichText.h"
@@ -2410,6 +2411,35 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		// cursor positions might have changed
 		[self updateCursorAnimated:NO];
 	}
+}
+
+- (void)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range
+{
+	NSRange styleRange = [(DTTextRange *)range NSRangeValue];
+	
+	// get range containing all selected paragraphs
+	NSAttributedString *attributedString = [contentView.layoutFrame attributedStringFragment];
+	
+	NSString *string = [attributedString string];
+	
+	NSUInteger begIndex;
+	NSUInteger endIndex;
+	
+	[string rangeOfParagraphsContainingRange:styleRange parBegIndex:&begIndex parEndIndex:&endIndex];
+	styleRange = NSMakeRange(begIndex, endIndex - begIndex); // now extended to full paragraphs
+	
+	// get fragment that is to be changed
+	NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
+	[fragment adjustTextAlignment:alignment inRange:NSMakeRange(0, [fragment length])];
+	
+	// replace 
+	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
+	
+	// attachment positions might have changed
+	[self.contentView layoutSubviewsInRect:self.bounds];
+	
+	// cursor positions might have changed
+	[self updateCursorAnimated:NO];
 }
 
 - (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate
