@@ -2341,6 +2341,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		// cursor positions might have changed
 		[self updateCursorAnimated:NO];
 	}
+	
+	[self hideContextMenu];
 }
 
 - (void)toggleItalicInRange:(UITextRange *)range
@@ -2376,6 +2378,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		// cursor positions might have changed
 		[self updateCursorAnimated:NO];
 	}
+	
+	[self hideContextMenu];
 }
 
 - (void)toggleUnderlineInRange:(UITextRange *)range
@@ -2411,6 +2415,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		// cursor positions might have changed
 		[self updateCursorAnimated:NO];
 	}
+	
+	[self hideContextMenu];
 }
 
 - (void)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range
@@ -2440,6 +2446,39 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	// cursor positions might have changed
 	[self updateCursorAnimated:NO];
+	
+	[self hideContextMenu];
+}
+
+- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range
+{
+	NSRange styleRange = [(DTTextRange *)range NSRangeValue];
+	
+	// get range containing all selected paragraphs
+	NSAttributedString *attributedString = [contentView.layoutFrame attributedStringFragment];
+	
+	NSString *string = [attributedString string];
+	
+	NSUInteger begIndex;
+	NSUInteger endIndex;
+	
+	[string rangeOfParagraphsContainingRange:styleRange parBegIndex:&begIndex parEndIndex:&endIndex];
+	styleRange = NSMakeRange(begIndex, endIndex - begIndex); // now extended to full paragraphs
+	
+	// get fragment that is to be changed
+	NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
+	[fragment toggleListStyle:listStyle inRange:NSMakeRange(0, [fragment length])];
+	
+	// replace 
+	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
+	
+	// attachment positions might have changed
+	[self.contentView layoutSubviewsInRect:self.bounds];
+	
+	// cursor positions might have changed
+	[self updateCursorAnimated:NO];	
+	
+	[self hideContextMenu];
 }
 
 - (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate

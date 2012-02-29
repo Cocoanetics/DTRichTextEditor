@@ -19,6 +19,7 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
 @class DTCursorView;
 @class DTLoupeView;
 @class DTTextSelectionView;
+@class DTCSSListStyle;
 
 
 typedef enum
@@ -155,6 +156,7 @@ typedef enum
 - (void)toggleUnderlineInRange:(UITextRange *)range;
 
 - (void)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range;
+- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range;
 
 - (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate;
 - (void)relayoutText;

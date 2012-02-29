@@ -24,4 +24,7 @@
 // convenience method to set text alignment on entire paragraphs
 - (void)adjustTextAlignment:(CTTextAlignment)alignment inRange:(NSRange)range;
 
+// convenience method to toggle list on entire paragraphs
+- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range;
+
 @end

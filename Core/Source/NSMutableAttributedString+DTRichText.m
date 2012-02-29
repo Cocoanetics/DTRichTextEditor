@@ -294,8 +294,51 @@
 					  CTParagraphStyleRef newParagraphStyle = [para createCTParagraphStyle];
 					  [self addAttribute:(id)kCTParagraphStyleAttributeName value:CFBridgingRelease(newParagraphStyle) range:range];
 				  }];
+	
+	[self endEditing];
 }
 
-
+- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range
+{
+	[self beginEditing];
+	
+	[self enumerateAttribute:DTTextListsAttribute inRange:range options:0
+				  usingBlock:^(id value, NSRange range, BOOL *stop) {
+					  NSArray *currentLists = (NSArray *)value;
+					  
+					  BOOL setNewLists = NO;
+					  
+					  DTCSSListStyle *effectiveListStyle = [currentLists lastObject];
+					  
+					  if (effectiveListStyle)
+					  {
+						  // there is a list, if it is different, update
+						  if (![effectiveListStyle isEqual:listStyle])
+						  {
+							  setNewLists = YES;
+						  }
+						  else
+						  {
+							  // toggle list off
+							  setNewLists = NO;
+						  }
+					  }
+					  else
+					  {
+						  setNewLists = YES;
+					  }
+					  
+					  if (setNewLists)
+					  {
+						  [self addAttribute:DTTextListsAttribute value:[NSArray arrayWithObject:listStyle] range:range]; 
+					  }
+					  else
+					  {
+						  [self removeAttribute:DTTextListsAttribute range:range];
+					  }
+				  }];
+	
+	[self endEditing];
+}
 
 @end
