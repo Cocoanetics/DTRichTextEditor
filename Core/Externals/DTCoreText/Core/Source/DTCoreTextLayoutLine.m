@@ -434,6 +434,26 @@
 	CGFloat minLineHeight = 0;
 	CGFloat maxLineHeight = 0;
 	
+	CGFloat usedLeading = self.leading;
+	
+	if (usedLeading == 0.0f)
+	{
+		// font has no leading, so we fake one (e.g. Helvetica)
+		CGFloat tmpHeight = self.ascent + self.descent;
+		usedLeading = ceilf(0.2f * tmpHeight);
+		
+		if (usedLeading>20)
+		{
+			// we have a large image increasing the ascender too much for this calc to work
+			usedLeading = 0;
+		}
+	}
+	else
+	{
+		// make sure that we don't have less than 10% of line height as leading
+		usedLeading = ceilf(MAX((self.ascent + self.descent)*0.1f, usedLeading));
+	}
+	
 	if (CTParagraphStyleGetValueForSpecifier(paragraphStyle, kCTParagraphStyleSpecifierMinimumLineHeight, sizeof(minLineHeight), &minLineHeight))
 	{
 		if (lineHeight<minLineHeight)
@@ -457,12 +477,15 @@
 	}
 	
 	lineHeight += [previousLine paragraphSpacing:YES];
-	lineHeight += self.leading;
+	lineHeight += usedLeading;
 	
 	lineOrigin.y += lineHeight;
 
 	// preserve own baseline x
 	lineOrigin.x = _baselineOrigin.x;
+	
+	// origins are rounded
+	lineOrigin.y = roundf(lineOrigin.y);
 	
 	return lineOrigin;
 }
@@ -470,28 +493,30 @@
 #pragma mark Properties
 - (NSArray *)glyphRuns
 {
-	if (!_glyphRuns)
-	{
-		CFArrayRef runs = CTLineGetGlyphRuns(_line);
-		
-        if (runs) {
-		CGFloat offset = 0;
-		
-		NSMutableArray *tmpArray = [[NSMutableArray alloc] initWithCapacity:CFArrayGetCount(runs)];
-		
-		for (id oneRun in (__bridge NSArray *)runs)
+	dispatch_sync(_syncQueue, ^{
+		if (!_glyphRuns)
 		{
-			//CGPoint runOrigin = CGPointMake(_baselineOrigin.x + offset, _baselineOrigin.y);
+			// run array is owned by line
+			NSArray *runs = (__bridge NSArray *)CTLineGetGlyphRuns(_line);
 			
-			DTCoreTextGlyphRun *glyphRun = [[DTCoreTextGlyphRun alloc] initWithRun:(__bridge CTRunRef)oneRun layoutLine:self offset:offset];
-			[tmpArray addObject:glyphRun];
-			
-			offset += glyphRun.frame.size.width;
+			if (runs) 
+			{
+				CGFloat offset = 0;
+				
+				NSMutableArray *tmpArray = [[NSMutableArray alloc] initWithCapacity:[runs count]];
+				
+				for (id oneRun in runs)
+				{
+					DTCoreTextGlyphRun *glyphRun = [[DTCoreTextGlyphRun alloc] initWithRun:(__bridge CTRunRef)oneRun layoutLine:self offset:offset];
+					[tmpArray addObject:glyphRun];
+					
+					offset += glyphRun.frame.size.width;
+				}
+				
+				_glyphRuns = tmpArray;
+			}
 		}
-		
-		_glyphRuns = tmpArray;
-        }
-	}
+	});
 	
 	return _glyphRuns;
 }
