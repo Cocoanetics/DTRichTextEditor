@@ -1445,6 +1445,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:myRange withText:text];
 	
+//	[(NSMutableAttributedString *)self.contentView.layoutFrame.attributedStringFragment correctParagraphSpacingForRange:NSMakeRange(myRange.location, [text length])];
+	
 	self.contentSize = self.contentView.frame.size;
 	
     // if it's just one character remaining then set text defaults on this
@@ -2447,7 +2449,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		// replace 
 		[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
-
+		
 		// attachment positions might have changed
 		[self.contentView layoutSubviewsInRect:self.bounds];
 		
@@ -2514,6 +2516,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	styleRange.length = [fragment length];
 	self.selectedTextRange = [[DTTextRange alloc] initWithNSRange:styleRange];
 	
+//	[(NSMutableAttributedString *)self.contentView.layoutFrame.attributedStringFragment correctParagraphSpacingForRange:styleRange];
+//	
+//	
 	// attachment positions might have changed
 	[self.contentView layoutSubviewsInRect:self.bounds];
 	

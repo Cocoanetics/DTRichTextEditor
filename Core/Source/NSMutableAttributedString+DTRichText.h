@@ -27,4 +27,7 @@
 // convenience method to toggle list on entire paragraphs
 - (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range;
 
+// method to correct paragraph styles on paragraphs belonging to list
+- (void)correctParagraphSpacingForRange:(NSRange)range;
+
 @end

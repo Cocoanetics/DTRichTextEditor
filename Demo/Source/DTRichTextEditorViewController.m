@@ -56,7 +56,7 @@
     
     NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	
-//	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	[richEditor setHTMLString:html];
 	
@@ -275,6 +275,7 @@
 	UITextRange *range = richEditor.selectedTextRange;
 	
 	DTCSSListStyle *listStyle = [[DTCSSListStyle alloc] init];
+	listStyle.startingItemNumber = 1;
 	listStyle.type = DTCSSListStyleTypeDisc;
 	
 	[richEditor toggleListStyle:listStyle inRange:range];
@@ -285,6 +286,7 @@
 	UITextRange *range = richEditor.selectedTextRange;
 	
 	DTCSSListStyle *listStyle = [[DTCSSListStyle alloc] init];
+	listStyle.startingItemNumber = 1;
 	listStyle.type = DTCSSListStyleTypeDecimal;
 	
 	[richEditor toggleListStyle:listStyle inRange:range];

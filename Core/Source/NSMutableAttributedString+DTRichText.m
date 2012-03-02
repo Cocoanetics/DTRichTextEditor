@@ -417,4 +417,41 @@
 	[self endEditing];
 }
 
+- (void)correctParagraphSpacingForRange:(NSRange)range
+{
+	NSString *string = [self string];
+	
+	range = NSMakeRange(0, [string length]);
+	
+	// extend to entire paragraphs
+	range = [string rangeOfParagraphsContainingRange:range parBegIndex:NULL parEndIndex:NULL];
+
+	// enumerate paragraphs
+	[string enumerateSubstringsInRange:range options:NSStringEnumerationByParagraphs usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+		
+		BOOL isLastParagraph = (NSMaxRange(substringRange)==NSMaxRange(range));
+		
+		CTParagraphStyleRef para = (__bridge CTParagraphStyleRef)[self attribute:(id)kCTParagraphStyleAttributeName atIndex:substringRange.location effectiveRange:NULL];
+		
+		DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:para];
+		
+		NSArray *textLists = [self attribute:DTTextListsAttribute atIndex:substringRange.location effectiveRange:NULL];
+		
+		if (![textLists count]||isLastParagraph)
+		{
+			paragraphStyle.paragraphSpacing = 12.0;
+		}
+		else
+		{
+			paragraphStyle.paragraphSpacing = 0;
+		}
+		
+		NSLog(@"space: %f", paragraphStyle.paragraphSpacing);
+		
+		para = [paragraphStyle createCTParagraphStyle];
+		[self addAttribute:(id)kCTParagraphStyleAttributeName value:(__bridge id)para range:substringRange];
+		CFRelease(para);
+	}];
+}
+
 @end
