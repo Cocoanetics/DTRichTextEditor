@@ -6,7 +6,7 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+@class DTCSSListStyle;
 
 @interface NSAttributedString (DTRichText)
 
@@ -18,6 +18,9 @@
 
 // create attributed string with hyperlink
 + (NSAttributedString *)attributedStringWithURL:(NSURL *)url;
+
+// create attributed string prefix for a list paragraph
++ (NSAttributedString *)prefixForListItemWithCounter:(NSUInteger)listCounter listStyle:(DTCSSListStyle *)listStyle attributes:(NSDictionary *)attributes;
 
 // for debugging
 - (NSString *)dumpString;

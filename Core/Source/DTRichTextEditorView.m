@@ -1336,7 +1336,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		DTTextRange *selectedRange = (id)self.selectedTextRange;
 		
 		[self replaceRange:selectedRange withText:text];
-		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[selectedRange start] offset:[text length]]];
+		//[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[selectedRange start] offset:[text length]]];
 		// leave marking intact
 	}
 	
@@ -1361,14 +1361,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 			DTTextRange *delRange = [DTTextRange textRangeFromStart:delStart toEnd:delEnd];
 			
 			[self replaceRange:delRange  withText:@""];
-			[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:delStart offset:0]];
+			//[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:delStart offset:0]];
 		}
 	}
 	else 
 	{
 		// delete selection
 		[self replaceRange:currentRange withText:nil];
-		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[currentRange start] offset:0]];
+	//	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[currentRange start] offset:0]];
 	}
 	
 	// hide context menu on deleting text
@@ -1415,18 +1415,36 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		typingAttributes = [self typingAttributesForRange:range];
 	}
 	
+	DTCSSListStyle *effectiveList = [[typingAttributes objectForKey:DTTextListsAttribute] lastObject];
+	BOOL newlineEntered = NO;
+	
 	if ([text isKindOfClass:[NSString class]])
 	{
+		// if we are inside a list and the text ends with NL we need list prefix
+		if ([text hasSuffix:@"\n"])
+		{
+			newlineEntered = YES;
+		}
+		
 		// need to replace attributes with typing attributes
 		text = [[NSAttributedString alloc] initWithString:text attributes:typingAttributes];
 	}
+	
+	// if we are in a list and just entered NL then we need appropriate list prefix
+	if (effectiveList && newlineEntered)
+	{
+		NSInteger itemNumber = [self.contentView.layoutFrame.attributedStringFragment itemNumberInTextList:effectiveList atIndex:myRange.location]+1;
+		NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:effectiveList attributes:typingAttributes];
+		
+		NSMutableAttributedString *tmpStr = [text mutableCopy];
+		[tmpStr appendAttributedString:prefixAttributedString];
+		
+		text = tmpStr;
+	}
 
+	
 	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:myRange withText:text];
-
-//	CGSize sizeThatFits = CGSizeMake(self.contentView.frame.size.width, CGRectGetMaxY(self.contentView.layoutFrame.frame) + self.contentView.edgeInsets.bottom);
-//	CGRect newFrame = CGRectMake(0, 0, sizeThatFits.width, sizeThatFits.height);
-//
-//	[self.contentView setFrame:newFrame relayoutText:NO];
+	
 	self.contentSize = self.contentView.frame.size;
 	
     // if it's just one character remaining then set text defaults on this
@@ -2192,33 +2210,54 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	NSDictionary *attributes = [self.contentView.layoutFrame.attributedStringFragment typingAttributesForRange:[range NSRangeValue]];
 	
 	CTFontRef font = (__bridge CTFontRef)[attributes objectForKey:(id)kCTFontAttributeName];
+	CTParagraphStyleRef paragraphStyle = (__bridge CTParagraphStyleRef)[attributes objectForKey:(id)kCTParagraphStyleAttributeName];
+	
+	if (font&&paragraphStyle)
+	{
+		return attributes;
+	}
+
+	// otherwise we need to add missing things
+	
+	NSDictionary *defaults = [self textDefaults];
+	NSString *fontFamily = [defaults objectForKey:DTDefaultFontFamily];
+	
+	CGFloat multiplier = [[defaults objectForKey:NSTextSizeMultiplierDocumentOption] floatValue];
+	
+	if (!multiplier)
+	{
+		multiplier = 1.0;
+	}
+	
+	NSMutableDictionary *tmpAttributes = [attributes mutableCopy];
 	
 	// if there's no font, then substitute it from our defaults
 	if (!font)
 	{
-        NSDictionary *defaults = [self textDefaults];
-        NSString *fontFamily = [defaults objectForKey:DTDefaultFontFamily];
-        
-        CGFloat multiplier = [[defaults objectForKey:NSTextSizeMultiplierDocumentOption] floatValue];
-        
-        if (!multiplier)
-        {
-            multiplier = 1.0;
-        }
-        
         DTCoreTextFontDescriptor *desc = [[DTCoreTextFontDescriptor alloc] init];
         desc.fontFamily = fontFamily;
         desc.pointSize = 12.0 * multiplier;
         
         CTFontRef defaultFont = [desc newMatchingFont];
         
-        attributes = [NSMutableDictionary dictionaryWithDictionary:attributes];
-        [(NSMutableDictionary *)attributes setObject:(__bridge id)defaultFont forKey:(id)kCTFontAttributeName];
+        [tmpAttributes setObject:(__bridge id)defaultFont forKey:(id)kCTFontAttributeName];
         
         CFRelease(defaultFont);
 	}
 	
-	return attributes;
+	if (!paragraphStyle)
+	{
+		DTCoreTextParagraphStyle *defaultStyle = [DTCoreTextParagraphStyle defaultParagraphStyle];
+		defaultStyle.paragraphSpacing = 12.0 * multiplier;
+		
+		paragraphStyle = [defaultStyle createCTParagraphStyle];
+		
+		[tmpAttributes setObject:(__bridge id)paragraphStyle forKey:(id)kCTParagraphStyleAttributeName];
+		
+		CFRelease(paragraphStyle);
+	}
+	
+	return tmpAttributes;
 }
 
 
@@ -2472,6 +2511,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// replace 
 	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
 	
+	styleRange.length = [fragment length];
+	self.selectedTextRange = [[DTTextRange alloc] initWithNSRange:styleRange];
+	
 	// attachment positions might have changed
 	[self.contentView layoutSubviewsInRect:self.bounds];
 	
@@ -2574,7 +2616,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
     {
 		[tmpDict setObject:@"Times New Roman" forKey:DTDefaultFontFamily];
     }
-		
+	
 	return tmpDict;
 }
 
