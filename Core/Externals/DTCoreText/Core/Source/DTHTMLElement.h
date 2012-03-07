@@ -6,14 +6,11 @@
 //  Copyright 2011 Drobnik.com. All rights reserved.
 //
 
-#import "DTCoreText.h"
-#import "DTColor+HTML.h"
-
 @class DTCoreTextParagraphStyle;
 @class DTCoreTextFontDescriptor;
 @class DTTextAttachment;
 @class DTCSSListStyle;
-
+@class DTColor;
 
 typedef enum
 {
@@ -62,7 +59,6 @@ typedef enum
 @property (nonatomic, assign) CGFloat textScale;
 @property (nonatomic, assign) CGSize size;
 @property (nonatomic, strong) NSDictionary *attributes;
-
 
 - (NSAttributedString *)attributedString;
 - (NSAttributedString *)prefixForListItemWithCounter:(NSUInteger)listCounter;

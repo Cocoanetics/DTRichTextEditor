@@ -6,20 +6,12 @@
 //  Copyright (c) 2012 Drobnik.com. All rights reserved.
 //
 
+#import "DTCoreText.h"
 #import "DTHTMLAttributedStringBuilder.h"
 
-#import "DTCoreTextConstants.h"
-#import "DTCSSStylesheet.h"
-#import "DTCoreTextFontDescriptor.h"
-#import "DTCoreTextParagraphStyle.h"
-#import "DTTextAttachment.h"
-
-#import "DTColor+HTML.h"
-#import "DTImage+HTML.h"
-
-#import "NSString+HTML.h"
-#import "NSString+CSS.h"
-#import "NSMutableString+HTML.h"
+//#import "NSString+HTML.h"
+//#import "NSString+CSS.h"
+//#import "NSMutableString+HTML.h"
 
 
 @interface DTHTMLAttributedStringBuilder ()
@@ -128,26 +120,6 @@
 	// use baseURL from options if present
 	baseURL = [_options objectForKey:NSBaseURLDocumentOption];
 	
-	
-	// Make it a string
-	NSString *htmlString;
-	
-	if (encoding == NSUTF8StringEncoding)
-	{
-		// this method can fix malformed UTF8
-		htmlString = [[NSString alloc] initWithPotentiallyMalformedUTF8Data:_data];
-	}
-	else
-	{
-		// use the specified encoding
-		htmlString = [[NSString alloc] initWithData:_data encoding:encoding];
-	}
-	
-	if (!htmlString)
-	{
-		return NO;
-	}
-	
 	// the combined style sheet for entire document
 	_globalStyleSheet = [DTCSSStylesheet defaultStyleSheet]; 
 	
@@ -164,10 +136,6 @@
 	
 	needsListItemStart = NO;
 	needsNewLineBefore = NO;
-	
-	// we cannot skip any characters, NLs turn into spaces and multi-spaces get compressed to singles
-	NSScanner *scanner = [NSScanner scannerWithString:htmlString];
-	scanner.charactersToBeSkipped = nil;
 	
 	// base tag with font defaults
 	defaultFontDescriptor = [[DTCoreTextFontDescriptor alloc] initWithFontAttributes:nil];
@@ -978,7 +946,7 @@
 			{
 				if (currentTag.displayStyle != DTHTMLElementDisplayStyleBlock)
 				{
-					[_currentTagContents removeWhitespaceSuffix];
+					[_currentTagContents removeTrailingWhitespace];
 				}
 				
 				removeUnflushedWhitespace = YES;
@@ -1050,7 +1018,7 @@
 			// trim off white space at end if block
 			if (currentTag.displayStyle != DTHTMLElementDisplayStyleInline)
 			{
-				[_currentTagContents removeWhitespaceSuffix];
+				[_currentTagContents removeTrailingWhitespace];
 			}
 			
 			[self _flushCurrentTagContent:_currentTagContents];

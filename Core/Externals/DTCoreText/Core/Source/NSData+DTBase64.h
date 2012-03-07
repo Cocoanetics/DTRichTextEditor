@@ -33,9 +33,23 @@ char *NewDTBase64Encode(
 	bool separateLines,
 	size_t *outputLength);
 
+/**
+ Category to deal with base64-strings.
+*/
 @interface NSData (DTBase64)
 
+/** 
+ Retrieve the NSData of a string encoded in Base64 encoding. 
+ @param aString The base 64 string.
+ @returns An NSData representation of a string that was Base64 encoded. 
+ */
 + (NSData *)dataFromBase64String:(NSString *)aString;
+
+
+/** 
+ Retrive an NSString in Base64 encoding from an NSData object. 
+ @returns An NSString representation of this NSData instance, encoded in Base64. 
+ */
 - (NSString *)base64EncodedString;
 
 @end
