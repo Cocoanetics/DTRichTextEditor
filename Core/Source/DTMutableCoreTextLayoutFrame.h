@@ -25,6 +25,8 @@
 - (void)setAttributedString:(NSAttributedString *)attributedString;
 
 // incremental layouting
+- (void)relayoutTextInRange:(NSRange)range;
+
 - (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text;
 
 - (void)setFrame:(CGRect)frame;

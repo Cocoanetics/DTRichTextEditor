@@ -134,6 +134,31 @@
 }
 
 // incremental layouting
+- (void)relayoutTextInRange:(NSRange)range
+{
+	DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
+	
+	SYNCHRONIZE_START(self.selfLock)
+	{
+		[layoutFrame relayoutTextInRange:range];
+		
+		// remove attachment custom views that are no longer needed
+		[self setNeedsRemoveObsoleteAttachmentViews:YES];
+		
+		// remove all link custom views
+		[self removeAllCustomViewsForLinks];
+	}
+	SYNCHRONIZE_END(self.selfLock)
+	
+	// relayout / redraw
+	[self setNeedsDisplay];
+	
+	// size might have changed
+    layoutFrame.shouldRebuildLines = NO;
+	[self sizeToFit];
+    layoutFrame.shouldRebuildLines = YES;
+}
+
 - (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text
 {
 	DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;

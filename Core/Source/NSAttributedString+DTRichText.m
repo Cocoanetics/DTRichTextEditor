@@ -115,6 +115,7 @@
 		paragraphStyle.tabStops = nil;
 		
 		paragraphStyle.headIndent = SPECIAL_LIST_INDENT;
+		paragraphStyle.paragraphSpacing = 0;
 		
 		// first tab is to right-align bullet, numbering against
 		CGFloat tabOffset = paragraphStyle.headIndent - 5.0f*1.0; // TODO: change with font size

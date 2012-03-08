@@ -15,6 +15,7 @@
 	BOOL _needsRemoveObsoleteAttachmentViews;
 }
 
+- (void)relayoutTextInRange:(NSRange)range;
 - (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text;
 
 // removes attachments after next layout

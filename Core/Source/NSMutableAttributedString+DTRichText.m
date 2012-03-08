@@ -298,12 +298,22 @@
 	[self endEditing];
 }
 
-- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range
+- (void)extendPreviousList:(DTCSSListStyle *)listStyle toIncludeRange:(NSRange)range numberingFrom:(NSInteger)nextItemNumber
 {
 	[self beginEditing];
 	
 	// extend range to include all paragraphs in their entirety
 	range = [[self string] rangeOfParagraphsContainingRange:range parBegIndex:NULL parEndIndex:NULL];
+	
+	// check if there is a list on the paragraph before, then we want to extend this
+	DTCSSListStyle *listBefore = nil;
+	
+	if (range.location>0)
+	{
+		NSArray *lists = [self attribute:DTTextListsAttribute atIndex:range.location effectiveRange:NULL];
+		
+		listBefore = [lists lastObject];
+	}
 	
 	
 	NSMutableAttributedString *tmpString = [[NSMutableAttributedString alloc] init];
@@ -311,8 +321,8 @@
 	// enumerate the paragraphs in this range
 	NSString *string = [self string];
 	
-	__block NSInteger itemNumber = [listStyle startingItemNumber];
-	__block BOOL firstParagraph = YES;
+	__block NSInteger itemNumber = nextItemNumber;
+	
 	NSUInteger length = [string length];
 	
 	[string enumerateSubstringsInRange:range options:NSStringEnumerationByParagraphs usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop)
@@ -338,15 +348,137 @@
 		 
 		 DTCSSListStyle *effectiveListStyle = [currentLists lastObject];
 		 
-		 if (firstParagraph)
-		 {
-			 firstParagraph = NO;
-			 
 			 if (effectiveListStyle)
 			 {
-				 itemNumber = [self itemNumberInTextList:effectiveListStyle atIndex:range.location];
+				 // there is a list, if it is different, update
+				 if (effectiveListStyle.type != listStyle.type)
+				 {
+					 setNewLists = YES;
+				 }
+				 else
+				 {
+					 // toggle list off
+					 setNewLists = NO;
+				 }
 			 }
+			 else
+			 {
+				 setNewLists = YES;
+			 }
+		 
+		 // remove previous prefix in either case
+		 if (effectiveListStyle)
+		 {
+			 NSString *prefix = [effectiveListStyle prefixWithCounter:itemNumber];
+			 
+			 [paragraphString deleteCharactersInRange:NSMakeRange(0, [prefix length])];
 		 }
+		 
+		 // insert new prefix
+		 NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:listStyle attributes:currentAttributes];
+		 
+		 [paragraphString insertAttributedString:prefixAttributedString atIndex:0];
+		 
+		 // we also want the paragraph style to affect the entire paragraph
+		 CTParagraphStyleRef tabPara = (__bridge CTParagraphStyleRef)[prefixAttributedString attribute:(id)kCTParagraphStyleAttributeName atIndex:0 effectiveRange:NULL];
+		 
+		 if (tabPara)
+		 {
+			 [paragraphString addAttribute:(id)kCTParagraphStyleAttributeName  value:(__bridge id)tabPara range:NSMakeRange(0, [paragraphString length])];
+		 }
+		 else
+		 {
+			 NSLog(@"should not get here!!! No paragraph style!!!");
+		 }
+
+		 
+		 NSRange paragraphRange = NSMakeRange(0, [paragraphString length]);
+		 
+		 [paragraphString addAttribute:DTTextListsAttribute value:[NSArray arrayWithObject:listStyle] range:paragraphRange]; 
+		 
+		 [tmpString appendAttributedString:paragraphString];
+		 
+		 itemNumber++;
+     }
+     ];
+	
+	[self replaceCharactersInRange:range withAttributedString:tmpString];
+	
+	[self endEditing];
+}
+
+
+- (void)toggleParagraphSpacing:(BOOL)spaceOn atIndex:(NSUInteger)index
+{
+	[self beginEditing];
+	
+	// need to restore appropriate paragraph spacing
+	NSRange effectiveRange;
+	
+	CTParagraphStyleRef para = (__bridge CTParagraphStyleRef)[self attribute:(id)kCTParagraphStyleAttributeName atIndex:index effectiveRange:&effectiveRange];
+	
+	NSAssert(para!=nil, @"Empty Paragraph Style at index %d", index);
+	
+	// create our mutatable paragraph style
+	DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:para];
+	
+	if (spaceOn)
+	{
+		CTFontRef font = (__bridge CTFontRef)[self attribute:(id)kCTFontAttributeName atIndex:index effectiveRange:NULL];
+		CGFloat fontSize = CTFontGetSize(font);
+		paragraphStyle.paragraphSpacing = fontSize;
+	}
+	else
+	{
+		paragraphStyle.paragraphSpacing = 0;
+	}
+	
+	para = [paragraphStyle createCTParagraphStyle];
+	
+	[self addAttribute:(id)kCTParagraphStyleAttributeName  value:(__bridge id)para range:effectiveRange];
+	
+	CFRelease(para);
+	
+	[self endEditing];
+}
+
+- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber
+{
+	[self beginEditing];
+	
+	// extend range to include all paragraphs in their entirety
+	range = [[self string] rangeOfParagraphsContainingRange:range parBegIndex:NULL parEndIndex:NULL];
+	
+	NSMutableAttributedString *tmpString = [[NSMutableAttributedString alloc] init];
+	
+	// enumerate the paragraphs in this range
+	NSString *string = [self string];
+	
+	__block NSInteger itemNumber = nextItemNumber;
+	NSUInteger length = [string length];
+	
+	[string enumerateSubstringsInRange:range options:NSStringEnumerationByParagraphs usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop)
+     {
+		 BOOL hasParagraphEnd = NO;
+		 
+		 // extend range to include \n
+		 if (NSMaxRange(substringRange) < length)
+		 {
+			 substringRange.length ++;
+			 hasParagraphEnd = YES;
+		 }
+		 
+		 // get current attributes
+		 NSDictionary *currentAttributes = [self attributesAtIndex:substringRange.location effectiveRange:NULL];
+		 
+		 NSArray *currentLists = [currentAttributes objectForKey:DTTextListsAttribute];
+		 
+		 BOOL setNewLists = NO;
+		 
+		 NSMutableAttributedString *paragraphString = [[self attributedSubstringFromRange:substringRange] mutableCopy];
+		 
+		 
+		 DTCSSListStyle *effectiveListStyle = [currentLists lastObject];
 		 
 		 if (effectiveListStyle)
 		 {
@@ -364,6 +496,11 @@
 		 else
 		 {
 			 setNewLists = YES;
+		 }
+		 
+		 if (!listStyle)
+		 {
+			 setNewLists = NO;
 		 }
 		 
 		 // remove previous prefix in either case
@@ -391,6 +528,28 @@
 			 else
 			 {
 				 NSLog(@"should not get here!!! No paragraph style!!!");
+			 }
+		 }
+		 else
+		 {
+			 // need to restore appropriate paragraph spacing
+			 CTParagraphStyleRef para = (__bridge CTParagraphStyleRef)[currentAttributes objectForKey:(id)kCTParagraphStyleAttributeName];
+			 CTFontRef font = (__bridge CTFontRef)[currentAttributes objectForKey:(id)kCTFontAttributeName];
+			 
+			 if (para&&font)
+			 {
+			 DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:para];
+			 
+			 CGFloat fontSize = CTFontGetSize(font);
+			 paragraphStyle.paragraphSpacing = fontSize;
+			 
+			 para = [paragraphStyle createCTParagraphStyle];
+			 
+			  [paragraphString addAttribute:(id)kCTParagraphStyleAttributeName  value:(__bridge id)para range:NSMakeRange(0, [paragraphString length])];
+			 }
+			 else
+			 {
+				 NSLog(@"should not get here!!! No paragraph and no font style!!!"); 
 			 }
 		 }
 		 

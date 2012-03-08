@@ -25,7 +25,10 @@
 - (void)adjustTextAlignment:(CTTextAlignment)alignment inRange:(NSRange)range;
 
 // convenience method to toggle list on entire paragraphs
-- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range;
+- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber;
+
+// sets or removes the space following the paragraph at the given index
+- (void)toggleParagraphSpacing:(BOOL)spaceOn atIndex:(NSUInteger)index;
 
 // method to correct paragraph styles on paragraphs belonging to list
 - (void)correctParagraphSpacingForRange:(NSRange)range;
