@@ -19,9 +19,6 @@
 // create attributed string with hyperlink
 + (NSAttributedString *)attributedStringWithURL:(NSURL *)url;
 
-// create attributed string prefix for a list paragraph
-+ (NSAttributedString *)prefixForListItemWithCounter:(NSUInteger)listCounter listStyle:(DTCSSListStyle *)listStyle attributes:(NSDictionary *)attributes;
-
 // for debugging
 - (NSString *)dumpString;
 
