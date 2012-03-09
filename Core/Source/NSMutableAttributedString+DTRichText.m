@@ -23,6 +23,8 @@
 #import <CoreText/CoreText.h>
 
 
+NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
+
 @implementation NSMutableAttributedString (DTRichText)
 
 - (NSUInteger)replaceRange:(NSRange)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph
@@ -348,23 +350,23 @@
 		 
 		 DTCSSListStyle *effectiveListStyle = [currentLists lastObject];
 		 
-			 if (effectiveListStyle)
-			 {
-				 // there is a list, if it is different, update
-				 if (effectiveListStyle.type != listStyle.type)
-				 {
-					 setNewLists = YES;
-				 }
-				 else
-				 {
-					 // toggle list off
-					 setNewLists = NO;
-				 }
-			 }
-			 else
+		 if (effectiveListStyle)
+		 {
+			 // there is a list, if it is different, update
+			 if (effectiveListStyle.type != listStyle.type)
 			 {
 				 setNewLists = YES;
 			 }
+			 else
+			 {
+				 // toggle list off
+				 setNewLists = NO;
+			 }
+		 }
+		 else
+		 {
+			 setNewLists = YES;
+		 }
 		 
 		 // remove previous prefix in either case
 		 if (effectiveListStyle)
@@ -390,7 +392,7 @@
 		 {
 			 NSLog(@"should not get here!!! No paragraph style!!!");
 		 }
-
+		 
 		 
 		 NSRange paragraphRange = NSMakeRange(0, [paragraphString length]);
 		 
@@ -411,6 +413,12 @@
 - (void)toggleParagraphSpacing:(BOOL)spaceOn atIndex:(NSUInteger)index
 {
 	[self beginEditing];
+	
+	NSString *string = [self string];
+	
+	NSRange paragraphRange = [string rangeOfParagraphAtIndex:index];
+	
+	NSLog(@"toggle %d in '%@'", spaceOn, [string substringWithRange:paragraphRange]);
 	
 	// need to restore appropriate paragraph spacing
 	NSRange effectiveRange;
@@ -435,7 +443,7 @@
 	
 	para = [paragraphStyle createCTParagraphStyle];
 	
-	[self addAttribute:(id)kCTParagraphStyleAttributeName  value:(__bridge id)para range:effectiveRange];
+	[self addAttribute:(id)kCTParagraphStyleAttributeName  value:(__bridge id)para range:paragraphRange];
 	
 	CFRelease(para);
 	
@@ -538,14 +546,14 @@
 			 
 			 if (para&&font)
 			 {
-			 DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:para];
-			 
-			 CGFloat fontSize = CTFontGetSize(font);
-			 paragraphStyle.paragraphSpacing = fontSize;
-			 
-			 para = [paragraphStyle createCTParagraphStyle];
-			 
-			  [paragraphString addAttribute:(id)kCTParagraphStyleAttributeName  value:(__bridge id)para range:NSMakeRange(0, [paragraphString length])];
+				 DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:para];
+				 
+				 CGFloat fontSize = CTFontGetSize(font);
+				 paragraphStyle.paragraphSpacing = fontSize;
+				 
+				 para = [paragraphStyle createCTParagraphStyle];
+				 
+				 [paragraphString addAttribute:(id)kCTParagraphStyleAttributeName  value:(__bridge id)para range:NSMakeRange(0, [paragraphString length])];
 			 }
 			 else
 			 {
@@ -573,6 +581,19 @@
 	
 	[self replaceCharactersInRange:range withAttributedString:tmpString];
 	
+	// first paragraph after toggled range
+	NSInteger firstIndexInNextParagraph = range.location + [tmpString length];
+	
+	if (firstIndexInNextParagraph && firstIndexInNextParagraph < [self length])
+	{
+		DTCSSListStyle *followingList = [[self attribute:DTTextListsAttribute atIndex:firstIndexInNextParagraph effectiveRange:NULL] lastObject];
+		
+		if (!followingList)
+		{
+			[self toggleParagraphSpacing:YES atIndex:firstIndexInNextParagraph-1];
+		}
+	}
+	
 	[self endEditing];
 }
 
@@ -584,7 +605,7 @@
 	
 	// extend to entire paragraphs
 	range = [string rangeOfParagraphsContainingRange:range parBegIndex:NULL parEndIndex:NULL];
-
+	
 	// enumerate paragraphs
 	[string enumerateSubstringsInRange:range options:NSStringEnumerationByParagraphs usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
 		
@@ -611,6 +632,52 @@
 		[self addAttribute:(id)kCTParagraphStyleAttributeName value:(__bridge id)para range:substringRange];
 		CFRelease(para);
 	}];
+}
+
+#pragma mark Marking
+- (void)addMarkersForSelectionRange:(NSRange)range
+{
+	// mark range
+	[self addAttribute:DTSelectionMarkerAttribute value:[NSNumber numberWithBool:YES] range:NSMakeRange(range.location, 1)];
+	
+	if (range.length)
+	{
+		[self addAttribute:DTSelectionMarkerAttribute value:[NSNumber numberWithBool:YES] range:NSMakeRange(range.location + range.length - 1, 1)];
+	}
+}
+
+- (NSRange)markedRangeRemove:(BOOL)remove
+{
+	__block NSInteger index=0;
+	
+	__block NSInteger firstLocation = 0;
+	__block NSInteger lastLocation = NSNotFound;
+	
+	[self enumerateAttribute:DTSelectionMarkerAttribute inRange:NSMakeRange(0, [self length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+		if (value)
+		{
+			switch (index) 
+			{
+				case 0:
+					firstLocation = range.location;
+					lastLocation = firstLocation;
+					break;
+				case 1:
+					lastLocation = range.location;
+					*stop = YES;
+					break;
+			}
+			
+			if (remove)
+			{
+				[self removeAttribute:DTSelectionMarkerAttribute range:range];
+			}
+			
+			index++;
+		}
+	}];
+	
+	return NSMakeRange(firstLocation, lastLocation-firstLocation+1);
 }
 
 @end

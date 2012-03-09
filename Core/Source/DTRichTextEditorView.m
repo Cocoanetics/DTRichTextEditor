@@ -1449,46 +1449,29 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 			NSMutableAttributedString *mutableParagraph = [[attributedString attributedSubstringFromRange:paragraphRange] mutableCopy];
 			
-			NSLog(@"mutating ---%@---", [mutableParagraph string]);
-			
 			if ([paragraphString hasPrefix:listPrefix])
 			{
 				
 				// check if it is an empty line, then we'll remove the list
 				if (myRange.location == paragraphRange.location + [listPrefix length])
 				{
-					NSLog(@"remove list");
-					
 					[mutableParagraph toggleListStyle:nil inRange:NSMakeRange(0, paragraphRange.length) numberFrom:0];
 					
 					text = mutableParagraph;
 					myRange = paragraphRange;
 					
+					// adjust cursor position
+					rangeToSelectAfterReplace.location -= [listPrefix length] + 1;
+
+					
+					// paragraph before gets its spacing back
 					if (paragraphRange.location)
 					{
-						// also layout the paragraph before this one
-						NSRange previousParagraphRange = [string rangeOfParagraphAtIndex:paragraphRange.location-1];
-						NSMutableAttributedString *previousParagraph = [[attributedString attributedSubstringFromRange:previousParagraphRange] mutableCopy];
-						
-						[previousParagraph toggleParagraphSpacing:YES atIndex:0];
-						
-						// append
-						[previousParagraph appendAttributedString:text];
-						myRange.location -= previousParagraphRange.length;
-						myRange.length += previousParagraphRange.length;
-						
-						// insert this instead
-						text = previousParagraph;
-						
-						// adjust cursor position
-						rangeToSelectAfterReplace.location -= [listPrefix length] + 1;
-
+						[attributedString toggleParagraphSpacing:YES atIndex:paragraphRange.location-1];
 					}
 				}
 				else
 				{
-					NSLog(@"extend list");
-					
 					NSInteger itemNumber = [attributedString itemNumberInTextList:effectiveList atIndex:myRange.location]+1;
 					NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:effectiveList attributes:typingAttributes];
 					
@@ -1498,7 +1481,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 					// remove part after the insertion point
 					NSInteger suffixLength = NSMaxRange(paragraphRange)-myRange.location;
 					NSRange suffixRange = NSMakeRange(myRange.location - paragraphRange.location, suffixLength);
-					NSLog(@"remove %@ from len %d", NSStringFromRange(suffixRange), [mutableParagraph length]);
 					[mutableParagraph deleteCharactersInRange:suffixRange];
 					
 					// adjust the insertion range to include the paragraph
@@ -1515,7 +1497,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 					
 					// adjust cursor position
 					rangeToSelectAfterReplace.location += [prefixAttributedString length];
-
 				}
 			}
 		}
@@ -2572,6 +2553,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	NSRange styleRange = [(DTTextRange *)range NSRangeValue];
 	
+	NSRange rangeToSelectAfterwards = styleRange;
+	
 	// get range containing all selected paragraphs
 	NSAttributedString *attributedString = [contentView.layoutFrame attributedStringFragment];
 	
@@ -2609,19 +2592,33 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		nextItemNumber = [listStyle startingItemNumber];
 	}
+
+	// remember current markers
+	[entireAttributedString addMarkersForSelectionRange:rangeToSelectAfterwards];
+	
+	// toggle the list style
+	[entireAttributedString toggleListStyle:listStyle inRange:styleRange numberFrom:nextItemNumber];
+
+	// selected range has shifted
+	rangeToSelectAfterwards = [entireAttributedString markedRangeRemove:YES];
+	
+	// relayout range of entire list
+	//NSRange listRange = [entireAttributedString rangeOfTextList:listStyle atIndex:styleRange.location];
+	//[(DTRichTextEditorContentView *)self.contentView relayoutTextInRange:rangeToSelectAfterwards];
+	[self.contentView relayoutText];
 	
 	// get fragment that is to be changed
-	NSMutableAttributedString *fragment = [[entireAttributedString attributedSubstringFromRange:styleRange] mutableCopy];
+//	NSMutableAttributedString *fragment = [[entireAttributedString attributedSubstringFromRange:styleRange] mutableCopy];
 	
-	NSRange fragmentRange = NSMakeRange(0, [fragment length]);
+//	NSRange fragmentRange = NSMakeRange(0, [fragment length]);
 	
-	[fragment toggleListStyle:listStyle inRange:fragmentRange numberFrom:nextItemNumber];
+//	[fragment toggleListStyle:listStyle inRange:fragmentRange numberFrom:nextItemNumber];
 	
 	// replace 
-	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
+//	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
 	
-	styleRange.length = [fragment length];
-	self.selectedTextRange = [[DTTextRange alloc] initWithNSRange:styleRange];
+//	styleRange.length = [fragment length];
+	self.selectedTextRange = [[DTTextRange alloc] initWithNSRange:rangeToSelectAfterwards];
 	
 	// attachment positions might have changed
 	[self.contentView layoutSubviewsInRect:self.bounds];

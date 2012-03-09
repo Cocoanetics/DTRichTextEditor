@@ -33,4 +33,8 @@
 // method to correct paragraph styles on paragraphs belonging to list
 - (void)correctParagraphSpacingForRange:(NSRange)range;
 
+// Adding/removing a marked range
+- (void)addMarkersForSelectionRange:(NSRange)range;
+- (NSRange)markedRangeRemove:(BOOL)remove;
+
 @end
