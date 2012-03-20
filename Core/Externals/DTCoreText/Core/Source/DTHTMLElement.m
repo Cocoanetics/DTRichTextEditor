@@ -543,9 +543,7 @@
 		}
 		else if ([lineHeight isNumeric])
 		{
-			//self.paragraphStyle.lineHeightMultiple = [lineHeight floatValue];
-			self.paragraphStyle.minimumLineHeight = fontDescriptor.pointSize * (CGFloat)[lineHeight intValue];
-			self.paragraphStyle.maximumLineHeight = self.paragraphStyle.minimumLineHeight;
+			self.paragraphStyle.lineHeightMultiple = [lineHeight floatValue];
 		}
 		else // interpret as length
 		{
@@ -745,7 +743,15 @@
 			newBlock.backgroundColor = backgroundColor;
 			backgroundColor = nil;
 			
-			self.paragraphStyle.textBlocks = [NSArray arrayWithObject:newBlock];
+			NSArray *newBlocks = [self.paragraphStyle.textBlocks mutableCopy];
+			
+			if (!newBlocks)
+			{
+				// need an array, this is the first block
+				newBlocks = [NSArray arrayWithObject:newBlock];
+			}
+			
+			self.paragraphStyle.textBlocks = newBlocks;
 		}
 	}
 }
