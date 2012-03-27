@@ -868,6 +868,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		DTTextRange *wordRange = [self rangeForWordAtPosition:position];
 		
+		self.selectionView.showsDragHandlesForSelection = _keyboardIsShowing;
+		
 		if (wordRange)
 		{
 			[self hideContextMenu];
@@ -1300,6 +1302,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		_shouldReshowContextMenuAfterHide = YES;
 		
+		self.selectionView.showsDragHandlesForSelection = _keyboardIsShowing;
+
 		[self setSelectedTextRange:wordRange];
 	}
 }
@@ -1554,6 +1558,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated
 {
+	self.selectionView.showsDragHandlesForSelection = _keyboardIsShowing;
+	
 	// check if the selected range fits with the attributed text
 	DTTextPosition *start = (DTTextPosition *)newTextRange.start;
 	DTTextPosition *end = (DTTextPosition *)newTextRange.end;
