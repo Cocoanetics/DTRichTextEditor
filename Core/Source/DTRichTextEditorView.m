@@ -820,15 +820,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	if (gesture.state == UIGestureRecognizerStateRecognized)
 	{
-		if (![self isFirstResponder] && [self canBecomeFirstResponder])
-		{
-			_keyboardIsShowing = YES;
-			self.selectionView.showsDragHandlesForSelection	= YES;
-			[self becomeFirstResponder];
-		}
-		
 		if (self.editable)
 		{
+			// this mode has the drag handles showing
+			self.selectionView.showsDragHandlesForSelection	= YES;
+			
+			// show the keyboard
+			[self becomeFirstResponder];
+			
 			if (!_keyboardIsShowing && ![_selectedTextRange isEmpty])
 			{
 				[self resignFirstResponder];
@@ -1075,8 +1074,20 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (BOOL)becomeFirstResponder
 {
-	// we need input accessory and input view to show
-	//_keyboardIsShowing = YES;
+	if (![self isFirstResponder] && [self canBecomeFirstResponder])
+	{
+		if (_showsKeyboardWhenBecomingFirstResponder)
+		{
+			_keyboardIsShowing = YES;
+			
+			// set curser to beginning of document if nothing selected
+			if (!_selectedTextRange)
+			{
+				UITextPosition *begin = [self beginningOfDocument];
+				self.selectedTextRange = [DTTextRange textRangeFromStart:begin toEnd:begin];
+			}
+		}
+	}
 	
 	return [super becomeFirstResponder];
 }
