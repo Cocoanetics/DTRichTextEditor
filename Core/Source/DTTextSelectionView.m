@@ -42,31 +42,39 @@
     return self;
 }
 
+
 - (NSArray *)selectionRectanglesVisibleInRect:(CGRect)rect
 {
 	NSMutableArray *tmpArray = [NSMutableArray arrayWithCapacity:[self.selectionRectangles count]];
 	
-	BOOL earlyBreakPossible = NO;
+	CGFloat minY = CGRectGetMinY(rect);
+	CGFloat maxY = CGRectGetMaxY(rect);
 	
 	for (NSValue *oneValue in self.selectionRectangles)
 	{
         CGRect oneRect = [oneValue CGRectValue];
-        
-        // CGRectIntersectsRect returns false if the frame has 0 width, which
-        // lines that consist only of line-breaks have. Set the min-width
-        // to one to work-around.
-        oneRect.size.width = oneRect.size.width>1?oneRect.size.width:1;
+		
+		// lines before the rect
+		if (CGRectGetMaxY(oneRect)<minY)
+		{
+			// skip
+			continue;
+		}
+		
+		// line is after the rect
+		if (oneRect.origin.y > maxY)
+		{
+			break;
+		}
+		
+		// CGRectIntersectsRect returns false if the frame has 0 width, which
+		// lines that consist only of line-breaks have. Set the min-width
+		// to one to work-around.
+		oneRect.size.width = oneRect.size.width>1?oneRect.size.width:1;
+		
 		if (CGRectIntersectsRect(rect, oneRect))
 		{
 			[tmpArray addObject:oneValue];
-			earlyBreakPossible = YES;
-		}
-		else
-		{
-			if (earlyBreakPossible)
-			{
-				break;
-			}
 		}
 	}
 	
