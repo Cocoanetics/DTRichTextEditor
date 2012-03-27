@@ -37,6 +37,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
 	[super viewDidAppear:animated];
+	[richEditor becomeFirstResponder];
 }
 
 
