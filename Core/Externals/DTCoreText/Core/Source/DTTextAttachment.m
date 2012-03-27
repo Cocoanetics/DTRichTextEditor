@@ -7,12 +7,8 @@
 //
 
 #import "DTTextAttachment.h"
-#import "DTHTMLElement.h"
-#import "CGUtils.h"
-#import "NSAttributedString+HTML.h"
+#import "DTCoreText.h"
 #import "NSData+DTBase64.h"
-#import "DTImage+HTML.h"
-#import "DTCoreTextConstants.h"
 
 @implementation DTTextAttachment
 {
@@ -298,5 +294,6 @@
 @synthesize hyperLinkURL = _hyperLinkURL;
 @synthesize attributes = _attributes;
 @synthesize verticalAlignment = _verticalAlignment;
+@synthesize hyperLinkGUID;
 
 @end
