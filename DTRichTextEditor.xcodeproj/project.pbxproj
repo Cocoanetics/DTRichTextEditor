@@ -130,6 +130,13 @@
 			remoteGlobalIDString = A7D8FF5A14E17A6600BF8CCD;
 			remoteInfo = "Resource Bundle";
 		};
+		A7840CCD1524A99B00FA9F9D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7D8FF5A14E17A6600BF8CCD;
+			remoteInfo = "Resource Bundle";
+		};
 		A7D729211487D5DD00A22742 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */;
@@ -200,13 +207,6 @@
 			remoteGlobalIDString = A7D8FF5B14E17A6600BF8CCD;
 			remoteInfo = "Resource Bundle";
 		};
-		A7D8FF8B14E293D200BF8CCD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A7D8FF5A14E17A6600BF8CCD;
-			remoteInfo = "Resource Bundle";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -258,6 +258,7 @@
 		A74351591486772100F4C766 /* DTRichTextEditorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorViewController.m; sourceTree = "<group>"; };
 		A743515A1486772100F4C766 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A76F898113C73421007B37C0 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		A7840CCC1524A98200FA9F9D /* DTLoupe.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = DTLoupe.bundle; sourceTree = "<group>"; };
 		A7D728631487C2F300A22742 /* NSAttributedString+DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+DTWebArchive.h"; sourceTree = "<group>"; };
 		A7D728641487C2F300A22742 /* NSAttributedString+DTWebArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+DTWebArchive.m"; sourceTree = "<group>"; };
 		A7D728921487C46600A22742 /* DTWebResource+DTRichText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTWebResource+DTRichText.h"; sourceTree = "<group>"; };
@@ -459,6 +460,7 @@
 				A743514B1486772100F4C766 /* Demo */,
 				A7F0C84113C326E900EBD027 /* Frameworks */,
 				A7F0C83F13C326E900EBD027 /* Products */,
+				A7840CCC1524A98200FA9F9D /* DTLoupe.bundle */,
 			);
 			sourceTree = "<group>";
 		};
@@ -587,7 +589,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				A7D8FF8C14E293D200BF8CCD /* PBXTargetDependency */,
+				A7840CCE1524A99B00FA9F9D /* PBXTargetDependency */,
 				A7D8FEC414E14FA300BF8CCD /* PBXTargetDependency */,
 			);
 			name = "Demo App";
@@ -837,6 +839,11 @@
 			name = "Resource Bundle";
 			targetProxy = A7470F8014E2A6C70015477A /* PBXContainerItemProxy */;
 		};
+		A7840CCE1524A99B00FA9F9D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Resource Bundle";
+			targetProxy = A7840CCD1524A99B00FA9F9D /* PBXContainerItemProxy */;
+		};
 		A7D729221487D5DD00A22742 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Static Library";
@@ -846,11 +853,6 @@
 			isa = PBXTargetDependency;
 			target = A7D728D21487D12A00A22742 /* Static Library */;
 			targetProxy = A7D8FEC314E14FA300BF8CCD /* PBXContainerItemProxy */;
-		};
-		A7D8FF8C14E293D200BF8CCD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Resource Bundle";
-			targetProxy = A7D8FF8B14E293D200BF8CCD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
