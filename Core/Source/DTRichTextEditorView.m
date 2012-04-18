@@ -174,7 +174,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		[self setDefaultText];
 	}
-
+	
 	// this also layouts the content View
 	[super layoutSubviews];
     
@@ -269,7 +269,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	UIMenuController *menuController = [UIMenuController sharedMenuController];
 	
-//	UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Item" action:@selector(menuItemClicked:)];
+	//	UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Item" action:@selector(menuItemClicked:)];
 	
 	//NSAssert([self becomeFirstResponder], @"Sorry, UIMenuController will not work with %@ since it cannot become first responder", self);
 	//[menuController setMenuItems:[NSArray arrayWithObject:resetMenuItem]];
@@ -1303,7 +1303,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		_shouldReshowContextMenuAfterHide = YES;
 		
 		self.selectionView.showsDragHandlesForSelection = _keyboardIsShowing;
-
+		
 		[self setSelectedTextRange:wordRange];
 	}
 }
@@ -1383,7 +1383,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		// delete selection
 		[self replaceRange:currentRange withText:nil];
-	//	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[currentRange start] offset:0]];
+		//	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[currentRange start] offset:0]];
 	}
 	
 	// hide context menu on deleting text
@@ -1446,7 +1446,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		// need to replace attributes with typing attributes
 		text = [[NSAttributedString alloc] initWithString:text attributes:typingAttributes];
 	}
-
+	
 	NSMutableAttributedString *attributedString = (NSMutableAttributedString *)self.contentView.layoutFrame.attributedStringFragment;
 	NSString *string = [attributedString string];
 	
@@ -1461,7 +1461,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 			NSUInteger itemNumber = [attributedString itemNumberInTextList:effectiveList atIndex:myRange.location];
 			
 			NSString *listPrefix = [effectiveList prefixWithCounter:itemNumber];
-
+			
 			NSMutableAttributedString *mutableParagraph = [[attributedString attributedSubstringFromRange:paragraphRange] mutableCopy];
 			
 			if ([paragraphString hasPrefix:listPrefix])
@@ -1477,7 +1477,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 					
 					// adjust cursor position
 					rangeToSelectAfterReplace.location -= [listPrefix length] + 1;
-
+					
 					
 					// paragraph before gets its spacing back
 					if (paragraphRange.location)
@@ -1516,7 +1516,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 			}
 		}
 	}
-
+	
 	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:myRange withText:text];
 	
 	self.contentSize = self.contentView.frame.size;
@@ -1528,7 +1528,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
         
         [(NSMutableAttributedString *)self.contentView.layoutFrame.attributedStringFragment setAttributes:typingDefaults range:NSMakeRange(0, 1)];
     }
-
+	
     // need to call extra because we control layouting
     [self setNeedsLayout];
 	
@@ -2293,7 +2293,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		return attributes;
 	}
-
+	
 	// otherwise we need to add missing things
 	
 	NSDictionary *defaults = [self textDefaults];
@@ -2352,29 +2352,32 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	NSString *plainText = [self.contentView.layoutFrame.attributedStringFragment string];
 	
-	if (textRange.location>0)
+	if (inParagraph)
 	{
-		NSInteger index = textRange.location-1;
-		
-		unichar character = [plainText characterAtIndex:index];
-		
-		if (character != '\n')
+		// determine if we need a paragraph break before or after the item
+		if (textRange.location>0)
 		{
-			needsParagraphBefore = YES;
+			NSInteger index = textRange.location-1;
+			
+			unichar character = [plainText characterAtIndex:index];
+			
+			if (character != '\n')
+			{
+				needsParagraphBefore = YES;
+			}
+		}
+		
+		NSUInteger indexAfterRange = NSMaxRange(textRange);
+		if (indexAfterRange<[plainText length])
+		{
+			unichar character = [plainText characterAtIndex:indexAfterRange];
+			
+			if (character != '\n')
+			{
+				needsParagraphAfter = YES;
+			}
 		}
 	}
-	
-	NSUInteger indexAfterRange = NSMaxRange(textRange);
-	if (indexAfterRange<[plainText length])
-	{
-        unichar character = [plainText characterAtIndex:indexAfterRange];
-		
-		if (character != '\n')
-		{
-			needsParagraphAfter = YES;
-		}
-	}
-	
 	NSMutableAttributedString *tmpAttributedString = [[NSMutableAttributedString alloc] initWithString:@""];
 	
 	if (needsParagraphBefore)
@@ -2393,6 +2396,12 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// add attachment
 	[objectAttributes setObject:attachment forKey:NSAttachmentAttributeName];
 	
+	// get the font
+	CTFontRef font = (__bridge CTFontRef)[objectAttributes objectForKey:(__bridge NSString *) kCTFontAttributeName];
+	if (font)
+	{
+		[attachment adjustVerticalAlignmentForFont:font];
+	}
 	
 	NSAttributedString *tmpStr = [[NSAttributedString alloc] initWithString:UNICODE_OBJECT_PLACEHOLDER attributes:objectAttributes];
 	[tmpAttributedString appendAttributedString:tmpStr];
@@ -2422,6 +2431,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 	
 	[self updateCursorAnimated:NO];
+	
+	// this causes the image to appear, layout gets the custom view for the image
+	[self setNeedsLayout];
 	
 	// send change notification
 	[[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidBeginEditingNotification object:self userInfo:nil];
@@ -2609,13 +2621,13 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		nextItemNumber = [listStyle startingItemNumber];
 	}
-
+	
 	// remember current markers
 	[entireAttributedString addMarkersForSelectionRange:rangeToSelectAfterwards];
 	
 	// toggle the list style
 	[entireAttributedString toggleListStyle:listStyle inRange:styleRange numberFrom:nextItemNumber];
-
+	
 	// selected range has shifted
 	rangeToSelectAfterwards = [entireAttributedString markedRangeRemove:YES];
 	
@@ -2625,16 +2637,16 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[self.contentView relayoutText];
 	
 	// get fragment that is to be changed
-//	NSMutableAttributedString *fragment = [[entireAttributedString attributedSubstringFromRange:styleRange] mutableCopy];
+	//	NSMutableAttributedString *fragment = [[entireAttributedString attributedSubstringFromRange:styleRange] mutableCopy];
 	
-//	NSRange fragmentRange = NSMakeRange(0, [fragment length]);
+	//	NSRange fragmentRange = NSMakeRange(0, [fragment length]);
 	
-//	[fragment toggleListStyle:listStyle inRange:fragmentRange numberFrom:nextItemNumber];
+	//	[fragment toggleListStyle:listStyle inRange:fragmentRange numberFrom:nextItemNumber];
 	
 	// replace 
-//	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
+	//	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
 	
-//	styleRange.length = [fragment length];
+	//	styleRange.length = [fragment length];
 	self.selectedTextRange = [[DTTextRange alloc] initWithNSRange:rangeToSelectAfterwards];
 	
 	// attachment positions might have changed
