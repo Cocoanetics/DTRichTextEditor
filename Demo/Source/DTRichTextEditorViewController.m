@@ -62,7 +62,7 @@
 	[richEditor setHTMLString:html];
 	
 	// image as drawn by your custom views which you return in the delegate method
-	richEditor.contentView.shouldDrawImages = NO;
+	richEditor.contentView.shouldDrawImages = YES;
 	
 	
 	photoButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];
@@ -90,12 +90,14 @@
 	unorderedListButton = [[UIBarButtonItem alloc] initWithTitle:@"+" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleUnorderedList:)];
 
 	UIBarButtonItem *spacer3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+	
+	UIBarButtonItem *smile = [[UIBarButtonItem alloc] initWithTitle:@":)" style:UIBarButtonItemStyleBordered target:self action:@selector(insertSmiley:)];
 
 	
 	toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
 	richEditor.inputAccessoryView = toolbar;
 	
-	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, orderedListButton, unorderedListButton, spacer3, photoButton, nil]];
+	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, orderedListButton, unorderedListButton, spacer3, photoButton, smile, nil]];
 	
 	// watch the selectedTextRange property
 	[richEditor addObserver:self forKeyPath:@"selectedTextRange" options:NSKeyValueObservingOptionNew context:nil];
@@ -222,6 +224,27 @@
 	{
 		[self presentModalViewController:picker animated:YES];
 	}
+}
+
+- (void)insertSmiley:(UIBarButtonItem *)sender
+{
+	if (!richEditor.selectedTextRange)
+	{
+		NSLog(@"no text selected!");
+		return;
+	}
+	
+	UIImage *image = [UIImage imageNamed:@"icon_smile.gif"];
+	
+	// make an attachment
+	DTTextAttachment *attachment = [[DTTextAttachment alloc] init];
+	attachment.contents = (id)image;
+	attachment.displaySize = image.size;
+	attachment.originalSize = image.size;
+	attachment.contentType = DTTextAttachmentTypeImage;
+	attachment.verticalAlignment = DTTextAttachmentVerticalAlignmentCenter;
+	
+	[richEditor replaceRange:richEditor.selectedTextRange withAttachment:attachment inParagraph:NO];
 }
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
