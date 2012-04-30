@@ -67,6 +67,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 
 @implementation DTRichTextEditorView
+{
+	BOOL _cursorIsShowing;
+}
 
 #pragma mark -
 #pragma mark Initialization
@@ -309,7 +312,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 #pragma mark Custom Selection/Marking/Cursor
 - (void)scrollCursorVisibleAnimated:(BOOL)animated
 {
-	if  (![_selectedTextRange isEmpty])
+	if  (![_selectedTextRange isEmpty] || !_cursorIsShowing)
 	{
 		return;
 	}
@@ -357,7 +360,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	DTTextPosition *position = (id)self.selectedTextRange.start;
 	
 	// no selection
-	if (!position)
+	if (!position || !_cursorIsShowing)
 	{
 		// remove cursor
 		[_cursor removeFromSuperview];
@@ -825,6 +828,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 			// this mode has the drag handles showing
 			self.selectionView.showsDragHandlesForSelection	= YES;
 			
+			// show the cursor
+			_cursorIsShowing = YES;
+			
 			// show the keyboard
 			[self becomeFirstResponder];
 			
@@ -891,6 +897,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		case UIGestureRecognizerStateBegan:
 		{
 			[self presentLoupeWithTouchPoint:touchPoint];
+			_cursorIsShowing = YES;
 			_cursor.state = DTCursorStateStatic;
 		}
 			
@@ -921,7 +928,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
                 }
                 
 				_shouldShowContextMenuAfterLoupeHide = YES;
-				// _selectionView.showsDragHandlesForSelection = YES;
 			}
 		}
 			
@@ -1068,8 +1074,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// selecting via long press does not show handles
 	_selectionView.showsDragHandlesForSelection	= NO;
 	
-	// this removes cursor and selections
-	self.selectedTextRange = nil;
+	_cursorIsShowing = NO;
+	[self updateCursorAnimated:NO];
+	[self hideContextMenu];
 	
 	return [super resignFirstResponder];
 }
@@ -2093,22 +2100,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	return _selectionView;
 }
 
-//- (NSMutableAttributedString *)internalAttributedText
-//{
-//	if (!_internalAttributedText)
-//	{
-//		_internalAttributedText = [[NSMutableAttributedString alloc] init];
-//	}
-//	
-//	return _internalAttributedText;
-//}
-
 - (NSAttributedString *)attributedString
 {
-	//return self.internalAttributedText;
 	return self.contentView.layoutFrame.attributedStringFragment;
 }
-
 
 - (UIView *)inputView
 {
