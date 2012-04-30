@@ -87,6 +87,13 @@
 		subresources = [NSMutableArray array];
 		for (DTTextAttachment *oneAttachment in images)
 		{
+			// only add web resources for images that are not data URLs and that have a contentURL
+			if (oneAttachment.contents && !oneAttachment.contentURL)
+			{
+				// this is an image in a data URL, that's already represented in the HTML
+				continue;
+			}
+			
 			NSData *data = UIImagePNGRepresentation(oneAttachment.contents);
 			
 			if (data)
