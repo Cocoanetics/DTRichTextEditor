@@ -4,3 +4,4 @@ Version 1.0.2
 - FIXED: issue #127, position of inserted autocorrection text when dismissing keyboard.
 - FIXED: Changed DTLoupeView to using 4 layers instead of drawRect. This fixes a display bug when moving the loupe to far to the right or down.
 - FIXED: Issue #464 through the internal change to DTLoupeView
+- FIXED: Cursor not showing up on programmatic becomeFirstResponder (knock on effect from fixing #127)

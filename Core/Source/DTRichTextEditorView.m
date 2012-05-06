@@ -828,10 +828,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 			// this mode has the drag handles showing
 			self.selectionView.showsDragHandlesForSelection	= YES;
 			
-			// show the cursor
-			_cursorIsShowing = YES;
-			
-			// show the keyboard
+			// show the keyboard and cursor
 			[self becomeFirstResponder];
 			
 			if (!_keyboardIsShowing && ![_selectedTextRange isEmpty])
@@ -1085,6 +1082,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	if (![self isFirstResponder] && [self canBecomeFirstResponder])
 	{
+        _cursorIsShowing = YES;
+        
 		if (_showsKeyboardWhenBecomingFirstResponder)
 		{
 			_keyboardIsShowing = YES;
