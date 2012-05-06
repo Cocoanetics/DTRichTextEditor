@@ -375,6 +375,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// single cursor
 	if ([_selectedTextRange isEmpty])
 	{
+        // show as a single caret
 		_selectionView.dragHandlesVisible = NO;
 		
 		CGRect cursorFrame = [self caretRectForPosition:position];
@@ -391,23 +392,12 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		}
 		
 		[self _scrollCursorVisible];
-		//		SEL selector = @selector(_scrollCursorVisible);
-		//		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
-		//		[self performSelector:selector withObject:nil afterDelay:0.3];
 	}
 	else
 	{
+        // show as a blue selection range
 		self.selectionView.style = DTTextSelectionStyleSelection;
 		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_selectedTextRange NSRangeValue]];
-		
-		//		if (self.editable && !_markedTextRange)
-		//		{
-		//			_selectionView.showsDragHandlesForSelection = YES;
-		//		}
-		//		else
-		//		{
-		//			_selectionView.dragHandlesVisible = NO;
-		//		}
 		
 		[_selectionView setSelectionRectangles:rects animated:animated];
 		
