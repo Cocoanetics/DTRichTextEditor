@@ -69,6 +69,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 @implementation DTRichTextEditorView
 {
 	BOOL _cursorIsShowing;
+    NSDictionary *_textDefaults;
 }
 
 #pragma mark -
@@ -2748,33 +2749,49 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 // pack the properties into a dictionary
 - (NSDictionary *)textDefaults
 {
-	NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
-	
-	if (!CGSizeEqualToSize(_maxImageDisplaySize, CGSizeZero))
-	{
-		[tmpDict setObject:[NSValue valueWithCGSize:_maxImageDisplaySize] forKey:DTMaxImageSize];
-	}
-	
-	if (_baseURL)
-	{
-		[tmpDict setObject:_baseURL forKey:NSBaseURLDocumentOption];
-	}
-	
-	if (_textSizeMultiplier)
-	{
-		[tmpDict setObject:[NSNumber numberWithFloat:_textSizeMultiplier] forKey:NSTextSizeMultiplierDocumentOption];
-	}
-	
-	if (_defaultFontFamily)
-	{
-		[tmpDict setObject:_defaultFontFamily forKey:DTDefaultFontFamily];
-	}
+    NSMutableDictionary *tmpDict = [_textDefaults mutableCopy];
+    
+    if (!tmpDict)
+    {
+        tmpDict = [NSMutableDictionary dictionary];
+    }
+    
+    // modify the settings with the overrides
+    if (!CGSizeEqualToSize(_maxImageDisplaySize, CGSizeZero))
+    {
+        [tmpDict setObject:[NSValue valueWithCGSize:_maxImageDisplaySize] forKey:DTMaxImageSize];
+    }
+    
+    if (_baseURL)
+    {
+        [tmpDict setObject:_baseURL forKey:NSBaseURLDocumentOption];
+    }
+    
+    if (_textSizeMultiplier)
+    {
+        [tmpDict setObject:[NSNumber numberWithFloat:_textSizeMultiplier] forKey:NSTextSizeMultiplierDocumentOption];
+    }
+    
+    if (_defaultFontFamily)
+    {
+        [tmpDict setObject:_defaultFontFamily forKey:DTDefaultFontFamily];
+    }
     else
     {
-		[tmpDict setObject:@"Times New Roman" forKey:DTDefaultFontFamily];
+        [tmpDict setObject:@"Times New Roman" forKey:DTDefaultFontFamily];
     }
-	
-	return tmpDict;
+    
+    
+    // otherwise use set defaults
+    return tmpDict;
+}
+
+- (void)setTextDefaults:(NSDictionary *)textDefaults
+{
+    if (_textDefaults != textDefaults)
+    {
+        _textDefaults = textDefaults;
+    }
 }
 
 - (void)setFrame:(CGRect)frame
@@ -2824,8 +2841,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// return NO if we don't want keyboard to show e.g. context menu only on double tap
 	return _editable && _showsKeyboardWhenBecomingFirstResponder;
 }
-
-
 
 @end
 

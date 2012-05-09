@@ -108,6 +108,9 @@ typedef enum
 @property (nonatomic, copy) NSDictionary *markedTextStyle;
 @property (nonatomic) UITextStorageDirection selectionAffinity;
 
+/**
+ Overrides for textDefaults. If they are set then they are used instead of the values contained in textDefaults.
+ */
 @property (nonatomic, assign) CGSize maxImageDisplaySize;
 @property (nonatomic, copy) NSString *defaultFontFamily;
 @property (nonatomic, copy) NSURL *baseURL;
@@ -166,11 +169,24 @@ typedef enum
 - (BOOL)pasteboardHasSuitableContentForPaste;
 - (NSString *)plainTextForRange:(UITextRange *)range;
 
-- (NSDictionary *)textDefaults;
 - (void)setHTMLString:(NSString *)string;
 
 - (CGRect)visibleContentRect;
 - (BOOL)selectionIsVisible;
+
+/**
+ The default options to be used for text. See the options parameter of <DTHTMLAttributedStringBuilder> for individual options.
+ 
+ If one of these properties is set then it is used instead of the value contained in textDefaults:
+ 
+ - maxImageDisplaySize
+ - defaultFontFamily
+ - baseURL;
+ - textSizeMultiplier;
+ 
+ NOTE: Changing these defaults does not affect the current `NSAttributedString`. They are used when calling setHTMLString. 
+*/
+@property (nonatomic, retain) NSDictionary *textDefaults;
 
 @end
 

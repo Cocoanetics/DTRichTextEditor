@@ -3,6 +3,7 @@ Version 1.0.3
 
 - FIXED: Without Keyboard drag handles should still appear to allow modifying selection for e.g. copy
 - ADDED: methods to toggle highlighting on NSAttributedString, option "H" in Demo demonstrating this
+- CHANGED: textDefaults is now a writeable property. For possible values see <DTHTMLAttributedStringBuilder>
 
 Version 1.0.2
 
