@@ -1,3 +1,9 @@
+
+Version 1.0.3
+
+- FIXED: Without Keyboard drag handles should still appear to allow modifying selection for e.g. copy
+- ADDED: methods to toggle highlighting on NSAttributedString, option "H" in Demo demonstrating this
+
 Version 1.0.2
 
 - FIXED: copying multiple local attachments would cause them to all turn into the last image on pasting. A local attachment is one that has contents, but no contentURL so this is represented as HTML DATA URL and does not require an additional DTWebResource in the pastboard.

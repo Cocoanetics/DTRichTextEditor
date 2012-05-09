@@ -21,6 +21,9 @@
 - (void)toggleItalicInRange:(NSRange)range;
 - (void)toggleUnderlineInRange:(NSRange)range;
 
+// text highlighting
+- (void)toggleHighlightInRange:(NSRange)range color:(UIColor *)color;
+
 // convenience method to set text alignment on entire paragraphs
 - (void)adjustTextAlignment:(CTTextAlignment)alignment inRange:(NSRange)range;
 

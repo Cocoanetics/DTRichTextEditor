@@ -75,6 +75,28 @@
 	}
 }
 
+- (void)toggleHighlightWithColor:(UIColor *)color
+{
+    CGColorRef backgroundColor = (__bridge CGColorRef)[self objectForKey:DTBackgroundColorAttribute];
+    
+    if (backgroundColor)
+    {
+        // trying to set the same color again removes it
+        
+        UIColor *setColor = [UIColor colorWithCGColor:backgroundColor];
+        
+        if ([color isEqual:setColor])
+        {
+            [self removeObjectForKey:DTBackgroundColorAttribute];
+        }
+    }
+    else 
+    {
+        [self setObject:(id)[color CGColor] forKey:DTBackgroundColorAttribute];
+    }
+}
+
+
 - (void)removeAttachment
 {
 	[self removeObjectForKey:(id)kCTRunDelegateAttributeName];

@@ -16,6 +16,8 @@
 - (void)toggleItalic;
 - (void)toggleUnderline;
 
+- (void)toggleHighlightWithColor:(UIColor *)color;
+
 - (void)removeAttachment;
 
 @end

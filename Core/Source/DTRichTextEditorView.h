@@ -155,6 +155,8 @@ typedef enum
 - (void)toggleItalicInRange:(UITextRange *)range;
 - (void)toggleUnderlineInRange:(UITextRange *)range;
 
+- (void)toggleHighlightInRange:(UITextRange *)range color:(UIColor *)color;
+
 - (void)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range;
 - (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range;
 

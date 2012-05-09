@@ -915,6 +915,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
                 }
                 
 				_shouldShowContextMenuAfterLoupeHide = YES;
+                _selectionView.showsDragHandlesForSelection = YES;
 			}
 		}
 			
@@ -1554,7 +1555,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated
 {
-	self.selectionView.showsDragHandlesForSelection = _keyboardIsShowing;
+	//self.selectionView.showsDragHandlesForSelection = _keyboardIsShowing;
 	
 	// check if the selected range fits with the attributed text
 	DTTextPosition *start = (DTTextPosition *)newTextRange.start;
@@ -2517,6 +2518,43 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		// make entire frament bold
 		[fragment toggleUnderlineInRange:NSMakeRange(0, [fragment length])];
+		
+		// replace 
+		[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
+		
+		// attachment positions might have changed
+		[self.contentView layoutSubviewsInRect:self.bounds];
+		
+		// cursor positions might have changed
+		[self updateCursorAnimated:NO];
+	}
+	
+	[self hideContextMenu];
+}
+
+- (void)toggleHighlightInRange:(UITextRange *)range color:(UIColor *)color
+{
+	if ([range isEmpty])
+	{
+		// if we only have a cursor then we save the attributes for the next insertion
+		NSMutableDictionary *tmpDict = [self.overrideInsertionAttributes mutableCopy];
+		
+		if (!tmpDict)
+		{
+			tmpDict = [[self typingAttributesForRange:range] mutableCopy];
+		}
+		[tmpDict toggleHighlightWithColor:color];
+		self.overrideInsertionAttributes = tmpDict;
+	}
+	else
+	{
+		NSRange styleRange = [(DTTextRange *)range NSRangeValue];
+		
+		// get fragment that is to be made bold
+		NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
+		
+		// make entire frament highlighted
+		[fragment toggleHighlightInRange:NSMakeRange(0, [fragment length]) color:[UIColor yellowColor]];
 		
 		// replace 
 		[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];

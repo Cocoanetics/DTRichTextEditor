@@ -76,6 +76,11 @@
 
 	underlineButton = [[UIBarButtonItem alloc] initWithTitle:@"U" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleUnderline:)];
 	underlineButton.enabled = NO;
+    
+    highlightButton = [[UIBarButtonItem alloc] initWithTitle:@"H" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleHighlight:)];
+	highlightButton.enabled = NO;
+    
+    
 
 	UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 	
@@ -97,7 +102,7 @@
 	toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
 	richEditor.inputAccessoryView = toolbar;
 	
-	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, orderedListButton, unorderedListButton, spacer3, photoButton, smile, nil]];
+	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, highlightButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, orderedListButton, unorderedListButton, spacer3, photoButton, smile, nil]];
 	
 	// watch the selectedTextRange property
 	[richEditor addObserver:self forKeyPath:@"selectedTextRange" options:NSKeyValueObservingOptionNew context:nil];
@@ -268,6 +273,12 @@
 {
 	UITextRange *range = richEditor.selectedTextRange;
 	[richEditor toggleUnderlineInRange:range];
+}
+
+- (void)toggleHighlight:(UIBarButtonItem *)sender
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	[richEditor toggleHighlightInRange:range color:[UIColor yellowColor]];
 }
 
 - (void)toggleLeft:(UIBarButtonItem *)sender

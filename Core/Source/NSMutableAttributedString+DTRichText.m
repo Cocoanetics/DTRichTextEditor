@@ -281,6 +281,53 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 	[self endEditing];
 }
 
+- (void)toggleHighlightInRange:(NSRange)range color:(UIColor *)color
+{
+	[self beginEditing];
+	
+	// first character determines current highlight status
+	NSDictionary *currentAttributes = [self typingAttributesForRange:range];
+    
+    if (!currentAttributes)
+    {
+        return;
+    }
+	
+	BOOL isHighlighted = [currentAttributes objectForKey:(id)DTBackgroundColorAttribute]!=nil;
+	
+    NSRange attrRange;
+    NSUInteger index=range.location;
+    
+    while (index < NSMaxRange(range)) 
+    {
+        NSMutableDictionary *attrs = [[self attributesAtIndex:index effectiveRange:&attrRange] mutableCopy];
+		
+		if (isHighlighted)
+		{
+			[attrs removeObjectForKey:DTBackgroundColorAttribute];
+		}
+		else
+		{
+			[attrs setObject:(id)[color CGColor] forKey:DTBackgroundColorAttribute];
+		}
+		if (attrRange.location < range.location)
+		{
+			attrRange.length -= (range.location - attrRange.location);
+			attrRange.location = range.location;
+		}
+		
+		if (NSMaxRange(attrRange)>NSMaxRange(range))
+		{
+			attrRange.length = NSMaxRange(range) - attrRange.location;
+		}
+		
+		[self setAttributes:attrs range:attrRange];
+		
+        index += attrRange.length;
+    }
+	
+	[self endEditing];
+}
 
 - (void)adjustTextAlignment:(CTTextAlignment)alignment inRange:(NSRange)range
 {
