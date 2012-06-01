@@ -13,10 +13,8 @@
 		A704273A13C37F0B00EE0776 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273913C37F0B00EE0776 /* MediaPlayer.framework */; };
 		A743515C1486772100F4C766 /* 43-film-roll.png in Resources */ = {isa = PBXBuildFile; fileRef = A743514F1486772100F4C766 /* 43-film-roll.png */; };
 		A743515D1486772100F4C766 /* 43-film-roll@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A74351501486772100F4C766 /* 43-film-roll@2x.png */; };
-		A743515E1486772100F4C766 /* DTRichTextEditorViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A74351511486772100F4C766 /* DTRichTextEditorViewController.xib */; };
 		A743515F1486772100F4C766 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A74351521486772100F4C766 /* Icon.png */; };
 		A74351601486772100F4C766 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A74351531486772100F4C766 /* Icon@2x.png */; };
-		A74351611486772100F4C766 /* DTRichTextEditorMainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = A74351541486772100F4C766 /* DTRichTextEditorMainWindow.xib */; };
 		A74351641486772100F4C766 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A743515A1486772100F4C766 /* main.m */; };
 		A7470F7814E2A5F10015477A /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FF8814E2939600BF8CCD /* libDTLoupe.a */; };
 		A7470F7914E2A6920015477A /* DTLoupe.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A7D8FF8A14E2939600BF8CCD /* DTLoupe.bundle */; };
@@ -249,10 +247,8 @@
 		A743514D1486772100F4C766 /* DTRichTextEditor-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTRichTextEditor-Prefix.pch"; sourceTree = "<group>"; };
 		A743514F1486772100F4C766 /* 43-film-roll.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "43-film-roll.png"; sourceTree = "<group>"; };
 		A74351501486772100F4C766 /* 43-film-roll@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "43-film-roll@2x.png"; sourceTree = "<group>"; };
-		A74351511486772100F4C766 /* DTRichTextEditorViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DTRichTextEditorViewController.xib; sourceTree = "<group>"; };
 		A74351521486772100F4C766 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		A74351531486772100F4C766 /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
-		A74351541486772100F4C766 /* DTRichTextEditorMainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DTRichTextEditorMainWindow.xib; sourceTree = "<group>"; };
 		A74351561486772100F4C766 /* DTRichTextEditorAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditorAppDelegate.h; sourceTree = "<group>"; };
 		A74351571486772100F4C766 /* DTRichTextEditorAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorAppDelegate.m; sourceTree = "<group>"; };
 		A74351581486772100F4C766 /* DTRichTextEditorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditorViewController.h; sourceTree = "<group>"; };
@@ -394,10 +390,8 @@
 				A7914A77153EF6BB00F6CC86 /* icon_smile.gif */,
 				A743514F1486772100F4C766 /* 43-film-roll.png */,
 				A74351501486772100F4C766 /* 43-film-roll@2x.png */,
-				A74351511486772100F4C766 /* DTRichTextEditorViewController.xib */,
 				A74351521486772100F4C766 /* Icon.png */,
 				A74351531486772100F4C766 /* Icon@2x.png */,
-				A74351541486772100F4C766 /* DTRichTextEditorMainWindow.xib */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -740,10 +734,8 @@
 			files = (
 				A743515C1486772100F4C766 /* 43-film-roll.png in Resources */,
 				A743515D1486772100F4C766 /* 43-film-roll@2x.png in Resources */,
-				A743515E1486772100F4C766 /* DTRichTextEditorViewController.xib in Resources */,
 				A743515F1486772100F4C766 /* Icon.png in Resources */,
 				A74351601486772100F4C766 /* Icon@2x.png in Resources */,
-				A74351611486772100F4C766 /* DTRichTextEditorMainWindow.xib in Resources */,
 				A7D8FF9414E294D600BF8CCD /* DTLoupe.bundle in Resources */,
 				A7914A78153EF6BB00F6CC86 /* icon_smile.gif in Resources */,
 			);

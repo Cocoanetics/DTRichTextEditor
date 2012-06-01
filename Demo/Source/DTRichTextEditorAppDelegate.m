@@ -21,10 +21,17 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions 
 {  
+	// create a window
+	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+	
+	// create the VC
+	viewController = [[DTRichTextEditorViewController alloc] initWithNibName:@"DTRichTextEditorViewController" bundle:nil];
 	navController = [[UINavigationController alloc] initWithRootViewController:viewController];
+	navController.navigationBarHidden = NO;
 	viewController.title = @"Rich Text Demo";
 	
-    [self.window addSubview:navController.view];
+	// set it as root
+	self.window.rootViewController = navController;
     [self.window makeKeyAndVisible];
 
     return YES;
