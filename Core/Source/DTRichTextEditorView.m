@@ -1079,6 +1079,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		if (_showsKeyboardWhenBecomingFirstResponder)
 		{
 			_keyboardIsShowing = YES;
+            self.selectionView.showsDragHandlesForSelection = YES;
 			
 			// set curser to beginning of document if nothing selected
 			if (!_selectedTextRange)
