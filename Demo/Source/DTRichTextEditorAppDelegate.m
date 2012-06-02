@@ -25,7 +25,7 @@
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	
 	// create the VC
-	viewController = [[DTRichTextEditorViewController alloc] initWithNibName:@"DTRichTextEditorViewController" bundle:nil];
+	viewController = [[DTRichTextEditorViewController alloc] init];
 	navController = [[UINavigationController alloc] initWithRootViewController:viewController];
 	navController.navigationBarHidden = NO;
 	viewController.title = @"Rich Text Demo";

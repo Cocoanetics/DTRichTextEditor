@@ -16,23 +16,22 @@
 @implementation DTRichTextEditorViewController
 
 
-
-/*
- // The designated initializer. Override to perform setup that is required before the view is loaded.
- - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
- self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
- if (self) {
- // Custom initialization
- }
- return self;
- }
- */
-
-/*
  // Implement loadView to create a view hierarchy programmatically, without using a nib.
- - (void)loadView {
+ - (void)loadView 
+{
+    CGRect frame = [UIScreen mainScreen].applicationFrame;
+    
+    UIView *view = [[UIView alloc] initWithFrame:frame];
+    
+    richEditor = [[DTRichTextEditorView alloc] initWithFrame:view.bounds];
+    richEditor.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    richEditor.textDelegate = self;
+    
+    [view addSubview:richEditor];
+    
+    self.view = view;
  }
- */
+ 
 
 - (void)viewDidAppear:(BOOL)animated
 {
