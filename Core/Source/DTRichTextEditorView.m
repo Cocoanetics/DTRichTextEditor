@@ -1927,8 +1927,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 #pragma mark Returning Text Styling Information
 - (NSDictionary *)textStylingAtPosition:(DTTextPosition *)position inDirection:(UITextStorageDirection)direction;
 {
-	if (!position)  
+	if (!position)
+	{
 		return nil;
+	}
 	
 	if ([position isEqual:(id)[self endOfDocument]])
 	{
@@ -1936,7 +1938,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 	
 	NSDictionary *ctStyles;
-	if (direction == UITextStorageDirectionBackward && index > 0)
+	if (direction == UITextStorageDirectionBackward && position.location > 0)
 	{
 		ctStyles = [self.contentView.layoutFrame.attributedStringFragment attributesAtIndex:position.location-1 effectiveRange:NULL];
 	}
@@ -1966,10 +1968,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	CGColorRef cgColor = (__bridge CGColorRef)[ctStyles objectForKey:(id)kCTForegroundColorAttributeName];
 	if (cgColor)
+	{
 		[uiStyles setObject:[UIColor colorWithCGColor:cgColor] forKey:UITextInputTextColorKey];
+	}
 	
 	if (self.backgroundColor)
+	{
 		[uiStyles setObject:self.backgroundColor forKey:UITextInputTextBackgroundColorKey];
+	}
 	
 	return uiStyles;
 }
