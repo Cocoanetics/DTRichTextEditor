@@ -58,16 +58,23 @@
 /**
  Returns the range of the given text block that contains the given location.
  
- @param list The text block.
+ @param textBlock The text block.
  @param location The location in the text.
  @returns The range of the given text block containing the location.
  */
 - (NSRange)rangeOfTextBlock:(DTTextBlock *)textBlock atIndex:(NSUInteger)location;
 
 /**
+ Returns the range of the given href anchor.
+ 
+ @param anchorName The name of the anchor.
+ @returns The range of the given anchor.
+ */
+- (NSRange)rangeOfAnchorNamed:(NSString *)anchorName;
+
+/**
  @name Converting to Other Representations
  */
-
 
 /**
  Encodes the receiver into a generic HTML prepresentation.
@@ -77,7 +84,7 @@
 - (NSString *)htmlString;
 
 
-/*
+/**
  Converts the receiver into plain text.
  
  This is different from the `string` method of `NSAttributedString` by also erasing placeholders for text attachments.
@@ -97,11 +104,10 @@
  
  @param listCounter The value for the list item.
  @param listStyle The list style
+ @param listIndent The amount in px to indent the list
  @param attributes The attribute dictionary for the text to be prefixed
  @returns An attributed string with the list prefix
  */
-+ (NSAttributedString *)prefixForListItemWithCounter:(NSUInteger)listCounter listStyle:(DTCSSListStyle *)listStyle attributes:(NSDictionary *)attributes;
-
-
++ (NSAttributedString *)prefixForListItemWithCounter:(NSUInteger)listCounter listStyle:(DTCSSListStyle *)listStyle listIndent:(CGFloat)listIndent attributes:(NSDictionary *)attributes;
 
 @end

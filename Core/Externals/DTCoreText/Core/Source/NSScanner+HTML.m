@@ -9,8 +9,6 @@
 #import "DTCoreText.h"
 #import "NSScanner+HTML.h"
 #import "NSCharacterSet+HTML.h"
-#import "NSString+HTML.h"
-
 
 @implementation NSScanner (HTML)
 
@@ -232,8 +230,6 @@
 	// alphanumeric plus -
 	NSCharacterSet *cssStyleAttributeNameCharacterSet = [NSCharacterSet cssStyleAttributeNameCharacterSet];
 	
-	
-	
 	if (![self scanCharactersFromSet:cssStyleAttributeNameCharacterSet intoString:&attrName])
 	{
 		return NO;
@@ -252,10 +248,34 @@
 	// skip whitespace
 	[self scanCharactersFromSet:whiteCharacterSet intoString:NULL];
 	
-	if (![self scanUpToString:@";" intoString:&attrValue])
+	NSString *quote = nil;
+	if ([self scanString:@"\"" intoString:&quote])
 	{
-		[self setScanLocation:initialScanLocation];
-		return NO;
+		// attribute is quoted
+		
+		if (![self scanUpToString:@"\"" intoString:&attrValue])
+		{
+			[self setScanLocation:initialScanLocation];
+			return NO;
+		}
+		
+		// skip ending quote
+		[self scanString:@"\"" intoString:NULL];
+		
+		// skip whitespace
+		[self scanCharactersFromSet:whiteCharacterSet intoString:NULL];
+		
+		//TODO: decode unicode sequences like "\2022"
+	}
+	else
+	{
+		// attribute is not quoted
+		
+		if (![self scanUpToString:@";" intoString:&attrValue])
+		{
+			[self setScanLocation:initialScanLocation];
+			return NO;
+		}
 	}
 	
 	// skip ending characters

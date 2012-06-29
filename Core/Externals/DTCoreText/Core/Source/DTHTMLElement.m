@@ -29,6 +29,7 @@
 	DTTextAttachment *_textAttachment;
 	DTTextAttachmentVerticalAlignment _textAttachmentAlignment;
 	NSURL *_link;
+	NSString *_anchorName;
 	
 	DTColor *_textColor;
 	DTColor *backgroundColor;
@@ -36,6 +37,8 @@
 	CTUnderlineStyle underlineStyle;
 	
 	NSString *tagName;
+	
+	NSString *beforeContent;
 	NSString *text;
 	
 	NSString *_linkGUID;
@@ -100,7 +103,7 @@
 		CTRunDelegateRef embeddedObjectRunDelegate = createEmbeddedObjectRunDelegate(_textAttachment);
 		[tmpDict setObject:CFBridgingRelease(embeddedObjectRunDelegate) forKey:(id)kCTRunDelegateAttributeName];
 #endif		
-	
+		
 		// add attachment
 		[tmpDict setObject:_textAttachment forKey:NSAttachmentAttributeName];
 		
@@ -147,6 +150,12 @@
 		
 		// add a GUID to group multiple glyph runs belonging to same link
 		[tmpDict setObject:_linkGUID forKey:DTGUIDAttribute];
+	}
+	
+	// add anchor
+	if (_anchorName)
+	{
+		[tmpDict setObject:_anchorName forKey:DTAnchorAttribute];
 	}
 	
 	// add strikout if applicable
@@ -208,7 +217,7 @@
 	{
 		[tmpDict setObject:paragraphStyle.textLists forKey:DTTextListsAttribute];
 	}
-
+	
 	if (paragraphStyle.textBlocks)
 	{
 		[tmpDict setObject:paragraphStyle.textBlocks forKey:DTTextBlocksAttribute];
@@ -262,6 +271,9 @@
 	
 	// keep that for later lookup
 	_styles = styles;
+	
+	// register pseudo-selector contents
+	self.beforeContent = [[_styles objectForKey:@"before:content"] stringByDecodingCSSContentAttribute];
 	
 	NSString *fontSize = [styles objectForKey:@"font-size"];
 	if (fontSize)
@@ -585,10 +597,6 @@
 		}
 	}
 	
-//	// list style became it's own object
-//	self.listStyle = [DTCSSListStyle listStyleWithStyles:styles];
-	
-	
 	NSString *widthString = [styles objectForKey:@"width"];
 	if (widthString && ![widthString isEqualToString:@"auto"])
 	{
@@ -658,83 +666,99 @@
 		}
 	}
 	
-	if (_displayStyle == DTHTMLElementDisplayStyleBlock)
+	
+	DTEdgeInsets padding = {0,0,0,0};
+	
+	// webkit default value
+	NSString *webkitPaddingStart = [styles objectForKey:@"-webkit-padding-start"];
+	
+	if (webkitPaddingStart)
 	{
-		NSString *paddingString = [styles objectForKey:@"padding"];
+		padding.left = [webkitPaddingStart pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
+		self.paragraphStyle.listIndent = padding.left;
+	}
+	
+	BOOL needsTextBlock = (backgroundColor!=nil);
+	
+	NSString *paddingString = [styles objectForKey:@"padding"];
+	
+	if (paddingString)
+	{
+		// maybe it's using the short style
+		NSArray *parts = [paddingString componentsSeparatedByString:@" "];
 		
-		BOOL needsTextBlock = (backgroundColor!=nil);
+		if ([parts count] == 4)
+		{
+			padding.top = [[parts objectAtIndex:0] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
+			padding.right = [[parts objectAtIndex:1] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
+			padding.bottom = [[parts objectAtIndex:2] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
+			padding.left = [[parts objectAtIndex:3] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
+		}
+		else if ([parts count] == 3)
+		{
+			padding.top = [[parts objectAtIndex:0] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
+			padding.right = [[parts objectAtIndex:1] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
+			padding.bottom = [[parts objectAtIndex:2] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
+			padding.left = padding.right;
+		}
+		else if ([parts count] == 2)
+		{
+			padding.top = [[parts objectAtIndex:0] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
+			padding.right = [[parts objectAtIndex:1] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
+			padding.bottom = padding.top;
+			padding.left = padding.right;
+		}
+		else 
+		{
+			CGFloat paddingAmount = [paddingString pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
+			padding = DTEdgeInsetsMake(paddingAmount, paddingAmount, paddingAmount, paddingAmount);
+		}
 		
-		DTEdgeInsets padding = {0,0,0,0};
+		// left padding overrides webkit list indent
+		self.paragraphStyle.listIndent = padding.left;
+		
+		needsTextBlock = YES;
+	}
+	else
+	{
+		paddingString = [styles objectForKey:@"padding-left"];
 		
 		if (paddingString)
 		{
-			// maybe it's using the short style
-			NSArray *parts = [paddingString componentsSeparatedByString:@" "];
-			
-			if ([parts count] == 4)
-			{
-				padding.top = [[parts objectAtIndex:0] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
-				padding.right = [[parts objectAtIndex:1] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
-				padding.bottom = [[parts objectAtIndex:2] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
-				padding.left = [[parts objectAtIndex:3] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
-			}
-			else if ([parts count] == 3)
-			{
-				padding.top = [[parts objectAtIndex:0] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
-				padding.right = [[parts objectAtIndex:1] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
-				padding.bottom = [[parts objectAtIndex:2] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
-				padding.left = padding.right;
-			}
-			else if ([parts count] == 2)
-			{
-				padding.top = [[parts objectAtIndex:0] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
-				padding.right = [[parts objectAtIndex:1] pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
-				padding.bottom = padding.top;
-				padding.left = padding.right;
-			}
-			else 
-			{
-				CGFloat paddingAmount = [paddingString pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
-				padding = DTEdgeInsetsMake(paddingAmount, paddingAmount, paddingAmount, paddingAmount);
-			}
-			
+			padding.left = [paddingString pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
 			needsTextBlock = YES;
-		}
-		else
-		{
-			paddingString = [styles objectForKey:@"padding-left"];
 			
-			if (paddingString)
-			{
-				padding.left = [paddingString pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
-				needsTextBlock = YES;
-			}
-
-			paddingString = [styles objectForKey:@"padding-top"];
-			
-			if (paddingString)
-			{
-				padding.top = [paddingString pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
-				needsTextBlock = YES;
-			}
-
-			paddingString = [styles objectForKey:@"padding-right"];
-			
-			if (paddingString)
-			{
-				padding.right = [paddingString pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
-				needsTextBlock = YES;
-			}
-
-			paddingString = [styles objectForKey:@"padding-bottom"];
-			
-			if (paddingString)
-			{
-				padding.bottom = [paddingString pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
-				needsTextBlock = YES;
-			}
+			// left padding overrides webkit list indent
+			self.paragraphStyle.listIndent = padding.left;
 		}
 		
+		paddingString = [styles objectForKey:@"padding-top"];
+		
+		if (paddingString)
+		{
+			padding.top = [paddingString pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
+			needsTextBlock = YES;
+		}
+		
+		paddingString = [styles objectForKey:@"padding-right"];
+		
+		if (paddingString)
+		{
+			padding.right = [paddingString pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
+			needsTextBlock = YES;
+		}
+		
+		paddingString = [styles objectForKey:@"padding-bottom"];
+		
+		if (paddingString)
+		{
+			padding.bottom = [paddingString pixelSizeOfCSSMeasureRelativeToCurrentTextSize:self.fontDescriptor.pointSize];
+			needsTextBlock = YES;
+		}
+	}
+	
+	if (_displayStyle == DTHTMLElementDisplayStyleBlock)
+	{
 		if (needsTextBlock)
 		{
 			// need a block
@@ -899,12 +923,12 @@
 	newObject.shadows = self.shadows;
 	
 	newObject.link = self.link; // copy
+	newObject.anchorName = self.anchorName; // copy
 	newObject.linkGUID = _linkGUID; // transfer the GUID
 	
 	newObject.preserveNewlines = self.preserveNewlines;
 	
 	newObject.fontCache = self.fontCache; // reference
-	//newObject.listCounter = self.listCounter;
 	
 	return newObject;
 }
@@ -1008,8 +1032,10 @@
 @synthesize textColor = _textColor;
 @synthesize backgroundColor;
 @synthesize tagName;
+@synthesize beforeContent;
 @synthesize text;
 @synthesize link = _link;
+@synthesize anchorName = _anchorName;
 @synthesize underlineStyle;
 @synthesize textAttachment = _textAttachment;
 @synthesize tagContentInvisible;

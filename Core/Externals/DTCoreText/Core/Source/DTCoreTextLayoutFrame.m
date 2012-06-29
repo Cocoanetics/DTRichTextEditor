@@ -154,7 +154,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 	paragraphMetrics previousParaMetrics = {0,0,0};
 	
 	lineMetrics currentLineMetrics;
-	lineMetrics previousLineMetrics;
+//	lineMetrics previousLineMetrics;
 	
 	DTTextBlock *currentTextBlock = nil;
 	DTTextBlock *previousTextBlock = nil;
@@ -374,8 +374,12 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 				
 			case kCTJustifiedTextAlignment:
 			{
-				// only justify if the line widht is longer than 60% of the frame to avoid over-stretching
-				if (currentLineMetrics.width > 0.6 * _frame.size.width)
+				BOOL isAtEndOfParagraph    = (currentParagraphRange.location+currentParagraphRange.length <= lineRange.location+lineRange.length || 		// JTL 28/June/2012
+					[[_attributedStringFragment string] characterAtIndex:lineRange.location+lineRange.length-1]==0x2028);									// JTL 28/June/2012
+
+				// only justify if not last line, not <br>, and if the line width is longer than 60% of the frame
+				// avoids over-stretching
+				if( !isAtEndOfParagraph && (currentLineMetrics.width > 0.60 * _frame.size.width) ) 
 				{
 					// create a justified line and replace the current one with it
 					CTLineRef justifiedLine = CTLineCreateJustifiedLine(line, 1.0f, availableSpace);
@@ -395,6 +399,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 		if (lineBottom>maxY)
 		{
 			// doesn't fit any more
+			CFRelease(line);
 			break;
 		}
 		
@@ -413,7 +418,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 		lineRange.location += lineRange.length;
 		
 		previousLine = newLine;
-		previousLineMetrics = currentLineMetrics;
+	//previousLineMetrics = currentLineMetrics;
 	} 
 	while (lineRange.location < maxIndex);
 	
@@ -491,7 +496,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 	//[self _correctLineOrigins];
 	
 	// --- begin workaround for image squishing bug in iOS < 4.2
-	DTVersion version = [[UIDevice currentDevice] osVersion];
+	DTSimpleVersion version = [[UIDevice currentDevice] osVersion];
 	
 	if (version.major<4 || (version.major==4 && version.minor < 2))
 	{

@@ -6,13 +6,13 @@
 //  Copyright 2011 Drobnik.com. All rights reserved.
 //
 
-#import "UIDevice+DTVersion.h"
+#import "UIDevice+DTSimpleVersion.h"
 
-@implementation UIDevice (DTVersion)
+@implementation UIDevice (DTSimpleVersion)
 
-- (DTVersion) osVersion
+- (DTSimpleVersion) osVersion
 {
-	static DTVersion retVersion;
+	static DTSimpleVersion retVersion;
 	
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{

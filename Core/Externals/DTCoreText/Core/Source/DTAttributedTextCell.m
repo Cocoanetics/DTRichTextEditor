@@ -8,6 +8,7 @@
 
 #import "DTCoreText.h"
 #import "DTAttributedTextCell.h"
+#import "DTCSSStylesheet.h"
 
 @implementation DTAttributedTextCell
 {
@@ -114,7 +115,7 @@
 	_htmlHash = newHash;
 	
 	NSData *data = [html dataUsingEncoding:NSUTF8StringEncoding];
-	NSAttributedString *string = [[NSAttributedString alloc] initWithHTML:data documentAttributes:NULL];
+	NSAttributedString *string = [[NSAttributedString alloc] initWithHTMLData:data documentAttributes:NULL];
 	self.attributedString = string;
 }
 
