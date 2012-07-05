@@ -1252,7 +1252,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		{
 			if (_maxImageDisplaySize.width < image.size.width || _maxImageDisplaySize.height < image.size.height)
 			{
-				displaySize = sizeThatFitsKeepingAspectRatio(image.size,_maxImageDisplaySize);
+				displaySize = sizeThatFitsKeepingAspectRatio2(image.size,_maxImageDisplaySize);
 			}
 		}
 		attachment.displaySize = displaySize;
@@ -1487,7 +1487,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 				else
 				{
 					NSInteger itemNumber = [attributedString itemNumberInTextList:effectiveList atIndex:myRange.location]+1;
-					NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:effectiveList attributes:typingAttributes];
+					NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:effectiveList listIndent:20 attributes:typingAttributes];
 					
 					// extend to include paragraph before in inserted string
 					[mutableParagraph toggleParagraphSpacing:NO atIndex:0];
@@ -2747,7 +2747,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
 	
-	NSAttributedString *attributedString = [[NSAttributedString alloc] initWithHTML:data options:[self textDefaults] documentAttributes:NULL];
+	NSAttributedString *attributedString = [[NSAttributedString alloc] initWithHTMLData:data options:[self textDefaults] documentAttributes:NULL];
 	
 	[self setAttributedText:attributedString];
 }

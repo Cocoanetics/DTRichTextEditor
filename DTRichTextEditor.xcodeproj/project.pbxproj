@@ -101,6 +101,13 @@
 			remoteGlobalIDString = A743530A14867ACD00F4C766;
 			remoteInfo = "Static Library";
 		};
+		A73129CB15A5E69900971C55 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7F7EFCD1573603100F5A4D0;
+			remoteInfo = "Static Library (no DTFoundation)";
+		};
 		A7470F7A14E2A6C70015477A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */;
@@ -437,6 +444,7 @@
 				A7D8FEBA14E14E4500BF8CCD /* libDTCoreText.a */,
 				A7D8FEBC14E14E4500BF8CCD /* UnitTest.octest */,
 				A7D8FEBE14E14E4500BF8CCD /* MacUnitTest.octest */,
+				A73129CC15A5E69900971C55 /* libDTCoreText_no_DTFoundation.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -659,6 +667,13 @@
 			fileType = archive.ar;
 			path = libDTWebArchive.a;
 			remoteRef = A7235AA51487A9C100C9F926 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A73129CC15A5E69900971C55 /* libDTCoreText_no_DTFoundation.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDTCoreText_no_DTFoundation.a;
+			remoteRef = A73129CB15A5E69900971C55 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		A7D8FEB614E14E4500BF8CCD /* DemoApp.app */ = {

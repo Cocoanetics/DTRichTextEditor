@@ -45,7 +45,7 @@
 	}
 	
 	// make attributed string
-	NSAttributedString *tmpStr = [[NSAttributedString alloc] initWithHTML:webArchive.mainResource.data options:localOptions documentAttributes:dict];
+	NSAttributedString *tmpStr = [[NSAttributedString alloc] initWithHTMLData:webArchive.mainResource.data options:localOptions documentAttributes:dict];
 	
 	
 	// if data is available for image attachments fill it in

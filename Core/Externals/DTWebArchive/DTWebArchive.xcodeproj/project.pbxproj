@@ -259,7 +259,7 @@
 		A7697CC61410CC6400F25129 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 			};
 			buildConfigurationList = A7697CC91410CC6400F25129 /* Build configuration list for PBXProject "DTWebArchive" */;
 			compatibilityVersion = "Xcode 3.2";

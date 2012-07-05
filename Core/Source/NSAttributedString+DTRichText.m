@@ -69,7 +69,7 @@
 	{
 		if (maxDisplaySize.width < image.size.width || maxDisplaySize.height < image.size.height)
 		{
-			displaySize = sizeThatFitsKeepingAspectRatio(image.size,maxDisplaySize);
+			displaySize = sizeThatFitsKeepingAspectRatio2(image.size,maxDisplaySize);
 		}
 	}
 	attachment.displaySize = displaySize;

@@ -424,7 +424,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 		 }
 		 
 		 // insert new prefix
-		 NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:listStyle attributes:currentAttributes];
+		 NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:listStyle listIndent:20.0 attributes:currentAttributes];
 		 
 		 [paragraphString insertAttributedString:prefixAttributedString atIndex:0];
 		 
@@ -569,7 +569,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 		 // insert new prefix
 		 if (setNewLists)
 		 {
-			 NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:listStyle attributes:currentAttributes];
+			 NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:listStyle listIndent:20 attributes:currentAttributes];
 			 
 			 [paragraphString insertAttributedString:prefixAttributedString atIndex:0];
 			 
