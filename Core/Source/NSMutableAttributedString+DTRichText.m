@@ -329,6 +329,24 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 	[self endEditing];
 }
 
+- (void)toggleHyperlinkInRange:(NSRange)range URL:(NSURL *)URL
+{
+	[self beginEditing];
+	
+	// remove existing attributes
+	[self removeAttribute:DTLinkAttribute range:range];
+	[self removeAttribute:DTGUIDAttribute range:range];
+
+	if (URL)
+	{
+		// we want to set the URL
+		[self addAttribute:DTLinkAttribute value:URL range:range];
+		[self addAttribute:DTGUIDAttribute value:[NSString guid] range:range];
+	}
+	
+	[self endEditing];
+}
+
 - (void)adjustTextAlignment:(CTTextAlignment)alignment inRange:(NSRange)range
 {
 	[self beginEditing];

@@ -41,6 +41,9 @@
 	// lists
 	UIBarButtonItem *unorderedListButton;
 	UIBarButtonItem *orderedListButton;
+	
+	// URL
+	UIBarButtonItem *linkButton;
 }
 
 @property (nonatomic, retain) NSCache *imageViewCache;

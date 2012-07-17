@@ -24,6 +24,9 @@
 // text highlighting
 - (void)toggleHighlightInRange:(NSRange)range color:(UIColor *)color;
 
+// adding/removing hyperlinks
+- (void)toggleHyperlinkInRange:(NSRange)range URL:(NSURL *)URL;
+
 // convenience method to set text alignment on entire paragraphs
 - (void)adjustTextAlignment:(CTTextAlignment)alignment inRange:(NSRange)range;
 

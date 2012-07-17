@@ -2330,6 +2330,28 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	return tmpAttributes;
 }
 
+- (UITextRange *)textRangeOfURLAtPosition:(UITextPosition *)position URL:(NSURL **)URL
+{
+	NSUInteger index = [(DTTextPosition *)position location];
+	
+	NSRange effectiveRange;
+	
+	NSURL *effectiveURL = [self.contentView.layoutFrame.attributedStringFragment attribute:DTLinkAttribute atIndex:index effectiveRange:&effectiveRange];
+	
+	if (!effectiveURL)
+	{
+		return nil;
+	}
+	
+	DTTextRange *range = [[DTTextRange alloc] initWithNSRange:effectiveRange];
+	
+	if (URL)
+	{
+		*URL = effectiveURL;
+	}
+	
+	return range;
+}
 
 - (void)replaceRange:(UITextRange *)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph
 {
@@ -2576,6 +2598,80 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	[self hideContextMenu];
 }
+
+- (void)toggleHyperlinkInRange:(UITextRange *)range URL:(NSURL *)URL
+{
+	// if there is an URL at the cursor position we assume it
+	NSURL *effectiveURL = nil;
+	UITextRange *effectiveRange = [self textRangeOfURLAtPosition:range.start URL:&effectiveURL];
+	
+	if ([effectiveURL isEqual:URL])
+	{
+		// toggle URL off
+		URL = nil;
+	}
+	
+	if ([range isEmpty])
+	{
+		if (effectiveRange)
+		{
+			// work with the effective range instead
+			range = effectiveRange;
+		}
+		else
+		{
+			// cannot toggle with empty range
+			return;
+		}
+	}
+	
+	NSRange styleRange = [(DTTextRange *)range NSRangeValue];
+	
+	// get fragment that is to be made bold
+	NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
+	
+	// make entire frament highlighted
+	NSRange entireFragmentRange = NSMakeRange(0, [fragment length]);
+	[fragment toggleHyperlinkInRange:entireFragmentRange URL:URL];
+	
+	NSDictionary *textDefaults = self.textDefaults;
+	
+	// remove extra stylings
+	[fragment removeAttribute:(id)kCTUnderlineStyleAttributeName range:entireFragmentRange];
+	
+	// assume normal text color is black
+	[fragment addAttribute:(id)kCTForegroundColorAttributeName value:(id)[UIColor blackColor].CGColor range:entireFragmentRange];
+
+	if (URL)
+	{
+		if ([[textDefaults objectForKey:DTDefaultLinkDecoration] boolValue])
+		{
+			[fragment addAttribute:(id)kCTUnderlineStyleAttributeName  value:[NSNumber numberWithInteger:1] range:entireFragmentRange];
+		}
+		
+		UIColor *linkColor = [textDefaults objectForKey:DTDefaultLinkColor];
+		
+		if (linkColor)
+		{
+			[fragment addAttribute:(id)kCTForegroundColorAttributeName value:(id)linkColor.CGColor range:entireFragmentRange];
+		}
+		
+	}
+	
+	// need to style the text accordingly
+	
+	// replace
+	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
+	
+	// attachment positions might have changed
+	[self.contentView layoutSubviewsInRect:self.bounds];
+	
+	// cursor positions might have changed
+	[self updateCursorAnimated:NO];
+
+	[self hideContextMenu];
+}
+
 
 - (void)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range
 {

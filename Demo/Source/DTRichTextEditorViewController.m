@@ -53,6 +53,12 @@
 	richEditor.textSizeMultiplier = 2.2;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
     richEditor.autocorrectionType = UITextAutocorrectionTypeNo;
+	
+	NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
+	[defaults setObject:[NSNumber numberWithBool:YES] forKey:DTDefaultLinkDecoration];
+	[defaults setObject:[UIColor colorWithHTMLName:@"purple"] forKey:DTDefaultLinkColor];
+	
+	richEditor.textDefaults = defaults;
     
     NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	
@@ -96,12 +102,14 @@
 	UIBarButtonItem *spacer3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 	
 	UIBarButtonItem *smile = [[UIBarButtonItem alloc] initWithTitle:@":)" style:UIBarButtonItemStyleBordered target:self action:@selector(insertSmiley:)];
+	
 
+	linkButton = [[UIBarButtonItem alloc] initWithTitle:@"URL" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleURL:)];
 	
 	toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
 	richEditor.inputAccessoryView = toolbar;
 	
-	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, highlightButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, orderedListButton, unorderedListButton, spacer3, photoButton, smile, nil]];
+	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, highlightButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, orderedListButton, unorderedListButton, spacer3, photoButton, smile, linkButton, nil]];
 	
 	// watch the selectedTextRange property
 	[richEditor addObserver:self forKeyPath:@"selectedTextRange" options:NSKeyValueObservingOptionNew context:nil];
@@ -326,6 +334,16 @@
 	[richEditor toggleListStyle:listStyle inRange:range];
 }
 
+- (void)toggleURL:(UIBarButtonItem *)sender
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	
+	// for simplicity this is static
+	NSURL *URL =[NSURL URLWithString:@"http://www.cocoanetics.com"];
+	
+	[richEditor toggleHyperlinkInRange:range URL:URL];
+}
+
 #pragma mark Notifications
 - (void)textChanged:(NSNotification *)notification
 {
@@ -392,6 +410,29 @@
 	
 	return nil;
 }
+
+- (UIView *)attributedTextContentView:(DTAttributedTextContentView *)attributedTextContentView viewForLink:(NSURL *)url identifier:(NSString *)identifier frame:(CGRect)frame
+{
+	DTLinkButton *button = [[DTLinkButton alloc] initWithFrame:frame];
+	button.URL = url;
+	button.minimumHitSize = CGSizeMake(25, 25); // adjusts it's bounds so that button is always large enough
+	button.GUID = identifier;
+	
+	// use normal push action for opening URL
+	[button addTarget:self action:@selector(linkPushed:) forControlEvents:UIControlEventTouchUpInside];
+	
+	// demonstrate combination with long press
+	//UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(linkLongPressed:)];
+	//[button addGestureRecognizer:longPress];
+	
+	return button;
+}
+
+- (void)linkPushed:(id)sender
+{
+	// do something when a link was pushed
+}
+
 
 #pragma mark Properties
 

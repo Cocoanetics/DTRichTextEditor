@@ -152,6 +152,8 @@ typedef enum
 
 - (NSDictionary *)defaultAttributes;
 - (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
+- (UITextRange *)textRangeOfURLAtPosition:(UITextPosition *)position URL:(NSURL **)URL;
+
 - (void)replaceRange:(UITextRange *)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph;
 
 - (void)toggleBoldInRange:(UITextRange *)range;
@@ -159,6 +161,9 @@ typedef enum
 - (void)toggleUnderlineInRange:(UITextRange *)range;
 
 - (void)toggleHighlightInRange:(UITextRange *)range color:(UIColor *)color;
+
+// make a range a hyperlink or remove it
+- (void)toggleHyperlinkInRange:(UITextRange *)range URL:(NSURL *)URL;
 
 - (void)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range;
 - (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range;
