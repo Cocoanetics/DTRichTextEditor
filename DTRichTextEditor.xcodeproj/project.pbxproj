@@ -23,6 +23,13 @@
 		A7470F8414E2A6D90015477A /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7235AA61487A9C100C9F926 /* libDTWebArchive.a */; };
 		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
 		A7914A78153EF6BB00F6CC86 /* icon_smile.gif in Resources */ = {isa = PBXBuildFile; fileRef = A7914A77153EF6BB00F6CC86 /* icon_smile.gif */; };
+		A79E1CDC15D57ADF003A4473 /* DTCoreTextLayoutFrame+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A743511F1486771700F4C766 /* DTCoreTextLayoutFrame+DTRichText.m */; };
+		A79E1CDD15D57AE7003A4473 /* NSAttributedString+DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D728641487C2F300A22742 /* NSAttributedString+DTWebArchive.m */; };
+		A79E1CDE15D57AED003A4473 /* NSAttributedString+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351351486771700F4C766 /* NSAttributedString+DTRichText.m */; };
+		A79E1CDF15D57AF0003A4473 /* NSDictionary+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351371486771700F4C766 /* NSDictionary+DTRichText.m */; };
+		A79E1CE015D57AF2003A4473 /* NSMutableAttributedString+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351391486771700F4C766 /* NSMutableAttributedString+DTRichText.m */; };
+		A79E1CE115D57AF5003A4473 /* NSMutableDictionary+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A743513B1486771700F4C766 /* NSMutableDictionary+DTRichText.m */; };
+		A79E1CE215D57AF8003A4473 /* DTWebResource+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D728931487C46600A22742 /* DTWebResource+DTRichText.m */; };
 		A7D142081508DCC000ACC855 /* DTRichTextEditorAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351571486772100F4C766 /* DTRichTextEditorAppDelegate.m */; };
 		A7D142091508DCC000ACC855 /* DTRichTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351591486772100F4C766 /* DTRichTextEditorViewController.m */; };
 		A7D545E815D567BC00711CA1 /* DTAttributedTextCell.h in Resources */ = {isa = PBXBuildFile; fileRef = A7D545E215D567BC00711CA1 /* DTAttributedTextCell.h */; };
@@ -1062,6 +1069,13 @@
 				A7D729341487D97C00A22742 /* DTTextRange.m in Sources */,
 				A7D729361487D97C00A22742 /* DTTextSelectionView.m in Sources */,
 				A7D729381487D97C00A22742 /* DTTiledLayerWithoutFade.m in Sources */,
+				A79E1CDC15D57ADF003A4473 /* DTCoreTextLayoutFrame+DTRichText.m in Sources */,
+				A79E1CDD15D57AE7003A4473 /* NSAttributedString+DTWebArchive.m in Sources */,
+				A79E1CDE15D57AED003A4473 /* NSAttributedString+DTRichText.m in Sources */,
+				A79E1CDF15D57AF0003A4473 /* NSDictionary+DTRichText.m in Sources */,
+				A79E1CE015D57AF2003A4473 /* NSMutableAttributedString+DTRichText.m in Sources */,
+				A79E1CE115D57AF5003A4473 /* NSMutableDictionary+DTRichText.m in Sources */,
+				A79E1CE215D57AF8003A4473 /* DTWebResource+DTRichText.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
