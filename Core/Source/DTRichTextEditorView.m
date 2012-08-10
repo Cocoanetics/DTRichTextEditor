@@ -74,6 +74,32 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 #pragma mark -
 #pragma mark Initialization
+
++(void)initialize
+{
+#ifdef TIMEBOMB
+#warning Timebomb enabled
+	NSTimeInterval expirationTimestamp = TIMEBOMB;
+	NSDate *expirationDate = [NSDate dateWithTimeIntervalSince1970:expirationTimestamp];
+	
+	NSDateFormatter *df = [[NSDateFormatter alloc] init];
+	[df setTimeStyle:NSDateFormatterNoStyle];
+	[df setDateStyle:NSDateFormatterMediumStyle];
+	
+	NSDate *now = [NSDate date];
+	
+	if ([now compare:expirationDate] == NSOrderedDescending)
+	{
+		NSLog(@"ERROR: This demo expired on %@", [df stringFromDate:expirationDate]);
+		exit(1);
+	}
+	else
+	{
+		NSLog(@"WARNING: This demo expires on %@", [df stringFromDate:expirationDate]);
+	}
+#endif
+}
+
 - (void)setDefaults
 {
 	_canInteractWithPasteboard = YES;
