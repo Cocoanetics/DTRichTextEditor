@@ -99,8 +99,13 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[pf setDateFormat:@"yyyy-MM-dd_H-m-s"];
 	[pf setTimeZone:tz];
 	
-	NSDate *expirationDate = [pf dateFromString:buildidStr];
+	NSDate *buildDate = [pf dateFromString:buildidStr];
+	
+	NSDateComponents *comps = [[NSDateComponents alloc] init];
+	[comps setDay:30];
+	NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
 	NSDate *now = [NSDate date];
+	NSDate *expirationDate = [gregorian dateByAddingComponents:comps toDate:now options:0];
 	
 	// date formatter for output
 	NSDateFormatter *df = [[NSDateFormatter alloc] init];
