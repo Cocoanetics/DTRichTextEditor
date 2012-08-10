@@ -55,6 +55,16 @@
 		A7D5460E15D5687A00711CA1 /* NSScanner+HTML.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D545FA15D5685300711CA1 /* NSScanner+HTML.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7D5460F15D5687D00711CA1 /* NSMutableAttributedString+HTML.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D545F915D5685300711CA1 /* NSMutableAttributedString+HTML.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7D5461015D5688000711CA1 /* DTTextBlock.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D545FD15D5685300711CA1 /* DTTextBlock.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A7D5462C15D569A800711CA1 /* DTCoreTextFontCollection.h in Resources */ = {isa = PBXBuildFile; fileRef = A7D5462715D569A800711CA1 /* DTCoreTextFontCollection.h */; };
+		A7D5462D15D569A800711CA1 /* DTCoreTextGlyphRun.h in Resources */ = {isa = PBXBuildFile; fileRef = A7D5462815D569A800711CA1 /* DTCoreTextGlyphRun.h */; };
+		A7D5462E15D569A800711CA1 /* DTCoreTextLayouter.h in Resources */ = {isa = PBXBuildFile; fileRef = A7D5462915D569A800711CA1 /* DTCoreTextLayouter.h */; };
+		A7D5462F15D569A800711CA1 /* DTCoreTextLayoutFrame.h in Resources */ = {isa = PBXBuildFile; fileRef = A7D5462A15D569A800711CA1 /* DTCoreTextLayoutFrame.h */; };
+		A7D5463015D569A800711CA1 /* DTCoreTextLayoutLine.h in Resources */ = {isa = PBXBuildFile; fileRef = A7D5462B15D569A800711CA1 /* DTCoreTextLayoutLine.h */; };
+		A7D5463115D569B000711CA1 /* DTCoreTextFontCollection.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D5462715D569A800711CA1 /* DTCoreTextFontCollection.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A7D5463215D569B300711CA1 /* DTCoreTextGlyphRun.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D5462815D569A800711CA1 /* DTCoreTextGlyphRun.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A7D5463315D569B500711CA1 /* DTCoreTextLayouter.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D5462915D569A800711CA1 /* DTCoreTextLayouter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A7D5463415D569B700711CA1 /* DTCoreTextLayoutFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D5462A15D569A800711CA1 /* DTCoreTextLayoutFrame.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A7D5463515D569B900711CA1 /* DTCoreTextLayoutLine.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D5462B15D569A800711CA1 /* DTCoreTextLayoutLine.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7D728E21487D1B500A22742 /* NSAttributedString+DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D728631487C2F300A22742 /* NSAttributedString+DTWebArchive.h */; settings = {ATTRIBUTES = (); }; };
 		A7D728E31487D1B500A22742 /* NSAttributedString+DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D728641487C2F300A22742 /* NSAttributedString+DTWebArchive.m */; };
 		A7D728E41487D1B500A22742 /* DTCoreTextLayoutFrame+DTRichText.h in Headers */ = {isa = PBXBuildFile; fileRef = A743511E1486771700F4C766 /* DTCoreTextLayoutFrame+DTRichText.h */; settings = {ATTRIBUTES = (); }; };
@@ -311,6 +321,11 @@
 		A7D545FB15D5685300711CA1 /* NSString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = "NSString+HTML.h"; path = "DTCoreText/Core/Source/NSString+HTML.h"; sourceTree = "<group>"; };
 		A7D545FC15D5685300711CA1 /* NSMutableString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = "NSMutableString+HTML.h"; path = "DTCoreText/Core/Source/NSMutableString+HTML.h"; sourceTree = "<group>"; };
 		A7D545FD15D5685300711CA1 /* DTTextBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTTextBlock.h; path = DTCoreText/Core/Source/DTTextBlock.h; sourceTree = "<group>"; };
+		A7D5462715D569A800711CA1 /* DTCoreTextFontCollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTCoreTextFontCollection.h; path = DTCoreText/Core/Source/DTCoreTextFontCollection.h; sourceTree = "<group>"; };
+		A7D5462815D569A800711CA1 /* DTCoreTextGlyphRun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTCoreTextGlyphRun.h; path = DTCoreText/Core/Source/DTCoreTextGlyphRun.h; sourceTree = "<group>"; };
+		A7D5462915D569A800711CA1 /* DTCoreTextLayouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTCoreTextLayouter.h; path = DTCoreText/Core/Source/DTCoreTextLayouter.h; sourceTree = "<group>"; };
+		A7D5462A15D569A800711CA1 /* DTCoreTextLayoutFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTCoreTextLayoutFrame.h; path = DTCoreText/Core/Source/DTCoreTextLayoutFrame.h; sourceTree = "<group>"; };
+		A7D5462B15D569A800711CA1 /* DTCoreTextLayoutLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTCoreTextLayoutLine.h; path = DTCoreText/Core/Source/DTCoreTextLayoutLine.h; sourceTree = "<group>"; };
 		A7D728631487C2F300A22742 /* NSAttributedString+DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+DTWebArchive.h"; sourceTree = "<group>"; };
 		A7D728641487C2F300A22742 /* NSAttributedString+DTWebArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+DTWebArchive.m"; sourceTree = "<group>"; };
 		A7D728921487C46600A22742 /* DTWebResource+DTRichText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTWebResource+DTRichText.h"; sourceTree = "<group>"; };
@@ -484,6 +499,11 @@
 				A7D545FB15D5685300711CA1 /* NSString+HTML.h */,
 				A7D545FC15D5685300711CA1 /* NSMutableString+HTML.h */,
 				A7D545FD15D5685300711CA1 /* DTTextBlock.h */,
+				A7D5462715D569A800711CA1 /* DTCoreTextFontCollection.h */,
+				A7D5462815D569A800711CA1 /* DTCoreTextGlyphRun.h */,
+				A7D5462915D569A800711CA1 /* DTCoreTextLayouter.h */,
+				A7D5462A15D569A800711CA1 /* DTCoreTextLayoutFrame.h */,
+				A7D5462B15D569A800711CA1 /* DTCoreTextLayoutLine.h */,
 			);
 			name = "Repackaged Headers (Framework)";
 			sourceTree = "<group>";
@@ -629,10 +649,15 @@
 				A7D5460A15D5686D00711CA1 /* NSAttributedString+SmallCaps.h in Headers */,
 				A7D5460B15D5687100711CA1 /* NSAttributedStringRunDelegates.h in Headers */,
 				A7D5460F15D5687D00711CA1 /* NSMutableAttributedString+HTML.h in Headers */,
+				A7D5463415D569B700711CA1 /* DTCoreTextLayoutFrame.h in Headers */,
+				A7D5463515D569B900711CA1 /* DTCoreTextLayoutLine.h in Headers */,
 				A7D5460C15D5687400711CA1 /* NSCharacterSet+HTML.h in Headers */,
 				A7D5460E15D5687A00711CA1 /* NSScanner+HTML.h in Headers */,
+				A7D5463315D569B500711CA1 /* DTCoreTextLayouter.h in Headers */,
 				A7D5460D15D5687700711CA1 /* NSString+HTML.h in Headers */,
+				A7D5463215D569B300711CA1 /* DTCoreTextGlyphRun.h in Headers */,
 				A7D5461015D5688000711CA1 /* DTTextBlock.h in Headers */,
+				A7D5463115D569B000711CA1 /* DTCoreTextFontCollection.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -844,6 +869,11 @@
 				A7D5460515D5685300711CA1 /* NSString+HTML.h in Resources */,
 				A7D5460615D5685300711CA1 /* NSMutableString+HTML.h in Resources */,
 				A7D5460715D5685300711CA1 /* DTTextBlock.h in Resources */,
+				A7D5462C15D569A800711CA1 /* DTCoreTextFontCollection.h in Resources */,
+				A7D5462D15D569A800711CA1 /* DTCoreTextGlyphRun.h in Resources */,
+				A7D5462E15D569A800711CA1 /* DTCoreTextLayouter.h in Resources */,
+				A7D5462F15D569A800711CA1 /* DTCoreTextLayoutFrame.h in Resources */,
+				A7D5463015D569A800711CA1 /* DTCoreTextLayoutLine.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
