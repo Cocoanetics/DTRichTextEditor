@@ -81,6 +81,7 @@
 		A7D8FEC814E1570000BF8CCD /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7235AA61487A9C100C9F926 /* libDTWebArchive.a */; };
 		A7D8FECA14E1571900BF8CCD /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FEC914E1571900BF8CCD /* libxml2.dylib */; };
 		A7D8FF9414E294D600BF8CCD /* DTLoupe.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A7D8FF8A14E2939600BF8CCD /* DTLoupe.bundle */; };
+		A7E82CE015D5384700BD47AB /* DTLoupeView.h in Headers */ = {isa = PBXBuildFile; fileRef = A7E82CDF15D5384700BD47AB /* DTLoupeView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7F0C84313C326E900EBD027 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84213C326E900EBD027 /* UIKit.framework */; };
 		A7F0C84513C326E900EBD027 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84413C326E900EBD027 /* Foundation.framework */; };
 		A7F0C84713C326E900EBD027 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84613C326E900EBD027 /* CoreGraphics.framework */; };
@@ -275,6 +276,7 @@
 		A7D729511487DAB100A22742 /* DTRichTextEditor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DTRichTextEditor-Info.plist"; sourceTree = "<group>"; };
 		A7D8FEC914E1571900BF8CCD /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTLoupe.xcodeproj; path = DTLoupeView/DTLoupe.xcodeproj; sourceTree = "<group>"; };
+		A7E82CDF15D5384700BD47AB /* DTLoupeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTLoupeView.h; path = DTLoupeView/Core/Source/DTLoupeView.h; sourceTree = "<group>"; };
 		A7E994DD154E79DA00FEB5DB /* Changelog.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = Changelog.markdown; sourceTree = "<group>"; };
 		A7F0C83E13C326E900EBD027 /* DemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7F0C84213C326E900EBD027 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -326,6 +328,7 @@
 		A72358D11487A4FF00C9F926 /* Externals */ = {
 			isa = PBXGroup;
 			children = (
+				A7E82CDF15D5384700BD47AB /* DTLoupeView.h */,
 				A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */,
 				A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */,
 				A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */,
@@ -545,6 +548,7 @@
 				A7D729351487D97C00A22742 /* DTTextSelectionView.h in Headers */,
 				A7D729371487D97C00A22742 /* DTTiledLayerWithoutFade.h in Headers */,
 				A7D7293E1487D9EF00A22742 /* DTRichTextEditor.h in Headers */,
+				A7E82CE015D5384700BD47AB /* DTLoupeView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
