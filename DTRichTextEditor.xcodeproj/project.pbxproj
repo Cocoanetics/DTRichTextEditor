@@ -587,10 +587,10 @@
 			buildRules = (
 			);
 			dependencies = (
-				A7470F7B14E2A6C70015477A /* PBXTargetDependency */,
-				A7470F7D14E2A6C70015477A /* PBXTargetDependency */,
 				A7470F7F14E2A6C70015477A /* PBXTargetDependency */,
 				A7470F8114E2A6C70015477A /* PBXTargetDependency */,
+				A7470F7B14E2A6C70015477A /* PBXTargetDependency */,
+				A7470F7D14E2A6C70015477A /* PBXTargetDependency */,
 			);
 			name = "Static Framework";
 			productName = DTRichTextEditor;
