@@ -121,9 +121,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		NSLog(@"WARNING: This demo expires on %@", [df stringFromDate:expirationDate]);
 	}
-	
-#else
-	NSLog(@"No Timebomb");
 #endif
 	
 }
