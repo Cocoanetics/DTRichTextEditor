@@ -79,14 +79,33 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 #ifdef TIMEBOMB
 #warning Timebomb enabled
-	NSTimeInterval expirationTimestamp = TIMEBOMB;
-	NSDate *expirationDate = [NSDate dateWithTimeIntervalSince1970:expirationTimestamp];
 	
+	/*
+	 NSTimeInterval expirationTimestamp = TIMEBOMB;
+	 NSDate *expirationDate = [NSDate dateWithTimeIntervalSince1970:expirationTimestamp];
+	 */
+	
+	// stringification macros
+#define xstr(s) str(s)
+#define str(s) #s
+	
+	// TIMEBOMB is Jenkins build id = time
+	char *buildid = xstr(TIMEBOMB);
+	NSString *buildidStr = [NSString stringWithCString:buildid encoding:NSUTF8StringEncoding];
+	
+	// date formatter for parsing
+	NSDateFormatter *pf = [[NSDateFormatter alloc] init];
+	NSTimeZone *tz = [NSTimeZone timeZoneForSecondsFromGMT:60*60*2];
+	[pf setDateFormat:@"yyyy-MM-dd_H-m-s"];
+	[pf setTimeZone:tz];
+	
+	NSDate *expirationDate = [pf dateFromString:buildidStr];
+	NSDate *now = [NSDate date];
+	
+	// date formatter for output
 	NSDateFormatter *df = [[NSDateFormatter alloc] init];
 	[df setTimeStyle:NSDateFormatterNoStyle];
 	[df setDateStyle:NSDateFormatterMediumStyle];
-	
-	NSDate *now = [NSDate date];
 	
 	if ([now compare:expirationDate] == NSOrderedDescending)
 	{
@@ -97,6 +116,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		NSLog(@"WARNING: This demo expires on %@", [df stringFromDate:expirationDate]);
 	}
+	
 #endif
 }
 
