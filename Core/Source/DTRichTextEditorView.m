@@ -80,11 +80,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 #ifdef TIMEBOMB
 #warning Timebomb enabled
 	
-	/*
-	 NSTimeInterval expirationTimestamp = TIMEBOMB;
-	 NSDate *expirationDate = [NSDate dateWithTimeIntervalSince1970:expirationTimestamp];
-	 */
-	
+	 NSTimeInterval expirationTimestamp = TIMEBOMB/1000.0;
+	 NSDate *buildDate = [NSDate dateWithTimeIntervalSince1970:expirationTimestamp];
+	 
+/*
 	// stringification macros
 #define xstr(s) str(s)
 #define str(s) #s
@@ -100,6 +99,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[pf setTimeZone:tz];
 	
 	NSDate *buildDate = [pf dateFromString:buildidStr];
+ */
 	
 	NSDateComponents *comps = [[NSDateComponents alloc] init];
 	[comps setDay:30];
