@@ -221,6 +221,13 @@
 			remoteGlobalIDString = A7D8FF5A14E17A6600BF8CCD;
 			remoteInfo = "Resource Bundle";
 		};
+		A79646B015DE9D5E0091CD4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7D8FEE314E1693300BF8CCD;
+			remoteInfo = "Static Library";
+		};
 		A7D729211487D5DD00A22742 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */;
@@ -764,6 +771,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A79646B115DE9D5E0091CD4C /* PBXTargetDependency */,
 				A7D729221487D5DD00A22742 /* PBXTargetDependency */,
 			);
 			name = "Static Library";
@@ -1103,6 +1111,11 @@
 			name = "Resource Bundle";
 			targetProxy = A7840CCD1524A99B00FA9F9D /* PBXContainerItemProxy */;
 		};
+		A79646B115DE9D5E0091CD4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Static Library";
+			targetProxy = A79646B015DE9D5E0091CD4C /* PBXContainerItemProxy */;
+		};
 		A7D729221487D5DD00A22742 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Static Library";
@@ -1125,6 +1138,10 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
 				GCC_THUMB_SUPPORT = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PRODUCT_NAME = DTRichTextEditor;
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "Core/Externals/**";
@@ -1139,6 +1156,10 @@
 				GCC_PREFIX_HEADER = "Core/DTRichTextEditor-Prefix.pch";
 				GCC_THUMB_SUPPORT = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PRODUCT_NAME = DTRichTextEditor;
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "Core/Externals/**";
