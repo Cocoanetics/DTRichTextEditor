@@ -10,11 +10,8 @@
 
 #import "DTLoupeView.h"
 
-#import "DTAttributedTextContentView.h"
-#import "NSString+HTML.h"
-#import "NSString+Paragraphs.h"
-#import "DTHTMLElement.h"
-#import "DTCoreTextLayoutFrame.h"
+#import "DTCoreText.h"
+
 #import "DTCoreTextLayoutFrame+DTRichText.h"
 #import "DTMutableCoreTextLayoutFrame.h"
 #import "NSMutableAttributedString+HTML.h"

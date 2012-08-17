@@ -7,14 +7,8 @@
 //
 
 #import "DTMutableCoreTextLayoutFrame.h"
-
-#import "DTCoreTextLayoutLine.h"
-#import "NSString+Paragraphs.h"
-#import "DTCoreTextLayouter.h"
-
 #import "DTRichTextCategories.h"
-
-
+#import "DTCoreText.h"
 
 @implementation DTMutableCoreTextLayoutFrame
 
