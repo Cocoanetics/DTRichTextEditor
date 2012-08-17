@@ -1,0 +1,11 @@
+//
+// Prefix header for all source files of the Static Library and Framework targets in the 'DTCoreText' project
+//
+
+#ifdef __OBJC__
+
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+#import <CoreText/CoreText.h>
+    
+#endif

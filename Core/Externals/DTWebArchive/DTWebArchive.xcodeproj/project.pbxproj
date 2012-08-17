@@ -259,7 +259,7 @@
 		A7697CC61410CC6400F25129 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0440;
 			};
 			buildConfigurationList = A7697CC91410CC6400F25129 /* Build configuration list for PBXProject "DTWebArchive" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -354,6 +354,7 @@
 				DSTROOT = /tmp/DTWebArchive.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Core/DTWebArchive-Prefix.pch";
+				GCC_THUMB_SUPPORT = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = DTWebArchive;
 				SKIP_INSTALL = YES;
@@ -371,6 +372,7 @@
 				DSTROOT = /tmp/DTWebArchive.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Core/DTWebArchive-Prefix.pch";
+				GCC_THUMB_SUPPORT = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = DTWebArchive;
 				SKIP_INSTALL = YES;
