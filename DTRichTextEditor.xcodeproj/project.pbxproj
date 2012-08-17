@@ -23,6 +23,9 @@
 		A7470F8414E2A6D90015477A /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7235AA61487A9C100C9F926 /* libDTWebArchive.a */; };
 		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
 		A7914A78153EF6BB00F6CC86 /* icon_smile.gif in Resources */ = {isa = PBXBuildFile; fileRef = A7914A77153EF6BB00F6CC86 /* icon_smile.gif */; };
+		A79646E315DEA0EE0091CD4C /* NSData+DTBase64.h in Resources */ = {isa = PBXBuildFile; fileRef = A79646E015DEA0EE0091CD4C /* NSData+DTBase64.h */; };
+		A79646E415DEA0EE0091CD4C /* NSString+Paragraphs.h in Resources */ = {isa = PBXBuildFile; fileRef = A79646E115DEA0EE0091CD4C /* NSString+Paragraphs.h */; };
+		A79646E515DEA0EE0091CD4C /* UIDevice+DTSimpleVersion.h in Resources */ = {isa = PBXBuildFile; fileRef = A79646E215DEA0EE0091CD4C /* UIDevice+DTSimpleVersion.h */; };
 		A7D142081508DCC000ACC855 /* DTRichTextEditorAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351571486772100F4C766 /* DTRichTextEditorAppDelegate.m */; };
 		A7D142091508DCC000ACC855 /* DTRichTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351591486772100F4C766 /* DTRichTextEditorViewController.m */; };
 		A7D545E815D567BC00711CA1 /* DTAttributedTextCell.h in Resources */ = {isa = PBXBuildFile; fileRef = A7D545E215D567BC00711CA1 /* DTAttributedTextCell.h */; };
@@ -349,6 +352,9 @@
 		A76F898113C73421007B37C0 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		A7840CCC1524A98200FA9F9D /* DTLoupe.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = DTLoupe.bundle; sourceTree = "<group>"; };
 		A7914A77153EF6BB00F6CC86 /* icon_smile.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = icon_smile.gif; path = ../../Core/Externals/DTCoreText/Demo/Resources/icon_smile.gif; sourceTree = "<group>"; };
+		A79646E015DEA0EE0091CD4C /* NSData+DTBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = "NSData+DTBase64.h"; path = "DTCoreText/Core/Source/NSData+DTBase64.h"; sourceTree = "<group>"; };
+		A79646E115DEA0EE0091CD4C /* NSString+Paragraphs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = "NSString+Paragraphs.h"; path = "DTCoreText/Core/Source/NSString+Paragraphs.h"; sourceTree = "<group>"; };
+		A79646E215DEA0EE0091CD4C /* UIDevice+DTSimpleVersion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = "UIDevice+DTSimpleVersion.h"; path = "DTCoreText/Core/Source/UIDevice+DTSimpleVersion.h"; sourceTree = "<group>"; };
 		A7D545E215D567BC00711CA1 /* DTAttributedTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextCell.h; path = DTCoreText/Core/Source/DTAttributedTextCell.h; sourceTree = "<group>"; };
 		A7D545E315D567BC00711CA1 /* DTAttributedTextContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextContentView.h; path = DTCoreText/Core/Source/DTAttributedTextContentView.h; sourceTree = "<group>"; };
 		A7D545E415D567BC00711CA1 /* DTAttributedTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextView.h; path = DTCoreText/Core/Source/DTAttributedTextView.h; sourceTree = "<group>"; };
@@ -578,6 +584,9 @@
 				A7D5465D15D56A9B00711CA1 /* DTCoreTextFontDescriptor.h */,
 				A7D5465E15D56A9B00711CA1 /* DTCoreTextParagraphStyle.h */,
 				A7D5465F15D56A9B00711CA1 /* CGUtils.h */,
+				A79646E015DEA0EE0091CD4C /* NSData+DTBase64.h */,
+				A79646E115DEA0EE0091CD4C /* NSString+Paragraphs.h */,
+				A79646E215DEA0EE0091CD4C /* UIDevice+DTSimpleVersion.h */,
 			);
 			name = "Repackaged Headers (Framework)";
 			sourceTree = "<group>";
@@ -986,6 +995,9 @@
 				A7D5466C15D56A9B00711CA1 /* DTCoreTextFontDescriptor.h in Resources */,
 				A7D5466D15D56A9B00711CA1 /* DTCoreTextParagraphStyle.h in Resources */,
 				A7D5466E15D56A9B00711CA1 /* CGUtils.h in Resources */,
+				A79646E315DEA0EE0091CD4C /* NSData+DTBase64.h in Resources */,
+				A79646E415DEA0EE0091CD4C /* NSString+Paragraphs.h in Resources */,
+				A79646E515DEA0EE0091CD4C /* UIDevice+DTSimpleVersion.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
