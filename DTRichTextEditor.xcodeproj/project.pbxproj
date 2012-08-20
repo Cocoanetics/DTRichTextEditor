@@ -22,6 +22,7 @@
 		A7470F8314E2A6D90015477A /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FF8814E2939600BF8CCD /* libDTLoupe.a */; };
 		A7470F8414E2A6D90015477A /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7235AA61487A9C100C9F926 /* libDTWebArchive.a */; };
 		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
+		A784849515E2842000595102 /* NSMutableString+HTML.h in Headers */ = {isa = PBXBuildFile; fileRef = A784849415E2842000595102 /* NSMutableString+HTML.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7914A78153EF6BB00F6CC86 /* icon_smile.gif in Resources */ = {isa = PBXBuildFile; fileRef = A7914A77153EF6BB00F6CC86 /* icon_smile.gif */; };
 		A7C9EB0615DFA98500BFE033 /* DTCoreTextLayoutFrame+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A743511F1486771700F4C766 /* DTCoreTextLayoutFrame+DTRichText.m */; };
 		A7C9EB0B15DFAB0100BFE033 /* NSData+DTBase64.h in Headers */ = {isa = PBXBuildFile; fileRef = A79646E015DEA0EE0091CD4C /* NSData+DTBase64.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -316,6 +317,7 @@
 		A743515A1486772100F4C766 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A76F898113C73421007B37C0 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		A7840CCC1524A98200FA9F9D /* DTLoupe.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = DTLoupe.bundle; sourceTree = "<group>"; };
+		A784849415E2842000595102 /* NSMutableString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = "NSMutableString+HTML.h"; path = "Core/Externals/DTCoreText/Core/Source/NSMutableString+HTML.h"; sourceTree = "<group>"; };
 		A7914A77153EF6BB00F6CC86 /* icon_smile.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = icon_smile.gif; path = ../../Core/Externals/DTCoreText/Demo/Resources/icon_smile.gif; sourceTree = "<group>"; };
 		A79646E015DEA0EE0091CD4C /* NSData+DTBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSData+DTBase64.h"; path = "DTCoreText/Core/Source/NSData+DTBase64.h"; sourceTree = "<group>"; };
 		A79646E115DEA0EE0091CD4C /* NSString+Paragraphs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+Paragraphs.h"; path = "DTCoreText/Core/Source/NSString+Paragraphs.h"; sourceTree = "<group>"; };
@@ -611,6 +613,7 @@
 		A7F0C83313C326E900EBD027 = {
 			isa = PBXGroup;
 			children = (
+				A784849415E2842000595102 /* NSMutableString+HTML.h */,
 				A743511C1486771700F4C766 /* Core */,
 				A743514B1486772100F4C766 /* Demo */,
 				A7E994DC154E79CD00FEB5DB /* Documentation */,
@@ -679,6 +682,7 @@
 				A7D5466F15D56AA800711CA1 /* DTCoreText.h in Headers */,
 				A7D729251487D97C00A22742 /* DTCursorView.h in Headers */,
 				A7D729271487D97C00A22742 /* DTMutableCoreTextLayoutFrame.h in Headers */,
+				A784849515E2842000595102 /* NSMutableString+HTML.h in Headers */,
 				A7D729291487D97C00A22742 /* DTRichTextCategories.h in Headers */,
 				A7D729311487D97C00A22742 /* DTTextPosition.h in Headers */,
 				A7D729331487D97C00A22742 /* DTTextRange.h in Headers */,
