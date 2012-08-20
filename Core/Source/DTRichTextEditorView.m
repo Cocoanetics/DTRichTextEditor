@@ -76,34 +76,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 #ifdef TIMEBOMB
 #warning Timebomb enabled
-	
-	 NSTimeInterval expirationTimestamp = TIMEBOMB/1000.0;
-	 NSDate *buildDate = [NSDate dateWithTimeIntervalSince1970:expirationTimestamp];
+	// TIMEBOMB define is seconds since 1970 when the thing should stop working
+	 NSTimeInterval expirationTimestamp = TIMEBOMB;
+	 NSDate *expirationDate = [NSDate dateWithTimeIntervalSince1970:expirationTimestamp];
 	 
-/*
-	// stringification macros
-#define xstr(s) str(s)
-#define str(s) #s
-	
-	// TIMEBOMB is Jenkins build id = time
-	char *buildid = xstr(TIMEBOMB);
-	NSString *buildidStr = [NSString stringWithCString:buildid encoding:NSUTF8StringEncoding];
-	
-	// date formatter for parsing
-	NSDateFormatter *pf = [[NSDateFormatter alloc] init];
-	NSTimeZone *tz = [NSTimeZone timeZoneForSecondsFromGMT:60*60*2];
-	[pf setDateFormat:@"yyyy-MM-dd_H-m-s"];
-	[pf setTimeZone:tz];
-	
-	NSDate *buildDate = [pf dateFromString:buildidStr];
- */
-	
-	NSDateComponents *comps = [[NSDateComponents alloc] init];
-	[comps setDay:30];
-	NSCalendar *gregorian = [[NSCalendar alloc] initWithCalendarIdentifier:NSGregorianCalendar];
-	NSDate *now = [NSDate date];
-	NSDate *expirationDate = [gregorian dateByAddingComponents:comps toDate:now options:0];
-	
 	// date formatter for output
 	NSDateFormatter *df = [[NSDateFormatter alloc] init];
 	[df setTimeStyle:NSDateFormatterNoStyle];
