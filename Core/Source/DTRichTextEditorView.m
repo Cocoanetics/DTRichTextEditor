@@ -85,6 +85,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[df setTimeStyle:NSDateFormatterNoStyle];
 	[df setDateStyle:NSDateFormatterMediumStyle];
 	
+	NSDate *now = [NSDate date];
 	if ([now compare:expirationDate] == NSOrderedDescending)
 	{
 		NSLog(@"ERROR: This demo expired on %@", [df stringFromDate:expirationDate]);
