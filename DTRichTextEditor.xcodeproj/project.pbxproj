@@ -133,7 +133,7 @@
 		A7E807D515EB6CE400525855 /* NSMutableDictionary+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A743513B1486771700F4C766 /* NSMutableDictionary+DTRichText.m */; };
 		A7E807D615EB6CE700525855 /* NSMutableAttributedString+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351391486771700F4C766 /* NSMutableAttributedString+DTRichText.m */; };
 		A7E807D715EB6CE900525855 /* NSDictionary+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351371486771700F4C766 /* NSDictionary+DTRichText.m */; };
-		A7E807D915EB6F8700525855 /* NSMutableString+HTML.m in Headers */ = {isa = PBXBuildFile; fileRef = A7E807D815EB6F8700525855 /* NSMutableString+HTML.m */; settings = {ATTRIBUTES = (Public, ); }; };
+		A7E8082315EBAC2A00525855 /* NSMutableString+HTML.h in Headers */ = {isa = PBXBuildFile; fileRef = A7E8082215EBAC2900525855 /* NSMutableString+HTML.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7E82CE015D5384700BD47AB /* DTLoupeView.h in Headers */ = {isa = PBXBuildFile; fileRef = A7E82CDF15D5384700BD47AB /* DTLoupeView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7F0C84313C326E900EBD027 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84213C326E900EBD027 /* UIKit.framework */; };
 		A7F0C84513C326E900EBD027 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84413C326E900EBD027 /* Foundation.framework */; };
@@ -374,7 +374,7 @@
 		A7D729511487DAB100A22742 /* DTRichTextEditor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DTRichTextEditor-Info.plist"; sourceTree = "<group>"; };
 		A7D8FEC914E1571900BF8CCD /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTLoupe.xcodeproj; path = DTLoupeView/DTLoupe.xcodeproj; sourceTree = "<group>"; };
-		A7E807D815EB6F8700525855 /* NSMutableString+HTML.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSMutableString+HTML.m"; path = "Core/Externals/DTCoreText/Core/Source/NSMutableString+HTML.m"; sourceTree = "<group>"; };
+		A7E8082215EBAC2900525855 /* NSMutableString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = "NSMutableString+HTML.h"; path = "Core/Externals/DTCoreText/Core/Source/NSMutableString+HTML.h"; sourceTree = "<group>"; };
 		A7E82CDF15D5384700BD47AB /* DTLoupeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTLoupeView.h; path = DTLoupeView/Core/Source/DTLoupeView.h; sourceTree = "<group>"; };
 		A7E994DD154E79DA00FEB5DB /* Changelog.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = Changelog.markdown; sourceTree = "<group>"; };
 		A7F0C83E13C326E900EBD027 /* DemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -618,7 +618,7 @@
 		A7F0C83313C326E900EBD027 = {
 			isa = PBXGroup;
 			children = (
-				A7E807D815EB6F8700525855 /* NSMutableString+HTML.m */,
+				A7E8082215EBAC2900525855 /* NSMutableString+HTML.h */,
 				A743511C1486771700F4C766 /* Core */,
 				A743514B1486772100F4C766 /* Demo */,
 				A7E994DC154E79CD00FEB5DB /* Documentation */,
@@ -735,7 +735,7 @@
 				A7D546AC15D56BE600711CA1 /* NSMutableAttributedString+DTRichText.h in Headers */,
 				A7D5460F15D5687D00711CA1 /* NSMutableAttributedString+HTML.h in Headers */,
 				A7D546AD15D56BE600711CA1 /* NSMutableDictionary+DTRichText.h in Headers */,
-				A7E807D915EB6F8700525855 /* NSMutableString+HTML.m in Headers */,
+				A7E8082315EBAC2A00525855 /* NSMutableString+HTML.h in Headers */,
 				A7D5460E15D5687A00711CA1 /* NSScanner+HTML.h in Headers */,
 				A7D5467A15D56ABA00711CA1 /* NSString+CSS.h in Headers */,
 				A7D5460D15D5687700711CA1 /* NSString+HTML.h in Headers */,
