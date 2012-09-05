@@ -2609,7 +2609,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
 		
 		// make entire frament highlighted
-		[fragment toggleHighlightInRange:NSMakeRange(0, [fragment length]) color:[UIColor yellowColor]];
+		[fragment toggleHighlightInRange:NSMakeRange(0, [fragment length]) color:color];
 		
 		// replace 
 		[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];

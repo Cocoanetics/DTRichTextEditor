@@ -1,4 +1,9 @@
 
+Version 1.0.4
+
+- FIXED: toggleHighlightInRange has Yellow hard-coded.
+- ADDED: passing nil to toggleHighlightInRange does not try to add a color
+
 Version 1.0.3
 
 - FIXED: Without Keyboard drag handles should still appear to allow modifying selection for e.g. copy

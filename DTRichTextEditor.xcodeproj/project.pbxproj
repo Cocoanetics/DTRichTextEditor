@@ -374,7 +374,7 @@
 		A7D729511487DAB100A22742 /* DTRichTextEditor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DTRichTextEditor-Info.plist"; sourceTree = "<group>"; };
 		A7D8FEC914E1571900BF8CCD /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTLoupe.xcodeproj; path = DTLoupeView/DTLoupe.xcodeproj; sourceTree = "<group>"; };
-		A7E8082215EBAC2900525855 /* NSMutableString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = "NSMutableString+HTML.h"; path = "Core/Externals/DTCoreText/Core/Source/NSMutableString+HTML.h"; sourceTree = "<group>"; };
+		A7E8082215EBAC2900525855 /* NSMutableString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSMutableString+HTML.h"; path = "Core/Externals/DTCoreText/Core/Source/NSMutableString+HTML.h"; sourceTree = "<group>"; };
 		A7E82CDF15D5384700BD47AB /* DTLoupeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTLoupeView.h; path = DTLoupeView/Core/Source/DTLoupeView.h; sourceTree = "<group>"; };
 		A7E994DD154E79DA00FEB5DB /* Changelog.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = Changelog.markdown; sourceTree = "<group>"; };
 		A7F0C83E13C326E900EBD027 /* DemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };

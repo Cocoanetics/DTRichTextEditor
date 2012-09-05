@@ -308,7 +308,10 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 		}
 		else
 		{
-			[attrs setObject:(id)[color CGColor] forKey:DTBackgroundColorAttribute];
+			if (color)
+			{
+				[attrs setObject:(id)[color CGColor] forKey:DTBackgroundColorAttribute];
+			}
 		}
 		if (attrRange.location < range.location)
 		{
