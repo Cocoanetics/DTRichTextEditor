@@ -686,6 +686,34 @@
 				}
 			}
 			
+			NSNumber *superscript = [attributes objectForKey:(id)kCTSuperscriptAttributeName];
+			if (superscript)
+			{
+				NSInteger style = [superscript integerValue];
+				
+				switch (style)
+				{
+					case 1:
+					{
+						fontStyle = [fontStyle stringByAppendingString:@"vertical-align:super;"];
+						break;
+					}
+						
+					case -1:
+					{
+						fontStyle = [fontStyle stringByAppendingString:@"vertical-align:sub;"];
+						break;
+					}
+						
+					default:
+					{
+						// all other are baseline because we don't support anything else for text
+						fontStyle = [fontStyle stringByAppendingString:@"vertical-align:baseline;"];
+						
+						break;
+					}
+				}
+			}
 			
 			NSURL *url = [attributes objectForKey:DTLinkAttribute];
 			
@@ -737,6 +765,8 @@
 		}
 		while ([closingStyles count]);
 	}
+	
+	NSLog(@"%@", retString);
 	
 	return retString;
 }
@@ -812,6 +842,14 @@
 		[newAttributes setObject:CFBridgingRelease(newParagraphStyle) forKey:(id)kCTParagraphStyleAttributeName];
 	}
 	
+	// add textBlock if there's one (this has padding and background color)
+	NSArray *textBlocks = [attributes objectForKey:DTTextBlocksAttribute];
+	if (textBlocks)
+	{
+		[newAttributes setObject:textBlocks forKey:DTTextBlocksAttribute];
+	}
+	
+	// transfer list style to new attributes
 	if (listStyle)
 	{
 		[newAttributes setObject:[NSArray arrayWithObject:listStyle] forKey:DTTextListsAttribute];
@@ -840,7 +878,6 @@
 		}
 		
 		NSMutableAttributedString *tmpStr = [[NSMutableAttributedString alloc] initWithString:prefix attributes:newAttributes];
-		
 		
 		if (image)
 		{

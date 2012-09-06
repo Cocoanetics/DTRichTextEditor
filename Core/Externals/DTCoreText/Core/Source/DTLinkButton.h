@@ -37,4 +37,21 @@ extern NSString *DTLinkButtonDidHighlightNotification;
  */
 @property (nonatomic, assign) CGSize minimumHitSize;
 
+
+/**
+ A Boolean value that determines whether tapping the button causes it to show a gray rounded rectangle. Default is YES.
+ */
+@property(nonatomic) BOOL showsTouchWhenHighlighted;
+
+/**
+ The attributed string to be drawn for the link button.
+ */
+@property (nonatomic, retain) NSAttributedString *attributedString;
+
+
+/**
+ The attributed string to be drawn for the link button while it is highlighted.
+ */
+@property (nonatomic, retain) NSAttributedString *highlightedAttributedString;
+
 @end
