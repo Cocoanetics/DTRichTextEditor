@@ -65,7 +65,7 @@
 	{
 		SYNCHRONIZE_START(self.selfLock)
 		{
-			CGRect rect = UIEdgeInsetsInsetRect(self.bounds, edgeInsets);
+			CGRect rect = UIEdgeInsetsInsetRect(self.bounds, _edgeInsets);
 			rect.size.height = CGFLOAT_OPEN_HEIGHT; // necessary height set as soon as we know it.
 			
 			_layoutFrame = [[DTMutableCoreTextLayoutFrame alloc] initWithFrame:rect attributedString:_attributedString];
@@ -127,7 +127,7 @@
 	[super setFrame:frame];
 	
 	// reduce frame by edgeinsets
-	CGRect frameForLayout = UIEdgeInsetsInsetRect(frame, edgeInsets);
+	CGRect frameForLayout = UIEdgeInsetsInsetRect(frame, _edgeInsets);
 	
 	[(DTMutableCoreTextLayoutFrame *)self.layoutFrame setFrame:frameForLayout];
 	[self didChangeValueForKey:@"frame"];
