@@ -2021,25 +2021,11 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	return uiStyles;
 }
 
-
-#pragma mark Reconciling Text Position and Character Offset
-
 #pragma mark Returning the Text Input View
 - (UIView *)textInputView
 {
 	return (id)self;
 }
-
-// not needed because there is a 1:1 relationship between positions and index in string
-//- (NSInteger)characterOffsetOfPosition:(UITextPosition *)position withinRange:(UITextRange *)range
-//{
-//    
-//}
-
-
-
-
-
 
 #pragma mark Properties
 - (void)setAttributedText:(NSAttributedString *)newAttributedText
