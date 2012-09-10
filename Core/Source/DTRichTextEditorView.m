@@ -487,7 +487,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		didMove = YES;
 	}
 	
-	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:position offset:0]];
+	self.selectedTextRange = [DTTextRange emptyRangeAtPosition:position];
 	
 	[self.inputDelegate selectionDidChange:self];
 	
@@ -664,7 +664,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	if (newRange && ![newRange isEqual:_selectedTextRange])
 	{
-		[self setSelectedTextRange:newRange];
+		self.selectedTextRange = newRange;
 	}
 	
 	if (_dragMode == DTDragModeLeftHandle)
@@ -893,7 +893,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		{
 			[self hideContextMenu];
 			
-			[self setSelectedTextRange:wordRange];
+			self.selectedTextRange = wordRange;
+			
 			_showsKeyboardWhenBecomingFirstResponder = NO;
 			[self showContextMenuFromSelection];
 			_showsKeyboardWhenBecomingFirstResponder = YES;
@@ -1338,7 +1339,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		self.selectionView.showsDragHandlesForSelection = _keyboardIsShowing;
 		
-		[self setSelectedTextRange:wordRange];
+		self.selectedTextRange = wordRange;
 	}
 }
 
@@ -1346,8 +1347,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	_shouldReshowContextMenuAfterHide = YES;
 	
-	DTTextRange *fullRange = [DTTextRange textRangeFromStart:(DTTextPosition *)[self beginningOfDocument] toEnd:(DTTextPosition *)[self endOfDocument]];
-	[self setSelectedTextRange:fullRange];
+	self.selectedTextRange = [DTTextRange textRangeFromStart:self.beginningOfDocument toEnd:self.endOfDocument];
 }
 
 #pragma mark UIKeyInput Protocol
@@ -1395,7 +1395,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		DTTextRange *selectedRange = (id)self.selectedTextRange;
 		
 		[self replaceRange:selectedRange withText:text];
-		//[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[selectedRange start] offset:[text length]]];
 		// leave marking intact
 	}
 	
@@ -1420,14 +1419,12 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 			DTTextRange *delRange = [DTTextRange textRangeFromStart:delStart toEnd:delEnd];
 			
 			[self replaceRange:delRange  withText:@""];
-			//[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:delStart offset:0]];
 		}
 	}
 	else 
 	{
 		// delete selection
 		[self replaceRange:currentRange withText:nil];
-		//	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[currentRange start] offset:0]];
 	}
 	
 	// hide context menu on deleting text
@@ -1576,8 +1573,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
     // need to call extra because we control layouting
     [self setNeedsLayout];
 	
-	DTTextRange *selectedRange = [[DTTextRange alloc] initWithNSRange:rangeToSelectAfterReplace];
-	[self setSelectedTextRange:selectedRange];
+	self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterReplace];
 	
 	[self updateCursorAnimated:NO];
 	[self scrollCursorVisibleAnimated:YES];
@@ -1677,7 +1673,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		if (!currentSelection)
 		{
-			replaceRange = [DTTextRange emptyRangeAtPosition:(id)[self endOfDocument] offset:0];
+			replaceRange = [DTTextRange emptyRangeAtPosition:self.endOfDocument];
 		}
 		else 
 		{
@@ -1690,7 +1686,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[self replaceRange:replaceRange withText:markedText];
 	
 	// adjust selection
-	[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:replaceRange.start offset:[markedText length]]];
+	self.selectedTextRange = [DTTextRange emptyRangeAtPosition:replaceRange.start offset:[markedText length]];
 	
 	[self willChangeValueForKey:@"markedTextRange"];
 	
@@ -1698,7 +1694,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	DTTextPosition *startOfReplaceRange = (DTTextPosition *)replaceRange.start;
 	
 	// set new marked range
-	self.markedTextRange = [[DTTextRange alloc]  initWithNSRange:NSMakeRange(startOfReplaceRange.location, [markedText length])];
+	self.markedTextRange = [DTTextRange rangeWithNSRange:NSMakeRange(startOfReplaceRange.location, [markedText length])];
 	
 	[self updateCursorAnimated:NO];
 	
@@ -2051,13 +2047,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	// setting new text should remove all selections
 	[self unmarkText];
 	
-	// make sure that the selected text range stays valid
-	BOOL needsAdjustSelection = NO;
-	if (NSMaxRange([_selectedTextRange NSRangeValue]) > [newAttributedText length])
-	{
-		needsAdjustSelection = YES;
-	}
-	
 	if (newAttributedText)
 	{
 		NSMutableAttributedString *tmpString = [newAttributedText mutableCopy];
@@ -2077,11 +2066,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
     
     [self setNeedsLayout];
-	
-	if (needsAdjustSelection)
-	{
-		self.selectedTextRange = _selectedTextRange;
-	}
+
+	// always position cursor at the end of the text
+	self.selectedTextRange = [DTTextRange emptyRangeAtPosition:self.endOfDocument];
 }
 
 - (NSAttributedString *)attributedText
@@ -2388,7 +2375,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		return nil;
 	}
 	
-	DTTextRange *range = [[DTTextRange alloc] initWithNSRange:effectiveRange];
+	DTTextRange *range = [DTTextRange rangeWithNSRange:effectiveRange];
 	
 	if (URL)
 	{
@@ -2483,11 +2470,11 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	if (_keyboardIsShowing)
 	{
-		[self setSelectedTextRange:[DTTextRange emptyRangeAtPosition:[range start] offset:replacementLength]];
+		self.selectedTextRange = [DTTextRange emptyRangeAtPosition:[range start] offset:replacementLength];
 	}
 	else
 	{
-		[self setSelectedTextRange:nil animated:NO];
+		self.selectedTextRange = nil;
 	}
 	
 	[self updateCursorAnimated:NO];
@@ -2818,7 +2805,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	//	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
 	
 	//	styleRange.length = [fragment length];
-	self.selectedTextRange = [[DTTextRange alloc] initWithNSRange:rangeToSelectAfterwards];
+	self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
 	
 	// attachment positions might have changed
 	[self.contentView layoutSubviewsInRect:self.bounds];

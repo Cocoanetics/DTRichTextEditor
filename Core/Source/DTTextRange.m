@@ -11,6 +11,9 @@
 
 @interface DTTextRange ()
 
+- (id)initWithStart:(UITextPosition *)start end:(UITextPosition *)end;
+- (id)initWithNSRange:(NSRange)range;
+
 @end
 
 
@@ -37,6 +40,16 @@
 	DTTextPosition *newPosition = [DTTextPosition textPositionWithLocation:[(DTTextPosition *)position location] + offset];
 	
 	return [DTTextRange textRangeFromStart:newPosition toEnd:newPosition];
+}
+
++ (DTTextRange *)emptyRangeAtPosition:(UITextPosition *)position
+{
+	return [DTTextRange textRangeFromStart:position toEnd:position];
+}
+
++ (DTTextRange *)rangeWithNSRange:(NSRange)range
+{
+	return [[DTTextRange alloc] initWithNSRange:range];
 }
 
 - (id)initWithStart:(UITextPosition  *)start end:(UITextPosition *)end
