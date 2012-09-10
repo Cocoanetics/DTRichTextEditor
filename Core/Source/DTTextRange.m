@@ -19,15 +19,6 @@
 
 @implementation DTTextRange
 
-//+ (DTTextRange *)textRangeFromStartLocation:(NSInteger)start toEndLocation:(NSInteger)end
-//{
-//	DTTextRange *range = [[[DTTextRange alloc] init] autorelease];
-//	range._start = [DTTextPosition textPositionWithLocation:start];
-//	range._end = [DTTextPosition textPositionWithLocation:end];
-//	
-//	return range;
-//}
-
 + (DTTextRange *)textRangeFromStart:(UITextPosition *)start toEnd:(UITextPosition *)end
 {
 	DTTextRange *range = [[DTTextRange alloc] initWithStart:start end:end];
