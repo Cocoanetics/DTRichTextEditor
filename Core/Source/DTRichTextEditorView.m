@@ -1189,6 +1189,16 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	return NO;
 }
 
+- (void)delete:(id)sender
+{
+	if ([_selectedTextRange isEmpty])
+	{
+		return;
+	}
+	
+	[self replaceRange:_selectedTextRange withText:@""];
+}
+
 - (void)cut:(id)sender
 {
 	if ([_selectedTextRange isEmpty])
@@ -1200,7 +1210,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[self copy:sender];
 	
 	// second set is removing what was copied
-	[self replaceRange:_selectedTextRange withText:@""];
+	[self delete:sender];
 }
 
 - (void)copy:(id)sender
@@ -1339,13 +1349,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	DTTextRange *fullRange = [DTTextRange textRangeFromStart:(DTTextPosition *)[self beginningOfDocument] toEnd:(DTTextPosition *)[self endOfDocument]];
 	[self setSelectedTextRange:fullRange];
 }
-
-- (void)delete:(id)sender
-{
-	
-}
-
-
 
 #pragma mark UIKeyInput Protocol
 - (BOOL)hasText
