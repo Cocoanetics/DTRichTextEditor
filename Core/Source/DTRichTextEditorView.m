@@ -1350,7 +1350,24 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 #pragma mark UIKeyInput Protocol
 - (BOOL)hasText
 {
-	return [self.contentView.layoutFrame.attributedStringFragment length]>0;
+	// there should always be a \n with the default format
+	
+	NSAttributedString *currentContent = self.contentView.layoutFrame.attributedStringFragment;
+
+	// has to have text
+	if ([currentContent length]>1)
+	{
+		return YES;
+	}
+	
+	// only a paragraph break = no text
+	if ([[currentContent string] isEqualToString:@"\n"])
+	{
+		return NO;
+	}
+	
+	// all other scenarios: no text
+	return NO;
 }
 
 - (void)insertText:(NSString *)text

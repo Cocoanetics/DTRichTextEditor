@@ -3,6 +3,7 @@ Version 1.0.4
 
 - FIXED: toggleHighlightInRange has Yellow hard-coded.
 - ADDED: passing nil to toggleHighlightInRange does not try to add a color
+- FIXED: hasText reports YES even if only content is the default \n 
 
 Version 1.0.3
 
