@@ -1190,6 +1190,12 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	return NO;
 }
 
+- (BOOL)isEditable
+{
+	// return NO if we don't want keyboard to show e.g. context menu only on double tap
+	return _editable && _showsKeyboardWhenBecomingFirstResponder;
+}
+
 - (void)delete:(id)sender
 {
 	if ([_selectedTextRange isEmpty])
@@ -2955,12 +2961,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 	
 	return YES;
-}
-
-- (BOOL)isEditable
-{
-	// return NO if we don't want keyboard to show e.g. context menu only on double tap
-	return _editable && _showsKeyboardWhenBecomingFirstResponder;
 }
 
 @end
