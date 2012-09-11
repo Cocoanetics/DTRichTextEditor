@@ -7,6 +7,7 @@ Version 1.0.4
 - ADDED: implemented delete: for sake of completeness
 - CHANGED: moved isEditable from category to main implementation to quench warning
 - CHANGED: implemented DTTextSelectionRect and cleaned up selection handling to fix warning
+- FIXED:  crash when pasting web content from Safari into the editor
 
 Version 1.0.3
 

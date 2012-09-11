@@ -35,7 +35,7 @@
 	// base URL overrides
 	if (webArchive.mainResource.URL)
 	{
-		[localOptions setObject:webArchive.mainResource.textEncodingName forKey:NSBaseURLDocumentOption];
+		[localOptions setObject:webArchive.mainResource.URL forKey:NSBaseURLDocumentOption];
 	}
 	
 	// text encoding overrides
