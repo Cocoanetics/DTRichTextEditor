@@ -138,6 +138,10 @@
 		A7F0C84313C326E900EBD027 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84213C326E900EBD027 /* UIKit.framework */; };
 		A7F0C84513C326E900EBD027 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84413C326E900EBD027 /* Foundation.framework */; };
 		A7F0C84713C326E900EBD027 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84613C326E900EBD027 /* CoreGraphics.framework */; };
+		A7FE7FC515FF18370003723B /* DTTextSelectionRect.h in Headers */ = {isa = PBXBuildFile; fileRef = A7FE7FC315FF18370003723B /* DTTextSelectionRect.h */; };
+		A7FE7FC615FF18370003723B /* DTTextSelectionRect.h in Headers */ = {isa = PBXBuildFile; fileRef = A7FE7FC315FF18370003723B /* DTTextSelectionRect.h */; };
+		A7FE7FC715FF18370003723B /* DTTextSelectionRect.m in Sources */ = {isa = PBXBuildFile; fileRef = A7FE7FC415FF18370003723B /* DTTextSelectionRect.m */; };
+		A7FE7FC815FF18370003723B /* DTTextSelectionRect.m in Sources */ = {isa = PBXBuildFile; fileRef = A7FE7FC415FF18370003723B /* DTTextSelectionRect.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -381,6 +385,8 @@
 		A7F0C84213C326E900EBD027 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		A7F0C84413C326E900EBD027 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A7F0C84613C326E900EBD027 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		A7FE7FC315FF18370003723B /* DTTextSelectionRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTTextSelectionRect.h; sourceTree = "<group>"; };
+		A7FE7FC415FF18370003723B /* DTTextSelectionRect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTTextSelectionRect.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -474,6 +480,8 @@
 				A743512D1486771700F4C766 /* DTTextPosition.m */,
 				A743512E1486771700F4C766 /* DTTextRange.h */,
 				A743512F1486771700F4C766 /* DTTextRange.m */,
+				A7FE7FC315FF18370003723B /* DTTextSelectionRect.h */,
+				A7FE7FC415FF18370003723B /* DTTextSelectionRect.m */,
 				A74351301486771700F4C766 /* DTTextSelectionView.h */,
 				A74351311486771700F4C766 /* DTTextSelectionView.m */,
 				A74351321486771700F4C766 /* DTTiledLayerWithoutFade.h */,
@@ -677,6 +685,7 @@
 				A7D728FE1487D1B500A22742 /* DTTextRange.h in Headers */,
 				A7D729001487D1B500A22742 /* DTTextSelectionView.h in Headers */,
 				A7D729021487D1B500A22742 /* DTTiledLayerWithoutFade.h in Headers */,
+				A7FE7FC515FF18370003723B /* DTTextSelectionRect.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -741,6 +750,7 @@
 				A7D5460D15D5687700711CA1 /* NSString+HTML.h in Headers */,
 				A7C9EB0C15DFAB0600BFE033 /* NSString+Paragraphs.h in Headers */,
 				A7C9EB0D15DFAB0900BFE033 /* UIDevice+DTSimpleVersion.h in Headers */,
+				A7FE7FC615FF18370003723B /* DTTextSelectionRect.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1005,6 +1015,7 @@
 				A7D728FF1487D1B500A22742 /* DTTextRange.m in Sources */,
 				A7D729011487D1B500A22742 /* DTTextSelectionView.m in Sources */,
 				A7D729031487D1B500A22742 /* DTTiledLayerWithoutFade.m in Sources */,
+				A7FE7FC715FF18370003723B /* DTTextSelectionRect.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1028,6 +1039,7 @@
 				A7E807D715EB6CE900525855 /* NSDictionary+DTRichText.m in Sources */,
 				A7E807D615EB6CE700525855 /* NSMutableAttributedString+DTRichText.m in Sources */,
 				A7E807D515EB6CE400525855 /* NSMutableDictionary+DTRichText.m in Sources */,
+				A7FE7FC815FF18370003723B /* DTTextSelectionRect.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

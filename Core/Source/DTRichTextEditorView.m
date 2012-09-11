@@ -423,9 +423,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
         // show as a blue selection range
 		self.selectionView.style = DTTextSelectionStyleSelection;
-		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_selectedTextRange NSRangeValue]];
-		
-		[_selectionView setSelectionRectangles:rects animated:animated];
+		NSArray *textSelectionRects = [self selectionRectsForRange:_selectedTextRange];
+		[_selectionView setSelectionRectangles:textSelectionRects animated:animated];
 		
 		// no cursor
 		[_cursor removeFromSuperview];
@@ -436,8 +435,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	if (_markedTextRange)
 	{
 		self.selectionView.style = DTTextSelectionStyleMarking;
-		NSArray *rects = [self.contentView.layoutFrame  selectionRectsForRange:[_markedTextRange NSRangeValue]];
-		_selectionView.selectionRectangles = rects;
+		
+		NSArray *textSelectionRects = [self selectionRectsForRange:_markedTextRange];
+		_selectionView.selectionRectangles = textSelectionRects;
 		
 		_selectionView.dragHandlesVisible = NO;
 	}
@@ -1917,6 +1917,11 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	caretRect.origin.y = layoutLine.frame.origin.y;
 	
 	return caretRect;
+}
+
+- (NSArray *)selectionRectsForRange:(UITextRange *)range
+{
+	return [self.contentView.layoutFrame  selectionRectsForRange:[(DTTextRange *)range NSRangeValue]];
 }
 
 

@@ -8,6 +8,7 @@
 
 #import "DTTextSelectionView.h"
 #import <QuartzCore/QuartzCore.h>
+#import "DTTextSelectionRect.h"
 
 #define SELECTION_ANIMATION_DURATION 0.25
 
@@ -50,9 +51,9 @@
 	CGFloat minY = CGRectGetMinY(rect);
 	CGFloat maxY = CGRectGetMaxY(rect);
 	
-	for (NSValue *oneValue in self.selectionRectangles)
+	for (DTTextSelectionRect *oneSelectionRect in self.selectionRectangles)
 	{
-        CGRect oneRect = [oneValue CGRectValue];
+        CGRect oneRect = oneSelectionRect.rect;
 		
 		// lines before the rect
 		if (CGRectGetMaxY(oneRect)<minY)
@@ -74,7 +75,7 @@
 		
 		if (CGRectIntersectsRect(rect, oneRect))
 		{
-			[tmpArray addObject:oneValue];
+			[tmpArray addObject:oneSelectionRect];
 		}
 	}
 	
@@ -100,7 +101,7 @@
     
     for (; i<[selectionRectangles count]; i++)
     {
-        CGRect rect = [[selectionRectangles objectAtIndex:i] CGRectValue];
+        CGRect rect = [[selectionRectangles objectAtIndex:i] rect];
         
         if (i < [currentRectangleViews count])
         {
@@ -177,26 +178,36 @@
 #pragma mark Utilities
 - (CGRect)beginCaretRect
 {
-	if (![_selectionRectangles count])
-	{
-		return CGRectNull;
-	}
+	__block CGRect rect = CGRectNull;
+
+	// find the first selection rectangle the has the beginning
+	[_selectionRectangles enumerateObjectsUsingBlock:^(DTTextSelectionRect *oneTextSelectionRect, NSUInteger idx, BOOL *stop) {
+		if (oneTextSelectionRect.containsStart)
+		{
+			rect = oneTextSelectionRect.rect;
+			rect.size.width = 3.0;
+			*stop = YES;
+		}
+	}];
 	
-	CGRect rect = [[_selectionRectangles objectAtIndex:0] CGRectValue];
-	rect.size.width = 3.0;
 	return rect;
 }
 
 - (CGRect)endCaretRect
 {
-	if (![_selectionRectangles count])
-	{
-		return CGRectNull;
-	}
+	__block CGRect rect = CGRectNull;
+
+	// find the first selection rectangle from the back the has the end
+	[_selectionRectangles enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(DTTextSelectionRect *oneTextSelectionRect, NSUInteger idx, BOOL *stop) {
+		if (oneTextSelectionRect.containsEnd)
+		{
+			rect = oneTextSelectionRect.rect;
+			rect.origin.x += rect.size.width;
+			rect.size.width = 3.0;
+			*stop = YES;
+		}
+	}];
 	
-	CGRect rect = [[_selectionRectangles lastObject] CGRectValue];
-	rect.origin.x += rect.size.width;
-	rect.size.width = 3.0;
 	return rect;
 }
 
@@ -207,14 +218,12 @@
 		return CGRectNull;
 	}
 	
-	CGRect unionRect = [[_selectionRectangles objectAtIndex:0] CGRectValue];
+	CGRect unionRect = [[_selectionRectangles objectAtIndex:0] rect];
 	
 	// draw all these rectangles
-	for (NSValue *value in _selectionRectangles)
+	for (DTTextSelectionRect *oneTextSelectionRect in _selectionRectangles)
 	{
-		CGRect rect = [value CGRectValue];
-		
-		unionRect = CGRectUnion(unionRect, rect);
+		unionRect = CGRectUnion(unionRect, oneTextSelectionRect.rect);
 	}
 	
 	return unionRect;

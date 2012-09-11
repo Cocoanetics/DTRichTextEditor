@@ -5,6 +5,8 @@ Version 1.0.4
 - ADDED: passing nil to toggleHighlightInRange does not try to add a color
 - FIXED: hasText reports YES even if only content is the default \n 
 - ADDED: implemented delete: for sake of completeness
+- CHANGED: moved isEditable from category to main implementation to quench warning
+- CHANGED: implemented DTTextSelectionRect and cleaned up selection handling to fix warning
 
 Version 1.0.3
 

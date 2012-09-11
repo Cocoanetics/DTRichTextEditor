@@ -11,6 +11,7 @@
 #import "DTTextPosition.h"
 #import "DTTextRange.h"
 #import "DTCoreTextLayoutLine.h"
+#import "DTTextSelectionRect.h"
 
 @implementation DTCoreTextLayoutFrame (DTRichText)
 
@@ -82,7 +83,21 @@
                 rect = CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, line.frame.origin.x + self.frame.size.width - firstIndexRect.origin.x, line.frame.size.height);
             }
             
-            [tmpArray addObject:[NSValue valueWithCGRect:rect]];
+			// make new DTTextSelectionRect, was NSValue with CGRect before
+			DTTextSelectionRect *selectionRect = [DTTextSelectionRect textSelectionRectWithRect:rect];
+			
+			// annotate
+			if (i==firstIndexLine)
+			{
+				selectionRect.containsStart = YES;
+			}
+			
+			if (i==lastIndexLine)
+			{
+				selectionRect.containsEnd = YES;
+			}
+			
+            [tmpArray addObject:selectionRect];
         }
 	}
 	
@@ -125,8 +140,6 @@
 	
 	return closestIndex;
 }
-
-
 
 - (NSInteger)closestIndexToPoint:(CGPoint)point
 {
