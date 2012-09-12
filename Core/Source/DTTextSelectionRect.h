@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_6_0
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_5_1
 #define SELECTION_SUPER_CLASS UITextSelectionRect
 #else
 #define SELECTION_SUPER_CLASS NSObject
