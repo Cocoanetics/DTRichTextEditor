@@ -1,3 +1,6 @@
+Version 1.0.5
+- FIXED: Crash when dismissing modal view controller after loupe was shown once
+- CHANGED: Loupe is now a singleton with a dedicated UIWindow
 
 Version 1.0.4
 

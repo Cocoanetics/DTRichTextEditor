@@ -45,9 +45,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 @interface DTRichTextEditorView ()
 
-//@property (nonatomic, retain) NSMutableAttributedString *internalAttributedText;
-
-@property (nonatomic, retain) DTLoupeView *loupe;
 @property (nonatomic, retain) DTTextSelectionView *selectionView;
 
 @property (nonatomic, readwrite) UITextRange *markedTextRange;  // internal property writeable
@@ -211,9 +208,11 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	
 	if (self.isDragging || self.decelerating)
 	{
-		if ([_loupe isShowing] && _loupe.style == DTLoupeStyleCircle)
+		DTLoupeView *loupe = [DTLoupeView sharedLoupe];
+		
+		if ([loupe isShowing] && loupe.style == DTLoupeStyleCircle)
 		{
-			_loupe.seeThroughMode = YES;
+			loupe.seeThroughMode = YES;
 		}
 		
 		if ([[UIMenuController sharedMenuController] isMenuVisible])
@@ -499,6 +498,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	_touchDownPoint = touchPoint;
 	
+	DTLoupeView *loupe = [DTLoupeView sharedLoupe];
+	loupe.targetView = self.contentView;
+	
 	if (_selectionView.dragHandlesVisible)
 	{
 		if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
@@ -534,10 +536,10 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		
 		_dragCursorStartMidPoint = CGRectCenter(rect);
 		
-		self.loupe.style = DTLoupeStyleRectangleWithArrow;
-		self.loupe.magnification = 0.5;
-		self.loupe.touchPoint = loupeStartPoint;
-		[self.loupe presentLoupeFromLocation:loupeStartPoint];
+		loupe.style = DTLoupeStyleRectangleWithArrow;
+		loupe.magnification = 0.5;
+		loupe.touchPoint = loupeStartPoint;
+		[loupe presentLoupeFromLocation:loupeStartPoint];
 		
 		return;
 	}
@@ -551,11 +553,11 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		_dragCursorStartMidPoint = CGRectCenter(rect);
 		
 		
-		self.loupe.style = DTLoupeStyleRectangleWithArrow;
-		self.loupe.magnification = 0.5;
-		self.loupe.touchPoint = loupeStartPoint;
-		self.loupe.touchPointOffset = CGPointMake(0, rect.origin.y - _dragCursorStartMidPoint.y);
-		[self.loupe presentLoupeFromLocation:loupeStartPoint];
+		loupe.style = DTLoupeStyleRectangleWithArrow;
+		loupe.magnification = 0.5;
+		loupe.touchPoint = loupeStartPoint;
+		loupe.touchPointOffset = CGPointMake(0, rect.origin.y - _dragCursorStartMidPoint.y);
+		[loupe presentLoupeFromLocation:loupeStartPoint];
 		
 		return;
 	}
@@ -563,20 +565,20 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	if (_dragMode == DTDragModeCursorInsideMarking)
 	{
 		
-		self.loupe.style = DTLoupeStyleRectangleWithArrow;
-		self.loupe.magnification = 0.5;
+		loupe.style = DTLoupeStyleRectangleWithArrow;
+		loupe.magnification = 0.5;
 		
 		CGPoint loupeStartPoint = CGRectCenter(_cursor.frame);
 		
-		self.loupe.touchPoint = loupeStartPoint;
-		[self.loupe presentLoupeFromLocation:loupeStartPoint];
+		loupe.touchPoint = loupeStartPoint;
+		[loupe presentLoupeFromLocation:loupeStartPoint];
 		
 		return;
 	}
 	
 	// normal round loupe
-	self.loupe.style = DTLoupeStyleCircle;
-	self.loupe.magnification = 1.2;
+	loupe.style = DTLoupeStyleCircle;
+	loupe.magnification = 1.2;
 	
 	if (self.editable)
 	{
@@ -588,18 +590,20 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		_selectionView.dragHandlesVisible = NO;
 	}
 	
-	_loupe.touchPoint = touchPoint;
-	[_loupe presentLoupeFromLocation:touchPoint];
+	loupe.touchPoint = touchPoint;
+	[loupe presentLoupeFromLocation:touchPoint];
 	
 	
 }
 
 - (void)moveLoupeWithTouchPoint:(CGPoint)touchPoint
 {
+	DTLoupeView *loupe = [DTLoupeView sharedLoupe];
+
 	if (_dragMode == DTDragModeCursor)
 	{
-		_loupe.touchPoint = touchPoint;
-		_loupe.seeThroughMode = NO;
+		loupe.touchPoint = touchPoint;
+		loupe.seeThroughMode = NO;
 		
 		[self hideContextMenu];
 		
@@ -619,8 +623,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		[self moveCursorToPositionClosestToLocation:touchPoint];
 		
-		_loupe.touchPoint = CGRectCenter(_cursor.frame);
-		_loupe.seeThroughMode = NO;
+		loupe.touchPoint = CGRectCenter(_cursor.frame);
+		loupe.seeThroughMode = NO;
 		
 		[self hideContextMenu];
 		
@@ -671,39 +675,39 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	{
 		CGRect rect = [_selectionView beginCaretRect];
 		CGPoint point = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
-		self.loupe.touchPoint = point;
+		loupe.touchPoint = point;
 	}
 	else if (_dragMode == DTDragModeRightHandle)
 	{
 		CGRect rect = [_selectionView endCaretRect];
 		CGPoint point = CGRectCenter(rect);
-		self.loupe.touchPoint = point;
+		loupe.touchPoint = point;
 	}
-	
-	
 }
 
 - (void)dismissLoupeWithTouchPoint:(CGPoint)touchPoint
 {
+	DTLoupeView *loupe = [DTLoupeView sharedLoupe];
+
 	if (_dragMode == DTDragModeCursor || _dragMode == DTDragModeCursorInsideMarking)
 	{
 		if (self.editable)
 		{
 			if (_keyboardIsShowing)
 			{
-				[_loupe dismissLoupeTowardsLocation:self.cursor.center];
+				[loupe dismissLoupeTowardsLocation:self.cursor.center];
 				_cursor.state = DTCursorStateBlinking;
 			}
 			else
 			{
-				[_loupe dismissLoupeTowardsLocation:touchPoint];
+				[loupe dismissLoupeTowardsLocation:touchPoint];
 			}
 		}
 		else
 		{
 			CGRect rect = [_selectionView beginCaretRect];
 			CGPoint point = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
-			[_loupe dismissLoupeTowardsLocation:point];
+			[loupe dismissLoupeTowardsLocation:point];
 		}
 	}
 	else if (_dragMode == DTDragModeLeftHandle)
@@ -711,14 +715,14 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		CGRect rect = [_selectionView beginCaretRect];
 		CGPoint point = CGRectCenter(rect);
 		_shouldShowContextMenuAfterLoupeHide = YES;
-		[_loupe dismissLoupeTowardsLocation:point];
+		[loupe dismissLoupeTowardsLocation:point];
 	}
 	else if (_dragMode == DTDragModeRightHandle)
 	{
 		_shouldShowContextMenuAfterLoupeHide = YES;
 		CGRect rect = [_selectionView endCaretRect];
 		CGPoint point = CGRectCenter(rect);
-		[_loupe dismissLoupeTowardsLocation:point];
+		[loupe dismissLoupeTowardsLocation:point];
 	}
 	
 	_dragMode = DTDragModeNone;	
@@ -792,10 +796,12 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 - (void)cursorDidBlink:(NSNotification *)notification
 {
+	DTLoupeView *loupe = [DTLoupeView sharedLoupe];
+
 	// update loupe magnified image to show changed cursor
-	if ([_loupe isShowing])
+	if ([loupe isShowing])
 	{
-		[_loupe setNeedsDisplay];
+		[loupe setNeedsDisplay];
 	}
 }
 
@@ -2095,15 +2101,18 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	[self updateCursorAnimated:NO];
 }
 
-- (DTLoupeView *)loupe
-{
-	if (!_loupe)
-	{
-		_loupe = [[DTLoupeView alloc] initWithStyle:DTLoupeStyleCircle targetView:self.contentView];
-	}
-	
-	return _loupe;
-}
+//- (DTLoupeView *)loupe
+//{
+//	if (!_loupe)
+//	{
+//		_loupe = [DTLoupeView sharedLoupe];
+//		_loupe.style = DTLoupeStyleCircle;
+//		_loupe.targetView = self.contentView;
+//	}
+//	
+//	return _loupe;
+//}
+
 
 - (DTCursorView *)cursor
 {
@@ -2190,7 +2199,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 @synthesize secureTextEntry;
 //@synthesize spellCheckingType;
 
-@synthesize loupe = _loupe;
 @synthesize cursor = _cursor;
 @synthesize selectionView = _selectionView;
 

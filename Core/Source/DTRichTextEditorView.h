@@ -66,7 +66,6 @@ typedef enum
 	// not enabled, that's new as of iOS5
   //  UITextSpellCheckingType spellCheckingType;
 	
-	DTLoupeView *_loupe;
 	DTCursorView *_cursor;
 	DTTextSelectionView *_selectionView;
 	
