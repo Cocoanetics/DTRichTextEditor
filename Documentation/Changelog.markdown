@@ -1,6 +1,7 @@
 Version 1.0.5
 - FIXED: Crash when dismissing modal view controller after loupe was shown once
 - CHANGED: Loupe is now a singleton with a dedicated UIWindow
+- FIXED: background-color attribute is no longer inherited from non-inline parent tag
 
 Version 1.0.4
 
