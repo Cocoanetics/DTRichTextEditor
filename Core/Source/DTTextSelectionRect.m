@@ -52,7 +52,7 @@
 + (id <DTTextSelectionRect>)textSelectionRectWithRect:(CGRect)rect
 {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_5_1
-	if (NSStringFromClass([UITextSelectionRect class]))
+	if ([UITextSelectionRect class])
 	{
 		return [[DTTextSelectionRectDerived alloc] initWithRect:rect];
 	}
