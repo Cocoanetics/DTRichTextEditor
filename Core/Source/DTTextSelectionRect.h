@@ -8,13 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_5_1
-#define SELECTION_SUPER_CLASS UITextSelectionRect
-#else
-#define SELECTION_SUPER_CLASS NSObject
-#endif
+@class DTTextSelectionRect;
 
-@interface DTTextSelectionRect : SELECTION_SUPER_CLASS
+@protocol DTTextSelectionRect <NSObject>
 
 @property (nonatomic, assign) CGRect rect;
 @property (nonatomic, assign) UITextWritingDirection writingDirection;
@@ -22,6 +18,19 @@
 @property (nonatomic, assign) BOOL containsEnd; // Returns YES if the rect contains the end of the selection.
 @property (nonatomic, assign) BOOL isVertical; // Returns YES if the rect is for vertically oriented text.
 
-+ (DTTextSelectionRect *)textSelectionRectWithRect:(CGRect)rect;
+@end
+
+
+// on iOS 6 there is a new UITextSelectionRect class we want to be a subclass of
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_5_1
+@interface DTTextSelectionRectDerived : UITextSelectionRect <DTTextSelectionRect>
+@end
+#endif
+
+
+@interface DTTextSelectionRect : NSObject <DTTextSelectionRect>
+
++ (id <DTTextSelectionRect>)textSelectionRectWithRect:(CGRect)rect;
 
 @end
+
