@@ -208,6 +208,13 @@
 			remoteGlobalIDString = A7D8FEE314E1693300BF8CCD;
 			remoteInfo = "Static Library";
 		};
+		A7D649AC16359C9A002166D2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A70F11DD148632CD009202BF;
+			remoteInfo = "Static Library";
+		};
 		A7D729211487D5DD00A22742 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */;
@@ -768,6 +775,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A7D649AD16359C9A002166D2 /* PBXTargetDependency */,
 				A79646B115DE9D5E0091CD4C /* PBXTargetDependency */,
 				A7D729221487D5DD00A22742 /* PBXTargetDependency */,
 			);
@@ -1085,6 +1093,11 @@
 			isa = PBXTargetDependency;
 			name = "Static Library";
 			targetProxy = A79646B015DE9D5E0091CD4C /* PBXContainerItemProxy */;
+		};
+		A7D649AD16359C9A002166D2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Static Library";
+			targetProxy = A7D649AC16359C9A002166D2 /* PBXContainerItemProxy */;
 		};
 		A7D729221487D5DD00A22742 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
