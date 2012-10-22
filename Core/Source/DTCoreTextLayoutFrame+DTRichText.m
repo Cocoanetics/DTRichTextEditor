@@ -64,25 +64,25 @@
 		NSInteger lastInRange = range.location + range.length;
 		
 		NSInteger firstIndexInLine = MIN(MAX(range.location, firstIndex), lastInRange);
-        
+		
 		CGRect firstIndexRect = [self cursorRectAtIndex:firstIndexInLine];
 		
 		CGRect rect;
 		
-        if (lastIndex > range.location)
-        {
-            if (lastIndex < lastInRange)
-            {
-                // in same line
-                CGRect lastIndexRect = [self cursorRectAtIndex:lastIndex];
-                rect =  CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, lastIndexRect.origin.x - firstIndexRect.origin.x, line.frame.size.height);
-            }
-            else 
-            {
-                // ending after this line
-                rect = CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, line.frame.origin.x + self.frame.size.width - firstIndexRect.origin.x, line.frame.size.height);
-            }
-            
+		if (lastIndex > range.location)
+		{
+			if (lastIndex < lastInRange)
+			{
+				// in same line
+				CGRect lastIndexRect = [self cursorRectAtIndex:lastIndex];
+				rect =  CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, lastIndexRect.origin.x - firstIndexRect.origin.x, line.frame.size.height);
+			}
+			else
+			{
+				// ending after this line
+				rect = CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, line.frame.origin.x + self.frame.size.width - firstIndexRect.origin.x, line.frame.size.height);
+			}
+			
 			// make new DTTextSelectionRect, was NSValue with CGRect before
 			DTTextSelectionRect *selectionRect = [DTTextSelectionRect textSelectionRectWithRect:rect];
 			
@@ -97,8 +97,8 @@
 				selectionRect.containsEnd = YES;
 			}
 			
-            [tmpArray addObject:selectionRect];
-        }
+			[tmpArray addObject:selectionRect];
+		}
 	}
 	
 	return [NSArray arrayWithArray:tmpArray];

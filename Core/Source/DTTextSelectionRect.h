@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 Cocoanetics. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 @class DTTextSelectionRect;
 
 @protocol DTTextSelectionRect <NSObject>
