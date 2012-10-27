@@ -1265,27 +1265,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 	
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	//	
-	NSLog(@"%@", [pasteboard pasteboardTypes]);
-	//	
-	//	
-	//	NSData *data = [pasteboard dataForPasteboardType:@"Apple Web Archive pasteboard type"];
-	//	
-	//	NSString *documentsDirectory = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-	//	NSString *path = [documentsDirectory stringByAppendingPathComponent:@"output.data"];
-	//	[data writeToFile:path atomically:YES];
-	
-	//NSLog(@"%@", data);
 	
 	UIImage *image = [pasteboard image];
-	
-	//	if (image)
-	//	{
-	//		NSAttributedString *tmpString = [NSAttributedString attributedStringWithImage:image maxDisplaySize:_maxImageDisplaySize];
-	//		[self replaceRange:_selectedTextRange withText:tmpString];
-	//
-	//		return;
-	//	}
 	
 	if (image)
 	{
@@ -1468,7 +1449,18 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 {
 	NSParameterAssert(range);
 	
+	NSMutableAttributedString *attributedString = (NSMutableAttributedString *)self.contentView.layoutFrame.attributedStringFragment;
+	NSString *string = [attributedString string];
+	
 	NSRange myRange = [range NSRangeValue];
+	
+	// extend range to include part of composed character sequences as well
+	NSRange composedRange = [string rangeOfComposedCharacterSequenceAtIndex:myRange.location];
+	
+	if (composedRange.location<myRange.location)
+	{
+		myRange = NSUnionRange(myRange, composedRange);
+	}
 	
 	NSRange rangeToSelectAfterReplace = NSMakeRange(myRange.location + [text length], 0);
 	
@@ -1499,9 +1491,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 		// need to replace attributes with typing attributes
 		text = [[NSAttributedString alloc] initWithString:text attributes:typingAttributes];
 	}
-	
-	NSMutableAttributedString *attributedString = (NSMutableAttributedString *)self.contentView.layoutFrame.attributedStringFragment;
-	NSString *string = [attributedString string];
 	
 	// if we are in a list and just entered NL then we need appropriate list prefix
 	if (effectiveList && newlineEntered)

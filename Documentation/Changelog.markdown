@@ -1,3 +1,8 @@
+Version 1.0.6
+- FIXED: Crash when selection ends at beginning of line (introduced in 1.0.5)
+- CHANGED: Removed unnecessary logging of pasteboard types on paste
+- FIXED: Hitting backspace with cursor right of an Emoji would only delete half of the composed character sequence resulting in an extra glyph showing up
+
 Version 1.0.5
 - FIXED: Crash when dismissing modal view controller after loupe was shown once
 - CHANGED: Loupe is now a singleton with a dedicated UIWindow

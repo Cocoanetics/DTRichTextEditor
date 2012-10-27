@@ -46,7 +46,6 @@
 	NSInteger lastIndex = range.location + range.length;
 	NSInteger lastIndexLine = [self lineIndexForGlyphIndex:lastIndex];
 	
-	
 	NSMutableArray *tmpArray = [NSMutableArray array];
     
 	
@@ -69,7 +68,7 @@
 		
 		CGRect rect;
 		
-		if (lastIndex > range.location)
+		if (lastIndex >= range.location)
 		{
 			if (lastIndex < lastInRange)
 			{
