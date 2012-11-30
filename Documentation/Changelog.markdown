@@ -1,3 +1,6 @@
+Version 1.0.7
+- FIXED: Crash when selection goes beyond a paragraph, somehow left over from 1.0.6
+
 Version 1.0.6
 - FIXED: Crash when selection ends at beginning of line (introduced in 1.0.5)
 - CHANGED: Removed unnecessary logging of pasteboard types on paste

@@ -68,7 +68,7 @@
 		
 		CGRect rect;
 		
-		if (lastIndex >= range.location)
+		if (lastIndex > range.location)
 		{
 			if (lastIndex < lastInRange)
 			{
@@ -85,22 +85,22 @@
 			// make new DTTextSelectionRect, was NSValue with CGRect before
 			DTTextSelectionRect *selectionRect = [DTTextSelectionRect textSelectionRectWithRect:rect];
 			
-			// annotate
-			if (i==firstIndexLine)
-			{
-				selectionRect.containsStart = YES;
-			}
-			
-			if (i==lastIndexLine)
-			{
-				selectionRect.containsEnd = YES;
-			}
-			
 			[tmpArray addObject:selectionRect];
 		}
 	}
 	
-	return [NSArray arrayWithArray:tmpArray];
+    if ([tmpArray count])
+    {
+        DTTextSelectionRect *firstSelection = [tmpArray objectAtIndex:0];
+        firstSelection.containsStart = YES;
+        
+        DTTextSelectionRect *lastSelection = [tmpArray lastObject];
+        lastSelection.containsEnd = YES;
+        
+        return [NSArray arrayWithArray:tmpArray];
+    }
+    
+    return nil;
 }
 
 - (NSInteger)indexForPositionUpwardsFromIndex:(NSInteger)index offset:(NSInteger)offset
