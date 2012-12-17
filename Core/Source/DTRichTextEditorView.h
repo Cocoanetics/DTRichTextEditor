@@ -31,72 +31,17 @@ typedef enum
 	DTDragModeCursorInsideMarking
 } DTDragMode;
 
+/**
+ DTRichTextEditorView is a subclass of UIScrollView and offers rich text edtiting capabilities. It has a single content view of type DTRichTextEditorContentView which is repsonsible for displaying the rich text.
+ 
+ 
+ 
+ 
+ */
 
-@interface DTRichTextEditorView : DTAttributedTextView <UITextInputTraits, UITextInput, DTAttributedTextContentViewDelegate, UIGestureRecognizerDelegate>
-{
-	// customization options available as properties
-	BOOL _editable;
-	BOOL _replaceParagraphsWithLineFeeds;
-	BOOL _canInteractWithPasteboard;
 
-	UIView *_inputView;
-	UIView *_inputAccessoryView;
-	
-	// private stuff
-//	NSMutableAttributedString *_internalAttributedText;
-	
-	id<UITextInputTokenizer> tokenizer;
-	__unsafe_unretained id<UITextInputDelegate> inputDelegate;
-	NSDictionary *markedTextStyle;
-	
-	DTTextRange *_selectedTextRange;
-	DTTextRange *_markedTextRange;
-    
-    UITextStorageDirection _selectionAffinity;
-	
-	// UITextInputTraits
-	UITextAutocapitalizationType autocapitalizationType; // default is UITextAutocapitalizationTypeSentences
-	UITextAutocorrectionType autocorrectionType;         // default is UITextAutocorrectionTypeDefault
-	BOOL enablesReturnKeyAutomatically;                  // default is NO
-	UIKeyboardAppearance keyboardAppearance;             // default is UIKeyboardAppearanceDefault
-	UIKeyboardType keyboardType;                         // default is UIKeyboardTypeDefault
-	UIReturnKeyType returnKeyType;                       // default is UIReturnKeyDefault (See note under UIReturnKeyType enum)
-    BOOL secureTextEntry;                                // default is NO
-	
-	// not enabled, that's new as of iOS5
-  //  UITextSpellCheckingType spellCheckingType;
-	
-	DTCursorView *_cursor;
-	DTTextSelectionView *_selectionView;
-	
-	
-	DTDragMode _dragMode;
-	BOOL _shouldReshowContextMenuAfterHide;
-	BOOL _shouldShowContextMenuAfterLoupeHide;
-	BOOL _shouldShowContextMenuAfterMovementEnded;
-	
-	BOOL _showsKeyboardWhenBecomingFirstResponder;
-	BOOL _keyboardIsShowing;
-	
-	CGPoint _dragCursorStartMidPoint;
-	CGPoint _touchDownPoint;
-	NSDictionary *_overrideInsertionAttributes;
-	
-	UITapGestureRecognizer *tapGesture;
-	UITapGestureRecognizer *doubleTapGesture;
-	UILongPressGestureRecognizer *longPressGesture;
-	UIPanGestureRecognizer *panGesture;
-	
-	BOOL _contextMenuVisible;
-    NSTimeInterval _lastCursorMovementTimestamp;
-	
-	// overrides
-	CGSize _maxImageDisplaySize;
-	NSString *_defaultFontFamily;
-	NSURL *_baseURL;
-	CGFloat _textSizeMultiplier;
-}
 
+@interface DTRichTextEditorView : DTAttributedTextView <UITextInputTraits, UITextInput>
 
 @property(nonatomic,getter=isEditable) BOOL editable;
 @property(nonatomic, assign) BOOL replaceParagraphsWithLineFeeds;

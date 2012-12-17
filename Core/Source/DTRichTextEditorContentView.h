@@ -8,17 +8,24 @@
 
 #import "DTAttributedTextContentView.h"
 
-
-
+/**
+ This class acts as the content view of DTRichTextEditorView which is a scroll view.
+ 
+ It is a subclass of DTAttributedTextContentView and adds mutability of the text and incremental layouting.
+ */
 @interface DTRichTextEditorContentView : DTAttributedTextContentView
-{
-	BOOL _needsRemoveObsoleteAttachmentViews;
-}
 
+/**
+ Recalculates the layout for the paragraphs covered by the given range.
+ @param range The string strange to relayout.
+ */
 - (void)relayoutTextInRange:(NSRange)range;
-- (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text;
 
-// removes attachments after next layout
-@property (nonatomic) BOOL needsRemoveObsoleteAttachmentViews; 
+/**
+ Replaces the attributed text in the given range.
+ @param range The string range to replace
+ @param text The replacement text
+ */
+- (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text;
 
 @end

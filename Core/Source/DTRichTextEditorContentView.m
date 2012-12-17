@@ -24,38 +24,37 @@
 
 
 @implementation DTRichTextEditorContentView
+{
+	NSUndoManager *_undoManager;
+}
 
 - (void)relayoutText
 {
-	//SYNCHRONIZE_START(self.selfLock)
+	// Make sure we actually have a superview before attempting to relayout the text.
+	if (self.superview)
 	{
-		// Make sure we actually have a superview before attempting to relayout the text.
-		if (self.superview) 
+		// update the layout
+		//[(DTMutableCoreTextLayoutFrame*)self.layoutFrame relayoutText];
+		
+		// remove all links because they might have merged or split
+		[self removeAllCustomViewsForLinks];
+		
+		if (_attributedString)
 		{
-			// update the layout
-			//[(DTMutableCoreTextLayoutFrame*)self.layoutFrame relayoutText];
+			// triggers new layout
+			[self sizeToFit];
+			//            CGSize neededSize = [self sizeThatFits:self.bounds.size];
 			
-			// remove all links because they might have merged or split
-			[self removeAllCustomViewsForLinks];
-			
-			if (_attributedString)
-			{
-				// triggers new layout
-				[self sizeToFit];
-				//            CGSize neededSize = [self sizeThatFits:self.bounds.size];
-				
-				// set frame to fit text preserving origin
-				// call super to avoid endless loop
-				//            [self willChangeValueForKey:@"frame"];
-				//            super.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, neededSize.width, neededSize.height);
-				//            [self didChangeValueForKey:@"frame"];
-			}
-			
-			[self setNeedsDisplay];
-			[self setNeedsLayout];
+			// set frame to fit text preserving origin
+			// call super to avoid endless loop
+			//            [self willChangeValueForKey:@"frame"];
+			//            super.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, neededSize.width, neededSize.height);
+			//            [self didChangeValueForKey:@"frame"];
 		}
+		
+		[self setNeedsDisplay];
+		[self setNeedsLayout];
 	}
-	//SYNCHRONIZE_END(self.selfLock)
 }
 
 
@@ -97,6 +96,9 @@
 			
 			_attributedString = layoutFrame.attributedStringFragment;
 			
+			// remove old actions from the undo manager
+			[self.undoManager removeAllActions];
+			
 			// new layout invalidates all positions for custom views
 			[self removeAllCustomViews];
 			
@@ -109,16 +111,6 @@
 	{
 		[self relayoutText];
 	}
-}
-
-- (void)layoutSubviews
-{
-	if (_needsRemoveObsoleteAttachmentViews)
-	{
-		_needsRemoveObsoleteAttachmentViews = NO;
-	}	
-	
-	[super layoutSubviews];
 }
 
 - (void)setFrame:(CGRect)frame
@@ -142,9 +134,6 @@
 	{
 		[layoutFrame relayoutTextInRange:range];
 		
-		// remove attachment custom views that are no longer needed
-		[self setNeedsRemoveObsoleteAttachmentViews:YES];
-		
 		// remove all link custom views
 		[self removeAllCustomViewsForLinks];
 	}
@@ -154,9 +143,9 @@
 	[self setNeedsDisplay];
 	
 	// size might have changed
-    layoutFrame.shouldRebuildLines = NO;
+	layoutFrame.shouldRebuildLines = NO;
 	[self sizeToFit];
-    layoutFrame.shouldRebuildLines = YES;
+	layoutFrame.shouldRebuildLines = YES;
 }
 
 - (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text
@@ -167,9 +156,6 @@
 	{
 		[layoutFrame replaceTextInRange:range withText:text];
 		
-		// remove attachment custom views that are no longer needed
-		[self setNeedsRemoveObsoleteAttachmentViews:YES];
-		
 		// remove all link custom views
 		[self removeAllCustomViewsForLinks];
 	}
@@ -179,9 +165,9 @@
 	[self setNeedsDisplay];
 	
 	// size might have changed
-    layoutFrame.shouldRebuildLines = NO;
+	layoutFrame.shouldRebuildLines = NO;
 	[self sizeToFit];
-    layoutFrame.shouldRebuildLines = YES;
+	layoutFrame.shouldRebuildLines = YES;
 }
 
 - (void)removeAttachmentCustomViewsNoLongerInLayoutFrame
@@ -215,8 +201,16 @@
 	
 }
 
-#pragma mark Properties
+#pragma mark UIResponder
 
-@synthesize needsRemoveObsoleteAttachmentViews = _needsRemoveObsoleteAttachmentViews;
+- (NSUndoManager *)undoManager
+{
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		_undoManager = [[NSUndoManager alloc] init];
+	});
+	
+	return _undoManager;
+}
 
 @end

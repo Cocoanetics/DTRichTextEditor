@@ -43,12 +43,11 @@
 NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextEditorTextDidBeginEditingNotification";
 
 
-@interface DTRichTextEditorView ()
+// private extensions to the public interface
+@interface DTRichTextEditorView () <DTAttributedTextContentViewDelegate, UIGestureRecognizerDelegate>
 
 @property (nonatomic, retain) DTTextSelectionView *selectionView;
-
 @property (nonatomic, readwrite) UITextRange *markedTextRange;  // internal property writeable
-
 @property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
 @property (nonatomic, retain) DTMutableCoreTextLayoutFrame *mutableLayoutFrame;
 
@@ -58,12 +57,74 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 
 @end
 
-
-
 @implementation DTRichTextEditorView
 {
+	// customization options available as properties
+	BOOL _editable;
+	BOOL _replaceParagraphsWithLineFeeds;
+	BOOL _canInteractWithPasteboard;
+	
+	UIView *_inputView;
+	UIView *_inputAccessoryView;
+	
+	// private stuff
+	id<UITextInputTokenizer> tokenizer;
+	__unsafe_unretained id<UITextInputDelegate> inputDelegate;
+	NSDictionary *markedTextStyle;
+	
+	DTTextRange *_selectedTextRange;
+	DTTextRange *_markedTextRange;
+	
+	UITextStorageDirection _selectionAffinity;
+	
+	// UITextInputTraits
+	UITextAutocapitalizationType autocapitalizationType; // default is UITextAutocapitalizationTypeSentences
+	UITextAutocorrectionType autocorrectionType;         // default is UITextAutocorrectionTypeDefault
+	BOOL enablesReturnKeyAutomatically;                  // default is NO
+	UIKeyboardAppearance keyboardAppearance;             // default is UIKeyboardAppearanceDefault
+	UIKeyboardType keyboardType;                         // default is UIKeyboardTypeDefault
+	UIReturnKeyType returnKeyType;                       // default is UIReturnKeyDefault (See note under UIReturnKeyType enum)
+	BOOL secureTextEntry;                                // default is NO
+	
+	// not enabled, that's new as of iOS5
+	//  UITextSpellCheckingType spellCheckingType;
+	
+	DTCursorView *_cursor;
+	DTTextSelectionView *_selectionView;
+	
+	// internal state
+	DTDragMode _dragMode;
+	BOOL _shouldReshowContextMenuAfterHide;
+	BOOL _shouldShowContextMenuAfterLoupeHide;
+	BOOL _shouldShowContextMenuAfterMovementEnded;
+	
+	BOOL _showsKeyboardWhenBecomingFirstResponder;
+	BOOL _keyboardIsShowing;
+	
+	CGPoint _dragCursorStartMidPoint;
+	CGPoint _touchDownPoint;
+	NSDictionary *_overrideInsertionAttributes;
+
+	BOOL _contextMenuVisible;
 	BOOL _cursorIsShowing;
-    NSDictionary *_textDefaults;
+	NSTimeInterval _lastCursorMovementTimestamp;
+
+	// gesture recognizers
+	UITapGestureRecognizer *tapGesture;
+	UITapGestureRecognizer *doubleTapGesture;
+	UILongPressGestureRecognizer *longPressGesture;
+	UIPanGestureRecognizer *panGesture;
+	
+	// overrides
+	CGSize _maxImageDisplaySize;
+	NSString *_defaultFontFamily;
+	NSURL *_baseURL;
+	CGFloat _textSizeMultiplier;
+
+	NSDictionary *_textDefaults;
+	
+	// the undo manager
+	NSUndoManager *_undoManager;
 }
 
 #pragma mark -
@@ -1343,6 +1404,17 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	self.selectedTextRange = [DTTextRange textRangeFromStart:self.beginningOfDocument toEnd:self.endOfDocument];
 }
 
+// creates an undo manager lazily in response to a shake gesture or first edit action
+- (NSUndoManager *)undoManager
+{
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		_undoManager = [[NSUndoManager alloc] init];
+	});
+	
+	return _undoManager;
+}
+
 #pragma mark UIKeyInput Protocol
 - (BOOL)hasText
 {
@@ -1452,6 +1524,9 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	NSMutableAttributedString *attributedString = (NSMutableAttributedString *)self.contentView.layoutFrame.attributedStringFragment;
 	NSString *string = [attributedString string];
 	
+	// remember selection/cursor before input
+	UITextRange *textRangeBeforeChange = self.selectedTextRange;
+	
 	NSRange myRange = [range NSRangeValue];
 	
 	// extend range to include part of composed character sequences as well
@@ -1558,9 +1633,33 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 			}
 		}
 	}
+
+	// ---
 	
+	NSUndoManager *undoManager = self.undoManager;
+	[undoManager beginUndoGrouping];
+
+	// restore selection/cursor together with the previous text
+	// the replaceRange:withText: also modifies the selection so we need to restore this first
+	[[undoManager prepareWithInvocationTarget:self] setSelectedTextRange:textRangeBeforeChange];
+	
+	// this is the string to restore if we undo
+	NSAttributedString *attributedStringBeingReplaced = [attributedString attributedSubstringFromRange:myRange];
+	
+	// the range that the replacement will have afterwards
+	NSRange replacedRange = NSMakeRange(myRange.location, [text length]);
+	DTTextRange *replacedTextRange = [DTTextRange rangeWithNSRange:replacedRange];
+	
+	[[undoManager prepareWithInvocationTarget:self] replaceRange:replacedTextRange withText:(id)attributedStringBeingReplaced];
+
+	// do the actual replacement
 	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:myRange withText:text];
+
+	[undoManager setActionName:@"Typing"];
+	[undoManager endUndoGrouping];
 	
+	// ----
+
 	self.contentSize = self.contentView.frame.size;
 	
     // if it's just one character remaining then set text defaults on this
@@ -1627,6 +1726,8 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	self.overrideInsertionAttributes = nil;
 	
 	[self didChangeValueForKey:@"selectedTextRange"];
+	
+	NSLog(@"%@", _selectedTextRange);
 }
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange

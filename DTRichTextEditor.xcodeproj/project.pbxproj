@@ -11,6 +11,7 @@
 		A704273613C37EFE00EE0776 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273513C37EFE00EE0776 /* CoreText.framework */; };
 		A704273813C37F0500EE0776 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273713C37F0500EE0776 /* QuartzCore.framework */; };
 		A704273A13C37F0B00EE0776 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273913C37F0B00EE0776 /* MediaPlayer.framework */; };
+		A7402D4B167F4E5200BE0AAF /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7402D4A167F4E5200BE0AAF /* Default-568h@2x.png */; };
 		A743515C1486772100F4C766 /* 43-film-roll.png in Resources */ = {isa = PBXBuildFile; fileRef = A743514F1486772100F4C766 /* 43-film-roll.png */; };
 		A743515D1486772100F4C766 /* 43-film-roll@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A74351501486772100F4C766 /* 43-film-roll@2x.png */; };
 		A743515F1486772100F4C766 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A74351521486772100F4C766 /* Icon.png */; };
@@ -294,6 +295,7 @@
 		A704273913C37F0B00EE0776 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTCoreText.xcodeproj; path = DTCoreText/DTCoreText.xcodeproj; sourceTree = "<group>"; };
 		A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTWebArchive.xcodeproj; path = DTWebArchive/DTWebArchive.xcodeproj; sourceTree = "<group>"; };
+		A7402D4A167F4E5200BE0AAF /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		A743511E1486771700F4C766 /* DTCoreTextLayoutFrame+DTRichText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTCoreTextLayoutFrame+DTRichText.h"; sourceTree = "<group>"; };
 		A743511F1486771700F4C766 /* DTCoreTextLayoutFrame+DTRichText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DTCoreTextLayoutFrame+DTRichText.m"; sourceTree = "<group>"; };
 		A74351201486771700F4C766 /* DTCursorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTCursorView.h; sourceTree = "<group>"; };
@@ -636,6 +638,7 @@
 		A7F0C83313C326E900EBD027 = {
 			isa = PBXGroup;
 			children = (
+				A7402D4A167F4E5200BE0AAF /* Default-568h@2x.png */,
 				A743511C1486771700F4C766 /* Core */,
 				A743514B1486772100F4C766 /* Demo */,
 				A7E994DC154E79CD00FEB5DB /* Documentation */,
@@ -835,7 +838,7 @@
 		A7F0C83513C326E900EBD027 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0440;
+				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = Cocoanetics;
 			};
 			buildConfigurationList = A7F0C83813C326E900EBD027 /* Build configuration list for PBXProject "DTRichTextEditor" */;
@@ -970,6 +973,7 @@
 				A74351601486772100F4C766 /* Icon@2x.png in Resources */,
 				A7D8FF9414E294D600BF8CCD /* DTLoupe.bundle in Resources */,
 				A7914A78153EF6BB00F6CC86 /* icon_smile.gif in Resources */,
+				A7402D4B167F4E5200BE0AAF /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
