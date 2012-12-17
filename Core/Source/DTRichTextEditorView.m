@@ -1288,7 +1288,7 @@ typedef enum
 	}
 	
 	[self replaceRange:_selectedTextRange withText:@""];
-	[self.undoManager setActionName:@"Delete"];
+	[self.undoManager setActionName:NSLocalizedString(@"Delete", @"Action that deletes text")];
 }
 
 - (void)cut:(id)sender
@@ -1304,7 +1304,7 @@ typedef enum
 	// second set is removing what was copied
 	[self delete:sender];
 	
-	[self.undoManager setActionName:@"Cut"];
+	[self.undoManager setActionName:NSLocalizedString(@"Cut", @"Undo Action that cuts text")];
 }
 
 - (void)copy:(id)sender
@@ -1368,7 +1368,7 @@ typedef enum
 		attachment.displaySize = displaySize;
 		
 		[self replaceRange:_selectedTextRange withAttachment:attachment inParagraph:NO];
-		[self.undoManager setActionName:@"Paste"];
+		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
 		
 		return;
 	}
@@ -1379,7 +1379,7 @@ typedef enum
 	{
 		NSAttributedString *tmpString = [NSAttributedString attributedStringWithURL:url];
 		[self replaceRange:_selectedTextRange withText:tmpString];
-		[self.undoManager setActionName:@"Paste"];
+		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
 		
 		return;
 	}
@@ -1392,7 +1392,7 @@ typedef enum
 		NSAttributedString *attrString = [[NSAttributedString alloc] initWithWebArchive:webArchive options:[self textDefaults] documentAttributes:NULL];
 		
 		[self replaceRange:_selectedTextRange withText:attrString];
-		[self.undoManager setActionName:@"Paste"];
+		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
 		
 		return;
 	}
@@ -1402,7 +1402,7 @@ typedef enum
 	if (string)
 	{
 		[self replaceRange:_selectedTextRange withText:string];
-		[self.undoManager setActionName:@"Paste"];
+		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
 	}
 }
 
@@ -1679,7 +1679,10 @@ typedef enum
 	// do the actual replacement
 	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:myRange withText:text];
 
-	[undoManager setActionName:@"Typing"];
+	if (![undoManager isUndoing] && ![undoManager isRedoing])
+	{
+		[self.undoManager setActionName:NSLocalizedString(@"Typing", @"Undo Action when text is entered")];
+	}
 	[undoManager endUndoGrouping];
 	
 	// ----
