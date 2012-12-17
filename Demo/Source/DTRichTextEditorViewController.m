@@ -9,7 +9,7 @@
 #import "DTRichTextEditorViewController.h"
 #import "NSAttributedString+HTML.h"
 #import "NSAttributedString+DTRichText.h"
-#import "DTCoreText.h"
+#import "DTRichTextEditor.h"
 
 #import <AssetsLibrary/AssetsLibrary.h>
 
@@ -215,7 +215,7 @@
 - (void)insertPhoto:(UIBarButtonItem *)sender
 {
 	// preserve last selection because this goes away when editor loses firstResponder
-	lastSelection = richEditor.selectedTextRange;
+	lastSelection = [richEditor selectedTextRange];
 	
 	if (!lastSelection)
 	{
@@ -240,7 +240,7 @@
 
 - (void)insertSmiley:(UIBarButtonItem *)sender
 {
-	if (!richEditor.selectedTextRange)
+	if (![richEditor selectedTextRange])
 	{
 		NSLog(@"no text selected!");
 		return;
@@ -256,7 +256,7 @@
 	attachment.contentType = DTTextAttachmentTypeImage;
 	attachment.verticalAlignment = DTTextAttachmentVerticalAlignmentCenter;
 	
-	[richEditor replaceRange:richEditor.selectedTextRange withAttachment:attachment inParagraph:NO];
+	[richEditor replaceRange:[richEditor selectedTextRange ] withAttachment:attachment inParagraph:NO];
 }
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController

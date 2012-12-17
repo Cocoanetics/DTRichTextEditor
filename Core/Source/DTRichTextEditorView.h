@@ -6,12 +6,7 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
 #import "DTAttributedTextView.h"
-#import "DTAttributedTextContentView.h"
-#import "NSAttributedString+DTRichText.h"
-
 
 extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
 
@@ -20,16 +15,6 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
 @class DTLoupeView;
 @class DTTextSelectionView;
 @class DTCSSListStyle;
-
-
-typedef enum
-{
-	DTDragModeNone = 0,
-	DTDragModeLeftHandle,
-	DTDragModeRightHandle,
-	DTDragModeCursor,
-	DTDragModeCursorInsideMarking
-} DTDragMode;
 
 /**
  DTRichTextEditorView is a subclass of UIScrollView and offers rich text edtiting capabilities. It has a single content view of type DTRichTextEditorContentView which is repsonsible for displaying the rich text.
@@ -48,11 +33,13 @@ typedef enum
  */
 @property(nonatomic, assign) BOOL replaceParagraphsWithLineFeeds;
 
+/**
+ The current attributedText displayed in the receiver
+ */
 @property (nonatomic, copy) NSAttributedString *attributedText;
 
-@property(nonatomic, assign) id<UITextInputDelegate> inputDelegate;
-@property (nonatomic, copy) NSDictionary *markedTextStyle;
-@property (nonatomic) UITextStorageDirection selectionAffinity;
+//@property (nonatomic, copy) NSDictionary *markedTextStyle;
+//@property (nonatomic) UITextStorageDirection selectionAffinity;
 
 /**
  Overrides for textDefaults. If they are set then they are used instead of the values contained in textDefaults.
@@ -62,22 +49,29 @@ typedef enum
 @property (nonatomic, copy) NSURL *baseURL;
 @property (nonatomic, assign) CGFloat textSizeMultiplier;
 
+/**
+ The default options to be used for text. See the options parameter of <DTHTMLAttributedStringBuilder> for individual options.
+ 
+ If one of these properties is set then it is used instead of the value contained in textDefaults:
+ 
+ - maxImageDisplaySize
+ - defaultFontFamily
+ - baseURL;
+ - textSizeMultiplier;
+ 
+ NOTE: Changing these defaults does not affect the current `NSAttributedString`. They are used when calling setHTMLString.
+ */
+@property (nonatomic, retain) NSDictionary *textDefaults;
 
-@property (nonatomic, retain) DTCursorView *cursor;
-
+/**
+ Overrides the `UIResponder` input view to be settable. The inputView is show instead of the system keyboard when input is possible.
+ */
 @property (retain, readwrite) UIView *inputView;
+
+/**
+ Overrides the `UIResponder` input accessory view to be settable. The accessory gets shown riding on top of the inputView when input is possible.
+ */
 @property (retain, readwrite) UIView *inputAccessoryView;
-
-// UITextInputTraits
-@property(nonatomic) UITextAutocapitalizationType autocapitalizationType;
-@property(nonatomic) UITextAutocorrectionType autocorrectionType;
-@property(nonatomic) BOOL enablesReturnKeyAutomatically;
-@property(nonatomic) UIKeyboardAppearance keyboardAppearance;
-@property(nonatomic) UIKeyboardType keyboardType;
-@property(nonatomic) UIReturnKeyType returnKeyType;
-@property(nonatomic, getter=isSecureTextEntry) BOOL secureTextEntry;
-//@property(nonatomic) UITextSpellCheckingType spellCheckingType;
-
 
 /**
  Replaces a range of text. The current selection is adapted, too.
@@ -109,57 +103,7 @@ typedef enum
 @end
 
 
-
-@interface DTRichTextEditorView (manipulation)
-
-- (DTTextRange *)rangeForWordAtPosition:(DTTextPosition *)position;
-
-- (NSDictionary *)defaultAttributes;
-- (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
-- (UITextRange *)textRangeOfURLAtPosition:(UITextPosition *)position URL:(NSURL **)URL;
-
-- (void)replaceRange:(UITextRange *)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph;
-
-- (void)toggleBoldInRange:(UITextRange *)range;
-- (void)toggleItalicInRange:(UITextRange *)range;
-- (void)toggleUnderlineInRange:(UITextRange *)range;
-
-- (void)toggleHighlightInRange:(UITextRange *)range color:(UIColor *)color;
-
-// make a range a hyperlink or remove it
-- (void)toggleHyperlinkInRange:(UITextRange *)range URL:(NSURL *)URL;
-
-- (void)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range;
-- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range;
-
-- (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate;
-- (void)relayoutText;
-
-- (BOOL)pasteboardHasSuitableContentForPaste;
-- (NSString *)plainTextForRange:(UITextRange *)range;
-
-- (void)setHTMLString:(NSString *)string;
-
-- (CGRect)visibleContentRect;
-- (BOOL)selectionIsVisible;
-
-/**
- The default options to be used for text. See the options parameter of <DTHTMLAttributedStringBuilder> for individual options.
- 
- If one of these properties is set then it is used instead of the value contained in textDefaults:
- 
- - maxImageDisplaySize
- - defaultFontFamily
- - baseURL;
- - textSizeMultiplier;
- 
- NOTE: Changing these defaults does not affect the current `NSAttributedString`. They are used when calling setHTMLString. 
-*/
-@property (nonatomic, retain) NSDictionary *textDefaults;
-
-@end
-
-
+/*
 #pragma mark CoreText
 
 @class DTCoreTextLayoutLine;
@@ -172,3 +116,4 @@ typedef enum
 - (NSArray *)visibleLayoutLines;
 
 @end
+ */
