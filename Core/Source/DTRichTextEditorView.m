@@ -2249,7 +2249,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 	}
 }
 
-
 - (UIView *)inputAccessoryView
 {
 	if (_keyboardIsShowing || _showsKeyboardWhenBecomingFirstResponder)
