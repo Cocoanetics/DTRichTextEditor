@@ -460,6 +460,21 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A7402D4C167F506100BE0AAF /* Selection Range */ = {
+			isa = PBXGroup;
+			children = (
+				A743512C1486771700F4C766 /* DTTextPosition.h */,
+				A743512D1486771700F4C766 /* DTTextPosition.m */,
+				A743512E1486771700F4C766 /* DTTextRange.h */,
+				A743512F1486771700F4C766 /* DTTextRange.m */,
+				A7FE7FC315FF18370003723B /* DTTextSelectionRect.h */,
+				A7FE7FC415FF18370003723B /* DTTextSelectionRect.m */,
+				A74351301486771700F4C766 /* DTTextSelectionView.h */,
+				A74351311486771700F4C766 /* DTTextSelectionView.m */,
+			);
+			name = "Selection Range";
+			sourceTree = "<group>";
+		};
 		A743511C1486771700F4C766 /* Core */ = {
 			isa = PBXGroup;
 			children = (
@@ -475,25 +490,16 @@
 		A743511D1486771700F4C766 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				A7402D4C167F506100BE0AAF /* Selection Range */,
 				A7D728CE1487CF7C00A22742 /* Glue */,
 				A74351201486771700F4C766 /* DTCursorView.h */,
 				A74351211486771700F4C766 /* DTCursorView.m */,
 				A74351221486771700F4C766 /* DTMutableCoreTextLayoutFrame.h */,
 				A74351231486771700F4C766 /* DTMutableCoreTextLayoutFrame.m */,
-				A74351241486771700F4C766 /* DTRichTextCategories.h */,
-				A74351251486771700F4C766 /* DTRichTextCategories.m */,
 				A74351261486771700F4C766 /* DTRichTextEditorContentView.h */,
 				A74351271486771700F4C766 /* DTRichTextEditorContentView.m */,
 				A74351281486771700F4C766 /* DTRichTextEditorView.h */,
 				A74351291486771700F4C766 /* DTRichTextEditorView.m */,
-				A743512C1486771700F4C766 /* DTTextPosition.h */,
-				A743512D1486771700F4C766 /* DTTextPosition.m */,
-				A743512E1486771700F4C766 /* DTTextRange.h */,
-				A743512F1486771700F4C766 /* DTTextRange.m */,
-				A7FE7FC315FF18370003723B /* DTTextSelectionRect.h */,
-				A7FE7FC415FF18370003723B /* DTTextSelectionRect.m */,
-				A74351301486771700F4C766 /* DTTextSelectionView.h */,
-				A74351311486771700F4C766 /* DTTextSelectionView.m */,
 				A74351321486771700F4C766 /* DTTiledLayerWithoutFade.h */,
 				A74351331486771700F4C766 /* DTTiledLayerWithoutFade.m */,
 			);
@@ -585,12 +591,14 @@
 		A7D728CE1487CF7C00A22742 /* Glue */ = {
 			isa = PBXGroup;
 			children = (
-				A7D728631487C2F300A22742 /* NSAttributedString+DTWebArchive.h */,
-				A7D728641487C2F300A22742 /* NSAttributedString+DTWebArchive.m */,
 				A743511E1486771700F4C766 /* DTCoreTextLayoutFrame+DTRichText.h */,
 				A743511F1486771700F4C766 /* DTCoreTextLayoutFrame+DTRichText.m */,
+				A74351241486771700F4C766 /* DTRichTextCategories.h */,
+				A74351251486771700F4C766 /* DTRichTextCategories.m */,
 				A74351341486771700F4C766 /* NSAttributedString+DTRichText.h */,
 				A74351351486771700F4C766 /* NSAttributedString+DTRichText.m */,
+				A7D728631487C2F300A22742 /* NSAttributedString+DTWebArchive.h */,
+				A7D728641487C2F300A22742 /* NSAttributedString+DTWebArchive.m */,
 				A74351361486771700F4C766 /* NSDictionary+DTRichText.h */,
 				A74351371486771700F4C766 /* NSDictionary+DTRichText.m */,
 				A74351381486771700F4C766 /* NSMutableAttributedString+DTRichText.h */,
