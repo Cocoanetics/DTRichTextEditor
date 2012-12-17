@@ -1288,6 +1288,7 @@ typedef enum
 	}
 	
 	[self replaceRange:_selectedTextRange withText:@""];
+	[self.undoManager setActionName:@"Delete"];
 }
 
 - (void)cut:(id)sender
@@ -1302,6 +1303,8 @@ typedef enum
 	
 	// second set is removing what was copied
 	[self delete:sender];
+	
+	[self.undoManager setActionName:@"Cut"];
 }
 
 - (void)copy:(id)sender
@@ -1365,6 +1368,7 @@ typedef enum
 		attachment.displaySize = displaySize;
 		
 		[self replaceRange:_selectedTextRange withAttachment:attachment inParagraph:NO];
+		[self.undoManager setActionName:@"Paste"];
 		
 		return;
 	}
@@ -1375,6 +1379,7 @@ typedef enum
 	{
 		NSAttributedString *tmpString = [NSAttributedString attributedStringWithURL:url];
 		[self replaceRange:_selectedTextRange withText:tmpString];
+		[self.undoManager setActionName:@"Paste"];
 		
 		return;
 	}
@@ -1387,6 +1392,7 @@ typedef enum
 		NSAttributedString *attrString = [[NSAttributedString alloc] initWithWebArchive:webArchive options:[self textDefaults] documentAttributes:NULL];
 		
 		[self replaceRange:_selectedTextRange withText:attrString];
+		[self.undoManager setActionName:@"Paste"];
 		
 		return;
 	}
@@ -1396,6 +1402,7 @@ typedef enum
 	if (string)
 	{
 		[self replaceRange:_selectedTextRange withText:string];
+		[self.undoManager setActionName:@"Paste"];
 	}
 }
 
@@ -1690,7 +1697,14 @@ typedef enum
     // need to call extra because we control layouting
     [self setNeedsLayout];
 	
-	self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterReplace];
+	if (self->_keyboardIsShowing)
+	{
+		self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterReplace];
+	}
+	else
+	{
+		self.selectedTextRange = nil;
+	}
 	
 	[self updateCursorAnimated:NO];
 	[self scrollCursorVisibleAnimated:YES];

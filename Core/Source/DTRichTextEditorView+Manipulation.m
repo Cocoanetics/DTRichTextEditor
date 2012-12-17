@@ -222,120 +222,6 @@
 	return range;
 }
 
-- (void)replaceRange:(DTTextRange *)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph
-{
-	NSRange textRange = [(DTTextRange *)range NSRangeValue];
-	
-	NSMutableDictionary *attributes = [[self typingAttributesForRange:range] mutableCopy];
-	
-	// just in case if there is an attachment at the insertion point
-	[attributes removeAttachment];
-	
-	BOOL needsParagraphBefore = NO;
-	BOOL needsParagraphAfter = NO;
-	
-	NSString *plainText = [self.contentView.layoutFrame.attributedStringFragment string];
-	
-	if (inParagraph)
-	{
-		// determine if we need a paragraph break before or after the item
-		if (textRange.location>0)
-		{
-			NSInteger index = textRange.location-1;
-			
-			unichar character = [plainText characterAtIndex:index];
-			
-			if (character != '\n')
-			{
-				needsParagraphBefore = YES;
-			}
-		}
-		
-		NSUInteger indexAfterRange = NSMaxRange(textRange);
-		if (indexAfterRange<[plainText length])
-		{
-			unichar character = [plainText characterAtIndex:indexAfterRange];
-			
-			if (character != '\n')
-			{
-				needsParagraphAfter = YES;
-			}
-		}
-	}
-	NSMutableAttributedString *tmpAttributedString = [[NSMutableAttributedString alloc] initWithString:@""];
-	
-	if (needsParagraphBefore)
-	{
-		NSAttributedString *formattedNL = [[NSAttributedString alloc] initWithString:@"\n" attributes:attributes];
-		[tmpAttributedString appendAttributedString:formattedNL];
-	}
-	
-	NSMutableDictionary *objectAttributes = [attributes mutableCopy];
-	
-	// need run delegate for sizing
-	CTRunDelegateRef embeddedObjectRunDelegate = createEmbeddedObjectRunDelegate((id)attachment);
-	[objectAttributes setObject:(__bridge id)embeddedObjectRunDelegate forKey:(id)kCTRunDelegateAttributeName];
-	CFRelease(embeddedObjectRunDelegate);
-	
-	// add attachment
-	[objectAttributes setObject:attachment forKey:NSAttachmentAttributeName];
-	
-	// get the font
-	CTFontRef font = (__bridge CTFontRef)[objectAttributes objectForKey:(__bridge NSString *) kCTFontAttributeName];
-	if (font)
-	{
-		[attachment adjustVerticalAlignmentForFont:font];
-	}
-	
-	NSAttributedString *tmpStr = [[NSAttributedString alloc] initWithString:UNICODE_OBJECT_PLACEHOLDER attributes:objectAttributes];
-	[tmpAttributedString appendAttributedString:tmpStr];
-	
-	if (needsParagraphAfter)
-	{
-		NSAttributedString *formattedNL = [[NSAttributedString alloc] initWithString:@"\n" attributes:attributes];
-		[tmpAttributedString appendAttributedString:formattedNL];
-	}
-	
-	//NSUInteger replacementLength = [tmpAttributedString length];
-	DTTextRange *replacementRange = [DTTextRange rangeWithNSRange:textRange];
-	[self replaceRange:replacementRange withText:tmpAttributedString];
-
-	/*
-	
-	// need to notify input delegate to remove autocorrection candidate view if present
-	[self.inputDelegate textWillChange:self];
-	
-	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:textRange withText:tmpAttributedString];
-	
-	[self.inputDelegate textDidChange:self];
-	
-	if (self->_keyboardIsShowing)
-	{
-		self.selectedTextRange = [DTTextRange emptyRangeAtPosition:[range start] offset:replacementLength];
-	}
-	else
-	{
-		self.selectedTextRange = nil;
-	}
-	
-	[self updateCursorAnimated:NO];
-	
-	// this causes the image to appear, layout gets the custom view for the image
-	[self setNeedsLayout];
-	
-	// send change notification
-	[[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidBeginEditingNotification object:self userInfo:nil];
-	 */
-}
-
-
-
-- (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate
-{
-	// update all attachments that matchin this URL (possibly multiple images with same size)
-	return [self.contentView.layoutFrame textAttachmentsWithPredicate:predicate];
-}
-
 #pragma mark - Pasteboard
 
 - (BOOL)pasteboardHasSuitableContentForPaste
@@ -365,6 +251,28 @@
 	return NO;
 }
 
+#pragma mark - Utilities
+
+// updates a text framement by replacing it with a new string
+- (void)_updateSubstringInRange:(NSRange)range withAttributedString:(NSAttributedString *)attributedString actionName:(NSString *)actionName
+{
+	NSAssert([attributedString length] == range.length, @"lenght of updated string and update attributed string must match");
+	
+	NSUndoManager *undoManager = self.undoManager;
+	
+	NSAttributedString *replacedString = [self.contentView.attributedString attributedSubstringFromRange:range];
+	
+	[[undoManager prepareWithInvocationTarget:self] _updateSubstringInRange:range withAttributedString:replacedString actionName:actionName];
+	
+	if (actionName)
+	{
+		[undoManager setActionName:actionName];
+	}
+	
+	// replace
+	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:range withText:attributedString];
+}
+
 #pragma mark - Toggling Styles for Ranges
 
 - (void)toggleBoldInRange:(DTTextRange *)range
@@ -390,9 +298,9 @@
 		
 		// make entire frament bold
 		[fragment toggleBoldInRange:NSMakeRange(0, [fragment length])];
-		
+	
 		// replace
-		[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
+		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:@"Bold"];
 		
 		// cursor positions might have changed
 		[self updateCursorAnimated:NO];
@@ -424,9 +332,9 @@
 		
 		// make entire frament bold
 		[fragment toggleItalicInRange:NSMakeRange(0, [fragment length])];
-		
+
 		// replace
-		[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
+		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:@"Italic"];
 		
 		// attachment positions might have changed
 		[self.contentView layoutSubviewsInRect:self.bounds];
@@ -463,7 +371,7 @@
 		[fragment toggleUnderlineInRange:NSMakeRange(0, [fragment length])];
 		
 		// replace
-		[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
+		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:@"Underline"];
 		
 		// attachment positions might have changed
 		[self.contentView layoutSubviewsInRect:self.bounds];
@@ -500,7 +408,7 @@
 		[fragment toggleHighlightInRange:NSMakeRange(0, [fragment length]) color:color];
 		
 		// replace
-		[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
+		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:@"Highlight"];
 		
 		// attachment positions might have changed
 		[self.contentView layoutSubviewsInRect:self.bounds];
@@ -574,7 +482,7 @@
 	// need to style the text accordingly
 	
 	// replace
-	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
+	[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:@"Hyperlink"];
 	
 	// attachment positions might have changed
 	[self.contentView layoutSubviewsInRect:self.bounds];
@@ -606,7 +514,7 @@
 	[fragment adjustTextAlignment:alignment inRange:NSMakeRange(0, [fragment length])];
 	
 	// replace
-	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
+	[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:@"Alignment"];
 	
 	// attachment positions might have changed
 	[self.contentView layoutSubviewsInRect:self.bounds];
@@ -695,6 +603,122 @@
 	[self updateCursorAnimated:NO];
 	
 	[self hideContextMenu];
+}
+
+#pragma mark - Working with Attachments
+
+- (void)replaceRange:(DTTextRange *)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph
+{
+	NSRange textRange = [(DTTextRange *)range NSRangeValue];
+	
+	NSMutableDictionary *attributes = [[self typingAttributesForRange:range] mutableCopy];
+	
+	// just in case if there is an attachment at the insertion point
+	[attributes removeAttachment];
+	
+	BOOL needsParagraphBefore = NO;
+	BOOL needsParagraphAfter = NO;
+	
+	NSString *plainText = [self.contentView.layoutFrame.attributedStringFragment string];
+	
+	if (inParagraph)
+	{
+		// determine if we need a paragraph break before or after the item
+		if (textRange.location>0)
+		{
+			NSInteger index = textRange.location-1;
+			
+			unichar character = [plainText characterAtIndex:index];
+			
+			if (character != '\n')
+			{
+				needsParagraphBefore = YES;
+			}
+		}
+		
+		NSUInteger indexAfterRange = NSMaxRange(textRange);
+		if (indexAfterRange<[plainText length])
+		{
+			unichar character = [plainText characterAtIndex:indexAfterRange];
+			
+			if (character != '\n')
+			{
+				needsParagraphAfter = YES;
+			}
+		}
+	}
+	NSMutableAttributedString *tmpAttributedString = [[NSMutableAttributedString alloc] initWithString:@""];
+	
+	if (needsParagraphBefore)
+	{
+		NSAttributedString *formattedNL = [[NSAttributedString alloc] initWithString:@"\n" attributes:attributes];
+		[tmpAttributedString appendAttributedString:formattedNL];
+	}
+	
+	NSMutableDictionary *objectAttributes = [attributes mutableCopy];
+	
+	// need run delegate for sizing
+	CTRunDelegateRef embeddedObjectRunDelegate = createEmbeddedObjectRunDelegate((id)attachment);
+	[objectAttributes setObject:(__bridge id)embeddedObjectRunDelegate forKey:(id)kCTRunDelegateAttributeName];
+	CFRelease(embeddedObjectRunDelegate);
+	
+	// add attachment
+	[objectAttributes setObject:attachment forKey:NSAttachmentAttributeName];
+	
+	// get the font
+	CTFontRef font = (__bridge CTFontRef)[objectAttributes objectForKey:(__bridge NSString *) kCTFontAttributeName];
+	if (font)
+	{
+		[attachment adjustVerticalAlignmentForFont:font];
+	}
+	
+	NSAttributedString *tmpStr = [[NSAttributedString alloc] initWithString:UNICODE_OBJECT_PLACEHOLDER attributes:objectAttributes];
+	[tmpAttributedString appendAttributedString:tmpStr];
+	
+	if (needsParagraphAfter)
+	{
+		NSAttributedString *formattedNL = [[NSAttributedString alloc] initWithString:@"\n" attributes:attributes];
+		[tmpAttributedString appendAttributedString:formattedNL];
+	}
+	
+	//NSUInteger replacementLength = [tmpAttributedString length];
+	DTTextRange *replacementRange = [DTTextRange rangeWithNSRange:textRange];
+	[self replaceRange:replacementRange withText:tmpAttributedString];
+	
+	/*
+	 
+	 // need to notify input delegate to remove autocorrection candidate view if present
+	 [self.inputDelegate textWillChange:self];
+	 
+	 [(DTRichTextEditorContentView *)self.contentView replaceTextInRange:textRange withText:tmpAttributedString];
+	 
+	 [self.inputDelegate textDidChange:self];
+	 
+	 if (self->_keyboardIsShowing)
+	 {
+	 self.selectedTextRange = [DTTextRange emptyRangeAtPosition:[range start] offset:replacementLength];
+	 }
+	 else
+	 {
+	 self.selectedTextRange = nil;
+	 }
+	 
+	 [self updateCursorAnimated:NO];
+	 
+	 // this causes the image to appear, layout gets the custom view for the image
+	 [self setNeedsLayout];
+	 
+	 // send change notification
+	 [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidBeginEditingNotification object:self userInfo:nil];
+	 */
+}
+
+
+
+- (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate
+{
+	// update all attachments that matchin this URL (possibly multiple images with same size)
+	return [self.contentView.layoutFrame textAttachmentsWithPredicate:predicate];
 }
 
 @end
