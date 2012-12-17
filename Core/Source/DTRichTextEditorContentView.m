@@ -16,26 +16,13 @@
 #define SYNCHRONIZE_END(lock) dispatch_semaphore_signal(lock) /*, NSLog(@"UN-LOCK")*/;
 
 
-@interface DTRichTextEditorContentView ()
-
-- (void)removeAttachmentCustomViewsNoLongerInLayoutFrame;
-
-@end
-
-
 @implementation DTRichTextEditorContentView
-{
-	NSUndoManager *_undoManager;
-}
 
 - (void)relayoutText
 {
 	// Make sure we actually have a superview before attempting to relayout the text.
 	if (self.superview)
 	{
-		// update the layout
-		//[(DTMutableCoreTextLayoutFrame*)self.layoutFrame relayoutText];
-		
 		// remove all links because they might have merged or split
 		[self removeAllCustomViewsForLinks];
 		
@@ -43,20 +30,12 @@
 		{
 			// triggers new layout
 			[self sizeToFit];
-			//            CGSize neededSize = [self sizeThatFits:self.bounds.size];
-			
-			// set frame to fit text preserving origin
-			// call super to avoid endless loop
-			//            [self willChangeValueForKey:@"frame"];
-			//            super.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, neededSize.width, neededSize.height);
-			//            [self didChangeValueForKey:@"frame"];
 		}
 		
 		[self setNeedsDisplay];
 		[self setNeedsLayout];
 	}
 }
-
 
 - (DTCoreTextLayoutFrame *)layoutFrame
 {
@@ -95,9 +74,6 @@
 			[layoutFrame setAttributedString:attributedString];
 			
 			_attributedString = layoutFrame.attributedStringFragment;
-			
-			// remove old actions from the undo manager
-			[self.undoManager removeAllActions];
 			
 			// new layout invalidates all positions for custom views
 			[self removeAllCustomViews];
@@ -143,9 +119,9 @@
 	[self setNeedsDisplay];
 	
 	// size might have changed
-	layoutFrame.shouldRebuildLines = NO;
+    layoutFrame.shouldRebuildLines = NO;
 	[self sizeToFit];
-	layoutFrame.shouldRebuildLines = YES;
+    layoutFrame.shouldRebuildLines = YES;
 }
 
 - (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text
@@ -165,11 +141,12 @@
 	[self setNeedsDisplay];
 	
 	// size might have changed
-	layoutFrame.shouldRebuildLines = NO;
+    layoutFrame.shouldRebuildLines = NO;
 	[self sizeToFit];
-	layoutFrame.shouldRebuildLines = YES;
+    layoutFrame.shouldRebuildLines = YES;
 }
 
+/*
 - (void)removeAttachmentCustomViewsNoLongerInLayoutFrame
 {
 	NSArray *attachmentsInFrame = [self.layoutFrame textAttachments];
@@ -184,12 +161,12 @@
 		[attachmentKeys removeObject:indexKey];
 	}
 	
-	// any left over are no longer in the layout Frame, so we remove them
 	if ([attachmentKeys count])
 	{
 		[self setNeedsDisplay];
 	}
 	
+	// any left over are no longer in the layout Frame, so we remove them
 	for (NSNumber *oneKey in attachmentKeys)
 	{
 		UIView *customView = [customViewsForAttachmentsIndex objectForKey:oneKey];
@@ -198,19 +175,7 @@
 		[customViewsForAttachmentsIndex removeObjectForKey:oneKey];
 		[self.customViews removeObject:customView];
 	}
-	
 }
-
-#pragma mark UIResponder
-
-- (NSUndoManager *)undoManager
-{
-	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{
-		_undoManager = [[NSUndoManager alloc] init];
-	});
-	
-	return _undoManager;
-}
+ */
 
 @end

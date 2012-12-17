@@ -9,9 +9,9 @@
 #import "DTAttributedTextContentView.h"
 
 /**
- This class acts as the content view of DTRichTextEditorView which is a scroll view.
+ This class represents the content view of a DTRichTextEditorView which itself is a UIScrollView subclass.
  
- It is a subclass of DTAttributedTextContentView and adds mutability of the text and incremental layouting.
+ It adds mutability and incremental layouting to DTAttributedTextContentView.
  */
 @interface DTRichTextEditorContentView : DTAttributedTextContentView
 
