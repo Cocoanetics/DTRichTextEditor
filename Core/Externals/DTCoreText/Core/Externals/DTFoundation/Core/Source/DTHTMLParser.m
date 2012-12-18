@@ -45,7 +45,7 @@ void _endDocument(void *context)
 	[myself.delegate parserDidEndDocument:myself];
 }
 
-void _startElement(void *context, const xmlChar *name,const xmlChar **atts)
+void _startElement(void *context, const xmlChar *name, const xmlChar **atts)
 {
 	DTHTMLParser *myself = (__bridge DTHTMLParser *)context;
 	
@@ -60,7 +60,7 @@ void _startElement(void *context, const xmlChar *name,const xmlChar **atts)
 		
 		attributes = [[NSMutableDictionary alloc] init];
 		
-		int i=0;
+		int i = 0;
 		while (1)
 		{
 			char *att = (char *)atts[i++];
@@ -107,8 +107,8 @@ void _endElement(void *context, const xmlChar *chars)
 	[myself.delegate parser:myself didEndElement:nameStr];
 }
 
-// libxml reports characters with max 1000 at a time
-// also entities are reported separately
+// libxml reports characters in batches of at most 1000 at a time
+// in addition, entities are reported separately
 void _characters(void *context, const xmlChar *chars, int len)
 {
 	DTHTMLParser *myself = (__bridge DTHTMLParser *)context;
@@ -158,7 +158,7 @@ void _cdataBlock(void *context, const xmlChar *value, int len)
 void _processingInstruction (void *context, const xmlChar *target, const xmlChar *data)
 {
 	DTHTMLParser *myself = (__bridge DTHTMLParser *)context;
-
+	
 	NSStringEncoding encoding = myself.encoding;
 	
 	NSString *targetStr = [NSString stringWithCString:(const char *)target encoding:encoding];
@@ -196,7 +196,7 @@ void _processingInstruction (void *context, const xmlChar *target, const xmlChar
 		
 		xmlSAX2InitHtmlDefaultSAXHandler(&_handler);
 		
-		// set default handlers, otherwise crash if no delegate set
+		// set default handlers as we would crash otherwise
 		self.delegate = nil;
 	}
 	
@@ -329,7 +329,7 @@ void _processingInstruction (void *context, const xmlChar *target, const xmlChar
 	else
 	{
 		_handler.characters = NULL;
-	} 
+	}
 	
 	if ([delegate respondsToSelector:@selector(parser:foundComment:)])
 	{
@@ -338,7 +338,7 @@ void _processingInstruction (void *context, const xmlChar *target, const xmlChar
 	else
 	{
 		_handler.comment = NULL;
-	} 
+	}
 	
 	if ([delegate respondsToSelector:@selector(parser:parseErrorOccurred:)])
 	{
@@ -347,7 +347,7 @@ void _processingInstruction (void *context, const xmlChar *target, const xmlChar
 	else
 	{
 		_handler.error = NULL;
-	} 
+	}
 	
 	if ([delegate respondsToSelector:@selector(parser:foundCDATA:)])
 	{
