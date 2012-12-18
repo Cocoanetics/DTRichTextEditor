@@ -8,17 +8,16 @@
 
 #import "DTTextAttachment.h"
 #import "DTCoreText.h"
-#import "NSData+DTBase64.h"
 
 @implementation DTTextAttachment
 {
 	CGSize _originalSize;
 	CGSize _displaySize;
 	DTTextAttachmentVerticalAlignment _verticalAlignment;
-	id contents;
+	id _contents;
     NSDictionary *_attributes;
     
-    DTTextAttachmentType contentType;
+    DTTextAttachmentType _contentType;
 	
 	NSURL *_contentURL;
 	NSURL *_hyperLinkURL;
@@ -60,7 +59,11 @@
 	NSValue *maxImageSizeValue =[options objectForKey:DTMaxImageSize];
 	if (maxImageSizeValue)
 	{
+#if TARGET_OS_IPHONE
 		maxImageSize = [maxImageSizeValue CGSizeValue];
+#else
+		maxImageSize = [maxImageSizeValue sizeValue];
+#endif
 	}
 	
 	// width, height from tag
@@ -100,6 +103,11 @@
 		{
 			contentURL = [NSURL URLWithString:src];
 			
+			if(!contentURL){
+				src = [src stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+				contentURL = [NSURL URLWithString:src relativeToURL:baseURL];
+			}
+			
 			if (![contentURL scheme])
 			{
 				// possibly a relative url
@@ -134,9 +142,20 @@
 				DTImage *image = [[DTImage alloc] initWithContentsOfFile:[contentURL path]];
 				originalSize = image.size;
 				
-				if (!displaySize.width || !displaySize.height)
+				// width and/or height missing
+				if (displaySize.width==0 && displaySize.height==0)
 				{
 					displaySize = originalSize;
+				}
+				else if (!displaySize.width && displaySize.height)
+				{
+					CGFloat factor = image.size.height / displaySize.height;
+					displaySize.width = roundf(image.size.width / factor);
+				}
+				else if (displaySize.width>0 && displaySize.height==0)
+				{
+					CGFloat factor = image.size.width / displaySize.width;
+					displaySize.height = roundf(image.size.height / factor);
 				}
 			}
 			else
@@ -191,12 +210,12 @@
 // makes a data URL of the image
 - (NSString *)dataURLRepresentation
 {
-	if ((contents==nil) || contentType != DTTextAttachmentTypeImage)
+	if ((_contents==nil) || _contentType != DTTextAttachmentTypeImage)
 	{
 		return nil;
 	}
 	
-	DTImage *image = (DTImage *)contents;
+	DTImage *image = (DTImage *)_contents;
 	NSData *data = [image dataForPNGRepresentation];
 	NSString *encoded = [data base64EncodedString];
 	
@@ -275,9 +294,9 @@
  */
 - (id)contents
 {
-	if (!contents)
+	if (!_contents)
 	{
-		if (contentType == DTTextAttachmentTypeImage && _contentURL && [_contentURL isFileURL])
+		if (_contentType == DTTextAttachmentTypeImage && _contentURL && [_contentURL isFileURL])
 		{
 			DTImage *image = [[DTImage alloc] initWithContentsOfFile:[_contentURL path]];
 			
@@ -285,13 +304,13 @@
 		}
 	}
 	
-	return contents;
+	return _contents;
 }
 
 @synthesize originalSize = _originalSize;
 @synthesize displaySize = _displaySize;
-@synthesize contents;
-@synthesize contentType;
+@synthesize contents = _contents;
+@synthesize contentType = _contentType;
 @synthesize contentURL = _contentURL;
 @synthesize hyperLinkURL = _hyperLinkURL;
 @synthesize attributes = _attributes;
