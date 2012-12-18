@@ -19,5 +19,5 @@
 
 // time bomb set by integration server for nightly demo build
 #ifdef TIMEBOMB
-#error TIMEBOMB active
+#warning TIMEBOMB active
 #endif
