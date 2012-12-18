@@ -38,9 +38,6 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
  */
 @property (nonatomic, copy) NSAttributedString *attributedText;
 
-//@property (nonatomic, copy) NSDictionary *markedTextStyle;
-//@property (nonatomic) UITextStorageDirection selectionAffinity;
-
 /**
  Overrides for textDefaults. If they are set then they are used instead of the values contained in textDefaults.
  */
@@ -102,18 +99,3 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
 
 @end
 
-
-/*
-#pragma mark CoreText
-
-@class DTCoreTextLayoutLine;
-
-@interface DTRichTextEditorView (CoreText)
-
-- (NSUInteger)numberOfLayoutLines;
-- (DTCoreTextLayoutLine *)layoutLineAtIndex:(NSUInteger)lineIndex;
-- (DTCoreTextLayoutLine *)layoutLineContainingTextPosition:(DTTextPosition *)textPosition;
-- (NSArray *)visibleLayoutLines;
-
-@end
- */

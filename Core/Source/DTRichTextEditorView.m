@@ -87,10 +87,9 @@ typedef enum
 	// private stuff
 	id<UITextInputTokenizer> tokenizer;
 	__unsafe_unretained id<UITextInputDelegate> inputDelegate;
-	NSDictionary *markedTextStyle;
-	
 	DTTextRange *_selectedTextRange;
 	DTTextRange *_markedTextRange;
+	NSDictionary *_markedTextStyle;
 	
 	UITextStorageDirection _selectionAffinity;
 	
@@ -244,6 +243,9 @@ typedef enum
 	[center addObserver:self selector:@selector(loupeDidHide:) name:DTLoupeDidHide object:nil];
 	[center addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
 	[center addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+	
+	// style for displaying marked text
+	self.markedTextStyle = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor greenColor], UITextInputTextColorKey, nil];
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -1835,13 +1837,6 @@ typedef enum
 	[self didChangeValueForKey:@"markedTextRange"];
 }
 
-- (NSDictionary *)markedTextStyle
-{
-	return [NSDictionary dictionaryWithObjectsAndKeys:[UIColor greenColor], UITextInputTextColorKey, nil];
-}
-
-
-
 - (void)unmarkText
 {
 	if (!_markedTextRange)
@@ -1860,15 +1855,6 @@ typedef enum
 	
 	[self removeMarkedTextCandidateView];
 }
-
-@synthesize selectionAffinity = _selectionAffinity;
-
-// overrides
-@synthesize maxImageDisplaySize = _maxImageDisplaySize;
-@synthesize defaultFontFamily = _defaultFontFamily;
-@synthesize baseURL = _baseURL;
-@synthesize textSizeMultiplier = _textSizeMultiplier;
-
 
 #pragma mark Computing Text Ranges and Text Positions
 - (UITextRange *)textRangeFromPosition:(DTTextPosition *)fromPosition toPosition:(DTTextPosition *)toPosition
@@ -2396,33 +2382,24 @@ typedef enum
 	[super setFrame:frame];
 }
 
-@synthesize markedTextStyle;
+// overrides
+@synthesize maxImageDisplaySize = _maxImageDisplaySize;
+@synthesize defaultFontFamily = _defaultFontFamily;
+@synthesize baseURL = _baseURL;
+@synthesize textSizeMultiplier = _textSizeMultiplier;
 
-@synthesize markedTextRange = _markedTextRange;
-
-@synthesize editable = _editable;
-
-@synthesize inputView = _inputView;
-@synthesize inputAccessoryView = _inputAccessoryView;
-
-#pragma mark UITextInputTraits Protocol
-@synthesize autocapitalizationType;
-@synthesize autocorrectionType;
-@synthesize enablesReturnKeyAutomatically;
-@synthesize keyboardAppearance;
-@synthesize keyboardType;
-@synthesize returnKeyType;
-@synthesize secureTextEntry;
-//@synthesize spellCheckingType;
-
-@synthesize cursor = _cursor;
-@synthesize selectionView = _selectionView;
-
-@synthesize overrideInsertionAttributes = _overrideInsertionAttributes;
-
+// other properties
 @synthesize canInteractWithPasteboard = _canInteractWithPasteboard;
-@synthesize replaceParagraphsWithLineFeeds = _replaceParagraphsWithLineFeeds;
+@synthesize cursor = _cursor;
+@synthesize editable = _editable;
+@synthesize markedTextRange = _markedTextRange;
+@synthesize markedTextStyle = _markedTextStyle;
 @synthesize mutableLayoutFrame = _mutableLayoutFrame;
+@synthesize inputAccessoryView = _inputAccessoryView;
+@synthesize inputView = _inputView;
+@synthesize overrideInsertionAttributes = _overrideInsertionAttributes;
+@synthesize replaceParagraphsWithLineFeeds = _replaceParagraphsWithLineFeeds;
+@synthesize selectionView = _selectionView;
 
 @end
 
