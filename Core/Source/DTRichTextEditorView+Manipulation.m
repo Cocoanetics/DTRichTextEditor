@@ -302,7 +302,7 @@
 		[fragment toggleBoldInRange:NSMakeRange(0, [fragment length])];
 	
 		// replace
-		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:@"Bold"];
+		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Bold", @"Action that makes text bold")];
 		
 		// cursor positions might have changed
 		[self updateCursorAnimated:NO];
@@ -336,7 +336,7 @@
 		[fragment toggleItalicInRange:NSMakeRange(0, [fragment length])];
 
 		// replace
-		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:@"Italic"];
+		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Italic", @"Action that makes text italic")];
 		
 		// attachment positions might have changed
 		[self.contentView layoutSubviewsInRect:self.bounds];
@@ -373,7 +373,7 @@
 		[fragment toggleUnderlineInRange:NSMakeRange(0, [fragment length])];
 		
 		// replace
-		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:@"Underline"];
+		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Underline", @"Action that makes text underlined")];
 		
 		// attachment positions might have changed
 		[self.contentView layoutSubviewsInRect:self.bounds];
@@ -410,7 +410,7 @@
 		[fragment toggleHighlightInRange:NSMakeRange(0, [fragment length]) color:color];
 		
 		// replace
-		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:@"Highlight"];
+		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Highlight", @"Action that adds a colored background behind text to highlight it")];
 		
 		// attachment positions might have changed
 		[self.contentView layoutSubviewsInRect:self.bounds];
@@ -484,7 +484,7 @@
 	// need to style the text accordingly
 	
 	// replace
-	[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:@"Hyperlink"];
+	[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Hyperlink", @"Action that toggles text to be a hyperlink")];
 	
 	// attachment positions might have changed
 	[self.contentView layoutSubviewsInRect:self.bounds];
@@ -517,7 +517,7 @@
 	if (didUpdate)
 	{
 		// replace
-		[self _updateSubstringInRange:[paragraphRange NSRangeValue] withAttributedString:fragment actionName:@"Alignment"];
+		[self _updateSubstringInRange:[paragraphRange NSRangeValue] withAttributedString:fragment actionName:NSLocalizedString(@"Alignment", @"Action that adjusts paragraph alignment")];
 		
 		// attachment positions might have changed
 		[self.contentView layoutSubviewsInRect:self.bounds];
@@ -563,7 +563,7 @@
 	if (didUpdate)
 	{
 		// replace
-		[self _updateSubstringInRange:[paragraphRange NSRangeValue] withAttributedString:fragment actionName:@"Alignment"];
+		[self _updateSubstringInRange:[paragraphRange NSRangeValue] withAttributedString:fragment actionName:NSLocalizedString(@"Indent", @"Action that changes the indentation of a paragraph")];
 		
 		// attachment positions might have changed
 		[self.contentView layoutSubviewsInRect:self.bounds];
