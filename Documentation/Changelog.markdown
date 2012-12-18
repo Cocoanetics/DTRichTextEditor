@@ -1,6 +1,7 @@
 Version 1.1.0
 - ADDED: Support for Undo/Redo
 - CHANGED: Lots of documentation added, refactoring and cleanup
+- UPDATED: DTCoreText + DTFoundation submodule
 
 Version 1.0.7
 - FIXED: Crash when selection goes beyond a paragraph, somehow left over from 1.0.6
