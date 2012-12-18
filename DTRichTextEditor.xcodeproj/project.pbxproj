@@ -404,7 +404,7 @@
 		A7E8082215EBAC2900525855 /* NSMutableString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSMutableString+HTML.h"; path = "DTCoreText/Core/Source/NSMutableString+HTML.h"; sourceTree = "<group>"; };
 		A7E82CDF15D5384700BD47AB /* DTLoupeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTLoupeView.h; path = DTLoupeView/Core/Source/DTLoupeView.h; sourceTree = "<group>"; };
 		A7E994DD154E79DA00FEB5DB /* Changelog.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = Changelog.markdown; sourceTree = "<group>"; };
-		A7F0C83E13C326E900EBD027 /* DemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7F0C83E13C326E900EBD027 /* RTEDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RTEDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7F0C84213C326E900EBD027 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		A7F0C84413C326E900EBD027 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A7F0C84613C326E900EBD027 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -674,7 +674,7 @@
 		A7F0C83F13C326E900EBD027 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A7F0C83E13C326E900EBD027 /* DemoApp.app */,
+				A7F0C83E13C326E900EBD027 /* RTEDemoApp.app */,
 				A7D728D31487D12A00A22742 /* libDTRichTextEditor.a */,
 				A7D729141487D58A00A22742 /* DTRichTextEditor.framework */,
 			);
@@ -853,7 +853,7 @@
 			);
 			name = "Demo App";
 			productName = DTRichTextEditor;
-			productReference = A7F0C83E13C326E900EBD027 /* DemoApp.app */;
+			productReference = A7F0C83E13C326E900EBD027 /* RTEDemoApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -1322,7 +1322,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PRODUCT_NAME = DemoApp;
+				PRODUCT_NAME = RTEDemoApp;
 				USER_HEADER_SEARCH_PATHS = "Core/Externals/**";
 				WRAPPER_EXTENSION = app;
 			};
@@ -1342,7 +1342,7 @@
 					"-ObjC",
 					"-all_load",
 				);
-				PRODUCT_NAME = DemoApp;
+				PRODUCT_NAME = RTEDemoApp;
 				USER_HEADER_SEARCH_PATHS = "Core/Externals/**";
 				WRAPPER_EXTENSION = app;
 			};
