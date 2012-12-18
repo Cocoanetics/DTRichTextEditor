@@ -31,14 +31,6 @@ typedef BOOL (^NSMutableAttributedStringParagraphStyleEnumerationBlock)(DTCoreTe
 - (void)toggleHyperlinkInRange:(NSRange)range URL:(NSURL *)URL;
 
 /**
- Convenience method to set text alignment on entire paragraphs.
- @param alignment The text alignment to apply
- @param range The range
- @returns `YES` if at least one paragraph was updated
- */
-- (void)adjustTextAlignment:(CTTextAlignment)alignment inRange:(NSRange)range;
-
-/**
  Enumerates the paragraph styles for a given range extended to contain full paragraphs. If the block returns `YES` then the paragraph style for the paragraph is updated with changes made to the paragraphStyle parameter.
  @param range The range to update
  @param block The block to execute for each paragraph

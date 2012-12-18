@@ -350,12 +350,6 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 	[self endEditing];
 }
 
-- (void)adjustTextAlignment:(CTTextAlignment)alignment inRange:(NSRange)range
-{
-	
-
-}
-
 - (BOOL)enumerateAndUpdateParagraphStylesInRange:(NSRange)range block:(NSMutableAttributedStringParagraphStyleEnumerationBlock)block
 {
 	NSAssert(block, @"Block cannot be NULL");
