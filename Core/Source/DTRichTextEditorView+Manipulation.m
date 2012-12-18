@@ -531,6 +531,50 @@
 	return didUpdate;
 }
 
+- (void)changeParagraphLeftMarginBy:(CGFloat)delta toParagraphsContainingRange:(UITextRange *)range
+{
+	DTTextRange *paragraphRange = (DTTextRange *)[self textRangeOfParagraphsContainingRange:range];
+	NSMutableAttributedString *fragment = [[self attributedSubstringForRange:paragraphRange] mutableCopy];
+	
+	// adjust
+	NSRange entireRange = NSMakeRange(0, [fragment length]);
+	BOOL didUpdate = [fragment enumerateAndUpdateParagraphStylesInRange:entireRange block:^BOOL(DTCoreTextParagraphStyle *paragraphStyle, BOOL *stop) {
+		
+		CGFloat newFirstLineIndent = paragraphStyle.firstLineHeadIndent + delta;
+		
+		if (newFirstLineIndent < 0)
+		{
+			newFirstLineIndent = 0;
+		}
+		
+		CGFloat newOtherLineIndent = paragraphStyle.headIndent + delta;
+
+		if (newOtherLineIndent < 0)
+		{
+			newOtherLineIndent = 0;
+		}
+		
+		paragraphStyle.firstLineHeadIndent = newFirstLineIndent;
+		paragraphStyle.headIndent = newOtherLineIndent;
+
+		return YES;
+	}];
+	
+	if (didUpdate)
+	{
+		// replace
+		[self _updateSubstringInRange:[paragraphRange NSRangeValue] withAttributedString:fragment actionName:@"Alignment"];
+		
+		// attachment positions might have changed
+		[self.contentView layoutSubviewsInRect:self.bounds];
+		
+		// cursor positions might have changed
+		[self updateCursorAnimated:NO];
+	}
+	
+	[self hideContextMenu];
+}
+
 - (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range
 {
 	NSRange styleRange = [(DTTextRange *)range NSRangeValue];

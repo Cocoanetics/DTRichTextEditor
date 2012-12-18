@@ -38,6 +38,10 @@
 	UIBarButtonItem *rightAlignButton;
 	UIBarButtonItem *justifyAlignButton;
 	
+	// indent buttons
+	UIBarButtonItem *increaseIndentButton;
+	UIBarButtonItem *decreaseIndentButton;
+	
 	// lists
 	UIBarButtonItem *unorderedListButton;
 	UIBarButtonItem *orderedListButton;

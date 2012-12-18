@@ -94,12 +94,17 @@
 	rightAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"R" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleRight:)];
 	justifyAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"J" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleJustify:)];
 	
+	increaseIndentButton = [[UIBarButtonItem alloc] initWithTitle:@"->" style:UIBarButtonItemStyleBordered target:self action:@selector(increaseIndent:)];
+	decreaseIndentButton = [[UIBarButtonItem alloc] initWithTitle:@"<-" style:UIBarButtonItemStyleBordered target:self action:@selector(decreaseIndent:)];
+	
 	UIBarButtonItem *spacer2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
+	UIBarButtonItem *spacer3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+	
 	orderedListButton = [[UIBarButtonItem alloc] initWithTitle:@"1." style:UIBarButtonItemStyleBordered target:self action:@selector(toggleOrderedList:)];
 	unorderedListButton = [[UIBarButtonItem alloc] initWithTitle:@"+" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleUnorderedList:)];
 
-	UIBarButtonItem *spacer3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+	UIBarButtonItem *spacer4 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 	
 	UIBarButtonItem *smile = [[UIBarButtonItem alloc] initWithTitle:@":)" style:UIBarButtonItemStyleBordered target:self action:@selector(insertSmiley:)];
 	
@@ -109,7 +114,7 @@
 	toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
 	richEditor.inputAccessoryView = toolbar;
 	
-	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, highlightButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, orderedListButton, unorderedListButton, spacer3, photoButton, smile, linkButton, nil]];
+	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, highlightButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, increaseIndentButton, decreaseIndentButton, spacer3, orderedListButton, unorderedListButton, spacer4, photoButton, smile, linkButton, nil]];
 	
 	// watch the selectedTextRange property
 	[richEditor addObserver:self forKeyPath:@"selectedTextRange" options:NSKeyValueObservingOptionNew context:nil];
@@ -310,6 +315,18 @@
 {
 	UITextRange *range = richEditor.selectedTextRange;
 	[richEditor applyTextAlignment:kCTJustifiedTextAlignment toParagraphsContainingRange:range];
+}
+
+- (void)increaseIndent:(UIBarButtonItem *)sender
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	[richEditor changeParagraphLeftMarginBy:36 toParagraphsContainingRange:range];
+}
+
+- (void)decreaseIndent:(UIBarButtonItem *)sender
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	[richEditor changeParagraphLeftMarginBy:-36 toParagraphsContainingRange:range];
 }
 
 - (void)toggleUnorderedList:(UIBarButtonItem *)sender

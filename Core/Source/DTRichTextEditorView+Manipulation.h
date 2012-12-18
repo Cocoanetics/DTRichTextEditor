@@ -61,6 +61,8 @@
 
 /**
  The attributes to apply for new text inserted at the given range.
+ @param range The text range
+ @returns The dictionary of styles
  */
 - (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
 
@@ -83,6 +85,15 @@
  @returns `YES` if at least one paragraph's alignment was changed
  */
 - (BOOL)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range;
+
+/**
+ Changes the paragraph indentation by the given amount.
+ 
+ This modifies both the firstLineHeadIndent as well as the headIndent properties of the paragraph styles.
+ @param range The text range
+ @param delta The amont to modify the left indentation by.
+ */
+- (void)changeParagraphLeftMarginBy:(CGFloat)delta toParagraphsContainingRange:(UITextRange *)range;
 
 /**
  Toggles a list style on a given range.
