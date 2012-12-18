@@ -22,6 +22,13 @@
 
 #pragma mark - Getting/Setting content
 
+- (NSAttributedString *)attributedSubstringForRange:(UITextRange *)range
+{
+	DTTextRange *textRange = (DTTextRange *)range;
+	
+	return [self.contentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:[textRange NSRangeValue]];
+}
+
 - (void)setHTMLString:(NSString *)string
 {
 	NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
@@ -47,10 +54,9 @@
 	return tmpString;
 };
 
-- (UITextRange *)rangeForWordAtPosition:(UITextPosition *)textPosition
+#pragma mark - Working with Ranges
+- (UITextRange *)textRangeOfWordAtPosition:(UITextPosition *)position
 {
-	DTTextPosition *position = (DTTextPosition *)textPosition;
-	
 	DTTextRange *forRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionForward];
 	DTTextRange *backRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionBackward];
 	
@@ -69,18 +75,20 @@
 	}
 	
 	// treat image as word, left side of image selects it
-	NSAttributedString *characterString = [self.contentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:NSMakeRange(position.location, 1)];
+	UITextPosition *plusOnePosition = [self positionFromPosition:position offset:1];
+	UITextRange *imageRange = [self textRangeFromPosition:position toPosition:plusOnePosition];
+	
+	NSAttributedString *characterString = [self attributedSubstringForRange:imageRange];
 	
 	if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:NSAttachmentAttributeName])
 	{
-		return [DTTextRange textRangeFromStart:position toEnd:[position textPositionWithOffset:1]];
+		return imageRange;
 	}
 	
 	// we did not get a forward or backward range, like Word!|
 	DTTextPosition *previousPosition = (id)([self.tokenizer positionFromPosition:position
 																					 toBoundary:UITextGranularityCharacter
 																					inDirection:UITextStorageDirectionBackward]);
-	
 	
 	// treat image as word, right side of image selects it
 	characterString = [self.contentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:NSMakeRange(previousPosition.location, 1)];
@@ -118,30 +126,27 @@
 	return nil;
 }
 
-- (NSDictionary *)defaultAttributes
+- (UITextRange *)textRangeOfURLAtPosition:(UITextPosition *)position URL:(NSURL **)URL
 {
-	NSDictionary *defaults = [self textDefaults];
-	NSString *fontFamily = [defaults objectForKey:DTDefaultFontFamily];
+	NSUInteger index = [(DTTextPosition *)position location];
 	
-	CGFloat multiplier = [[defaults objectForKey:NSTextSizeMultiplierDocumentOption] floatValue];
+	NSRange effectiveRange;
 	
-	if (!multiplier)
+	NSURL *effectiveURL = [self.contentView.layoutFrame.attributedStringFragment attribute:DTLinkAttribute atIndex:index effectiveRange:&effectiveRange];
+	
+	if (!effectiveURL)
 	{
-		multiplier = 1.0;
+		return nil;
 	}
 	
-	DTCoreTextFontDescriptor *desc = [[DTCoreTextFontDescriptor alloc] init];
-	desc.fontFamily = fontFamily;
-	desc.pointSize = 12.0 * multiplier;
+	DTTextRange *range = [DTTextRange rangeWithNSRange:effectiveRange];
 	
-	CTFontRef defaultFont = [desc newMatchingFont];
+	if (URL)
+	{
+		*URL = effectiveURL;
+	}
 	
-	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-	[(NSMutableDictionary *)attributes setObject:(__bridge id)defaultFont forKey:(id)kCTFontAttributeName];
-	
-	CFRelease(defaultFont);
-	
-	return attributes;
+	return range;
 }
 
 - (NSDictionary *)typingAttributesForRange:(DTTextRange *)range
@@ -197,29 +202,6 @@
 	}
 	
 	return tmpAttributes;
-}
-
-- (UITextRange *)textRangeOfURLAtPosition:(UITextPosition *)position URL:(NSURL **)URL
-{
-	NSUInteger index = [(DTTextPosition *)position location];
-	
-	NSRange effectiveRange;
-	
-	NSURL *effectiveURL = [self.contentView.layoutFrame.attributedStringFragment attribute:DTLinkAttribute atIndex:index effectiveRange:&effectiveRange];
-	
-	if (!effectiveURL)
-	{
-		return nil;
-	}
-	
-	DTTextRange *range = [DTTextRange rangeWithNSRange:effectiveRange];
-	
-	if (URL)
-	{
-		*URL = effectiveURL;
-	}
-	
-	return range;
 }
 
 #pragma mark - Pasteboard
@@ -330,7 +312,7 @@
 		// get fragment that is to be made italic
 		NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
 		
-		// make entire frament bold
+		// make entire frament italic
 		[fragment toggleItalicInRange:NSMakeRange(0, [fragment length])];
 
 		// replace
@@ -364,10 +346,10 @@
 	{
 		NSRange styleRange = [(DTTextRange *)range NSRangeValue];
 		
-		// get fragment that is to be made bold
+		// get fragment that is to be made underlined
 		NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
 		
-		// make entire frament bold
+		// make entire frament underlined
 		[fragment toggleUnderlineInRange:NSMakeRange(0, [fragment length])];
 		
 		// replace
@@ -448,10 +430,10 @@
 	
 	NSRange styleRange = [(DTTextRange *)range NSRangeValue];
 	
-	// get fragment that is to be made bold
+	// get fragment that is to be toggled
 	NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
 	
-	// make entire frament highlighted
+	// toggle entire frament
 	NSRange entireFragmentRange = NSMakeRange(0, [fragment length]);
 	[fragment toggleHyperlinkInRange:entireFragmentRange URL:URL];
 	
@@ -493,6 +475,7 @@
 	[self hideContextMenu];
 }
 
+#pragma mark - Changing Paragraph Styles
 
 - (void)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range
 {

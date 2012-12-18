@@ -2238,6 +2238,32 @@ typedef enum
 	}
 }
 
+- (NSDictionary *)defaultAttributes
+{
+	NSDictionary *defaults = [self textDefaults];
+	NSString *fontFamily = [defaults objectForKey:DTDefaultFontFamily];
+	
+	CGFloat multiplier = [[defaults objectForKey:NSTextSizeMultiplierDocumentOption] floatValue];
+	
+	if (!multiplier)
+	{
+		multiplier = 1.0;
+	}
+	
+	DTCoreTextFontDescriptor *desc = [[DTCoreTextFontDescriptor alloc] init];
+	desc.fontFamily = fontFamily;
+	desc.pointSize = 12.0 * multiplier;
+	
+	CTFontRef defaultFont = [desc newMatchingFont];
+	
+	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
+	[(NSMutableDictionary *)attributes setObject:(__bridge id)defaultFont forKey:(id)kCTFontAttributeName];
+	
+	CFRelease(defaultFont);
+	
+	return attributes;
+}
+
 #pragma mark Properties
 - (void)setAttributedText:(NSAttributedString *)newAttributedText
 {
