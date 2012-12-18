@@ -352,20 +352,58 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 
 - (void)adjustTextAlignment:(CTTextAlignment)alignment inRange:(NSRange)range
 {
-	[self beginEditing];
 	
-	[self enumerateAttribute:(id)kCTParagraphStyleAttributeName inRange:range options:0
-				  usingBlock:^(id value, NSRange range, BOOL *stop) {
-					  CTParagraphStyleRef paragraphStyle = (__bridge CTParagraphStyleRef)value;
-					  
-					  DTCoreTextParagraphStyle *para = [[DTCoreTextParagraphStyle alloc] initWithCTParagraphStyle:paragraphStyle];
-					  para.alignment = alignment;
-					  
-					  CTParagraphStyleRef newParagraphStyle = [para createCTParagraphStyle];
-					  [self addAttribute:(id)kCTParagraphStyleAttributeName value:CFBridgingRelease(newParagraphStyle) range:range];
-				  }];
+
+}
+
+- (BOOL)enumerateAndUpdateParagraphStylesInRange:(NSRange)range block:(NSMutableAttributedStringParagraphStyleEnumerationBlock)block
+{
+	NSAssert(block, @"Block cannot be NULL");
 	
-	[self endEditing];
+	NSString *string = [self string];
+	
+	// extend to entire paragraphs
+	NSRange allParagraphsRange = [string rangeOfParagraphsContainingRange:range parBegIndex:NULL parEndIndex:NULL];
+	
+	NSUInteger index = range.location;
+	__block BOOL didChange = NO;
+	
+	while (index<NSMaxRange(allParagraphsRange))
+	{
+		NSRange paragraphRange =  [string rangeOfParagraphAtIndex:index];
+		
+		CTParagraphStyleRef ctParaStyle = (__bridge CTParagraphStyleRef)[self attribute:(id)kCTParagraphStyleAttributeName atIndex:index effectiveRange:NULL];
+		
+		// make our own mutable paragraph style objects out of that
+		DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:ctParaStyle];
+		
+		__block BOOL stop = NO;
+		
+		// execute the block
+		if (block(paragraphStyle, &stop))
+		{
+			// YES means we should update
+			CTParagraphStyleRef newStyle = [paragraphStyle createCTParagraphStyle];
+			
+			// remove old, works around old leak
+			[self removeAttribute:(id)kCTParagraphStyleAttributeName range:paragraphRange];
+			
+			[self addAttribute:(id)kCTParagraphStyleAttributeName value:(__bridge id)newStyle range:paragraphRange];
+			
+			didChange = YES;
+			
+			CFRelease(newStyle);
+			
+			if (stop)
+			{
+				break;
+			}
+		}
+		
+		index = NSMaxRange(paragraphRange);
+	}
+	
+	return didChange;
 }
 
 - (void)extendPreviousList:(DTCSSListStyle *)listStyle toIncludeRange:(NSRange)range numberingFrom:(NSInteger)nextItemNumber

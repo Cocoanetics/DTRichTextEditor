@@ -530,7 +530,7 @@ typedef enum
 - (void)selectWordAtPositionClosestToLocation:(CGPoint)location
 {
 	UITextPosition *position = (id)[self closestPositionToPoint:location];
-	UITextRange *wordRange = [self rangeForWordAtPosition:position];
+	UITextRange *wordRange = [self textRangeOfWordAtPosition:position];
 	self.selectedTextRange = wordRange;
 }
 
@@ -971,7 +971,7 @@ typedef enum
 		
 		UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
 		
-		UITextRange *wordRange = [self rangeForWordAtPosition:position];
+		UITextRange *wordRange = [self textRangeOfWordAtPosition:position];
 		
 		self.selectionView.showsDragHandlesForSelection = _keyboardIsShowing;
 		
@@ -1411,7 +1411,7 @@ typedef enum
 - (void)select:(id)sender
 {
 	UITextPosition *currentPosition = (DTTextPosition *)[_selectedTextRange start];
-	UITextRange *wordRange = [self rangeForWordAtPosition:currentPosition];
+	UITextRange *wordRange = [self textRangeOfWordAtPosition:currentPosition];
 	
 	if (wordRange)
 	{
@@ -2413,6 +2413,17 @@ typedef enum
 @synthesize defaultFontFamily = _defaultFontFamily;
 @synthesize baseURL = _baseURL;
 @synthesize textSizeMultiplier = _textSizeMultiplier;
+
+// UITextInput
+@synthesize autocapitalizationType;
+@synthesize autocorrectionType;
+@synthesize enablesReturnKeyAutomatically;
+@synthesize keyboardAppearance;
+@synthesize keyboardType;
+@synthesize returnKeyType;
+@synthesize secureTextEntry;
+@synthesize selectionAffinity;
+@synthesize spellCheckingType;
 
 // other properties
 @synthesize canInteractWithPasteboard = _canInteractWithPasteboard;

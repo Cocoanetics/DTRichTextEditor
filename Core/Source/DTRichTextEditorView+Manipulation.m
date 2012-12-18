@@ -149,6 +149,26 @@
 	return range;
 }
 
+- (UITextRange *)textRangeOfParagraphsContainingRange:(UITextRange *)range
+{
+	NSRange myRange = [(DTTextRange *)range NSRangeValue];
+	
+	// get range containing all selected paragraphs
+	NSAttributedString *attributedString = [contentView.layoutFrame attributedStringFragment];
+	
+	NSString *string = [attributedString string];
+	
+	NSUInteger begIndex;
+	NSUInteger endIndex;
+	
+	[string rangeOfParagraphsContainingRange:myRange parBegIndex:&begIndex parEndIndex:&endIndex];
+	myRange = NSMakeRange(begIndex, endIndex - begIndex); // now extended to full paragraphs
+	
+	DTTextRange *retRange = [DTTextRange rangeWithNSRange:myRange];
+
+	return retRange;
+}
+
 - (NSDictionary *)typingAttributesForRange:(DTTextRange *)range
 {
 	NSDictionary *attributes = [self.contentView.layoutFrame.attributedStringFragment typingAttributesForRange:[range NSRangeValue]];
@@ -477,35 +497,38 @@
 
 #pragma mark - Changing Paragraph Styles
 
-- (void)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range
+- (BOOL)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range
 {
-	NSRange styleRange = [(DTTextRange *)range NSRangeValue];
+	DTTextRange *paragraphRange = (DTTextRange *)[self textRangeOfParagraphsContainingRange:range];
+	NSMutableAttributedString *fragment = [[self attributedSubstringForRange:paragraphRange] mutableCopy];
 	
-	// get range containing all selected paragraphs
-	NSAttributedString *attributedString = [contentView.layoutFrame attributedStringFragment];
-	
-	NSString *string = [attributedString string];
-	
-	NSUInteger begIndex;
-	NSUInteger endIndex;
-	
-	[string rangeOfParagraphsContainingRange:styleRange parBegIndex:&begIndex parEndIndex:&endIndex];
-	styleRange = NSMakeRange(begIndex, endIndex - begIndex); // now extended to full paragraphs
-	
-	// get fragment that is to be changed
-	NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
-	[fragment adjustTextAlignment:alignment inRange:NSMakeRange(0, [fragment length])];
-	
-	// replace
-	[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:@"Alignment"];
-	
-	// attachment positions might have changed
-	[self.contentView layoutSubviewsInRect:self.bounds];
-	
-	// cursor positions might have changed
-	[self updateCursorAnimated:NO];
+	// adjust
+	NSRange entireRange = NSMakeRange(0, [fragment length]);
+	BOOL didUpdate = [fragment enumerateAndUpdateParagraphStylesInRange:entireRange block:^BOOL(DTCoreTextParagraphStyle *paragraphStyle, BOOL *stop) {
+		if (paragraphStyle.alignment != alignment)
+		{
+			paragraphStyle.alignment = alignment;
+			return YES;
+		}
+		
+		return NO;
+	}];
+
+	if (didUpdate)
+	{
+		// replace
+		[self _updateSubstringInRange:[paragraphRange NSRangeValue] withAttributedString:fragment actionName:@"Alignment"];
+		
+		// attachment positions might have changed
+		[self.contentView layoutSubviewsInRect:self.bounds];
+		
+		// cursor positions might have changed
+		[self updateCursorAnimated:NO];
+	}
 	
 	[self hideContextMenu];
+
+	return didUpdate;
 }
 
 - (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range

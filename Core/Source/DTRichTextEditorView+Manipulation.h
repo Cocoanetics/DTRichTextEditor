@@ -64,6 +64,13 @@
  */
 - (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
 
+/**
+ Extends the given range to include all full paragraphs that contain it.
+ @param range The text range
+ @returns The extended range
+ */
+- (UITextRange *)textRangeOfParagraphsContainingRange:(UITextRange *)range;
+
 
 /**
  @name Changing Paragraph Styles
@@ -73,8 +80,9 @@
  Applies the given text alignment to all paragraphs that are encompassing the given text range.
  @param alignment The text alignment to apply
  @param range The text range
+ @returns `YES` if at least one paragraph's alignment was changed
  */
-- (void)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range;
+- (BOOL)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range;
 
 /**
  Toggles a list style on a given range.
@@ -144,6 +152,7 @@
  Retrieving the attachments that match a predicate.
  @param predicate The `NSPredicate` that will be used to check the DTTextAttachment key values against
  @returns An array of matching attachments
+ */
 - (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate;
 
  
