@@ -398,9 +398,9 @@ static dispatch_semaphore_t selfLock;
 @synthesize tailIndent = _tailIndent;
 @synthesize listIndent = _listIndent;
 @synthesize alignment = _alignment;
-@synthesize textLists;
-@synthesize textBlocks;
-@synthesize baseWritingDirection;
+@synthesize textLists = _textLists;
+@synthesize textBlocks = _textBlocks;
+@synthesize baseWritingDirection = _baseWritingDirection;
 @synthesize tabStops = _tabStops;
 
 @end
