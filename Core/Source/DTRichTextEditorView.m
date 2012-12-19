@@ -41,6 +41,7 @@
 #import "UIPasteboard+DTWebArchive.h"
 #import "DTRichTextEditorContentView.h"
 #import "DTRichTextEditorView+Manipulation.h"
+#import "DTUndoManager.h"
 
 
 NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextEditorTextDidBeginEditingNotification";
@@ -140,7 +141,7 @@ typedef enum
 	NSDictionary *_textDefaults;
 	
 	// the undo manager
-	NSUndoManager *_undoManager;
+	DTUndoManager *_undoManager;
 }
 
 #pragma mark -
@@ -1441,11 +1442,11 @@ typedef enum
 }
 
 // creates an undo manager lazily in response to a shake gesture or first edit action
-- (NSUndoManager *)undoManager
+- (DTUndoManager *)undoManager
 {
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-		_undoManager = [[NSUndoManager alloc] init];
+		_undoManager = [[DTUndoManager alloc] init];
 	});
 	
 	return _undoManager;
@@ -1476,6 +1477,13 @@ typedef enum
 
 - (void)insertText:(NSString *)text
 {
+	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
+	
+	if (!undoManager.numberOfOpenGroups)
+	{
+		[self.undoManager beginUndoGrouping];
+	}
+
 	if (_replaceParagraphsWithLineFeeds)
 	{
 		text = [text stringByReplacingOccurrencesOfString:@"\n" withString:UNICODE_LINE_FEED];
@@ -1695,6 +1703,7 @@ typedef enum
 	{
 		[self.undoManager setActionName:NSLocalizedString(@"Typing", @"Undo Action when text is entered")];
 	}
+	
 	[undoManager endUndoGrouping];
 	
 	// ----
@@ -2292,6 +2301,8 @@ typedef enum
 
 	// always position cursor at the end of the text
 	self.selectedTextRange = [DTTextRange emptyRangeAtPosition:self.endOfDocument];
+	
+	[self.undoManager removeAllActions];
 }
 
 - (NSAttributedString *)attributedText

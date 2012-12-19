@@ -133,6 +133,10 @@
 		A7D8FEC814E1570000BF8CCD /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7235AA61487A9C100C9F926 /* libDTWebArchive.a */; };
 		A7D8FECA14E1571900BF8CCD /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FEC914E1571900BF8CCD /* libxml2.dylib */; };
 		A7D8FF9414E294D600BF8CCD /* DTLoupe.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A7D8FF8A14E2939600BF8CCD /* DTLoupe.bundle */; };
+		A7DA0C5516822CEC007637A2 /* DTUndoManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A7DA0C5316822CEC007637A2 /* DTUndoManager.h */; };
+		A7DA0C5616822CEC007637A2 /* DTUndoManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A7DA0C5316822CEC007637A2 /* DTUndoManager.h */; };
+		A7DA0C5716822CEC007637A2 /* DTUndoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DA0C5416822CEC007637A2 /* DTUndoManager.m */; };
+		A7DA0C5816822CEC007637A2 /* DTUndoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DA0C5416822CEC007637A2 /* DTUndoManager.m */; };
 		A7E807D215EB6C5900525855 /* NSAttributedString+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351351486771700F4C766 /* NSAttributedString+DTRichText.m */; };
 		A7E807D315EB6CC600525855 /* NSAttributedString+DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D728641487C2F300A22742 /* NSAttributedString+DTWebArchive.m */; };
 		A7E807D415EB6CE100525855 /* DTWebResource+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D728931487C46600A22742 /* DTWebResource+DTRichText.m */; };
@@ -401,6 +405,8 @@
 		A7D729511487DAB100A22742 /* DTRichTextEditor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DTRichTextEditor-Info.plist"; sourceTree = "<group>"; };
 		A7D8FEC914E1571900BF8CCD /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTLoupe.xcodeproj; path = DTLoupeView/DTLoupe.xcodeproj; sourceTree = "<group>"; };
+		A7DA0C5316822CEC007637A2 /* DTUndoManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTUndoManager.h; sourceTree = "<group>"; };
+		A7DA0C5416822CEC007637A2 /* DTUndoManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTUndoManager.m; sourceTree = "<group>"; };
 		A7E8082215EBAC2900525855 /* NSMutableString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSMutableString+HTML.h"; path = "DTCoreText/Core/Source/NSMutableString+HTML.h"; sourceTree = "<group>"; };
 		A7E82CDF15D5384700BD47AB /* DTLoupeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTLoupeView.h; path = DTLoupeView/Core/Source/DTLoupeView.h; sourceTree = "<group>"; };
 		A7E994DD154E79DA00FEB5DB /* Changelog.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = Changelog.markdown; sourceTree = "<group>"; };
@@ -519,6 +525,8 @@
 				A7402D4E167F571B00BE0AAF /* DTRichTextEditorView+Manipulation.m */,
 				A74351321486771700F4C766 /* DTTiledLayerWithoutFade.h */,
 				A74351331486771700F4C766 /* DTTiledLayerWithoutFade.m */,
+				A7DA0C5316822CEC007637A2 /* DTUndoManager.h */,
+				A7DA0C5416822CEC007637A2 /* DTUndoManager.m */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -628,7 +636,7 @@
 		A7D8FEAE14E14E4500BF8CCD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A7D8FEB614E14E4500BF8CCD /* DemoApp.app */,
+				A7D8FEB614E14E4500BF8CCD /* RTDemoApp.app */,
 				A7D8FEB814E14E4500BF8CCD /* DTCoreText.framework */,
 				A7D8FEBA14E14E4500BF8CCD /* libDTCoreText.a */,
 				A7D8FEBC14E14E4500BF8CCD /* UnitTest.octest */,
@@ -723,6 +731,7 @@
 				A7FE7FC515FF18370003723B /* DTTextSelectionRect.h in Headers */,
 				A7402D4F167F571B00BE0AAF /* DTRichTextEditorView+Manipulation.h in Headers */,
 				A7402D55167F66E000BE0AAF /* DTRichTextEditorView+DTCoreText.h in Headers */,
+				A7DA0C5516822CEC007637A2 /* DTUndoManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -787,6 +796,7 @@
 				A7FE7FC615FF18370003723B /* DTTextSelectionRect.h in Headers */,
 				A7402D50167F571B00BE0AAF /* DTRichTextEditorView+Manipulation.h in Headers */,
 				A7402D56167F66E000BE0AAF /* DTRichTextEditorView+DTCoreText.h in Headers */,
+				A7DA0C5616822CEC007637A2 /* DTUndoManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -927,7 +937,7 @@
 			remoteRef = A782209516805EBB005B602D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A7D8FEB614E14E4500BF8CCD /* DemoApp.app */ = {
+		A7D8FEB614E14E4500BF8CCD /* RTDemoApp.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = RTDemoApp.app;
@@ -1063,6 +1073,7 @@
 				A7FE7FC715FF18370003723B /* DTTextSelectionRect.m in Sources */,
 				A7402D51167F571B00BE0AAF /* DTRichTextEditorView+Manipulation.m in Sources */,
 				A7402D57167F66E000BE0AAF /* DTRichTextEditorView+DTCoreText.m in Sources */,
+				A7DA0C5716822CEC007637A2 /* DTUndoManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1089,6 +1100,7 @@
 				A7FE7FC815FF18370003723B /* DTTextSelectionRect.m in Sources */,
 				A7402D52167F571B00BE0AAF /* DTRichTextEditorView+Manipulation.m in Sources */,
 				A7402D58167F66E000BE0AAF /* DTRichTextEditorView+DTCoreText.m in Sources */,
+				A7DA0C5816822CEC007637A2 /* DTUndoManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,11 +7,13 @@
 //
 
 #import "DTRichTextEditor.h"
+#import "DTUndoManager.h"
 
 @interface DTRichTextEditorView (private)
 
 - (void)updateCursorAnimated:(BOOL)animated;
 - (void)hideContextMenu;
+- (void)_closeTypingUndoGroupIfNecessary;
 
 @property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
 
@@ -36,6 +38,8 @@
 	NSAttributedString *attributedString = [[NSAttributedString alloc] initWithHTMLData:data options:[self textDefaults] documentAttributes:NULL];
 	
 	[self setAttributedText:attributedString];
+	
+	[self.undoManager removeAllActions];
 }
 
 - (NSString *)plainTextForRange:(UITextRange *)range
@@ -273,12 +277,28 @@
 	
 	// replace
 	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:range withText:attributedString];
+	
+	// attachment positions might have changed
+	[self.contentView layoutSubviewsInRect:self.bounds];
+	
+	// cursor positions might have changed
+	[self updateCursorAnimated:NO];
+}
+
+- (void)_closeTypingUndoGroupIfNecessary
+{
+	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
+	
+	[undoManager closeAllOpenGroups];
 }
 
 #pragma mark - Toggling Styles for Ranges
 
 - (void)toggleBoldInRange:(DTTextRange *)range
 {
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
+
 	if ([range isEmpty])
 	{
 		// if we only have a cursor then we save the attributes for the next insertion
@@ -303,9 +323,6 @@
 	
 		// replace
 		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Bold", @"Action that makes text bold")];
-		
-		// cursor positions might have changed
-		[self updateCursorAnimated:NO];
 	}
 	
 	[self hideContextMenu];
@@ -313,6 +330,9 @@
 
 - (void)toggleItalicInRange:(DTTextRange *)range
 {
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
+
 	if ([range isEmpty])
 	{
 		// if we only have a cursor then we save the attributes for the next insertion
@@ -337,12 +357,6 @@
 
 		// replace
 		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Italic", @"Action that makes text italic")];
-		
-		// attachment positions might have changed
-		[self.contentView layoutSubviewsInRect:self.bounds];
-		
-		// cursor positions might have changed
-		[self updateCursorAnimated:NO];
 	}
 	
 	[self hideContextMenu];
@@ -350,6 +364,9 @@
 
 - (void)toggleUnderlineInRange:(DTTextRange *)range
 {
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
+
 	if ([range isEmpty])
 	{
 		// if we only have a cursor then we save the attributes for the next insertion
@@ -374,12 +391,6 @@
 		
 		// replace
 		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Underline", @"Action that makes text underlined")];
-		
-		// attachment positions might have changed
-		[self.contentView layoutSubviewsInRect:self.bounds];
-		
-		// cursor positions might have changed
-		[self updateCursorAnimated:NO];
 	}
 	
 	[self hideContextMenu];
@@ -387,6 +398,9 @@
 
 - (void)toggleHighlightInRange:(DTTextRange *)range color:(UIColor *)color
 {
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
+
 	if ([range isEmpty])
 	{
 		// if we only have a cursor then we save the attributes for the next insertion
@@ -411,12 +425,6 @@
 		
 		// replace
 		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Highlight", @"Action that adds a colored background behind text to highlight it")];
-		
-		// attachment positions might have changed
-		[self.contentView layoutSubviewsInRect:self.bounds];
-		
-		// cursor positions might have changed
-		[self updateCursorAnimated:NO];
 	}
 	
 	[self hideContextMenu];
@@ -424,6 +432,9 @@
 
 - (void)toggleHyperlinkInRange:(UITextRange *)range URL:(NSURL *)URL
 {
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
+
 	// if there is an URL at the cursor position we assume it
 	NSURL *effectiveURL = nil;
 	UITextRange *effectiveRange = [self textRangeOfURLAtPosition:range.start URL:&effectiveURL];
@@ -486,12 +497,6 @@
 	// replace
 	[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Hyperlink", @"Action that toggles text to be a hyperlink")];
 	
-	// attachment positions might have changed
-	[self.contentView layoutSubviewsInRect:self.bounds];
-	
-	// cursor positions might have changed
-	[self updateCursorAnimated:NO];
-	
 	[self hideContextMenu];
 }
 
@@ -499,6 +504,9 @@
 
 - (BOOL)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range
 {
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
+	
 	DTTextRange *paragraphRange = (DTTextRange *)[self textRangeOfParagraphsContainingRange:range];
 	NSMutableAttributedString *fragment = [[self attributedSubstringForRange:paragraphRange] mutableCopy];
 	
@@ -518,12 +526,6 @@
 	{
 		// replace
 		[self _updateSubstringInRange:[paragraphRange NSRangeValue] withAttributedString:fragment actionName:NSLocalizedString(@"Alignment", @"Action that adjusts paragraph alignment")];
-		
-		// attachment positions might have changed
-		[self.contentView layoutSubviewsInRect:self.bounds];
-		
-		// cursor positions might have changed
-		[self updateCursorAnimated:NO];
 	}
 	
 	[self hideContextMenu];
@@ -533,6 +535,9 @@
 
 - (void)changeParagraphLeftMarginBy:(CGFloat)delta toParagraphsContainingRange:(UITextRange *)range
 {
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
+
 	DTTextRange *paragraphRange = (DTTextRange *)[self textRangeOfParagraphsContainingRange:range];
 	NSMutableAttributedString *fragment = [[self attributedSubstringForRange:paragraphRange] mutableCopy];
 	
@@ -564,12 +569,6 @@
 	{
 		// replace
 		[self _updateSubstringInRange:[paragraphRange NSRangeValue] withAttributedString:fragment actionName:NSLocalizedString(@"Indent", @"Action that changes the indentation of a paragraph")];
-		
-		// attachment positions might have changed
-		[self.contentView layoutSubviewsInRect:self.bounds];
-		
-		// cursor positions might have changed
-		[self updateCursorAnimated:NO];
 	}
 	
 	[self hideContextMenu];
@@ -577,6 +576,9 @@
 
 - (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range
 {
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
+
 	NSRange styleRange = [(DTTextRange *)range NSRangeValue];
 	
 	NSRange rangeToSelectAfterwards = styleRange;
@@ -659,6 +661,9 @@
 
 - (void)replaceRange:(DTTextRange *)range withAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph
 {
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
+
 	NSRange textRange = [(DTTextRange *)range NSRangeValue];
 	
 	NSMutableDictionary *attributes = [[self typingAttributesForRange:range] mutableCopy];
@@ -731,36 +736,11 @@
 		[tmpAttributedString appendAttributedString:formattedNL];
 	}
 	
-	//NSUInteger replacementLength = [tmpAttributedString length];
 	DTTextRange *replacementRange = [DTTextRange rangeWithNSRange:textRange];
 	[self replaceRange:replacementRange withText:tmpAttributedString];
-	
-	/*
-	 
-	 // need to notify input delegate to remove autocorrection candidate view if present
-	 [self.inputDelegate textWillChange:self];
-	 
-	 [(DTRichTextEditorContentView *)self.contentView replaceTextInRange:textRange withText:tmpAttributedString];
-	 
-	 [self.inputDelegate textDidChange:self];
-	 
-	 if (self->_keyboardIsShowing)
-	 {
-	 self.selectedTextRange = [DTTextRange emptyRangeAtPosition:[range start] offset:replacementLength];
-	 }
-	 else
-	 {
-	 self.selectedTextRange = nil;
-	 }
-	 
-	 [self updateCursorAnimated:NO];
-	 
-	 // this causes the image to appear, layout gets the custom view for the image
-	 [self setNeedsLayout];
-	 
-	 // send change notification
-	 [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidBeginEditingNotification object:self userInfo:nil];
-	 */
+
+	// change undo action name from typing to inserting image
+	[self.undoManager setActionName:NSLocalizedString(@"Insert Image", @"Undoable Action")];
 }
 
 
