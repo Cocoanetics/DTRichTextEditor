@@ -16,6 +16,11 @@
 {
 	NSData *data = [self dataForPasteboardType:WebArchivePboardType];
 	
+    if (!data)
+    {
+        return nil;
+    }
+    
 	return [[DTWebArchive alloc] initWithData:data];
 }
 

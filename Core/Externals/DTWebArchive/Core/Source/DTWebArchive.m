@@ -56,6 +56,12 @@ NSString * WebArchivePboardType = @"Apple Web Archive pasteboard type";
 															 mutabilityOption:NSPropertyListImmutable 
 																	   format:NULL 
 															 errorDescription:nil];
+        
+        if (!dict)
+        {
+            return nil;
+        }
+        
 		[self updateFromDictionary:dict];
     }
     
