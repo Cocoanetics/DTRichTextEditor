@@ -987,6 +987,10 @@ typedef enum
 			
 			self.selectedTextRange = wordRange;
 			
+			// begins a new typing undo group
+			DTUndoManager *undoManager = self.undoManager;
+			[undoManager closeAllOpenGroups];
+			
 			_showsKeyboardWhenBecomingFirstResponder = NO;
 			[self showContextMenuFromSelection];
 			_showsKeyboardWhenBecomingFirstResponder = YES;
@@ -1005,6 +1009,10 @@ typedef enum
 			[self presentLoupeWithTouchPoint:touchPoint];
 			_cursorIsShowing = YES;
 			_cursor.state = DTCursorStateStatic;
+			
+			// begins a new typing undo group
+			DTUndoManager *undoManager = self.undoManager;
+			[undoManager closeAllOpenGroups];
 		}
 			
 		case UIGestureRecognizerStateChanged:
