@@ -172,7 +172,9 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 		
 		BOOL isAtBeginOfParagraph = (currentParagraphRange.location == lineRange.location);
 		
-		CGFloat offset = 0;
+		CGFloat headIndent = 0;
+		CGFloat tailIndent = 0;
+		CTWritingDirection writingDirection;
 		
 		// get the paragraph style at this index
 		CTParagraphStyleRef paragraphStyle = (__bridge CTParagraphStyleRef)[_attributedStringFragment attribute:(id)kCTParagraphStyleAttributeName atIndex:lineRange.location effectiveRange:NULL];
@@ -189,7 +191,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 		
 		if (isAtBeginOfParagraph)
 		{
-			CTParagraphStyleGetValueForSpecifier(paragraphStyle, kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(offset), &offset);
+			CTParagraphStyleGetValueForSpecifier(paragraphStyle, kCTParagraphStyleSpecifierFirstLineHeadIndent, sizeof(headIndent), &headIndent);
 			
 			// save prev paragraph
 			previousParaMetrics = currentParaMetrics;
@@ -199,15 +201,28 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 		}
 		else
 		{
-			CTParagraphStyleGetValueForSpecifier(paragraphStyle, kCTParagraphStyleSpecifierHeadIndent, sizeof(offset), &offset);
+			CTParagraphStyleGetValueForSpecifier(paragraphStyle, kCTParagraphStyleSpecifierHeadIndent, sizeof(headIndent), &headIndent);
 		}
 		
+		CTParagraphStyleGetValueForSpecifier(paragraphStyle, kCTParagraphStyleSpecifierTailIndent, sizeof(tailIndent), &tailIndent);
+		
+		CTParagraphStyleGetValueForSpecifier(paragraphStyle, kCTParagraphStyleSpecifierBaseWritingDirection, sizeof(writingDirection), &writingDirection);
+		
 		// add left padding to offset
-		offset += currentTextBlock.padding.left;
+		lineOrigin.x = _frame.origin.x + headIndent + currentTextBlock.padding.left;
 		
-		lineOrigin.x = offset + _frame.origin.x;
+		CGFloat availableSpace;
+		CGFloat offset = headIndent + currentTextBlock.padding.left;
 		
-		CGFloat availableSpace = _frame.size.width - offset - currentTextBlock.padding.right;
+		if (tailIndent<=0)
+		{
+			// negative tail indent is measured from trailing margin (we assume LTR here)
+			availableSpace = _frame.size.width - offset - currentTextBlock.padding.right + tailIndent;
+		}
+		else
+		{
+			availableSpace = tailIndent - offset - currentTextBlock.padding.right;
+		}
 		
 		// find how many characters we get into this line
 		lineRange.length = CTTypesetterSuggestLineBreak(typesetter, lineRange.location, availableSpace);
