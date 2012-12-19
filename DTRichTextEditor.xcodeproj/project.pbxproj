@@ -930,7 +930,7 @@
 		A7D8FEB614E14E4500BF8CCD /* DemoApp.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = DemoApp.app;
+			path = RTDemoApp.app;
 			remoteRef = A7D8FEB514E14E4500BF8CCD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};

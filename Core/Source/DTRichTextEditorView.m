@@ -1386,7 +1386,6 @@ typedef enum
 		return;
 	}
 	
-	
 	DTWebArchive *webArchive = [pasteboard webArchive];
 	
 	if (webArchive)
@@ -1398,7 +1397,18 @@ typedef enum
 		
 		return;
 	}
-	
+
+	NSData *HTMLdata = [pasteboard dataForPasteboardType:@"public.html"];
+    
+    if (HTMLdata)
+    {
+		NSAttributedString *attrString = [[NSAttributedString alloc] initWithHTMLData:HTMLdata options:[self textDefaults] documentAttributes:NULL];
+		[self replaceRange:_selectedTextRange withText:attrString];
+		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
+		
+		return;
+    }
+    
 	NSString *string = [pasteboard string];
 	
 	if (string)
@@ -1721,21 +1731,11 @@ typedef enum
 #pragma mark Working with Marked and Selected Text 
 - (DTTextRange *)selectedTextRange
 {
-	//	if (!_selectedTextRange)
-	//	{
-	//		// [inputDelegate selectionWillChange:self];
-	//		DTTextPosition *begin = (id)[self beginningOfDocument];
-	//		_selectedTextRange = [[DTTextRange alloc] initWithStart:begin end:begin];
-	//		// [inputDelegate selectionDidChange:self];
-	//	}
-	
 	return (id)_selectedTextRange;
 }
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated
 {
-	//self.selectionView.showsDragHandlesForSelection = _keyboardIsShowing;
-	
 	// check if the selected range fits with the attributed text
 	DTTextPosition *start = (DTTextPosition *)newTextRange.start;
 	DTTextPosition *end = (DTTextPosition *)newTextRange.end;
