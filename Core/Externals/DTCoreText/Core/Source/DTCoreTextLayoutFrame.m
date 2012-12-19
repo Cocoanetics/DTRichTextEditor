@@ -109,7 +109,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 
 #pragma mark Building the Lines
 /* 
- Builds the array of lines with the internal typesetter of our framesetter. No need to correct line origins in this case because they are placed correctly in the first place.
+ Builds the array of lines with the internal typesetter of our framesetter. No need to correct line origins in this case because they are placed correctly in the first place. This version supports text boxes.
  */
 - (void)_buildLinesWithTypesetter
 {
@@ -155,7 +155,6 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 	paragraphMetrics previousParaMetrics = {0,0,0};
 	
 	lineMetrics currentLineMetrics;
-//	lineMetrics previousLineMetrics;
 	
 	DTTextBlock *currentTextBlock = nil;
 	DTTextBlock *previousTextBlock = nil;
@@ -174,7 +173,6 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 		
 		CGFloat headIndent = 0;
 		CGFloat tailIndent = 0;
-		CTWritingDirection writingDirection;
 		
 		// get the paragraph style at this index
 		CTParagraphStyleRef paragraphStyle = (__bridge CTParagraphStyleRef)[_attributedStringFragment attribute:(id)kCTParagraphStyleAttributeName atIndex:lineRange.location effectiveRange:NULL];
@@ -205,8 +203,6 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 		}
 		
 		CTParagraphStyleGetValueForSpecifier(paragraphStyle, kCTParagraphStyleSpecifierTailIndent, sizeof(tailIndent), &tailIndent);
-		
-		CTParagraphStyleGetValueForSpecifier(paragraphStyle, kCTParagraphStyleSpecifierBaseWritingDirection, sizeof(writingDirection), &writingDirection);
 		
 		// add left padding to offset
 		lineOrigin.x = _frame.origin.x + headIndent + currentTextBlock.padding.left;

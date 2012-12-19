@@ -661,7 +661,7 @@ BOOL ___shouldUseiOS6Attributes = NO;
 	NSString *marginRight = [styles objectForKey:@"margin-right"];
 	if (marginRight)
 	{
-		self.paragraphStyle.tailIndent = [marginRight pixelSizeOfCSSMeasureRelativeToCurrentTextSize:_fontDescriptor.pointSize];
+		self.paragraphStyle.tailIndent = -[marginRight pixelSizeOfCSSMeasureRelativeToCurrentTextSize:_fontDescriptor.pointSize];
 	}
 	
 	NSString *fontVariantStr = [[styles objectForKey:@"font-variant"] lowercaseString];
