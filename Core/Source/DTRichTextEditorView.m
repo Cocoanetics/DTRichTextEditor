@@ -64,6 +64,7 @@ typedef enum
 @property (nonatomic, readwrite) UITextRange *markedTextRange;  // internal property writeable
 @property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
 @property (nonatomic, retain) DTMutableCoreTextLayoutFrame *mutableLayoutFrame;
+@property (nonatomic, retain) DTUndoManager *undoManager;
 
 - (void)setDefaultText;
 - (void)showContextMenuFromSelection;
@@ -570,6 +571,10 @@ typedef enum
 	self.selectedTextRange = [DTTextRange emptyRangeAtPosition:position];
 	
 	[self.inputDelegate selectionDidChange:self];
+	
+	// begins a new typing undo group
+	DTUndoManager *undoManager = self.undoManager;
+	[undoManager closeAllOpenGroups];
 	
 	return didMove;
 }
