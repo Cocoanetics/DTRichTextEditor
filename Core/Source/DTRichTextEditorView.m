@@ -1491,7 +1491,6 @@ typedef enum
 - (void)insertText:(NSString *)text
 {
 	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
-	
 	if (!undoManager.numberOfOpenGroups)
 	{
 		[self.undoManager beginUndoGrouping];
@@ -1526,6 +1525,12 @@ typedef enum
 
 - (void)deleteBackward
 {
+	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
+	if (!undoManager.numberOfOpenGroups)
+	{
+		[self.undoManager beginUndoGrouping];
+	}
+
 	DTTextRange *currentRange = (id)[self selectedTextRange];
 	
 	if ([currentRange isEmpty])
