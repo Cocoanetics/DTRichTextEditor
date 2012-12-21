@@ -11,6 +11,7 @@
 		A704273613C37EFE00EE0776 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273513C37EFE00EE0776 /* CoreText.framework */; };
 		A704273813C37F0500EE0776 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273713C37F0500EE0776 /* QuartzCore.framework */; };
 		A704273A13C37F0B00EE0776 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273913C37F0B00EE0776 /* MediaPlayer.framework */; };
+		A72D976F1684BA0E005F8BA5 /* DTHTMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D976D1684BA0E005F8BA5 /* DTHTMLParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7402D4B167F4E5200BE0AAF /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7402D4A167F4E5200BE0AAF /* Default-568h@2x.png */; };
 		A7402D4F167F571B00BE0AAF /* DTRichTextEditorView+Manipulation.h in Headers */ = {isa = PBXBuildFile; fileRef = A7402D4D167F571A00BE0AAF /* DTRichTextEditorView+Manipulation.h */; };
 		A7402D50167F571B00BE0AAF /* DTRichTextEditorView+Manipulation.h in Headers */ = {isa = PBXBuildFile; fileRef = A7402D4D167F571A00BE0AAF /* DTRichTextEditorView+Manipulation.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -311,6 +312,7 @@
 		A704273913C37F0B00EE0776 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTCoreText.xcodeproj; path = DTCoreText/DTCoreText.xcodeproj; sourceTree = "<group>"; };
 		A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTWebArchive.xcodeproj; path = DTWebArchive/DTWebArchive.xcodeproj; sourceTree = "<group>"; };
+		A72D976D1684BA0E005F8BA5 /* DTHTMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLParser.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/DTHTMLParser.h; sourceTree = "<group>"; };
 		A7402D4A167F4E5200BE0AAF /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		A7402D4D167F571A00BE0AAF /* DTRichTextEditorView+Manipulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTRichTextEditorView+Manipulation.h"; sourceTree = "<group>"; };
 		A7402D4E167F571B00BE0AAF /* DTRichTextEditorView+Manipulation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DTRichTextEditorView+Manipulation.m"; sourceTree = "<group>"; };
@@ -588,6 +590,7 @@
 				A7D5465A15D56A9B00711CA1 /* DTCSSStylesheet.h */,
 				A7D5465715D56A9B00711CA1 /* DTHTMLAttributedStringBuilder.h */,
 				A7D5465815D56A9B00711CA1 /* DTHTMLElement.h */,
+				A72D976D1684BA0E005F8BA5 /* DTHTMLParser.h */,
 				A7D5465415D56A9B00711CA1 /* DTImage+HTML.h */,
 				A7D545E515D567BC00711CA1 /* DTLazyImageView.h */,
 				A7D545E715D567BC00711CA1 /* DTLinkButton.h */,
@@ -760,6 +763,7 @@
 				A7D729251487D97C00A22742 /* DTCursorView.h in Headers */,
 				A7D5467515D56AB300711CA1 /* DTHTMLAttributedStringBuilder.h in Headers */,
 				A7D5467615D56AB400711CA1 /* DTHTMLElement.h in Headers */,
+				A72D976F1684BA0E005F8BA5 /* DTHTMLParser.h in Headers */,
 				A7D5467215D56AAE00711CA1 /* DTImage+HTML.h in Headers */,
 				A7D545F215D5681100711CA1 /* DTLazyImageView.h in Headers */,
 				A7D545F015D5680600711CA1 /* DTLinkButton.h in Headers */,

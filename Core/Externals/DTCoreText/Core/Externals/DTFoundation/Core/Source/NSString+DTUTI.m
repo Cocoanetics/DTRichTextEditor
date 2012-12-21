@@ -8,6 +8,8 @@
 
 #import "NSString+DTUTI.h"
 
+#import <MobileCoreServices/MobileCoreServices.h>
+
 @implementation NSString (DTUTI)
 
 + (NSString *)MIMETypeForFileExtension:(NSString *)extension
