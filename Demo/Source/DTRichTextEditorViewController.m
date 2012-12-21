@@ -85,6 +85,9 @@
     highlightButton = [[UIBarButtonItem alloc] initWithTitle:@"H" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleHighlight:)];
 	highlightButton.enabled = NO;
     
+    fontButton = [[UIBarButtonItem alloc] initWithTitle:@"Font" style:UIBarButtonItemStyleBordered target:self action:@selector(changeFont:)];
+	fontButton.enabled = NO;
+    
     
 
 	UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
@@ -114,7 +117,7 @@
 	toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
 	richEditor.inputAccessoryView = toolbar;
 	
-	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, highlightButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, increaseIndentButton, decreaseIndentButton, spacer3, orderedListButton, unorderedListButton, spacer4, photoButton, smile, linkButton, nil]];
+	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, highlightButton, fontButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, increaseIndentButton, decreaseIndentButton, spacer3, orderedListButton, unorderedListButton, spacer4, photoButton, smile, linkButton, nil]];
 	
 	// watch the selectedTextRange property
 	[richEditor addObserver:self forKeyPath:@"selectedTextRange" options:NSKeyValueObservingOptionNew context:nil];
@@ -359,6 +362,20 @@
 	NSURL *URL =[NSURL URLWithString:@"http://www.cocoanetics.com"];
 	
 	[richEditor toggleHyperlinkInRange:range URL:URL];
+}
+
+- (void)changeFont:(UIBarButtonItem *)sender
+{
+    UITextRange *range = richEditor.selectedTextRange;
+    
+    // for simplicity we set a static font, IRL you want to have a fancy font picker dialog
+    
+    // you can get the current font family and size (and other attributes like this:
+    
+    DTCoreTextFontDescriptor *fontDescriptor = [richEditor fontDescriptorAtPosition:range.start];
+    NSLog(@"font-family: %@, size: %.0f", fontDescriptor.fontFamily, fontDescriptor.pointSize);
+    
+    [richEditor updateFontInRange:range withFontFamilyName:@"American Typewriter" pointSize:60];
 }
 
 #pragma mark Notifications

@@ -75,6 +75,19 @@
 	}
 }
 
+- (void)setFontFromFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor
+{
+    CTFontRef currentFont = (__bridge CTFontRef)[self objectForKey:(id)kCTFontAttributeName];
+    
+    if (!currentFont)
+    {
+        return;
+    }
+    
+    CTFontRef newFont = [fontDescriptor newMatchingFont];
+    [self setObject:CFBridgingRelease(newFont) forKey:(id)kCTFontAttributeName];
+}
+
 - (void)toggleHighlightWithColor:(UIColor *)color
 {
     CGColorRef backgroundColor = (__bridge CGColorRef)[self objectForKey:DTBackgroundColorAttribute];

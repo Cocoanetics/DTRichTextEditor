@@ -500,6 +500,81 @@
 	[self hideContextMenu];
 }
 
+- (void)updateFontInRange:(UITextRange *)range withFontFamilyName:(NSString *)fontFamilyName pointSize:(CGFloat)pointSize
+{
+    // close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
+    
+    if ([range isEmpty])
+    {
+        // if we only have a cursor then we save the attributes for the next insertion
+		NSMutableDictionary *tmpDict = [self.overrideInsertionAttributes mutableCopy];
+		
+		if (!tmpDict)
+		{
+			tmpDict = [[self typingAttributesForRange:range] mutableCopy];
+		}
+
+        DTCoreTextFontDescriptor *fontDescriptor = [[DTCoreTextFontDescriptor alloc] init];
+        
+        fontDescriptor.fontFamily = fontFamilyName;
+        fontDescriptor.pointSize = pointSize;
+        
+		[tmpDict setFontFromFontDescriptor:fontDescriptor];
+		self.overrideInsertionAttributes = tmpDict;
+        
+        return;
+    }
+    
+    NSMutableAttributedString *fragment = [[self attributedSubstringForRange:range] mutableCopy];
+    
+    BOOL didUpdate = [fragment enumerateAndUpdateFontInRange:NSMakeRange(0, [fragment length]) block:^BOOL(DTCoreTextFontDescriptor *fontDescriptor, BOOL *stop) {
+        BOOL shouldUpdate = NO;
+        
+        if (fontFamilyName && ![fontFamilyName isEqualToString:fontDescriptor.fontFamily])
+        {
+            fontDescriptor.fontFamily = fontFamilyName;
+
+            // need to wipe these or else the matching font might be wrong
+            fontDescriptor.fontName = nil;
+            fontDescriptor.symbolicTraits = 0;
+            
+            shouldUpdate = YES;
+        }
+        
+        if (pointSize && pointSize!=fontDescriptor.pointSize)
+        {
+            fontDescriptor.pointSize = pointSize;
+            
+            shouldUpdate = YES;
+        }
+        
+        return shouldUpdate;
+    }];
+    
+    if (didUpdate)
+    {
+        // replace
+        [self _updateSubstringInRange:[(DTTextRange *)range NSRangeValue] withAttributedString:fragment actionName:NSLocalizedString(@"Set Font", @"Undo Action that replaces the font for a range")];
+         }
+    
+    [self hideContextMenu];
+}
+
+- (DTCoreTextFontDescriptor *)fontDescriptorAtPosition:(UITextPosition *)position
+{
+    NSUInteger index = [(DTTextPosition *)position location];
+    
+    CTFontRef font = (__bridge CTFontRef)[self.contentView.layoutFrame.attributedStringFragment attribute:(id)kCTFontAttributeName atIndex:index effectiveRange:NULL];
+    
+    if (!font)
+    {
+        return nil;
+    }
+    
+    return [DTCoreTextFontDescriptor fontDescriptorForCTFont:font];
+}
+
 #pragma mark - Changing Paragraph Styles
 
 - (BOOL)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range

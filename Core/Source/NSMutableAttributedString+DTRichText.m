@@ -21,6 +21,7 @@
 #import "DTCoreTextConstants.h"
 
 #import <CoreText/CoreText.h>
+#import "UIFont+DTCoreText.h"
 
 
 NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
@@ -350,6 +351,18 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 	[self endEditing];
 }
 
+- (void)replaceFont:(UIFont *)font inRange:(NSRange)range
+{
+	[self beginEditing];
+    
+    [self removeAttribute:(id)kCTFontAttributeName range:range];
+
+    CTFontRef ctFont = DTCTFontCreateWithUIFont(font);
+    [self addAttribute:(id)kCTFontAttributeName value:CFBridgingRelease(ctFont) range:range];
+    
+	[self endEditing];
+}
+
 - (BOOL)enumerateAndUpdateParagraphStylesInRange:(NSRange)range block:(NSMutableAttributedStringParagraphStyleEnumerationBlock)block
 {
 	NSAssert(block, @"Block cannot be NULL");
@@ -400,6 +413,40 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 	return didChange;
 }
 
+- (BOOL)enumerateAndUpdateFontInRange:(NSRange)range block:(NSMutableAttributedStringFontStyleEnumerationBlock)block
+{
+    NSAssert(block, @"Block cannot be NULL");
+
+    __block BOOL didChange = NO;
+    
+    [self enumerateAttribute:(id)kCTFontAttributeName inRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id value, NSRange range, BOOL *stop) {
+        
+        DTCoreTextFontDescriptor *descriptor = [DTCoreTextFontDescriptor fontDescriptorForCTFont:(__bridge CTFontRef)value];
+        
+        BOOL shouldStop = NO;
+        
+        BOOL didChangeRange = block(descriptor, &shouldStop);
+        
+        if (didChangeRange)
+        {
+            CTFontRef newFont = [descriptor newMatchingFont];
+            
+            // remove the old font
+            [self removeAttribute:(id)kCTFontAttributeName range:range];
+            
+            // add the new
+            [self addAttribute:(id)kCTFontAttributeName value:CFBridgingRelease(newFont) range:range];
+            
+            didChange = YES;
+        }
+        
+        *stop = shouldStop;
+    }];
+    
+    return didChange;
+}
+
+     
 - (void)extendPreviousList:(DTCSSListStyle *)listStyle toIncludeRange:(NSRange)range numberingFrom:(NSInteger)nextItemNumber
 {
 	[self beginEditing];

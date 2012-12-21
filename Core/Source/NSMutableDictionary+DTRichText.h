@@ -16,6 +16,8 @@
 - (void)toggleItalic;
 - (void)toggleUnderline;
 
+- (void)setFontFromFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor;
+
 - (void)toggleHighlightWithColor:(UIColor *)color;
 
 - (void)removeAttachment;

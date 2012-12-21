@@ -146,6 +146,20 @@
  */
 - (void)toggleHyperlinkInRange:(UITextRange *)range URL:(NSURL *)URL;
 
+/**
+ Replaces the font for a given range preserving bold or italic ranges.
+ @param range The text range
+ @param fontName The postscript font family name, or `nil` if the font family should be preserved.
+ @param pointSize The point size in pixels to apply, or 0 if it should be preserved
+*/
+- (void)updateFontInRange:(UITextRange *)range withFontFamilyName:(NSString *)fontFamilyName pointSize:(CGFloat)pointSize;
+
+/**
+ Returns a font descriptor that matches the font at the given index.
+ @param position The text position in the attributed string for which to query the font
+ @returns The font descriptor
+ */
+- (DTCoreTextFontDescriptor *)fontDescriptorAtPosition:(UITextPosition *)position;
 
 /**
  @name Working with Attachments
