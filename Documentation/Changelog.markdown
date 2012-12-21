@@ -1,5 +1,7 @@
 Version 1.1.0
 - ADDED: Support for Undo/Redo
+- ADDED: Setting and changing font family and size for ranges
+- ADDED: Support for indenting
 - CHANGED: Lots of documentation added, refactoring and cleanup
 - UPDATED: DTCoreText + DTFoundation submodule
 
