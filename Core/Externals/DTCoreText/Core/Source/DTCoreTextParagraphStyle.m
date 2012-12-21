@@ -8,10 +8,6 @@
 
 #import "DTCoreTextParagraphStyle.h"
 
-static NSCache *_paragraphStyleCache;
-
-static dispatch_semaphore_t selfLock;
-
 @implementation DTCoreTextParagraphStyle
 {
 	CGFloat _firstLineHeadIndent;
@@ -38,32 +34,7 @@ static dispatch_semaphore_t selfLock;
 
 + (DTCoreTextParagraphStyle *)paragraphStyleWithCTParagraphStyle:(CTParagraphStyleRef)ctParagraphStyle
 {
-	DTCoreTextParagraphStyle *returnParagraphStyle = NULL;
-	static dispatch_once_t predicate;
-	
-	dispatch_once(&predicate, ^{
-		
-		_paragraphStyleCache = [[NSCache alloc] init];
-		selfLock = dispatch_semaphore_create(1);
-	});
-	
-	// synchronize class-wide
-	
-	dispatch_semaphore_wait(selfLock, DISPATCH_TIME_FOREVER);
-	{
-		
-		NSNumber *cacheKey = [NSNumber numberWithInteger:(NSInteger)ctParagraphStyle];
-		returnParagraphStyle = [_paragraphStyleCache objectForKey:cacheKey];
-		
-		if (!returnParagraphStyle) 
-		{
-			returnParagraphStyle = [[DTCoreTextParagraphStyle alloc] initWithCTParagraphStyle:ctParagraphStyle];
-			[_paragraphStyleCache setObject:returnParagraphStyle forKey:cacheKey];
-		}
-	}
-	dispatch_semaphore_signal(selfLock);
-	
-	return returnParagraphStyle;
+	return [[DTCoreTextParagraphStyle alloc] initWithCTParagraphStyle:ctParagraphStyle];
 }
 
 + (DTCoreTextParagraphStyle *)paragraphStyleWithNSParagraphStyle:(NSParagraphStyle *)paragraphStyle
@@ -295,6 +266,37 @@ static dispatch_semaphore_t selfLock;
 		}
 		[_tabStops addObject:CFBridgingRelease(tab)];
 	}
+}
+
+- (NSUInteger)hash
+{
+	NSUInteger calcHash = 7;
+	
+	calcHash = calcHash*31 + _alignment;
+	calcHash = calcHash*31 + _firstLineHeadIndent;
+	calcHash = calcHash*31 + _defaultTabInterval;
+	calcHash = calcHash*31 + _paragraphSpacing;
+	calcHash = calcHash*31 + _paragraphSpacingBefore;
+	calcHash = calcHash*31 + _headIndent;
+	calcHash = calcHash*31 + _tailIndent;
+	calcHash = calcHash*31 + _baseWritingDirection;
+	calcHash = calcHash*31 + _lineHeightMultiple;
+	calcHash = calcHash*31 + _minimumLineHeight;
+	calcHash = calcHash*31 + _maximumLineHeight;
+
+	// also add tabs
+	for (id oneItem in _tabStops)
+	{
+		CTTextTabRef oneTab = (__bridge CTTextTabRef)oneItem;
+		
+		double position = CTTextTabGetLocation(oneTab);
+		CTTextAlignment alignment = CTTextTabGetAlignment(oneTab);
+		
+		calcHash = calcHash*31 + position;
+		calcHash = calcHash*31 + alignment;
+	}
+	
+	return calcHash;
 }
 
 #pragma mark HTML Encoding
