@@ -11,7 +11,6 @@
 
 @implementation NSArray (DTError)
 
-
 + (NSArray *)arrayWithContentsOfURL:(NSURL *)URL error:(NSError **)error
 {
 	NSData *readData = [NSData dataWithContentsOfURL:URL options:0 error:error];
