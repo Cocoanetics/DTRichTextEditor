@@ -658,6 +658,17 @@
 			}
 			
 			CGColorRef textColor = (__bridge CGColorRef)[attributes objectForKey:(id)kCTForegroundColorAttributeName];
+			
+			if (!textColor)
+			{
+				if (___useiOS6Attributes)
+				{
+					// could also be the iOS 6 color
+					DTColor *color = [attributes objectForKey:NSForegroundColorAttributeName];
+					textColor = color.CGColor;
+				}
+			}
+
 			if (textColor)
 			{
 				DTColor *color = [DTColor colorWithCGColor:textColor];
@@ -669,12 +680,14 @@
 			
 			if (!backgroundColor)
 			{
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_5_1
 				if (___useiOS6Attributes)
 				{
 					// could also be the iOS 6 background color
 					DTColor *color = [attributes objectForKey:NSBackgroundColorAttributeName];
 					backgroundColor = color.CGColor;
 				}
+#endif
 			}
 			
 			if (backgroundColor)
@@ -836,6 +849,7 @@
 		
 		font = [fontDesc newMatchingFont];
 		
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_5_1
 		if (___useiOS6Attributes)
 		{
 			UIFont *uiFont = [UIFont fontWithCTFont:font];
@@ -844,6 +858,7 @@
 			CFRelease(font);
 		}
 		else
+#endif
 		{
 			[newAttributes setObject:CFBridgingRelease(font) forKey:(id)kCTFontAttributeName];
 		}
@@ -855,6 +870,7 @@
 	{
 		[newAttributes setObject:(__bridge id)textColor forKey:(id)kCTForegroundColorAttributeName];
 	}
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_5_1
 	else if (___useiOS6Attributes)
 	{
 		UIColor *uiColor = [attributes objectForKey:NSForegroundColorAttributeName];
@@ -864,16 +880,19 @@
 			[newAttributes setObject:uiColor forKey:NSForegroundColorAttributeName];
 		}
 	}
+#endif
 	
 	// add paragraph style (this has the tabs)
 	if (paragraphStyle)
 	{
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_5_1
 		if (___useiOS6Attributes)
 		{
 			NSParagraphStyle *style = [paragraphStyle NSParagraphStyle];
 			[newAttributes setObject:style forKey:NSParagraphStyleAttributeName];
 		}
 		else
+#endif
 		{
 			CTParagraphStyleRef newParagraphStyle = [paragraphStyle createCTParagraphStyle];
 			[newAttributes setObject:CFBridgingRelease(newParagraphStyle) forKey:(id)kCTParagraphStyleAttributeName];
@@ -925,7 +944,7 @@
 			attachment.contentType = DTTextAttachmentTypeImage;
 			attachment.displaySize = image.size;
 			
-#if TARGET_OS_IPHONE
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_5_1
 			// need run delegate for sizing
 			CTRunDelegateRef embeddedObjectRunDelegate = createEmbeddedObjectRunDelegate(attachment);
 			[newAttributes setObject:CFBridgingRelease(embeddedObjectRunDelegate) forKey:(id)kCTRunDelegateAttributeName];

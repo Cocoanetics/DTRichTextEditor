@@ -8,6 +8,10 @@
 
 #import "DTCoreTextParagraphStyle.h"
 
+static NSCache *_paragraphStyleCache;
+
+static dispatch_semaphore_t selfLock;
+
 @implementation DTCoreTextParagraphStyle
 {
 	CGFloat _firstLineHeadIndent;
@@ -34,9 +38,35 @@
 
 + (DTCoreTextParagraphStyle *)paragraphStyleWithCTParagraphStyle:(CTParagraphStyleRef)ctParagraphStyle
 {
-	return [[DTCoreTextParagraphStyle alloc] initWithCTParagraphStyle:ctParagraphStyle];
+	DTCoreTextParagraphStyle *returnParagraphStyle = NULL;
+	static dispatch_once_t predicate;
+	
+	dispatch_once(&predicate, ^{
+		
+		_paragraphStyleCache = [[NSCache alloc] init];
+		selfLock = dispatch_semaphore_create(1);
+	});
+	
+	// synchronize class-wide
+	
+	dispatch_semaphore_wait(selfLock, DISPATCH_TIME_FOREVER);
+	{
+		
+		NSNumber *cacheKey = [NSNumber numberWithInteger:(NSInteger)ctParagraphStyle];
+		returnParagraphStyle = [_paragraphStyleCache objectForKey:cacheKey];
+		
+		if (!returnParagraphStyle) 
+		{
+			returnParagraphStyle = [[DTCoreTextParagraphStyle alloc] initWithCTParagraphStyle:ctParagraphStyle];
+			[_paragraphStyleCache setObject:returnParagraphStyle forKey:cacheKey];
+		}
+	}
+	dispatch_semaphore_signal(selfLock);
+	
+	return returnParagraphStyle;
 }
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_5_1
 + (DTCoreTextParagraphStyle *)paragraphStyleWithNSParagraphStyle:(NSParagraphStyle *)paragraphStyle
 {
 	DTCoreTextParagraphStyle *retStyle = [[DTCoreTextParagraphStyle alloc] init];
@@ -85,6 +115,7 @@
 	
 	return retStyle;
 }
+#endif
 
 - (id)init
 {	
@@ -201,6 +232,7 @@
 	return ret;
 }
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_5_1
 - (NSParagraphStyle *)NSParagraphStyle
 {
 	NSMutableParagraphStyle *mps = [[NSMutableParagraphStyle alloc] init];
@@ -254,6 +286,7 @@
 	// _tap stops not supported
 	return (NSParagraphStyle *)mps;
 }
+#endif
 
 - (void)addTabStopAtPosition:(CGFloat)position alignment:(CTTextAlignment)alignment
 {
@@ -266,37 +299,6 @@
 		}
 		[_tabStops addObject:CFBridgingRelease(tab)];
 	}
-}
-
-- (NSUInteger)hash
-{
-	NSUInteger calcHash = 7;
-	
-	calcHash = calcHash*31 + _alignment;
-	calcHash = calcHash*31 + _firstLineHeadIndent;
-	calcHash = calcHash*31 + _defaultTabInterval;
-	calcHash = calcHash*31 + _paragraphSpacing;
-	calcHash = calcHash*31 + _paragraphSpacingBefore;
-	calcHash = calcHash*31 + _headIndent;
-	calcHash = calcHash*31 + _tailIndent;
-	calcHash = calcHash*31 + _baseWritingDirection;
-	calcHash = calcHash*31 + _lineHeightMultiple;
-	calcHash = calcHash*31 + _minimumLineHeight;
-	calcHash = calcHash*31 + _maximumLineHeight;
-
-	// also add tabs
-	for (id oneItem in _tabStops)
-	{
-		CTTextTabRef oneTab = (__bridge CTTextTabRef)oneItem;
-		
-		double position = CTTextTabGetLocation(oneTab);
-		CTTextAlignment alignment = CTTextTabGetAlignment(oneTab);
-		
-		calcHash = calcHash*31 + position;
-		calcHash = calcHash*31 + alignment;
-	}
-	
-	return calcHash;
 }
 
 #pragma mark HTML Encoding
@@ -343,6 +345,30 @@
 			break;
 	}	
 	
+	// Spacing at the bottom
+	if (_paragraphSpacing!=0.0f)
+	{
+		[retString appendFormat:@"margin-bottom:%.2fpx;", _paragraphSpacing];
+	}
+
+	// Spacing at the top
+	if (_paragraphSpacingBefore!=0.0f)
+	{
+		[retString appendFormat:@"margin-top:%.2fpx;", _paragraphSpacingBefore];
+	}
+	
+	// Spacing at the left
+	if (_headIndent!=0.0f)
+	{
+		[retString appendFormat:@"margin-left:%.2fpx;", _headIndent];
+	}
+
+	// Spacing at the right
+	if (_tailIndent!=0.0f)
+	{
+		[retString appendFormat:@"margin-right:%.2fpx;", _tailIndent];
+	}
+
 	// return nil if no content
 	if ([retString length])
 	{
