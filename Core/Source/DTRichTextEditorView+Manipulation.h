@@ -155,11 +155,12 @@
 - (void)updateFontInRange:(UITextRange *)range withFontFamilyName:(NSString *)fontFamilyName pointSize:(CGFloat)pointSize;
 
 /**
- Returns a font descriptor that matches the font at the given index.
- @param position The text position in the attributed string for which to query the font
+ Returns a font descriptor that matches the font at the given range. The method calls typingAttributesForRange: and converts the font to a font descriptor.
+ If the range is empty then the font matches what it would be if the user would start typing. If the range is not empty then it is the font of the first character in the range. 
+ @param range The text range in the attributed string for which to query the font
  @returns The font descriptor
  */
-- (DTCoreTextFontDescriptor *)fontDescriptorAtPosition:(UITextPosition *)position;
+- (DTCoreTextFontDescriptor *)fontDescriptorForRange:(UITextRange *)range;
 
 /**
  @name Working with Attachments

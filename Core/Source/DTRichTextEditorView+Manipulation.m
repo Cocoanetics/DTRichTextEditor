@@ -561,11 +561,11 @@
     [self hideContextMenu];
 }
 
-- (DTCoreTextFontDescriptor *)fontDescriptorAtPosition:(UITextPosition *)position
+- (DTCoreTextFontDescriptor *)fontDescriptorForRange:(UITextRange *)range
 {
-    NSUInteger index = [(DTTextPosition *)position location];
+    NSDictionary *typingAttributes = [self typingAttributesForRange:range];
     
-    CTFontRef font = (__bridge CTFontRef)[self.contentView.layoutFrame.attributedStringFragment attribute:(id)kCTFontAttributeName atIndex:index effectiveRange:NULL];
+    CTFontRef font = (__bridge CTFontRef)[typingAttributes objectForKey:(id)kCTFontAttributeName];
     
     if (!font)
     {

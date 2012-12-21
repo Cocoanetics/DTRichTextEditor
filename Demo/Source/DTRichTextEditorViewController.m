@@ -372,7 +372,7 @@
     
     // you can get the current font family and size (and other attributes like this:
     
-    DTCoreTextFontDescriptor *fontDescriptor = [richEditor fontDescriptorAtPosition:range.start];
+    DTCoreTextFontDescriptor *fontDescriptor = [richEditor fontDescriptorForRange:range];
     NSLog(@"font-family: %@, size: %.0f", fontDescriptor.fontFamily, fontDescriptor.pointSize);
     
     [richEditor updateFontInRange:range withFontFamilyName:@"American Typewriter" pointSize:60];
