@@ -84,9 +84,12 @@
 	
 	NSAttributedString *characterString = [self attributedSubstringForRange:imageRange];
 	
-	if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:NSAttachmentAttributeName])
+	if (characterString.length)
 	{
-		return imageRange;
+		if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:NSAttachmentAttributeName])
+		{
+			return imageRange;
+		}
 	}
 	
 	// we did not get a forward or backward range, like Word!|

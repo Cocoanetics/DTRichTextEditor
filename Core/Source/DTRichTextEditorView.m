@@ -42,6 +42,8 @@
 #import "DTRichTextEditorContentView.h"
 #import "DTRichTextEditorView+Manipulation.h"
 #import "DTUndoManager.h"
+#import "DTHTMLWriter.h"
+#import "DTHTMLWriter+DTWebArchive.h"
 
 
 NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextEditorTextDidBeginEditingNotification";
@@ -1345,8 +1347,19 @@ typedef enum
 	// plain text omits attachments and format
 	NSString *plainText = [attributedString plainTextString];
 	
-	// web archive contains rich text
-	DTWebArchive *webArchive = [attributedString webArchive];
+	// all HTML generation goes via a writer
+	DTHTMLWriter *writer = [[DTHTMLWriter alloc] initWithAttributedString:attributedString];
+	
+	// set text scale if set
+	NSDictionary *defaults = [self textDefaults];
+	NSNumber *scale = [defaults objectForKey:NSTextSizeMultiplierDocumentOption];
+	if (scale)
+	{
+		writer.textScale = [scale floatValue];
+	}
+	
+	// create a web archive
+	DTWebArchive *webArchive = [writer webArchive];
 	NSData *data = [webArchive data];
 	
 	// set multiple formats at the same time
@@ -1565,18 +1578,19 @@ typedef enum
 /* Methods for manipulating text. */
 - (NSString *)textInRange:(UITextRange *)range
 {
-	NSString *bareText = [self.contentView.layoutFrame.attributedStringFragment string];
-	DTTextRange *myRange = (DTTextRange *)range;
-	NSRange rangeValue = [myRange NSRangeValue];
+	DTTextPosition *startPosition = (DTTextPosition *)range.start;
+	DTTextPosition *endPosition = (DTTextPosition *)range.end;
 	
 	// on iOS 5 the upper end of the range might be "unbounded" (NSIntegerMax)
-	if (NSMaxRange(rangeValue)>[bareText length])
+	if ([endPosition compare:self.endOfDocument]==NSOrderedDescending)
 	{
-		return [bareText substringFromIndex:rangeValue.location];
+		endPosition = (DTTextPosition *)self.endOfDocument;
 	}
 	
-	// otherwise return this part of the string			
-	return [bareText substringWithRange:rangeValue];
+	range = [self textRangeFromPosition:startPosition toPosition:endPosition];
+	NSAttributedString *fragment = [self attributedSubstringForRange:range];
+	
+	return [fragment string];
 }
 
 - (void)replaceRange:(DTTextRange *)range withText:(id)text
