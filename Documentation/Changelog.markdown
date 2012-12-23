@@ -3,6 +3,7 @@ Version 1.1.0
 - ADDED: Setting and changing font family and size for ranges
 - ADDED: Support for indenting
 - CHANGED: Lots of documentation added, refactoring and cleanup
+- FIXED: text scaling bug when pasting
 - UPDATED: DTCoreText + DTFoundation submodule
 
 Version 1.0.7
