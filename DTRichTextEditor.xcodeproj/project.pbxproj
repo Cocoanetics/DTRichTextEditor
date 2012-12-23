@@ -37,6 +37,10 @@
 		A7851873168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A7851870168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h */; };
 		A7851874168707A800DACF4B /* DTHTMLWriter+DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A7851871168707A800DACF4B /* DTHTMLWriter+DTWebArchive.m */; };
 		A7851875168707A800DACF4B /* DTHTMLWriter+DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A7851871168707A800DACF4B /* DTHTMLWriter+DTWebArchive.m */; };
+		A7851878168737B500DACF4B /* DTHTMLWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = A7851876168737B400DACF4B /* DTHTMLWriter.h */; };
+		A7851879168737B500DACF4B /* DTHTMLWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = A7851876168737B400DACF4B /* DTHTMLWriter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A785187A168737B500DACF4B /* DTCoreTextFunctions.h in Headers */ = {isa = PBXBuildFile; fileRef = A7851877168737B400DACF4B /* DTCoreTextFunctions.h */; };
+		A785187B168737B500DACF4B /* DTCoreTextFunctions.h in Headers */ = {isa = PBXBuildFile; fileRef = A7851877168737B400DACF4B /* DTCoreTextFunctions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7914A78153EF6BB00F6CC86 /* icon_smile.gif in Resources */ = {isa = PBXBuildFile; fileRef = A7914A77153EF6BB00F6CC86 /* icon_smile.gif */; };
 		A7C9EB0615DFA98500BFE033 /* DTCoreTextLayoutFrame+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A743511F1486771700F4C766 /* DTCoreTextLayoutFrame+DTRichText.m */; };
 		A7C9EB0C15DFAB0600BFE033 /* NSString+Paragraphs.h in Headers */ = {isa = PBXBuildFile; fileRef = A79646E115DEA0EE0091CD4C /* NSString+Paragraphs.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -367,6 +371,8 @@
 		A784849E15E28DF400595102 /* DTAttributedTextContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextContentView.h; path = DTCoreText/Core/Source/DTAttributedTextContentView.h; sourceTree = "<group>"; };
 		A7851870168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTHTMLWriter+DTWebArchive.h"; sourceTree = "<group>"; };
 		A7851871168707A800DACF4B /* DTHTMLWriter+DTWebArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DTHTMLWriter+DTWebArchive.m"; sourceTree = "<group>"; };
+		A7851876168737B400DACF4B /* DTHTMLWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLWriter.h; path = DTCoreText/Core/Source/DTHTMLWriter.h; sourceTree = "<group>"; };
+		A7851877168737B400DACF4B /* DTCoreTextFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTCoreTextFunctions.h; path = DTCoreText/Core/Source/DTCoreTextFunctions.h; sourceTree = "<group>"; };
 		A7914A77153EF6BB00F6CC86 /* icon_smile.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = icon_smile.gif; path = ../../Core/Externals/DTCoreText/Demo/Resources/icon_smile.gif; sourceTree = "<group>"; };
 		A79646E115DEA0EE0091CD4C /* NSString+Paragraphs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+Paragraphs.h"; path = "DTCoreText/Core/Source/NSString+Paragraphs.h"; sourceTree = "<group>"; };
 		A7D545E215D567BC00711CA1 /* DTAttributedTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextCell.h; path = DTCoreText/Core/Source/DTAttributedTextCell.h; sourceTree = "<group>"; };
@@ -597,6 +603,8 @@
 				A7D5465715D56A9B00711CA1 /* DTHTMLAttributedStringBuilder.h */,
 				A7D5465815D56A9B00711CA1 /* DTHTMLElement.h */,
 				A72D976D1684BA0E005F8BA5 /* DTHTMLParser.h */,
+				A7851876168737B400DACF4B /* DTHTMLWriter.h */,
+				A7851877168737B400DACF4B /* DTCoreTextFunctions.h */,
 				A7D5465415D56A9B00711CA1 /* DTImage+HTML.h */,
 				A7D545E515D567BC00711CA1 /* DTLazyImageView.h */,
 				A7D545E715D567BC00711CA1 /* DTLinkButton.h */,
@@ -744,6 +752,8 @@
 				A7402D55167F66E000BE0AAF /* DTRichTextEditorView+DTCoreText.h in Headers */,
 				A7DA0C5516822CEC007637A2 /* DTUndoManager.h in Headers */,
 				A7851872168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h in Headers */,
+				A7851878168737B500DACF4B /* DTHTMLWriter.h in Headers */,
+				A785187A168737B500DACF4B /* DTCoreTextFunctions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -811,6 +821,8 @@
 				A7402D56167F66E000BE0AAF /* DTRichTextEditorView+DTCoreText.h in Headers */,
 				A7DA0C5616822CEC007637A2 /* DTUndoManager.h in Headers */,
 				A7851873168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h in Headers */,
+				A7851879168737B500DACF4B /* DTHTMLWriter.h in Headers */,
+				A785187B168737B500DACF4B /* DTCoreTextFunctions.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
