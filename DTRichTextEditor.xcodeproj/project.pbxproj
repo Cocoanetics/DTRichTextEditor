@@ -11,6 +11,10 @@
 		A704273613C37EFE00EE0776 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273513C37EFE00EE0776 /* CoreText.framework */; };
 		A704273813C37F0500EE0776 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273713C37F0500EE0776 /* QuartzCore.framework */; };
 		A704273A13C37F0B00EE0776 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273913C37F0B00EE0776 /* MediaPlayer.framework */; };
+		A721D66016924DDB00C5A48F /* UIFont+DTCoreText.h in Headers */ = {isa = PBXBuildFile; fileRef = A721D65F16924DDB00C5A48F /* UIFont+DTCoreText.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A721D67916925A5500C5A48F /* DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A721D67616925A5500C5A48F /* DTWebArchive.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A721D67A16925A5500C5A48F /* DTWebResource.h in Headers */ = {isa = PBXBuildFile; fileRef = A721D67716925A5500C5A48F /* DTWebResource.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A721D67B16925A5500C5A48F /* UIPasteboard+DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A721D67816925A5500C5A48F /* UIPasteboard+DTWebArchive.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A72D976F1684BA0E005F8BA5 /* DTHTMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D976D1684BA0E005F8BA5 /* DTHTMLParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7402D4B167F4E5200BE0AAF /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7402D4A167F4E5200BE0AAF /* Default-568h@2x.png */; };
 		A7402D4F167F571B00BE0AAF /* DTRichTextEditorView+Manipulation.h in Headers */ = {isa = PBXBuildFile; fileRef = A7402D4D167F571A00BE0AAF /* DTRichTextEditorView+Manipulation.h */; };
@@ -34,7 +38,7 @@
 		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
 		A784849F15E28DF400595102 /* DTAttributedTextContentView.h in Headers */ = {isa = PBXBuildFile; fileRef = A784849E15E28DF400595102 /* DTAttributedTextContentView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7851872168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A7851870168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h */; };
-		A7851873168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A7851870168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h */; };
+		A7851873168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A7851870168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7851874168707A800DACF4B /* DTHTMLWriter+DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A7851871168707A800DACF4B /* DTHTMLWriter+DTWebArchive.m */; };
 		A7851875168707A800DACF4B /* DTHTMLWriter+DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A7851871168707A800DACF4B /* DTHTMLWriter+DTWebArchive.m */; };
 		A7851878168737B500DACF4B /* DTHTMLWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = A7851876168737B400DACF4B /* DTHTMLWriter.h */; };
@@ -143,7 +147,7 @@
 		A7D8FECA14E1571900BF8CCD /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FEC914E1571900BF8CCD /* libxml2.dylib */; };
 		A7D8FF9414E294D600BF8CCD /* DTLoupe.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A7D8FF8A14E2939600BF8CCD /* DTLoupe.bundle */; };
 		A7DA0C5516822CEC007637A2 /* DTUndoManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A7DA0C5316822CEC007637A2 /* DTUndoManager.h */; };
-		A7DA0C5616822CEC007637A2 /* DTUndoManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A7DA0C5316822CEC007637A2 /* DTUndoManager.h */; };
+		A7DA0C5616822CEC007637A2 /* DTUndoManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A7DA0C5316822CEC007637A2 /* DTUndoManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7DA0C5716822CEC007637A2 /* DTUndoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DA0C5416822CEC007637A2 /* DTUndoManager.m */; };
 		A7DA0C5816822CEC007637A2 /* DTUndoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DA0C5416822CEC007637A2 /* DTUndoManager.m */; };
 		A7E807D215EB6C5900525855 /* NSAttributedString+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351351486771700F4C766 /* NSAttributedString+DTRichText.m */; };
@@ -158,7 +162,7 @@
 		A7F0C84513C326E900EBD027 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84413C326E900EBD027 /* Foundation.framework */; };
 		A7F0C84713C326E900EBD027 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84613C326E900EBD027 /* CoreGraphics.framework */; };
 		A7FE7FC515FF18370003723B /* DTTextSelectionRect.h in Headers */ = {isa = PBXBuildFile; fileRef = A7FE7FC315FF18370003723B /* DTTextSelectionRect.h */; };
-		A7FE7FC615FF18370003723B /* DTTextSelectionRect.h in Headers */ = {isa = PBXBuildFile; fileRef = A7FE7FC315FF18370003723B /* DTTextSelectionRect.h */; };
+		A7FE7FC615FF18370003723B /* DTTextSelectionRect.h in Headers */ = {isa = PBXBuildFile; fileRef = A7FE7FC315FF18370003723B /* DTTextSelectionRect.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7FE7FC715FF18370003723B /* DTTextSelectionRect.m in Sources */ = {isa = PBXBuildFile; fileRef = A7FE7FC415FF18370003723B /* DTTextSelectionRect.m */; };
 		A7FE7FC815FF18370003723B /* DTTextSelectionRect.m in Sources */ = {isa = PBXBuildFile; fileRef = A7FE7FC415FF18370003723B /* DTTextSelectionRect.m */; };
 /* End PBXBuildFile section */
@@ -318,6 +322,10 @@
 		A704273513C37EFE00EE0776 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		A704273713C37F0500EE0776 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A704273913C37F0B00EE0776 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		A721D65F16924DDB00C5A48F /* UIFont+DTCoreText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIFont+DTCoreText.h"; path = "DTCoreText/Core/Source/UIFont+DTCoreText.h"; sourceTree = "<group>"; };
+		A721D67616925A5500C5A48F /* DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTWebArchive.h; path = DTWebArchive/Core/Source/DTWebArchive.h; sourceTree = "<group>"; };
+		A721D67716925A5500C5A48F /* DTWebResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTWebResource.h; path = DTWebArchive/Core/Source/DTWebResource.h; sourceTree = "<group>"; };
+		A721D67816925A5500C5A48F /* UIPasteboard+DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIPasteboard+DTWebArchive.h"; path = "DTWebArchive/Core/Source/UIPasteboard+DTWebArchive.h"; sourceTree = "<group>"; };
 		A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTCoreText.xcodeproj; path = DTCoreText/DTCoreText.xcodeproj; sourceTree = "<group>"; };
 		A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTWebArchive.xcodeproj; path = DTWebArchive/DTWebArchive.xcodeproj; sourceTree = "<group>"; };
 		A72D976D1684BA0E005F8BA5 /* DTHTMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLParser.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/DTHTMLParser.h; sourceTree = "<group>"; };
@@ -623,6 +631,10 @@
 				A7D5465C15D56A9B00711CA1 /* NSString+CSS.h */,
 				A7D545FB15D5685300711CA1 /* NSString+HTML.h */,
 				A79646E115DEA0EE0091CD4C /* NSString+Paragraphs.h */,
+				A721D65F16924DDB00C5A48F /* UIFont+DTCoreText.h */,
+				A721D67616925A5500C5A48F /* DTWebArchive.h */,
+				A721D67716925A5500C5A48F /* DTWebResource.h */,
+				A721D67816925A5500C5A48F /* UIPasteboard+DTWebArchive.h */,
 			);
 			name = "Repackaged Headers (Framework)";
 			sourceTree = "<group>";
@@ -762,6 +774,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				A7D5467D15D56ABF00711CA1 /* CGUtils.h in Headers */,
+				A721D67916925A5500C5A48F /* DTWebArchive.h in Headers */,
+				A721D67A16925A5500C5A48F /* DTWebResource.h in Headers */,
+				A721D67B16925A5500C5A48F /* UIPasteboard+DTWebArchive.h in Headers */,
 				A7D545EF15D567DF00711CA1 /* DTAttributedTextCell.h in Headers */,
 				A784849F15E28DF400595102 /* DTAttributedTextContentView.h in Headers */,
 				A7D545F315D5681400711CA1 /* DTAttributedTextView.h in Headers */,
@@ -816,11 +831,12 @@
 				A7D5467A15D56ABA00711CA1 /* NSString+CSS.h in Headers */,
 				A7D5460D15D5687700711CA1 /* NSString+HTML.h in Headers */,
 				A7C9EB0C15DFAB0600BFE033 /* NSString+Paragraphs.h in Headers */,
-				A7FE7FC615FF18370003723B /* DTTextSelectionRect.h in Headers */,
 				A7402D50167F571B00BE0AAF /* DTRichTextEditorView+Manipulation.h in Headers */,
 				A7402D56167F66E000BE0AAF /* DTRichTextEditorView+DTCoreText.h in Headers */,
+				A7FE7FC615FF18370003723B /* DTTextSelectionRect.h in Headers */,
 				A7DA0C5616822CEC007637A2 /* DTUndoManager.h in Headers */,
 				A7851873168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h in Headers */,
+				A721D66016924DDB00C5A48F /* UIFont+DTCoreText.h in Headers */,
 				A7851879168737B500DACF4B /* DTHTMLWriter.h in Headers */,
 				A785187B168737B500DACF4B /* DTCoreTextFunctions.h in Headers */,
 			);
@@ -1235,7 +1251,8 @@
 			buildSettings = {
 				CONTENTS_FOLDER_PATH = "$(WRAPPER_NAME)/Versions/$(FRAMEWORK_VERSION)";
 				DEAD_CODE_STRIPPING = NO;
-				DEPLOYMENT_POSTPROCESSING = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEPLOYMENT_POSTPROCESSING = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
@@ -1267,7 +1284,8 @@
 			buildSettings = {
 				CONTENTS_FOLDER_PATH = "$(WRAPPER_NAME)/Versions/$(FRAMEWORK_VERSION)";
 				DEAD_CODE_STRIPPING = NO;
-				DEPLOYMENT_POSTPROCESSING = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEPLOYMENT_POSTPROCESSING = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_VERSION = A;
