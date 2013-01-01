@@ -7,8 +7,10 @@
 //
 
 #import "NSAttributedString+DTRichText.h"
+
 #import "NSMutableDictionary+DTRichText.h"
 #import "DTHTMLElement.h"
+#import "DTHTMLElementText.h"
 #import "DTTextAttachment.h"
 #import "DTCoreTextParagraphStyle.h"
 #import "CGUtils.h"
@@ -82,7 +84,7 @@
 
 + (NSAttributedString *)attributedStringWithURL:(NSURL *)url
 {
-	DTHTMLElement *element = [[DTHTMLElement alloc] init];
+	DTHTMLElementText *element = [[DTHTMLElementText alloc] init];
 	element.link = url;
 	element.underlineStyle = kCTUnderlineStyleSingle;
 	element.textColor = [UIColor blueColor];
