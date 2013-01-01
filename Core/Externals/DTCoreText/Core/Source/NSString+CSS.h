@@ -20,8 +20,7 @@
 - (NSDictionary *)dictionaryOfCSSStyles;
 
 /**
- Calculates a pixel-based length from the receiver based on the current text size in pixels. 
- Takes a textSize and modifies the current string's pixel measurement to be modified by it. Used in DTHTMLElement.
+ Calculates a pixel-based length from the receiver based on the current text size in pixels. Used in DTHTMLElement.
  @param textSize The current size which the CSS size is relative to.
  @param textScale The factor by which absolute sizes are scaled. Set to 1.0f to keep the original value.
  @returns A float that is the textSize

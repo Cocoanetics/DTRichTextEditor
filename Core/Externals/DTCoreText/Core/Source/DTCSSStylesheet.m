@@ -307,7 +307,7 @@ extern unsigned int default_css_len;
 	NSMutableDictionary *tmpDict = [NSMutableDictionary dictionary];
 	
 	// Get based on element
-	NSDictionary *byTagName = [self.styles objectForKey:element.tagName];
+	NSDictionary *byTagName = [self.styles objectForKey:element.name];
 	
 	if (byTagName) 
 	{
@@ -315,13 +315,13 @@ extern unsigned int default_css_len;
 	}
 	
     // Get based on class(es)
-	NSString *classString = [element attributeForKey:@"class"];
+	NSString *classString = [element.attributes objectForKey:@"class"];
 	NSArray *classes = [classString componentsSeparatedByString:@" "];
 	
 	for (NSString *class in classes) 
 	{
 		NSString *classRule = [NSString stringWithFormat:@".%@", class];
-		NSString *classAndTagRule = [NSString stringWithFormat:@"%@.%@", element.tagName, class];
+		NSString *classAndTagRule = [NSString stringWithFormat:@"%@.%@", element.name, class];
 		
 		NSDictionary *byClass = [_styles objectForKey:classRule];
 		NSDictionary *byClassAndName = [_styles objectForKey:classAndTagRule];
@@ -338,7 +338,7 @@ extern unsigned int default_css_len;
 	}
 	
 	// Get based on id
-	NSString *idRule = [NSString stringWithFormat:@"#%@", [element attributeForKey:@"id"]];
+	NSString *idRule = [NSString stringWithFormat:@"#%@", [element.attributes objectForKey:@"id"]];
 	NSDictionary *byID = [_styles objectForKey:idRule];
 	
 	if (byID) 
@@ -347,7 +347,7 @@ extern unsigned int default_css_len;
 	}
 	
 	// Get tag's local style attribute
-	NSString *styleString = [element attributeForKey:@"style"];
+	NSString *styleString = [element.attributes objectForKey:@"style"];
 	
 	if ([styleString length])
 	{
