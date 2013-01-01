@@ -35,6 +35,12 @@
 	}
 }
 
+- (void)removeAllActions
+{
+	[self closeAllOpenGroups];
+	[super removeAllActions];
+}
+
 - (void)undo
 {
 	[self closeAllOpenGroups];

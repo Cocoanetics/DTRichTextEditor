@@ -1,3 +1,7 @@
+Version 1.1.1
+- UPDATED: DTCoreText to Version 1.1
+- FIXED: Hopefully a certain crash involving Undo
+
 Version 1.1.0
 - ADDED: Support for Undo/Redo
 - ADDED: Setting and changing font family and size for ranges
