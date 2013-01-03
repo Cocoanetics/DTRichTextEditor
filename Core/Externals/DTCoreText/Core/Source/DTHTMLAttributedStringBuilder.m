@@ -601,7 +601,7 @@
 		// output the element if it is direct descendant of body tag, or close of body in case there are direct text nodes
 		
 		// find block to execute for this tag if any
-		void (^tagBlock)(void) = [_tagStartHandlers objectForKey:elementName];
+		void (^tagBlock)(void) = [_tagEndHandlers objectForKey:elementName];
 		
 		if (tagBlock)
 		{
@@ -665,7 +665,7 @@
 	dispatch_group_async(_stringAssemblyGroup, _stringAssemblyQueue, ^{
 		NSAssert(_currentTag, @"Cannot add text node without a current node");
 		
-		if ([string isWhitespace])
+		if ([string isIgnorableWhitespace])
 		{
 			// ignore whitespace as first element
 			if (![_currentTag.childNodes count])
@@ -693,6 +693,9 @@
 		textNode.text = string;
 		
 		[textNode inheritAttributesFromElement:_currentTag];
+		
+		// need to transfer Apple Converted Space tag to text node
+		textNode.containsAppleConvertedSpace = _currentTag.containsAppleConvertedSpace;
 		
 		// text directly contained in body needs to be output right away
 		if (_currentTag == _bodyElement)

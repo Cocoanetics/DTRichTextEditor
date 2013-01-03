@@ -9,14 +9,16 @@
 #import "DTHTMLElementText.h"
 #import "NSString+HTML.h"
 #import "DTCoreTextFontDescriptor.h"
-#import "UIFont+DTCoreText.h"
 #import "NSAttributedString+SmallCaps.h"
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_5_1
+#import "UIFont+DTCoreText.h"
+#endif
 
 @implementation DTHTMLElementText
 {
 	NSString *_text;
 }
-
 
 - (void)_appendHTMLToString:(NSMutableString *)string indentLevel:(NSUInteger)indentLevel
 {
@@ -33,7 +35,7 @@
 {
 	NSString *text;
 	
-	if (self.preserveNewlines)
+	if (_preserveNewlines)
 	{
 		text = _text;
 		
@@ -52,6 +54,11 @@
 		// replace paragraph breaks with line breaks
 		// useing \r as to not confuse this with line feeds, but still get a single paragraph
 		text = [text stringByReplacingOccurrencesOfString:@"\n" withString:@"\r"];
+	}
+	else if (_containsAppleConvertedSpace)
+	{
+		// replace nbsp; with regular space
+		text = [_text stringByReplacingOccurrencesOfString:UNICODE_NON_BREAKING_SPACE withString:@" "];
 	}
 	else
 	{

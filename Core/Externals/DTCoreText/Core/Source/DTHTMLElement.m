@@ -72,7 +72,11 @@ NSDictionary *_classesForNames = nil;
 	self = [super initWithName:name attributes:attributes];
 	if (self)
 	{
-		
+		// transfer Apple Converted Space tag
+		if ([[self attributeForKey:@"class"] isEqualToString:@"Apple-converted-space"])
+		{
+			_containsAppleConvertedSpace = YES;
+		}
 	}
 	
 	return self;
@@ -400,12 +404,15 @@ NSDictionary *_classesForNames = nil;
 			
 			if (nodeString)
 			{
-				// we already have a white space in the string so far
-				if ([[tmpString string] hasSuffixCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]])
+				if (!oneChild.containsAppleConvertedSpace)
 				{
-					while ([[nodeString string] hasPrefix:@" "])
+					// we already have a white space in the string so far
+					if ([[tmpString string] hasSuffixCharacterFromSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]])
 					{
-						nodeString = [nodeString attributedSubstringFromRange:NSMakeRange(1, [nodeString length]-1)];
+						while ([[nodeString string] hasPrefix:@" "])
+						{
+							nodeString = [nodeString attributedSubstringFromRange:NSMakeRange(1, [nodeString length]-1)];
+						}
 					}
 				}
 				
@@ -467,26 +474,26 @@ NSDictionary *_classesForNames = nil;
 				// set new
 				[tmpString addAttribute:NSParagraphStyleAttributeName value:newParaStyle range:paragraphRange];
 			}
-			else
+		}
+		else
 #endif
+		{
+			CTParagraphStyleRef paraStyle = (__bridge CTParagraphStyleRef)[tmpString attribute:(id)kCTParagraphStyleAttributeName atIndex:paragraphRange.location effectiveRange:NULL];
+			
+			DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:paraStyle];
+			
+			if (paragraphStyle.paragraphSpacing < self.paragraphStyle.paragraphSpacing)
 			{
-				CTParagraphStyleRef paraStyle = (__bridge CTParagraphStyleRef)[tmpString attribute:(id)kCTParagraphStyleAttributeName atIndex:paragraphRange.location effectiveRange:NULL];
+				paragraphStyle.paragraphSpacing = self.paragraphStyle.paragraphSpacing;
 				
-				DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:paraStyle];
+				// make new paragraph style
+				CTParagraphStyleRef newParaStyle = [paragraphStyle createCTParagraphStyle];
 				
-				if (paragraphStyle.paragraphSpacing < self.paragraphStyle.paragraphSpacing)
-				{
-					paragraphStyle.paragraphSpacing = self.paragraphStyle.paragraphSpacing;
-					
-					// make new paragraph style
-					CTParagraphStyleRef newParaStyle = [paragraphStyle createCTParagraphStyle];
-					
-					// remove old (works around iOS 4.3 leak)
-					[tmpString removeAttribute:(id)kCTParagraphStyleAttributeName range:paragraphRange];
-					
-					// set new
-					[tmpString addAttribute:(id)kCTParagraphStyleAttributeName value:(__bridge_transfer id)newParaStyle range:paragraphRange];
-				}
+				// remove old (works around iOS 4.3 leak)
+				[tmpString removeAttribute:(id)kCTParagraphStyleAttributeName range:paragraphRange];
+				
+				// set new
+				[tmpString addAttribute:(id)kCTParagraphStyleAttributeName value:(__bridge_transfer id)newParaStyle range:paragraphRange];
 			}
 		}
 	}
@@ -1252,6 +1259,7 @@ NSDictionary *_classesForNames = nil;
 @synthesize textScale = _textScale;
 @synthesize size = _size;
 @synthesize linkGUID = _linkGUID;
+@synthesize containsAppleConvertedSpace = _containsAppleConvertedSpace;
 
 @end
 
