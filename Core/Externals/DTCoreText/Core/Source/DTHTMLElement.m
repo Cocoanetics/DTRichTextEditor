@@ -73,11 +73,6 @@ NSDictionary *_classesForNames = nil;
 	self = [super initWithName:name attributes:attributes];
 	if (self)
 	{
-		// transfer Apple Converted Space tag
-		if ([[self attributeForKey:@"class"] isEqualToString:@"Apple-converted-space"])
-		{
-			_containsAppleConvertedSpace = YES;
-		}
 	}
 	
 	return self;
@@ -1165,8 +1160,6 @@ NSDictionary *_classesForNames = nil;
 	_anchorName = [element.anchorName copy];
 	_linkGUID = element.linkGUID;
 	
-	_tagContentInvisible = element.tagContentInvisible;
-	
 	_textColor = element.textColor;
 	_isColorInherited = YES;
 	
@@ -1177,6 +1170,48 @@ NSDictionary *_classesForNames = nil;
 	if (element.displayStyle == DTHTMLElementDisplayStyleInline)
 	{
 		self.backgroundColor = element.backgroundColor;
+	}
+	
+	_containsAppleConvertedSpace = element.containsAppleConvertedSpace;
+}
+
+- (void)interpretAttributes
+{
+	if (!_attributes)
+	{
+		// nothing to interpret
+		return;
+	}
+	
+	// transfer Apple Converted Space tag
+	if ([[self attributeForKey:@"class"] isEqualToString:@"Apple-converted-space"])
+	{
+		_containsAppleConvertedSpace = YES;
+	}
+	
+	// detect writing direction if set
+	NSString *directionStr = [self attributeForKey:@"dir"];
+	
+	if (directionStr)
+	{
+		NSAssert(_paragraphStyle, @"Found dir attribute, but missing paragraph style on element");
+		
+		if ([directionStr isEqualToString:@"rtl"])
+		{
+			_paragraphStyle.baseWritingDirection = NSWritingDirectionRightToLeft;
+		}
+		else if ([directionStr isEqualToString:@"ltr"])
+		{
+			_paragraphStyle.baseWritingDirection = NSWritingDirectionLeftToRight;
+		}
+		else if ([directionStr isEqualToString:@"auto"])
+		{
+			_paragraphStyle.baseWritingDirection = NSWritingDirectionNatural; // that's also default
+		}
+		else
+		{
+			// other values are invalid and will be ignored
+		}
 	}
 }
 
@@ -1247,7 +1282,6 @@ NSDictionary *_classesForNames = nil;
 @synthesize anchorName = _anchorName;
 @synthesize underlineStyle = _underlineStyle;
 @synthesize textAttachment = _textAttachment;
-@synthesize tagContentInvisible = _tagContentInvisible;
 @synthesize strikeOut = _strikeOut;
 @synthesize superscriptStyle = _superscriptStyle;
 @synthesize headerLevel = _headerLevel;
