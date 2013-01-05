@@ -15,6 +15,7 @@
 #import <CoreText/CoreText.h>
 #import "NSAttributedStringRunDelegates.h"
 #import "NSString+HTML.h"
+#import "NSString+DTUtilities.h"
 
 #import "DTCoreTextFontDescriptor.h"
 #import "DTCoreTextParagraphStyle.h"
@@ -345,7 +346,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 	{
 		// we want to set the URL
 		[self addAttribute:DTLinkAttribute value:URL range:range];
-		[self addAttribute:DTGUIDAttribute value:[NSString guid] range:range];
+		[self addAttribute:DTGUIDAttribute value:[NSString stringWithUUID] range:range];
 	}
 	
 	[self endEditing];
