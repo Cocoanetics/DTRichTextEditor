@@ -196,7 +196,12 @@
 	DTCoreTextLayoutLine *lastLine = [lines lastObject];
 	if (point.y > CGRectGetMaxY(lastLine.frame))
 	{
-		return NSMaxRange([self visibleStringRange])-1;
+        NSRange stringRange = [self visibleStringRange];
+        
+        if (stringRange.length)
+        {
+            return NSMaxRange([self visibleStringRange])-1;
+        }
 	}
 	
 	// find closest line

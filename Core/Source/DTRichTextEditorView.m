@@ -1907,7 +1907,7 @@ typedef enum
 {
 	DTTextPosition *begin = (id)[self beginningOfDocument];
 	DTTextPosition *end = (id)[self endOfDocument];
-	
+    
 	if (offset<0)
 	{
 		if (([begin compare:position] == NSOrderedAscending))
@@ -1932,9 +1932,12 @@ typedef enum
 	
 	if (offset>0)
 	{
-		if (([position compare:end] == NSOrderedAscending))
+        DTTextPosition *newPosition = [DTTextPosition textPositionWithLocation:position.location+offset];
+        
+        // return new position if it is before the document end, otherwise return end
+		if (([newPosition compare:end] == NSOrderedAscending))
 		{
-			return [DTTextPosition textPositionWithLocation:position.location+offset];
+			return newPosition;
 		}
 		else 
 		{

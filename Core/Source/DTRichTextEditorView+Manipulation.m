@@ -84,13 +84,14 @@
 	
 	NSAttributedString *characterString = [self attributedSubstringForRange:imageRange];
 	
-	if (characterString.length)
-	{
-		if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:NSAttachmentAttributeName])
-		{
-			return imageRange;
-		}
-	}
+    // only check for attachment attribute if the string is not empty
+    if ([characterString length])
+    {
+        if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:NSAttachmentAttributeName])
+        {
+            return imageRange;
+        }
+    }
 	
 	// we did not get a forward or backward range, like Word!|
 	DTTextPosition *previousPosition = (id)([self.tokenizer positionFromPosition:position

@@ -1,3 +1,6 @@
+Version 1.1.2
+- FIXED: Crash when dragging beyond end of document with keyboard hidden
+
 Version 1.1.1
 - UPDATED: DTCoreText to Version 1.1
 - FIXED: Hopefully a certain crash involving Undo
