@@ -22,8 +22,8 @@
     CGRect frame = [UIScreen mainScreen].applicationFrame;
     
     UIView *view = [[UIView alloc] initWithFrame:frame];
-    
-    richEditor = [[DTRichTextEditorView alloc] initWithFrame:view.bounds];
+    CGRect rect = CGRectMake(300, 30, 200, 400);
+    richEditor = [[DTRichTextEditorView alloc] initWithFrame:rect];
     richEditor.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     richEditor.textDelegate = self;
     
@@ -60,9 +60,11 @@
 	
 	richEditor.textDefaults = defaults;
     
-    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
+//    NSString *html = @"<div dir=\"rtl\"><p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p></div>";
 	
-	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+    NSString *html = @"<p dir=\"rtl\" style=\"font-weight:normal;font-family:'XB Niloofar';font-size:24px\">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ </p><p dir=\"rtl\" style=\"font-weight:normal;font-family:'XB Niloofar';font-size:24px\">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ </p><p dir=\"rtl\" style=\"font-weight:normal;font-family:'XB Niloofar';font-size:24px\">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ </p>";
+    
+	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	[richEditor setHTMLString:html];
 	

@@ -79,7 +79,17 @@
 			else
 			{
 				// ending after this line
-				rect = CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, line.frame.origin.x + self.frame.size.width - firstIndexRect.origin.x, line.frame.size.height);
+                
+                if (line.writingDirectionIsRightToLeft)
+                {
+                    // extend to left side of line
+                    rect = CGRectMake(line.frame.origin.x, line.frame.origin.y, firstIndexRect.origin.x - line.frame.origin.x, line.frame.size.height);
+                }
+                else 
+                {
+                    // extend to right side of line
+                    rect = CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, line.frame.origin.x + self.frame.size.width - firstIndexRect.origin.x, line.frame.size.height);
+                }
 			}
 			
 			// make new DTTextSelectionRect, was NSValue with CGRect before
