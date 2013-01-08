@@ -1,5 +1,6 @@
 Version 1.1.2
 - FIXED: Crash when dragging beyond end of document with keyboard hidden
+- FIXED: Selection rectangles did not get correctly extended for RTL text
 
 Version 1.1.1
 - UPDATED: DTCoreText to Version 1.1
