@@ -220,15 +220,12 @@
 - (BOOL)scanCSSAttribute:(NSString **)name value:(NSString **)value
 {
 	NSString *attrName = nil;
-	NSMutableString *attrValue = [NSMutableString string];
+	NSString *attrValue = nil;
 	
 	NSInteger initialScanLocation = [self scanLocation];
 	
 	NSCharacterSet *whiteCharacterSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
 	
-	NSMutableCharacterSet *nonWhiteCharacterSet = [[NSCharacterSet whitespaceAndNewlineCharacterSet] mutableCopy];
-	[nonWhiteCharacterSet formUnionWithCharacterSet:[NSCharacterSet characterSetWithCharactersInString:@";"]];
-	[nonWhiteCharacterSet invert];
 	
 	// alphanumeric plus -
 	NSCharacterSet *cssStyleAttributeNameCharacterSet = [NSCharacterSet cssStyleAttributeNameCharacterSet];
@@ -252,60 +249,37 @@
 	[self scanCharactersFromSet:whiteCharacterSet intoString:NULL];
 	
 	NSString *quote = nil;
-	if ([self scanCharactersFromSet:[NSCharacterSet quoteCharacterSet] intoString:&quote])
+	if ([self scanString:@"\"" intoString:&quote])
 	{
 		// attribute is quoted
 		
-		if (![self scanUpToString:quote intoString:&attrValue])
+		if (![self scanUpToString:@"\"" intoString:&attrValue])
 		{
 			[self setScanLocation:initialScanLocation];
 			return NO;
 		}
 		
 		// skip ending quote
-		[self scanString:quote intoString:NULL];
+		[self scanString:@"\"" intoString:NULL];
 		
 		// skip whitespace
 		[self scanCharactersFromSet:whiteCharacterSet intoString:NULL];
 		
 		//TODO: decode unicode sequences like "\2022"
-		
-		// skip ending characters
-		[self scanString:@";" intoString:NULL];
 	}
 	else
 	{
-		// attribute is not quoted, we append elements until we find a ; or the string is at the end
-		while (![self isAtEnd])
+		// attribute is not quoted
+		
+		if (![self scanUpToString:@";" intoString:&attrValue])
 		{
-			NSString *value = nil;
-			if (![self scanCharactersFromSet:nonWhiteCharacterSet intoString:&value])
-			{
-				// skip ending characters
-				[self scanString:@";" intoString:NULL];
-				
-				break;
-			}
-			
-			// interleave a space if there are multiple parts
-			if ([attrValue length])
-			{
-				[attrValue appendString:@" "];
-			}
-			
-			[attrValue appendString:value];
-			
-			// skip whitespace
-			[self scanCharactersFromSet:whiteCharacterSet intoString:NULL];
-			
-			if ([self scanString:@";" intoString:NULL])
-			{
-				// reached end of attribute
-				break;
-			}
+			[self setScanLocation:initialScanLocation];
+			return NO;
 		}
 	}
 	
+	// skip ending characters
+	[self scanString:@";" intoString:NULL];
 	
 	
 	// Success 
@@ -407,11 +381,6 @@
 			
 			colorName = [colorName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 		}
-	}
-	else
-	{
-		// could be a plain html color name
-		[self scanCharactersFromSet:[NSCharacterSet alphanumericCharacterSet] intoString:&colorName];
 	}
 	
 	DTColor *foundColor = nil;

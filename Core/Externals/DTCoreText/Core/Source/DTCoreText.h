@@ -13,9 +13,7 @@
 
 // common utilities
 #import "CGUtils.h"
-#if TARGET_OS_IPHONE
 #import "DTCoreTextFunctions.h"
-#endif
 
 // common classes
 #import "DTCSSListStyle.h"
@@ -36,10 +34,6 @@
 #import "NSAttributedString+SmallCaps.h"
 #import "NSAttributedString+DTCoreText.h"
 #import "DTHTMLAttributedStringBuilder.h"
-
-// parsing classes
-#import "DTHTMLParserNode.h"
-#import "DTHTMLParserTextNode.h"
 
 
 // These classes only work with UIKit on iOS

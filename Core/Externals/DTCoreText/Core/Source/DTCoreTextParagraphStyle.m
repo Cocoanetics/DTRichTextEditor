@@ -300,8 +300,7 @@
 	
 	if (_lineHeightMultiple && _lineHeightMultiple!=1.0f)
 	{
-		NSNumber *number = [NSNumber numberWithFloat:_lineHeightMultiple];
-		[retString appendFormat:@"line-height:%@em;", number];
+		[retString appendFormat:@"line-height:%.2fem;", _lineHeightMultiple];
 	}
 	
 	switch (_baseWritingDirection)
@@ -320,29 +319,25 @@
 	// Spacing at the bottom
 	if (_paragraphSpacing!=0.0f)
 	{
-		NSNumber *number = [NSNumber numberWithFloat:_paragraphSpacing];
-		[retString appendFormat:@"margin-bottom:%@px;", number];
+		[retString appendFormat:@"margin-bottom:%.2fpx;", _paragraphSpacing];
 	}
 
 	// Spacing at the top
 	if (_paragraphSpacingBefore!=0.0f)
 	{
-		NSNumber *number = [NSNumber numberWithFloat:_paragraphSpacingBefore];
-		[retString appendFormat:@"margin-top:%@px;", number];
+		[retString appendFormat:@"margin-top:%.2fpx;", _paragraphSpacingBefore];
 	}
 	
 	// Spacing at the left
 	if (_headIndent!=0.0f)
 	{
-		NSNumber *number = [NSNumber numberWithFloat:_headIndent];
-		[retString appendFormat:@"margin-left:%@px;", number];
+		[retString appendFormat:@"margin-left:%.2fpx;", _headIndent];
 	}
 
 	// Spacing at the right
 	if (_tailIndent!=0.0f)
 	{
-		NSNumber *number = [NSNumber numberWithFloat:_tailIndent];
-		[retString appendFormat:@"margin-right:%@px;", number];
+		[retString appendFormat:@"margin-right:%.2fpx;", _tailIndent];
 	}
 
 	// return nil if no content

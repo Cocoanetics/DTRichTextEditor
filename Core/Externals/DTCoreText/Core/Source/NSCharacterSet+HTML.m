@@ -7,10 +7,8 @@
 //
 
 #import "NSCharacterSet+HTML.h"
-#import "DTCoreTextConstants.h"
 
 static NSCharacterSet *_tagNameCharacterSet = nil;
-static NSCharacterSet *_ignorableWhitespaceCharacterSet = nil;
 static NSCharacterSet *_tagAttributeNameCharacterSet = nil;
 static NSCharacterSet *_quoteCharacterSet = nil;
 static NSCharacterSet *_nonQuotedAttributeEndCharacterSet = nil;
@@ -40,21 +38,6 @@ static NSCharacterSet *_cssStyleAttributeNameCharacterSet = nil;
 	
 	return _tagAttributeNameCharacterSet;
 }
-
-+ (NSCharacterSet *)ignorableWhitespaceCharacterSet
-{
-	static dispatch_once_t predicate;
-	
-	dispatch_once(&predicate, ^{
-		NSMutableCharacterSet *tmpSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
-		[tmpSet removeCharactersInString:UNICODE_NON_BREAKING_SPACE];
-		
-		_ignorableWhitespaceCharacterSet = [tmpSet copy];
-	});
-	
-	return _ignorableWhitespaceCharacterSet;
-}
-
 
 + (NSCharacterSet *)quoteCharacterSet
 {
@@ -91,7 +74,5 @@ static NSCharacterSet *_cssStyleAttributeNameCharacterSet = nil;
 	});	
 	return _cssStyleAttributeNameCharacterSet;
 }
-
-
 
 @end

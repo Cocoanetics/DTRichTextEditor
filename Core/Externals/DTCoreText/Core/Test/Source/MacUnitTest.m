@@ -135,12 +135,11 @@ NSString *testCaseNameFromURL(NSURL *URL, BOOL withSpaces)
 
 	// our own builder
 	DTHTMLAttributedStringBuilder *doc = [[DTHTMLAttributedStringBuilder alloc] initWithHTML:testData options:nil documentAttributes:NULL];
-	doc.shouldKeepDocumentNodeTree = YES;
 
 	NSAttributedString *iosAttributedString = [doc generatedAttributedString];
 	NSString *iosString = [iosAttributedString string];
 	
-/*
+	/*
 	NSMutableString *dumpOutput = [[NSMutableString alloc] init];
 	NSData *dump = [macString dataUsingEncoding:NSUTF8StringEncoding];
 	for (NSInteger i = 0; i < [dump length]; i++)
@@ -228,72 +227,12 @@ NSString *testCaseNameFromURL(NSURL *URL, BOOL withSpaces)
 				
 				if (!isSame)
 				{
-					STFail(@"First differing character at index %d: iOS '%@' versus Mac '%@'", i, [ios stringByAddingHTMLEntities] , [mac stringByAddingHTMLEntities]);
+					STFail(@"First differing character at index %d: iOS '%@' versus Mac '%@'", i, [ios stringByAddingSlashEscapes] , [mac stringByAddingSlashEscapes]);
 				}
 				break;
 			}
 		}
 	}
 }
-
-/**
- Tests that an 8pt font-size and a 8px font-size turn out the same font sizes
- */
-- (void)testPixelsVersusPoints
-{
-	NSString *HTML = @"<span style=\"font-size:8pt;\">8 pt</span><span style=\"font-size:8px;\">8 px</span>";
-	NSData *data = [HTML dataUsingEncoding:NSUTF8StringEncoding];
-	
-	// create Mac version
-	NSAttributedString *macString = [[NSAttributedString alloc] initWithHTML:data baseURL:nil documentAttributes:NULL];
-
-	NSRange firstFontRangeMac;
-	NSFont *firstFontMac = [macString attribute:(id)kCTFontAttributeName atIndex:0 effectiveRange:&firstFontRangeMac];
-	CGFloat firstFontMacPoints = [firstFontMac pointSize];
-
-	NSRange secondFontRangeMac;
-	id secondFontMac = [macString attribute:(id)kCTFontAttributeName atIndex:NSMaxRange(firstFontRangeMac) effectiveRange:&secondFontRangeMac];
-	CGFloat secondFontMacPoints = [secondFontMac pointSize];
-	
-	// create DTCoreText/iOS version
-	
-	DTHTMLAttributedStringBuilder *builder = [[DTHTMLAttributedStringBuilder alloc] initWithHTML:data options:nil documentAttributes:NULL];
-	
-	NSAttributedString *iosString = [builder generatedAttributedString];
-
-	NSRange firstFontRangeiOS;
-	CTFontRef firstFontiOS = (__bridge CTFontRef)[iosString attribute:(id)kCTFontAttributeName atIndex:0 effectiveRange:&firstFontRangeiOS];
-	CGFloat firstFontiOSPoints = CTFontGetSize(firstFontiOS);
-	
-	NSRange secondFontRangeiOS;
-	CTFontRef secondFontiOS = (__bridge CTFontRef)[iosString attribute:(id)kCTFontAttributeName atIndex:NSMaxRange(firstFontRangeiOS) effectiveRange:&secondFontRangeiOS];
-	CGFloat secondFontiOSPoints = CTFontGetSize(secondFontiOS);
-
-	STAssertEquals(firstFontMacPoints, firstFontiOSPoints, @"First Font should be same size");
-	STAssertEquals(secondFontMacPoints, secondFontiOSPoints, @"Second Font should be same size");
-}
-
-/**
- // this is included in the above, but I left it to get things
-- (void)testAppleConverted
-{
-	NSString *path = [[NSBundle bundleForClass:[self class]] pathForResource:@"AppleConverted" ofType:@"html"];
-	NSData *data = [NSData dataWithContentsOfFile:path];
-	
-	NSAttributedString *macString = [[NSAttributedString alloc] initWithHTML:data baseURL:nil documentAttributes:NULL];
-	
-	NSMutableString *dumpOutput = [[NSMutableString alloc] init];
-	NSData *dump = [[macString string] dataUsingEncoding:NSUTF8StringEncoding];
-	for (NSInteger i = 0; i < [dump length]; i++)
-	{
-		char *bytes = (char *)[dump bytes];
-		char b = bytes[i];
-		
-		[dumpOutput appendFormat:@"%d: %x %c\n", i, b, b];
-	}
-	
-	NSLog(@"%@\n\n", dumpOutput);
-}
- */
 
 @end

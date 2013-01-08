@@ -33,19 +33,19 @@
 	// determine type
 	DTTextAttachmentType attachmentType;
 	
-	if ([element.name isEqualToString:@"img"])
+	if ([element.tagName isEqualToString:@"img"])
 	{
 		attachmentType = DTTextAttachmentTypeImage;
 	}
-	else if ([element.name isEqualToString:@"video"])
+	else if ([element.tagName isEqualToString:@"video"])
 	{
 		attachmentType = DTTextAttachmentTypeVideoURL;
 	}
-	else if ([element.name isEqualToString:@"iframe"])
+	else if ([element.tagName isEqualToString:@"iframe"])
 	{
 		attachmentType = DTTextAttachmentTypeIframe;
 	}
-	else if ([element.name isEqualToString:@"object"])
+	else if ([element.tagName isEqualToString:@"object"])
 	{
 		attachmentType = DTTextAttachmentTypeObject;
 	}
@@ -75,7 +75,7 @@
 	NSURL *baseURL = [options objectForKey:NSBaseURLDocumentOption];
 	
 	// decode URL
-	NSString *src = [element.attributes objectForKey:@"src"];
+	NSString *src = [element attributeForKey:@"src"];
 	
 	NSURL *contentURL = nil;
 	DTImage *decodedImage = nil;
