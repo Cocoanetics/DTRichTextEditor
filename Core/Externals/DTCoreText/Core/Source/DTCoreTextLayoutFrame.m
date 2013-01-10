@@ -414,26 +414,38 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 			}
 		}
 		
-		CGFloat lineBottom = lineOrigin.y + currentLineMetrics.descent;
-		
-		// abort layout if we left the configured frame
-		if (lineBottom>maxY)
-		{
-			// doesn't fit any more
-			CFRelease(line);
-			break;
-		}
-		
 		// wrap it
 		DTCoreTextLayoutLine *newLine = [[DTCoreTextLayoutLine alloc] initWithLine:line];
 		CFRelease(line);
 		
 		newLine.writingDirectionIsRightToLeft = isRTL;
 		
+		// prevent overlap of a line with small font size with line before it
+		if (previousLine && !usesForcedLineHeight)
+		{
+			// only if there IS a line before it AND the line height is not fixed
+			CGFloat previousLineBottom = CGRectGetMaxY(previousLine.frame);
+			
+			if (lineOrigin.y - newLine.ascent < previousLineBottom)
+			{
+				// move baseline origin down far enough
+				lineOrigin.y = previousLineBottom + newLine.ascent;
+			}
+		}
+		
 		// baseline origin is rounded
 		lineOrigin.y = ceilf(lineOrigin.y);
 		
 		newLine.baselineOrigin = lineOrigin;
+		
+		// abort layout if we left the configured frame
+		CGFloat lineBottom = lineOrigin.y + currentLineMetrics.descent;
+		
+		if (lineBottom>maxY)
+		{
+			// doesn't fit any more
+			break;
+		}
 		
 		[typesetLines addObject:newLine];
 		fittingLength += lineRange.length;
@@ -1266,7 +1278,6 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 // finds the appropriate baseline origin for a line to position it at the correct distance from a previous line
 - (CGPoint)baselineOriginToPositionLine:(DTCoreTextLayoutLine *)line afterLine:(DTCoreTextLayoutLine *)previousLine
 {
-	
 	CGPoint lineOrigin = previousLine.baselineOrigin;
 	
 	NSInteger lineStartIndex = line.stringRange.location;
@@ -1307,6 +1318,7 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 	CGFloat lineHeight = 0;
 	CGFloat minLineHeight = 0;
 	CGFloat maxLineHeight = 0;
+	BOOL usesForcedLineHeight = NO;
 	
 	CGFloat usedLeading = line.leading;
 	
@@ -1330,6 +1342,8 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 	
 	if (CTParagraphStyleGetValueForSpecifier(lineParagraphStyle, kCTParagraphStyleSpecifierMinimumLineHeight, sizeof(minLineHeight), &minLineHeight))
 	{
+		usesForcedLineHeight = YES;
+		
 		if (lineHeight<minLineHeight)
 		{
 			lineHeight = minLineHeight;
@@ -1388,6 +1402,19 @@ static BOOL _DTCoreTextLayoutFramesShouldDrawDebugFrames = NO;
 	
 	// preserve own baseline x
 	lineOrigin.x = line.baselineOrigin.x;
+	
+	// prevent overlap of a line with small font size with line before it
+	if (!usesForcedLineHeight)
+	{
+		// only if there IS a line before it AND the line height is not fixed
+		CGFloat previousLineBottom = CGRectGetMaxY(previousLine.frame);
+		
+		if (lineOrigin.y - line.ascent < previousLineBottom)
+		{
+			// move baseline origin down far enough
+			lineOrigin.y = previousLineBottom + line.ascent;
+		}
+	}
 	
 	// origins are rounded
 	lineOrigin.y = ceilf(lineOrigin.y);
