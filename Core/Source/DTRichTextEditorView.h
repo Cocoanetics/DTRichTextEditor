@@ -93,6 +93,11 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated;
 
 /**
+ Gets the bounds of the rectangle that encloses the cursor or an envelope around the current selection. Can be used for the target area of a context menu.
+ */
+- (CGRect)boundsOfCurrentSelection;
+
+/**
  Property to enable copy/paste support. If enabled the user can paste text into DTRichTextEditorView or copy text to the pasteboard.
  */
 @property (nonatomic, assign) BOOL canInteractWithPasteboard;

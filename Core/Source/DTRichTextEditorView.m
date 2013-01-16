@@ -345,24 +345,15 @@ typedef enum
 
 - (void)showContextMenuFromSelection
 {
-	_contextMenuVisible = YES;
-	
-	CGRect targetRect;
-	
-	if ([_selectedTextRange length])
-	{
-		targetRect = [_selectionView selectionEnvelope];
-	}
-	else
-	{
-		targetRect = self.cursor.frame;
-	}
-	
 	if (![self selectionIsVisible])
 	{
 		// don't show it
 		return;
 	}
+	
+	CGRect targetRect = [self boundsOfCurrentSelection];
+
+	_contextMenuVisible = YES;
 	
 	if (!self.isFirstResponder)
 	{
@@ -381,10 +372,6 @@ typedef enum
 	
 	UIMenuController *menuController = [UIMenuController sharedMenuController];
 	
-	//	UIMenuItem *resetMenuItem = [[UIMenuItem alloc] initWithTitle:@"Item" action:@selector(menuItemClicked:)];
-	
-	//NSAssert([self becomeFirstResponder], @"Sorry, UIMenuController will not work with %@ since it cannot become first responder", self);
-	//[menuController setMenuItems:[NSArray arrayWithObject:resetMenuItem]];
 	[menuController setTargetRect:targetRect inView:self];
 	[menuController setMenuVisible:YES animated:YES];
 }
@@ -877,7 +864,22 @@ typedef enum
         
         [self setSelectedTextRange:newRange animated:YES];
     }
+}
+
+- (CGRect)boundsOfCurrentSelection
+{
+	CGRect targetRect = CGRectZero;
 	
+	if ([_selectedTextRange length])
+	{
+		targetRect = [_selectionView selectionEnvelope];
+	}
+	else if (_cursorIsShowing)
+	{
+		targetRect = self.cursor.frame;
+	}
+	
+	return targetRect;
 }
 
 #pragma mark Notifications
@@ -2219,19 +2221,10 @@ typedef enum
 - (BOOL)selectionIsVisible
 {
 	CGRect visibleContentRect = [self visibleContentRect];
-	
-	CGRect targetRect;
-	
-	if ([_selectedTextRange length])
-	{
-		targetRect = [_selectionView selectionEnvelope];
-	}
-	else
-	{
-		targetRect = self.cursor.frame;
-	}
-	
-	if (!CGRectIntersectsRect(visibleContentRect, targetRect))
+	CGRect selectionRect = [self boundsOfCurrentSelection];
+
+	// selection is visible if the selection rect is in the visible rect
+	if (!CGRectIntersectsRect(visibleContentRect, selectionRect))
 	{
 		return NO;
 	}

@@ -2,6 +2,7 @@ Version 1.1.3
 - FIXED: Cursor would not show when becoming first responder
 - FIXED: Loupe would flash in top left corner when being presented the first time
 - ADDED: Known Issues file with warning not to use lists (incomplete)
+- CHANGED: refactored and made public boundsOfCurrentSelection method
 
 Version 1.1.2
 - FIXED: Crash when dragging beyond end of document with keyboard hidden
