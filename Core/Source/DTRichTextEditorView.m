@@ -1209,11 +1209,11 @@ typedef enum
 			_keyboardIsShowing = YES;
             self.selectionView.showsDragHandlesForSelection = YES;
 			
-			// set curser to beginning of document if nothing selected
+			// set cursor at end of document if nothing selected
 			if (!_selectedTextRange)
 			{
-				UITextPosition *begin = [self beginningOfDocument];
-				self.selectedTextRange = [DTTextRange textRangeFromStart:begin toEnd:begin];
+				UITextPosition *end = [self endOfDocument];
+				self.selectedTextRange = [self textRangeFromPosition:end toPosition:end];
 			}
 		}
 	}
@@ -1777,6 +1777,16 @@ typedef enum
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated
 {
+    // having a selected range implies that the cursor is showing
+    if (newTextRange)
+    {
+        _cursorIsShowing = YES;
+    }
+    else
+    {
+        _cursorIsShowing = NO;
+    }
+    
 	// check if the selected range fits with the attributed text
 	DTTextPosition *start = (DTTextPosition *)newTextRange.start;
 	DTTextPosition *end = (DTTextPosition *)newTextRange.end;
@@ -2335,7 +2345,10 @@ typedef enum
     [self setNeedsLayout];
 
 	// always position cursor at the end of the text
-	self.selectedTextRange = [DTTextRange emptyRangeAtPosition:self.endOfDocument];
+    if (_keyboardIsShowing)
+    {
+        self.selectedTextRange = [DTTextRange emptyRangeAtPosition:self.endOfDocument];
+    }
 	
 	[self.undoManager removeAllActions];
 }
@@ -2366,19 +2379,6 @@ typedef enum
 	self.selectionView.frame = self.contentView.frame;
 	[self updateCursorAnimated:NO];
 }
-
-//- (DTLoupeView *)loupe
-//{
-//	if (!_loupe)
-//	{
-//		_loupe = [DTLoupeView sharedLoupe];
-//		_loupe.style = DTLoupeStyleCircle;
-//		_loupe.targetView = self.contentView;
-//	}
-//	
-//	return _loupe;
-//}
-
 
 - (DTCursorView *)cursor
 {

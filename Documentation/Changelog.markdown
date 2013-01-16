@@ -1,3 +1,8 @@
+Version 1.1.3
+- FIXED: Cursor would not show when becoming first responder
+- FIXED: Loupe would flash in top left corner when being presented the first time
+- ADDED: Known Issues file with warning not to use lists (incomplete)
+
 Version 1.1.2
 - FIXED: Crash when dragging beyond end of document with keyboard hidden
 - FIXED: Selection rectangles did not get correctly extended for RTL text

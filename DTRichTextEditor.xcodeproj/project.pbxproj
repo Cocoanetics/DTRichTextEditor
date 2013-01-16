@@ -336,6 +336,7 @@
 		A721D67816925A5500C5A48F /* UIPasteboard+DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIPasteboard+DTWebArchive.h"; path = "DTWebArchive/Core/Source/UIPasteboard+DTWebArchive.h"; sourceTree = "<group>"; };
 		A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTCoreText.xcodeproj; path = DTCoreText/DTCoreText.xcodeproj; sourceTree = "<group>"; };
 		A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTWebArchive.xcodeproj; path = DTWebArchive/DTWebArchive.xcodeproj; sourceTree = "<group>"; };
+		A7239FC716A6A22F0071E902 /* KnownIssues.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = KnownIssues.markdown; sourceTree = "<group>"; };
 		A72D976D1684BA0E005F8BA5 /* DTHTMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLParser.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/DTHTMLParser.h; sourceTree = "<group>"; };
 		A7402D4A167F4E5200BE0AAF /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		A7402D4D167F571A00BE0AAF /* DTRichTextEditorView+Manipulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTRichTextEditorView+Manipulation.h"; sourceTree = "<group>"; };
@@ -716,6 +717,7 @@
 			isa = PBXGroup;
 			children = (
 				A7E994DD154E79DA00FEB5DB /* Changelog.markdown */,
+				A7239FC716A6A22F0071E902 /* KnownIssues.markdown */,
 				A7556EC31679BCE5000AC6D9 /* LICENSE.txt */,
 			);
 			path = Documentation;

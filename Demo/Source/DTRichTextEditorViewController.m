@@ -36,11 +36,10 @@
 - (void)viewDidAppear:(BOOL)animated
 {
 	[super viewDidAppear:animated];
-	[richEditor becomeFirstResponder];
+    
+    // if you want to show the keyboard after appearing
+    [richEditor becomeFirstResponder];
 }
-
-
-
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad {
