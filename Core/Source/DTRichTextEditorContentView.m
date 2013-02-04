@@ -28,8 +28,18 @@
 		
 		if (_attributedString)
 		{
-			// triggers new layout
-			[self sizeToFit];
+			CGRect rect = UIEdgeInsetsInsetRect(self.bounds, _edgeInsets);
+			rect.size.height = CGFLOAT_OPEN_HEIGHT; // necessary height set as soon as we know it.
+			
+			DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
+			layoutFrame.frame = rect;
+			
+			// trigger new layout
+			CGSize contentSize = [self intrinsicContentSize];
+			
+			// adjust own size with this info
+			CGRect frame = CGRectMake(0, 0, contentSize.width, contentSize.height);
+			[super setFrame:frame];
 		}
 		
 		[self setNeedsDisplay];
@@ -90,6 +100,7 @@
 	
 	// reduce frame by edgeinsets
 	CGRect frameForLayout = UIEdgeInsetsInsetRect(frame, _edgeInsets);
+	frameForLayout.size.height = CGFLOAT_OPEN_HEIGHT;
 	
 	[(DTMutableCoreTextLayoutFrame *)self.layoutFrame setFrame:frameForLayout];
 	[self didChangeValueForKey:@"frame"];

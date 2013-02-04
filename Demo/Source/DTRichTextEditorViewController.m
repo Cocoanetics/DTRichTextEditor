@@ -61,9 +61,11 @@
    
     NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	[richEditor setHTMLString:html];
+
+	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	// image as drawn by your custom views which you return in the delegate method
-	richEditor.attributedTextContentView.shouldDrawImages = YES;
+	richEditor.attributedTextContentView.shouldDrawImages = NO;
 	
 	photoButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];
 	photoButton.enabled = NO;

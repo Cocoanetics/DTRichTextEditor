@@ -182,8 +182,6 @@ typedef enum
 	_canInteractWithPasteboard = YES;
 	_showsKeyboardWhenBecomingFirstResponder = YES;
 	
-	self.attributedTextContentView.shouldLayoutCustomSubviews = YES;
-	
 	// --- text input
     self.autocapitalizationType = UITextAutocapitalizationTypeSentences;
     self.autocorrectionType = UITextAutocorrectionTypeDefault;

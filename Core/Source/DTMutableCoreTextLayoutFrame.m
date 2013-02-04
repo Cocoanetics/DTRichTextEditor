@@ -153,7 +153,7 @@
 
 - (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text
 {
-	CFAbsoluteTime startTime = CFAbsoluteTimeGetCurrent();
+//	CFAbsoluteTime startTime = CFAbsoluteTimeGetCurrent();
 	
 	NSString *plainText = [_attributedStringFragment string];
 
@@ -351,20 +351,20 @@
 	
 	// some attachments might have been overwritten, so we force refresh of the attachments list
 	_textAttachments = nil;
-	
-	CFAbsoluteTime endTime = CFAbsoluteTimeGetCurrent();
-
-	NSLog(@"%f", endTime-startTime);
+//	
+//	CFAbsoluteTime endTime = CFAbsoluteTimeGetCurrent();
+//
+//	NSLog(@"%f", endTime-startTime);
 }
 
 - (void)setFrame:(CGRect)frame
 {
 	_frame = frame;
     
-    if (shouldRebuildLines) {
+    if (shouldRebuildLines)
+	 {
         [self relayoutText];
     }
 }
-
 
 @end
