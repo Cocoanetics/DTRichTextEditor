@@ -2082,9 +2082,9 @@ typedef enum
 	
 	CGRect caretRect = [self.attributedTextContentView.layoutFrame cursorRectAtIndex:index];
 	
-	caretRect.size.height = layoutLine.frame.size.height;
+	caretRect.size.height = roundf(layoutLine.frame.size.height);
 	caretRect.origin.x = roundf(caretRect.origin.x);
-	caretRect.origin.y = layoutLine.frame.origin.y;
+	caretRect.origin.y = roundf(layoutLine.frame.origin.y);
 	
 	return caretRect;
 }
