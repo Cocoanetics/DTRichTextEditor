@@ -153,6 +153,8 @@
 
 - (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text
 {
+	CFAbsoluteTime startTime = CFAbsoluteTimeGetCurrent();
+	
 	NSString *plainText = [_attributedStringFragment string];
 
 	// get beginning and end of paragraph containing the replaced range
@@ -349,6 +351,10 @@
 	
 	// some attachments might have been overwritten, so we force refresh of the attachments list
 	_textAttachments = nil;
+	
+	CFAbsoluteTime endTime = CFAbsoluteTimeGetCurrent();
+
+	NSLog(@"%f", endTime-startTime);
 }
 
 - (void)setFrame:(CGRect)frame

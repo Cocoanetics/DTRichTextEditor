@@ -35,6 +35,7 @@
 		A7470F8214E2A6D90015477A /* libDTCoreText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FEBA14E14E4500BF8CCD /* libDTCoreText.a */; };
 		A7470F8314E2A6D90015477A /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FF8814E2939600BF8CCD /* libDTLoupe.a */; };
 		A7470F8414E2A6D90015477A /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7235AA61487A9C100C9F926 /* libDTWebArchive.a */; };
+		A76DB56316A7A96E0010CD85 /* phatpad.html in Resources */ = {isa = PBXBuildFile; fileRef = A76DB56216A7A96E0010CD85 /* phatpad.html */; };
 		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
 		A784849F15E28DF400595102 /* DTAttributedTextContentView.h in Headers */ = {isa = PBXBuildFile; fileRef = A784849E15E28DF400595102 /* DTAttributedTextContentView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7851872168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A7851870168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h */; };
@@ -383,6 +384,7 @@
 		A74351591486772100F4C766 /* DTRichTextEditorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorViewController.m; sourceTree = "<group>"; };
 		A743515A1486772100F4C766 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A7556EC31679BCE5000AC6D9 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		A76DB56216A7A96E0010CD85 /* phatpad.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = phatpad.html; sourceTree = "<group>"; };
 		A76F898113C73421007B37C0 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		A7840CCC1524A98200FA9F9D /* DTLoupe.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = DTLoupe.bundle; sourceTree = "<group>"; };
 		A784849E15E28DF400595102 /* DTAttributedTextContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextContentView.h; path = DTCoreText/Core/Source/DTAttributedTextContentView.h; sourceTree = "<group>"; };
@@ -726,6 +728,7 @@
 		A7F0C83313C326E900EBD027 = {
 			isa = PBXGroup;
 			children = (
+				A76DB56216A7A96E0010CD85 /* phatpad.html */,
 				A7402D4A167F4E5200BE0AAF /* Default-568h@2x.png */,
 				A743511C1486771700F4C766 /* Core */,
 				A743514B1486772100F4C766 /* Demo */,
@@ -1091,6 +1094,7 @@
 				A7D8FF9414E294D600BF8CCD /* DTLoupe.bundle in Resources */,
 				A7914A78153EF6BB00F6CC86 /* icon_smile.gif in Resources */,
 				A7402D4B167F4E5200BE0AAF /* Default-568h@2x.png in Resources */,
+				A76DB56316A7A96E0010CD85 /* phatpad.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

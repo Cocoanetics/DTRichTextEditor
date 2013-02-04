@@ -58,8 +58,12 @@
 	[defaults setObject:[UIColor colorWithHTMLName:@"purple"] forKey:DTDefaultLinkColor];
 	
 	richEditor.textDefaults = defaults;
-    
-    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
+   
+	NSBundle*		bundle = [NSBundle mainBundle];
+	NSString *		fileName = [[NSString alloc] initWithString:[bundle pathForResource:@"phatpad" ofType:@"html"]];
+	NSError	*		fileerror;
+	NSString *		html = [[NSString alloc] initWithContentsOfFile:fileName encoding:NSASCIIStringEncoding error:&fileerror];
+//    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	
 	//[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
