@@ -14,28 +14,20 @@
 @implementation DTRichTextEditorViewController
 
 
- // Implement loadView to create a view hierarchy programmatically, without using a nib.
- - (void)loadView 
+// Implement loadView to create a view hierarchy programmatically, without using a nib.
+- (void)loadView
 {
-    CGRect frame = [UIScreen mainScreen].applicationFrame;
-    
-    UIView *view = [[UIView alloc] initWithFrame:frame];
+	CGRect frame = [UIScreen mainScreen].applicationFrame;
+	UIView *view = [[UIView alloc] initWithFrame:frame];
    
-	CGRect editorFrame = frame;
-	editorFrame.origin.y += 100;
-	editorFrame.size.height -= 100;
+	richEditor = [[DTRichTextEditorView alloc] initWithFrame:view.bounds];
+	richEditor.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	richEditor.textDelegate = self;
+	[view addSubview:richEditor];
 	
-    richEditor = [[DTRichTextEditorView alloc] initWithFrame:editorFrame];
-    richEditor.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    richEditor.textDelegate = self;
-	richEditor.layer.borderColor = [UIColor redColor].CGColor;
-	richEditor.layer.borderWidth = 3;
-    
-    [view addSubview:richEditor];
-    
-    self.view = view;
- }
- 
+	self.view = view;
+}
+
 
 - (void)viewDidAppear:(BOOL)animated
 {
@@ -66,7 +58,7 @@
     NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	[richEditor setHTMLString:html];
 
-	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
+//	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	// image as drawn by your custom views which you return in the delegate method
 	richEditor.attributedTextContentView.shouldDrawImages = NO;
