@@ -39,9 +39,8 @@
 
 - (DTCoreTextLayoutFrame *)layoutFrame
 {
-	if (!_layoutFrame)
-	{
-		SYNCHRONIZE_START(self.selfLock)
+	dispatch_sync(self.layoutQueue, ^{
+		if (!_layoutFrame)
 		{
 			CGRect rect = UIEdgeInsetsInsetRect(self.bounds, _edgeInsets);
 			rect.size.height = CGFLOAT_OPEN_HEIGHT; // necessary height set as soon as we know it.
@@ -55,8 +54,7 @@
 				[self setNeedsDisplay];
 			}
 		}
-		SYNCHRONIZE_END(self.selfLock)
-	}
+	});
 	
 	return _layoutFrame;
 }
@@ -67,21 +65,17 @@
 	
 	BOOL needsRelayout = NO;
 	
-	SYNCHRONIZE_START(self.selfLock)
+	if (_attributedString != attributedString)
 	{
-		if (_attributedString != attributedString)
-		{
-			[layoutFrame setAttributedString:attributedString];
-			
-			_attributedString = layoutFrame.attributedStringFragment;
-			
-			// new layout invalidates all positions for custom views
-			[self removeAllCustomViews];
-			
-			needsRelayout = YES;
-		}
+		[layoutFrame setAttributedString:attributedString];
+		
+		_attributedString = layoutFrame.attributedStringFragment;
+		
+		// new layout invalidates all positions for custom views
+		[self removeAllCustomViews];
+		
+		needsRelayout = YES;
 	}
-	SYNCHRONIZE_END(self.selfLock)
 	
 	if (needsRelayout)
 	{
@@ -106,14 +100,12 @@
 {
 	DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
 	
-	SYNCHRONIZE_START(self.selfLock)
-	{
+	dispatch_sync(self.layoutQueue, ^{
 		[layoutFrame relayoutTextInRange:range];
 		
 		// remove all link custom views
 		[self removeAllCustomViewsForLinks];
-	}
-	SYNCHRONIZE_END(self.selfLock)
+	});
 	
 	// relayout / redraw
 	[self setNeedsDisplay];
@@ -128,14 +120,12 @@
 {
 	DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
 	
-	SYNCHRONIZE_START(self.selfLock)
-	{
+	dispatch_sync(self.layoutQueue, ^{
 		[layoutFrame replaceTextInRange:range withText:text];
 		
 		// remove all link custom views
 		[self removeAllCustomViewsForLinks];
-	}
-	SYNCHRONIZE_END(self.selfLock)
+	});
 	
 	// relayout / redraw
 	[self setNeedsDisplay];
@@ -145,37 +135,5 @@
 	[self sizeToFit];
     layoutFrame.shouldRebuildLines = YES;
 }
-
-/*
-- (void)removeAttachmentCustomViewsNoLongerInLayoutFrame
-{
-	NSArray *attachmentsInFrame = [self.layoutFrame textAttachments];
-	
-	NSMutableArray *attachmentKeys = [[customViewsForAttachmentsIndex allKeys] mutableCopy];
-	
-	// remove all keys that are still in frame
-	for (DTTextAttachment *oneAttachment in [NSSet setWithArray:attachmentsInFrame])
-	{
-		NSNumber *indexKey = [NSNumber numberWithInteger:[oneAttachment hash]];
-		
-		[attachmentKeys removeObject:indexKey];
-	}
-	
-	if ([attachmentKeys count])
-	{
-		[self setNeedsDisplay];
-	}
-	
-	// any left over are no longer in the layout Frame, so we remove them
-	for (NSNumber *oneKey in attachmentKeys)
-	{
-		UIView *customView = [customViewsForAttachmentsIndex objectForKey:oneKey];
-		[customView removeFromSuperview];
-		
-		[customViewsForAttachmentsIndex removeObjectForKey:oneKey];
-		[self.customViews removeObject:customView];
-	}
-}
- */
 
 @end
