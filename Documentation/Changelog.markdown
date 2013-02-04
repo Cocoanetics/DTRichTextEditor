@@ -1,6 +1,9 @@
 Version 1.1.4
+- FIXED: horizontal flickering when moving round loupe over text
 - UPDATED: DTCoreText to 1.2.1
 - CHANGED: renamed contentView to attributedTextContentView to avoid possible conflict with internal ivar of UIScrollView
+- CHANGED: replaced semaphore-based sync with dispatch_queue
+-
 
 Version 1.1.3
 - FIXED: Cursor would not show when becoming first responder
