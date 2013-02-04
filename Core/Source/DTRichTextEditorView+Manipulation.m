@@ -28,7 +28,7 @@
 {
 	DTTextRange *textRange = (DTTextRange *)range;
 	
-	return [self.contentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:[textRange NSRangeValue]];
+	return [self.attributedTextContentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:[textRange NSRangeValue]];
 }
 
 - (void)setHTMLString:(NSString *)string
@@ -51,7 +51,7 @@
 	
 	NSRange textRange = [(DTTextRange *)range NSRangeValue];
 	
-	NSString *tmpString = [[self.contentView.layoutFrame.attributedStringFragment string] substringWithRange:textRange];
+	NSString *tmpString = [[self.attributedTextContentView.layoutFrame.attributedStringFragment string] substringWithRange:textRange];
 	
 	tmpString = [tmpString stringByReplacingOccurrencesOfString:UNICODE_OBJECT_PLACEHOLDER withString:@""];
 	
@@ -99,7 +99,7 @@
 																					inDirection:UITextStorageDirectionBackward]);
 	
 	// treat image as word, right side of image selects it
-	characterString = [self.contentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:NSMakeRange(previousPosition.location, 1)];
+	characterString = [self.attributedTextContentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:NSMakeRange(previousPosition.location, 1)];
 	
 	if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:NSAttachmentAttributeName])
 	{
@@ -140,7 +140,7 @@
 	
 	NSRange effectiveRange;
 	
-	NSURL *effectiveURL = [self.contentView.layoutFrame.attributedStringFragment attribute:DTLinkAttribute atIndex:index effectiveRange:&effectiveRange];
+	NSURL *effectiveURL = [self.attributedTextContentView.layoutFrame.attributedStringFragment attribute:DTLinkAttribute atIndex:index effectiveRange:&effectiveRange];
 	
 	if (!effectiveURL)
 	{
@@ -162,7 +162,7 @@
 	NSRange myRange = [(DTTextRange *)range NSRangeValue];
 	
 	// get range containing all selected paragraphs
-	NSAttributedString *attributedString = [contentView.layoutFrame attributedStringFragment];
+	NSAttributedString *attributedString = [self.attributedTextContentView.layoutFrame attributedStringFragment];
 	
 	NSString *string = [attributedString string];
 	
@@ -179,7 +179,7 @@
 
 - (NSDictionary *)typingAttributesForRange:(DTTextRange *)range
 {
-	NSDictionary *attributes = [self.contentView.layoutFrame.attributedStringFragment typingAttributesForRange:[range NSRangeValue]];
+	NSDictionary *attributes = [self.attributedTextContentView.layoutFrame.attributedStringFragment typingAttributesForRange:[range NSRangeValue]];
 	
 	CTFontRef font = (__bridge CTFontRef)[attributes objectForKey:(id)kCTFontAttributeName];
 	CTParagraphStyleRef paragraphStyle = (__bridge CTParagraphStyleRef)[attributes objectForKey:(id)kCTParagraphStyleAttributeName];
@@ -270,7 +270,7 @@
 	
 	NSUndoManager *undoManager = self.undoManager;
 	
-	NSAttributedString *replacedString = [self.contentView.attributedString attributedSubstringFromRange:range];
+	NSAttributedString *replacedString = [self.attributedTextContentView.attributedString attributedSubstringFromRange:range];
 	
 	[[undoManager prepareWithInvocationTarget:self] _updateSubstringInRange:range withAttributedString:replacedString actionName:actionName];
 	
@@ -280,10 +280,10 @@
 	}
 	
 	// replace
-	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:range withText:attributedString];
+	[(DTRichTextEditorContentView *)self.attributedTextContentView replaceTextInRange:range withText:attributedString];
 	
 	// attachment positions might have changed
-	[self.contentView layoutSubviewsInRect:self.bounds];
+	[self.attributedTextContentView layoutSubviewsInRect:self.bounds];
 	
 	// cursor positions might have changed
 	[self updateCursorAnimated:NO];
@@ -320,7 +320,7 @@
 		NSRange styleRange = [(DTTextRange *)range NSRangeValue];
 		
 		// get fragment that is to be made bold
-		NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
+		NSMutableAttributedString *fragment = [[[self.attributedTextContentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
 		
 		// make entire frament bold
 		[fragment toggleBoldInRange:NSMakeRange(0, [fragment length])];
@@ -354,7 +354,7 @@
 		NSRange styleRange = [(DTTextRange *)range NSRangeValue];
 		
 		// get fragment that is to be made italic
-		NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
+		NSMutableAttributedString *fragment = [[[self.attributedTextContentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
 		
 		// make entire frament italic
 		[fragment toggleItalicInRange:NSMakeRange(0, [fragment length])];
@@ -388,7 +388,7 @@
 		NSRange styleRange = [(DTTextRange *)range NSRangeValue];
 		
 		// get fragment that is to be made underlined
-		NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
+		NSMutableAttributedString *fragment = [[[self.attributedTextContentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
 		
 		// make entire frament underlined
 		[fragment toggleUnderlineInRange:NSMakeRange(0, [fragment length])];
@@ -422,7 +422,7 @@
 		NSRange styleRange = [(DTTextRange *)range NSRangeValue];
 		
 		// get fragment that is to be made bold
-		NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
+		NSMutableAttributedString *fragment = [[[self.attributedTextContentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
 		
 		// make entire frament highlighted
 		[fragment toggleHighlightInRange:NSMakeRange(0, [fragment length]) color:color];
@@ -466,7 +466,7 @@
 	NSRange styleRange = [(DTTextRange *)range NSRangeValue];
 	
 	// get fragment that is to be toggled
-	NSMutableAttributedString *fragment = [[[contentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
+	NSMutableAttributedString *fragment = [[[self.attributedTextContentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
 	
 	// toggle entire frament
 	NSRange entireFragmentRange = NSMakeRange(0, [fragment length]);
@@ -663,7 +663,7 @@
 	NSRange rangeToSelectAfterwards = styleRange;
 	
 	// get range containing all selected paragraphs
-	NSAttributedString *attributedString = [contentView.layoutFrame attributedStringFragment];
+	NSAttributedString *attributedString = [self.attributedTextContentView.layoutFrame attributedStringFragment];
 	
 	NSString *string = [attributedString string];
 	
@@ -673,7 +673,7 @@
 	[string rangeOfParagraphsContainingRange:styleRange parBegIndex:&begIndex parEndIndex:&endIndex];
 	styleRange = NSMakeRange(begIndex, endIndex - begIndex); // now extended to full paragraphs
 	
-	NSMutableAttributedString *entireAttributedString = (NSMutableAttributedString *)[contentView.layoutFrame attributedStringFragment];
+	NSMutableAttributedString *entireAttributedString = (NSMutableAttributedString *)[self.attributedTextContentView.layoutFrame attributedStringFragment];
 	
 	// check if we are extending a list
 	DTCSSListStyle *extendingList = nil;
@@ -711,8 +711,8 @@
 	
 	// relayout range of entire list
 	//NSRange listRange = [entireAttributedString rangeOfTextList:listStyle atIndex:styleRange.location];
-	//[(DTRichTextEditorContentView *)self.contentView relayoutTextInRange:rangeToSelectAfterwards];
-	[self.contentView relayoutText];
+	//[(DTRichTextEditorContentView *)self.attributedTextContentView relayoutTextInRange:rangeToSelectAfterwards];
+	[self.attributedTextContentView relayoutText];
 	
 	// get fragment that is to be changed
 	//	NSMutableAttributedString *fragment = [[entireAttributedString attributedSubstringFromRange:styleRange] mutableCopy];
@@ -722,13 +722,13 @@
 	//	[fragment toggleListStyle:listStyle inRange:fragmentRange numberFrom:nextItemNumber];
 	
 	// replace
-	//	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:styleRange withText:fragment];
+	//	[(DTRichTextEditorContentView *)self.attributedTextContentView replaceTextInRange:styleRange withText:fragment];
 	
 	//	styleRange.length = [fragment length];
 	self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
 	
 	// attachment positions might have changed
-	[self.contentView layoutSubviewsInRect:self.bounds];
+	[self.attributedTextContentView layoutSubviewsInRect:self.bounds];
 	
 	// cursor positions might have changed
 	[self updateCursorAnimated:NO];
@@ -753,7 +753,7 @@
 	BOOL needsParagraphBefore = NO;
 	BOOL needsParagraphAfter = NO;
 	
-	NSString *plainText = [self.contentView.layoutFrame.attributedStringFragment string];
+	NSString *plainText = [self.attributedTextContentView.layoutFrame.attributedStringFragment string];
 	
 	if (inParagraph)
 	{
@@ -827,7 +827,7 @@
 - (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate
 {
 	// update all attachments that matchin this URL (possibly multiple images with same size)
-	return [self.contentView.layoutFrame textAttachmentsWithPredicate:predicate];
+	return [self.attributedTextContentView.layoutFrame textAttachmentsWithPredicate:predicate];
 }
 
 @end

@@ -1,3 +1,7 @@
+Version 1.1.4
+- UPDATED: DTCoreText to 1.2.1
+- CHANGED: renamed contentView to attributedTextContentView to avoid possible conflict with internal ivar of UIScrollView
+
 Version 1.1.3
 - FIXED: Cursor would not show when becoming first responder
 - FIXED: Loupe would flash in top left corner when being presented the first time

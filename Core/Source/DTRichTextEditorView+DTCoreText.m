@@ -12,12 +12,12 @@
 
 - (NSUInteger)numberOfLayoutLines
 {
-	return [self.contentView.layoutFrame.lines count];
+	return [self.attributedTextContentView.layoutFrame.lines count];
 }
 
 - (DTCoreTextLayoutLine *)layoutLineAtIndex:(NSUInteger)lineIndex
 {
-	return [self.contentView.layoutFrame.lines objectAtIndex:lineIndex];
+	return [self.attributedTextContentView.layoutFrame.lines objectAtIndex:lineIndex];
 }
 
 - (DTCoreTextLayoutLine *)layoutLineContainingTextPosition:(DTTextPosition *)textPosition
@@ -26,14 +26,14 @@
 	NSUInteger index = textPosition.location;
 	
 	// get line from layout frame
-	return [self.contentView.layoutFrame lineContainingIndex:index];
+	return [self.attributedTextContentView.layoutFrame lineContainingIndex:index];
 }
 
 - (NSArray *)visibleLayoutLines
 {
 	CGRect visibleRect = self.bounds;
 	
-	return [self.contentView.layoutFrame linesVisibleInRect:visibleRect];
+	return [self.attributedTextContentView.layoutFrame linesVisibleInRect:visibleRect];
 }
 
 @end

@@ -182,7 +182,7 @@ typedef enum
 	_canInteractWithPasteboard = YES;
 	_showsKeyboardWhenBecomingFirstResponder = YES;
 	
-	self.contentView.shouldLayoutCustomSubviews = YES;
+	self.attributedTextContentView.shouldLayoutCustomSubviews = YES;
 	
 	// --- text input
     self.autocapitalizationType = UITextAutocapitalizationTypeSentences;
@@ -197,8 +197,8 @@ typedef enum
 	
 	// --- look
     self.backgroundColor = [UIColor whiteColor];
-	self.contentView.backgroundColor = [UIColor whiteColor];
-	self.contentView.edgeInsets = UIEdgeInsetsMake(20, 10, 10, 10);
+	self.attributedTextContentView.backgroundColor = [UIColor whiteColor];
+	self.attributedTextContentView.edgeInsets = UIEdgeInsetsMake(20, 10, 10, 10);
 	self.editable = YES;
     self.selectionAffinity = UITextStorageDirectionForward;
 	self.userInteractionEnabled = YES; 	// for autocorrection candidate view
@@ -237,7 +237,7 @@ typedef enum
 		[self addGestureRecognizer:longPressGesture];
 	}
 	
-	//self.contentView.userInteractionEnabled = YES;
+	//self.attributedTextContentView.userInteractionEnabled = YES;
 	self.selectionView.userInteractionEnabled = NO;
 	// --- notifications
 	
@@ -280,7 +280,7 @@ typedef enum
 
 - (void)layoutSubviews
 {
-	if (![self.contentView.layoutFrame.attributedStringFragment length])
+	if (![self.attributedTextContentView.layoutFrame.attributedStringFragment length])
 	{
 		[self setDefaultText];
 	}
@@ -421,7 +421,7 @@ typedef enum
 		[self addSubview:_cursor];
 	}
 	
-	UIEdgeInsets reverseInsets = self.contentView.edgeInsets;
+	UIEdgeInsets reverseInsets = self.attributedTextContentView.edgeInsets;
 	reverseInsets.top *= -1.0;
 	reverseInsets.bottom *= -1.0;
 	reverseInsets.left *= -1.0;
@@ -574,7 +574,7 @@ typedef enum
 	_touchDownPoint = touchPoint;
 	
 	DTLoupeView *loupe = [DTLoupeView sharedLoupe];
-	loupe.targetView = self.contentView;
+	loupe.targetView = self.attributedTextContentView;
 	
 	if (_selectionView.dragHandlesVisible)
 	{
@@ -809,7 +809,7 @@ typedef enum
 	// prevents "Warning: phrase boundary gesture handler is somehow installed when there is no marked text"
 	for (UIView *oneView in self.subviews)
 	{
-		if (![oneView isKindOfClass:[UIImageView class]] && oneView != contentView && oneView != _cursor && oneView != _selectionView)
+		if (![oneView isKindOfClass:[UIImageView class]] && oneView != self.attributedTextContentView && oneView != _cursor && oneView != _selectionView)
 		{
 			[oneView removeFromSuperview];
 		}
@@ -949,7 +949,7 @@ typedef enum
 				return;
 			}
 			
-			CGPoint touchPoint = [gesture locationInView:self.contentView];
+			CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
 			
 			if (!_markedTextRange)
 			{
@@ -977,7 +977,7 @@ typedef enum
 {
 	if (gesture.state == UIGestureRecognizerStateRecognized)
 	{
-		CGPoint touchPoint = [gesture locationInView:self.contentView];
+		CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
 		
 		UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
 		
@@ -1004,7 +1004,7 @@ typedef enum
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture 
 {
-	CGPoint touchPoint = [gesture locationInView:self.contentView];
+	CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
 	
 	switch (gesture.state) 
 	{
@@ -1066,7 +1066,7 @@ typedef enum
 
 - (void)handleDragHandle:(UIPanGestureRecognizer *)gesture
 {
-	CGPoint touchPoint = [gesture locationInView:self.contentView];
+	CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
 	
 	switch (gesture.state) 
 	{
@@ -1124,7 +1124,7 @@ typedef enum
 	// those are added to self, user custom views are subviews of contentView
 	UIView *hitView = [self hitTest:touchPoint withEvent:nil];
 	
-	if (hitView.superview == self && hitView != self.contentView)
+	if (hitView.superview == self && hitView != self.attributedTextContentView)
 	{
 		return NO;
 	}
@@ -1344,7 +1344,7 @@ typedef enum
 		selectedRange.length ++;
 	}
 	
-	NSAttributedString *attributedString = [self.contentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:selectedRange];
+	NSAttributedString *attributedString = [self.attributedTextContentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:selectedRange];
 	
 	// plain text omits attachments and format
 	NSString *plainText = [attributedString plainTextString];
@@ -1485,7 +1485,7 @@ typedef enum
 {
 	// there should always be a \n with the default format
 	
-	NSAttributedString *currentContent = self.contentView.layoutFrame.attributedStringFragment;
+	NSAttributedString *currentContent = self.attributedTextContentView.layoutFrame.attributedStringFragment;
 
 	// has to have text
 	if ([currentContent length]>1)
@@ -1599,7 +1599,7 @@ typedef enum
 {
 	NSParameterAssert(range);
 	
-	NSMutableAttributedString *attributedString = (NSMutableAttributedString *)self.contentView.layoutFrame.attributedStringFragment;
+	NSMutableAttributedString *attributedString = (NSMutableAttributedString *)self.attributedTextContentView.layoutFrame.attributedStringFragment;
 	NSString *string = [attributedString string];
 	
 	// remember selection/cursor before input
@@ -1731,7 +1731,7 @@ typedef enum
 	[[undoManager prepareWithInvocationTarget:self] replaceRange:replacedTextRange withText:(id)attributedStringBeingReplaced];
 
 	// do the actual replacement
-	[(DTRichTextEditorContentView *)self.contentView replaceTextInRange:myRange withText:text];
+	[(DTRichTextEditorContentView *)self.attributedTextContentView replaceTextInRange:myRange withText:text];
 
 	if (![undoManager isUndoing] && ![undoManager isRedoing])
 	{
@@ -1742,14 +1742,14 @@ typedef enum
 	
 	// ----
 
-	self.contentSize = self.contentView.frame.size;
+	self.contentSize = self.attributedTextContentView.frame.size;
 	
     // if it's just one character remaining then set text defaults on this
-    if ([[self.contentView.layoutFrame.attributedStringFragment string] isEqualToString:@"\n"])
+    if ([[self.attributedTextContentView.layoutFrame.attributedStringFragment string] isEqualToString:@"\n"])
     {
         NSDictionary *typingDefaults = [self defaultAttributes];
         
-        [(NSMutableAttributedString *)self.contentView.layoutFrame.attributedStringFragment setAttributes:typingDefaults range:NSMakeRange(0, 1)];
+        [(NSMutableAttributedString *)self.attributedTextContentView.layoutFrame.attributedStringFragment setAttributes:typingDefaults range:NSMakeRange(0, 1)];
     }
 	
     // need to call extra because we control layouting
@@ -1835,7 +1835,7 @@ typedef enum
 
 - (void)setMarkedText:(NSString *)markedText selectedRange:(NSRange)selectedRange
 {
-	NSUInteger adjustedContentLength = [self.contentView.layoutFrame.attributedStringFragment length];
+	NSUInteger adjustedContentLength = [self.attributedTextContentView.layoutFrame.attributedStringFragment length];
 	
 	if (adjustedContentLength>0)
 	{
@@ -1987,7 +1987,7 @@ typedef enum
 		}
 		case UITextLayoutDirectionDown:
 		{
-			NSInteger newIndex = [self.contentView.layoutFrame indexForPositionDownwardsFromIndex:position.location offset:offset];
+			NSInteger newIndex = [self.attributedTextContentView.layoutFrame indexForPositionDownwardsFromIndex:position.location offset:offset];
 			
 			if (newIndex>=0)
 			{
@@ -2000,7 +2000,7 @@ typedef enum
 		}
 		case UITextLayoutDirectionUp:
 		{
-			NSInteger newIndex = [self.contentView.layoutFrame indexForPositionUpwardsFromIndex:position.location offset:offset];
+			NSInteger newIndex = [self.attributedTextContentView.layoutFrame indexForPositionUpwardsFromIndex:position.location offset:offset];
 			
 			if (newIndex>=0)
 			{
@@ -2025,7 +2025,7 @@ typedef enum
 {
 	if ([self hasText])
 	{
-		return [DTTextPosition textPositionWithLocation:[self.contentView.layoutFrame.attributedStringFragment length]-1];
+		return [DTTextPosition textPositionWithLocation:[self.attributedTextContentView.layoutFrame.attributedStringFragment length]-1];
 	}
 	
 	return [self beginningOfDocument];
@@ -2071,16 +2071,16 @@ typedef enum
 #pragma mark Geometry and Hit-Testing Methods
 - (CGRect)firstRectForRange:(DTTextRange *)range
 {
-	return [self.contentView.layoutFrame firstRectForRange:[range NSRangeValue]];
+	return [self.attributedTextContentView.layoutFrame firstRectForRange:[range NSRangeValue]];
 }
 
 - (CGRect)caretRectForPosition:(DTTextPosition *)position
 {
 	NSInteger index = position.location;
 	
-	DTCoreTextLayoutLine *layoutLine = [self.contentView.layoutFrame lineContainingIndex:index];
+	DTCoreTextLayoutLine *layoutLine = [self.attributedTextContentView.layoutFrame lineContainingIndex:index];
 	
-	CGRect caretRect = [self.contentView.layoutFrame cursorRectAtIndex:index];
+	CGRect caretRect = [self.attributedTextContentView.layoutFrame cursorRectAtIndex:index];
 	
 	caretRect.size.height = layoutLine.frame.size.height;
 	caretRect.origin.x = roundf(caretRect.origin.x);
@@ -2091,13 +2091,13 @@ typedef enum
 
 - (NSArray *)selectionRectsForRange:(UITextRange *)range
 {
-	return [self.contentView.layoutFrame  selectionRectsForRange:[(DTTextRange *)range NSRangeValue]];
+	return [self.attributedTextContentView.layoutFrame  selectionRectsForRange:[(DTTextRange *)range NSRangeValue]];
 }
 
 
 - (UITextPosition *)closestPositionToPoint:(CGPoint)point
 {
-	NSInteger newIndex = [self.contentView.layoutFrame closestCursorIndexToPoint:point];
+	NSInteger newIndex = [self.attributedTextContentView.layoutFrame closestCursorIndexToPoint:point];
 	
 	return [DTTextPosition textPositionWithLocation:newIndex];
 }
@@ -2125,7 +2125,7 @@ typedef enum
 
 - (UITextRange *)characterRangeAtPoint:(CGPoint)point
 {
-	NSInteger index = [self.contentView.layoutFrame closestCursorIndexToPoint:point];
+	NSInteger index = [self.attributedTextContentView.layoutFrame closestCursorIndexToPoint:point];
 	
 	DTTextPosition *position = [DTTextPosition textPositionWithLocation:index];
 	DTTextRange *range = [DTTextRange textRangeFromStart:position toEnd:position];
@@ -2162,16 +2162,16 @@ typedef enum
 	NSDictionary *ctStyles;
 	if (direction == UITextStorageDirectionBackward && position.location > 0)
 	{
-		ctStyles = [self.contentView.layoutFrame.attributedStringFragment attributesAtIndex:position.location-1 effectiveRange:NULL];
+		ctStyles = [self.attributedTextContentView.layoutFrame.attributedStringFragment attributesAtIndex:position.location-1 effectiveRange:NULL];
 	}
 	else
 	{
-		if (position.location>=[self.contentView.layoutFrame.attributedStringFragment length])
+		if (position.location>=[self.attributedTextContentView.layoutFrame.attributedStringFragment length])
 		{
 			return nil;
 		}
 		
-		ctStyles = [self.contentView.layoutFrame.attributedStringFragment attributesAtIndex:position.location effectiveRange:NULL];
+		ctStyles = [self.attributedTextContentView.layoutFrame.attributedStringFragment attributesAtIndex:position.location effectiveRange:NULL];
 	}
 	
 	/* TODO: Return typingAttributes, if position is the same as the insertion point? */
@@ -2234,7 +2234,7 @@ typedef enum
 
 - (void)relayoutText
 {
-	[self.contentView relayoutText];
+	[self.attributedTextContentView relayoutText];
 }
 
 // pack the properties into a dictionary
@@ -2328,7 +2328,7 @@ typedef enum
 		
 		[super setAttributedString:tmpString];
 		
-		[self.contentView sizeToFit];
+		[self.attributedTextContentView sizeToFit];
 	}
 	else
 	{
@@ -2348,7 +2348,7 @@ typedef enum
 
 - (NSAttributedString *)attributedText
 {
-	return self.contentView.layoutFrame.attributedStringFragment;
+	return self.attributedTextContentView.layoutFrame.attributedStringFragment;
 }
 
 - (void)setMarkedTextRange:(UITextRange *)markedTextRange
@@ -2369,7 +2369,7 @@ typedef enum
 {
 	[super setContentSize:newContentSize];
 	
-	self.selectionView.frame = self.contentView.frame;
+	self.selectionView.frame = self.attributedTextContentView.frame;
 	[self updateCursorAnimated:NO];
 }
 
@@ -2388,7 +2388,7 @@ typedef enum
 {
 	if (!_selectionView)
 	{
-		_selectionView = [[DTTextSelectionView alloc] initWithTextView:self.contentView];
+		_selectionView = [[DTTextSelectionView alloc] initWithTextView:self.attributedTextContentView];
 		[self addSubview:_selectionView];
 	}
 	
@@ -2397,7 +2397,7 @@ typedef enum
 
 - (NSAttributedString *)attributedString
 {
-	return self.contentView.layoutFrame.attributedStringFragment;
+	return self.attributedTextContentView.layoutFrame.attributedStringFragment;
 }
 
 - (UIView *)inputView
