@@ -667,8 +667,6 @@ typedef enum
 	
 	loupe.touchPoint = touchPoint;
 	[loupe presentLoupeFromLocation:touchPoint];
-	
-	
 }
 
 - (void)moveLoupeWithTouchPoint:(CGPoint)touchPoint

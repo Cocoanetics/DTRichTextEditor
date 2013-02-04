@@ -17,10 +17,6 @@ typedef enum
 } DTCursorState;
 
 @interface DTCursorView : UIView 
-{
-	NSTimer *blinkingTimer;
-	DTCursorState _state;
-}
 
 @property (nonatomic, assign) DTCursorState state;
 

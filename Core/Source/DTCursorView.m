@@ -12,19 +12,22 @@
 NSString * const DTCursorViewDidBlink = @"DTCursorViewDidBlink";
 
 @implementation DTCursorView
-
-
-- (id)initWithFrame:(CGRect)frame {
-    
-    self = [super initWithFrame:frame];
-    if (self) 
-	{
-		self.backgroundColor = [UIColor colorWithRed:66.07/255.0 green:107.0/255.0 blue:242.0/255.0 alpha:1.0];
-    }
-    return self;
+{
+	NSTimer *blinkingTimer;
+	DTCursorState _state;
 }
 
-- (void)dealloc 
+- (id)initWithFrame:(CGRect)frame
+{
+	self = [super initWithFrame:frame];
+	if (self)
+	{
+		self.backgroundColor = [UIColor colorWithRed:66.07/255.0 green:107.0/255.0 blue:242.0/255.0 alpha:1.0];
+	}
+	return self;
+}
+
+- (void)dealloc
 {
 	[blinkingTimer invalidate], blinkingTimer = nil;
 }
@@ -71,6 +74,11 @@ NSString * const DTCursorViewDidBlink = @"DTCursorViewDidBlink";
 
 - (void)blink:(NSTimer *)timer
 {
+	if (_state == DTCursorStateStatic)
+	{
+		return;
+	}
+	
 	self.hidden = !self.hidden;
 	
 	[self setTimerForNextBlink];
@@ -88,10 +96,7 @@ NSString * const DTCursorViewDidBlink = @"DTCursorViewDidBlink";
 	{
 		case DTCursorStateBlinking:
 		{
-			if (!blinkingTimer)
-			{
-				[self setTimerForNextBlink];
-			}
+			[self setTimerForNextBlink];
 			
 			break;
 		}
