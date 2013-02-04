@@ -673,9 +673,23 @@ typedef enum
 
 	if (_dragMode == DTDragModeCursor)
 	{
-		loupe.touchPoint = touchPoint;
-		loupe.seeThroughMode = NO;
+		CGRect visibleArea = [self visibleContentRect];
 		
+		// switch to see-through mode outside of visible content area
+		if (CGRectContainsPoint(visibleArea, touchPoint))
+		{
+			loupe.seeThroughMode = NO;
+		}
+		else
+		{
+			loupe.seeThroughMode = YES;
+			
+			// restrict bottom of loupe frame to visible area
+			touchPoint.y = MIN(touchPoint.y, CGRectGetMaxY(visibleArea)+3);
+		}
+
+		loupe.touchPoint = touchPoint;
+
 		[self hideContextMenu];
 		
 		if (self.editable && _keyboardIsShowing)
@@ -701,8 +715,6 @@ typedef enum
 		
 		return;
 	}
-	
-	
 	
 	CGPoint translation = touchPoint;
 	translation.x -= _touchDownPoint.x;
@@ -998,11 +1010,11 @@ typedef enum
 	}
 }
 
-- (void)handleLongPress:(UILongPressGestureRecognizer *)gesture 
+- (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
 {
 	CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
 	
-	switch (gesture.state) 
+	switch (gesture.state)
 	{
 		case UIGestureRecognizerStateBegan:
 		{
@@ -1016,8 +1028,8 @@ typedef enum
 		}
 			
 		case UIGestureRecognizerStateChanged:
-		{
-            _lastCursorMovementTimestamp = [[NSDate date] timeIntervalSinceReferenceDate];
+		{	
+			_lastCursorMovementTimestamp = [[NSDate date] timeIntervalSinceReferenceDate];
 			[self moveLoupeWithTouchPoint:touchPoint];
 			
 			break;
