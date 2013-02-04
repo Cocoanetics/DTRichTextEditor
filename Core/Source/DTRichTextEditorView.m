@@ -1125,27 +1125,6 @@ typedef enum
 		return NO;
 	}
 	
-	if (gestureRecognizer == longPressGesture)
-	{
-		//		if (![_selectionView dragHandlesVisible])
-		//		{
-		//			return YES;
-		//		}
-		
-		//NSLog(@"%@ contains %@", NSStringFromCGRect(_selectionView.dragHandleLeft.frame), NSStringFromCGPoint(touchPoint));
-		
-		// selection and contentView have same coordinate system
-		//		if (CGRectContainsPoint(_selectionView.dragHandleLeft.frame, touchPoint))
-		//		{
-		//			return NO;
-		//		}
-		//		else if (CGRectContainsPoint(_selectionView.dragHandleRight.frame, touchPoint))
-		//		{
-		//			return NO;
-		//		}
-	}
-	
-	
 	if (gestureRecognizer == panGesture)
 	{
 		if (![_selectionView dragHandlesVisible])

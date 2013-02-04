@@ -11,8 +11,6 @@
 #import "NSAttributedString+DTRichText.h"
 #import "DTRichTextEditor.h"
 
-#import <AssetsLibrary/AssetsLibrary.h>
-
 @implementation DTRichTextEditorViewController
 
 
@@ -22,10 +20,16 @@
     CGRect frame = [UIScreen mainScreen].applicationFrame;
     
     UIView *view = [[UIView alloc] initWithFrame:frame];
-    
-    richEditor = [[DTRichTextEditorView alloc] initWithFrame:view.bounds];
+   
+	CGRect editorFrame = frame;
+	editorFrame.origin.y += 100;
+	editorFrame.size.height -= 100;
+	
+    richEditor = [[DTRichTextEditorView alloc] initWithFrame:editorFrame];
     richEditor.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     richEditor.textDelegate = self;
+	richEditor.layer.borderColor = [UIColor redColor].CGColor;
+	richEditor.layer.borderWidth = 3;
     
     [view addSubview:richEditor];
     
