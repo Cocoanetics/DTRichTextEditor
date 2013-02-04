@@ -1,5 +1,6 @@
 Version 1.1.4
 - FIXED: horizontal flickering when moving round loupe over text
+- FIXED: cursor does not stop blinking during selection
 - UPDATED: DTCoreText to 1.2.1
 - CHANGED: renamed contentView to attributedTextContentView to avoid possible conflict with internal ivar of UIScrollView
 - CHANGED: replaced semaphore-based sync with dispatch_queue
