@@ -373,12 +373,14 @@
     
     if (dirtyRect)
     {
+        NSLog(@"repl: %@, relayou: %@", NSStringFromCGRect(replacedLinesRect), NSStringFromCGRect(relayoutedLinesRect));
+        
         CGRect redrawArea = CGRectUnion(replacedLinesRect, relayoutedLinesRect);
         
         if (replacedLinesRect.origin.y != relayoutedLinesRect.origin.y || replacedLinesRect.size.height != relayoutedLinesRect.size.height)
         {
             // rest of document shifted up or down
-            redrawArea.size.height = _frame.size.height - redrawArea.origin.y;
+            redrawArea.size.height = MAX(_frame.size.height - redrawArea.origin.y, redrawArea.size.height);
         }
         
         *dirtyRect = redrawArea;
