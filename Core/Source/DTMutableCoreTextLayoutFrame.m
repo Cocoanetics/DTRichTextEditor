@@ -373,8 +373,6 @@
     
     if (dirtyRect)
     {
-        NSLog(@"repl: %@, relayou: %@", NSStringFromCGRect(replacedLinesRect), NSStringFromCGRect(relayoutedLinesRect));
-        
         CGRect redrawArea = CGRectUnion(replacedLinesRect, relayoutedLinesRect);
         
         if (replacedLinesRect.origin.y != relayoutedLinesRect.origin.y || replacedLinesRect.size.height != relayoutedLinesRect.size.height)
