@@ -15,17 +15,4 @@
 	return 0;
 }
 
-
-- (void)setNeedsDisplay
-{
-    NSLog(@"layout setneedsdisplay");
-    [super setNeedsDisplay];
-}
-
-- (void)setNeedsDisplayInRect:(CGRect)rect
-{
-	NSLog(@"layer set needs display: %@", NSStringFromCGRect(rect));
-	[super setNeedsDisplayInRect:rect];
-}
-
 @end
