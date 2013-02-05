@@ -151,12 +151,29 @@
 	_textAttachments = nil;
 }
 
-- (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text
-{
-//	CFAbsoluteTime startTime = CFAbsoluteTimeGetCurrent();
-	
-	NSString *plainText = [_attributedStringFragment string];
 
+- (CGRect)_frameCoveringLines:(NSArray *)array
+{
+    NSAssert([array count], @"cannot pass empty array");
+    
+    DTCoreTextLayoutLine *firstLine = [array objectAtIndex:0];
+    CGRect rect = firstLine.frame;
+    
+    DTCoreTextLayoutLine *lastLine = [array lastObject];
+    
+    if (firstLine != lastLine)
+    {
+        rect = CGRectUnion(rect, lastLine.frame);
+    }
+    
+    return CGRectIntegral(rect);
+}
+
+
+- (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text dirtyRect:(CGRect *)dirtyRect
+{
+	NSString *plainText = [_attributedStringFragment string];
+    
 	// get beginning and end of paragraph containing the replaced range
 	NSUInteger parBeginIndex;
 	NSUInteger parEndIndex;
@@ -259,17 +276,20 @@
 	
 	// remove the changed lines
     NSMutableArray *tmpArray = [self.lines mutableCopy];
+    NSMutableArray *replacedLines = [NSMutableArray array];
     
     for (NSInteger index=paragraphs.location; index < NSMaxRange(paragraphs); index++)
     {
-		
         NSArray *lines = [self linesInParagraphAtIndex:index];
+        [replacedLines addObjectsFromArray:lines];
         [tmpArray removeObjectsInArray:lines];
     }
 	
+    // this rect is the place where lines where removed, to be relayouted
+    CGRect replacedLinesRect = [self _frameCoveringLines:replacedLines];
+    
 	// remove paragraph ranges
 	_paragraphRanges = nil;
-	
 
 	DTCoreTextLayoutLine *previousLine = nil;
 	
@@ -301,15 +321,17 @@
 		}
 		
         [tmpArray insertObject:oneLine atIndex:insertionIndex];
-
+        
         insertionIndex++;
 		
 		// adjust string range
 		[oneLine adjustStringRangeToStartAtIndex:NSMaxRange(previousLine.stringRange)];
 		
 		previousLine = oneLine;
-		
     }
+    
+    // this rect covers the freshly layouted replacement lines
+    CGRect relayoutedLinesRect = [self _frameCoveringLines:tmpFrame.lines];
     
 	BOOL firstLineAfterInsert = YES;
 	CGPoint linesAfterinsertedLinesBaselineOffset = CGPointZero;
@@ -337,7 +359,7 @@
 		CGPoint baselineOrigin =  oneLine.baselineOrigin;
 		baselineOrigin.y += linesAfterinsertedLinesBaselineOffset.y;
 		oneLine.baselineOrigin = baselineOrigin;
-		
+        
 		previousLine = oneLine;
 		insertionIndex++;
 	}
@@ -348,13 +370,22 @@
 	// correct the overall frame size
 	DTCoreTextLayoutLine *lastLine = [_lines lastObject];
 	_frame.size.height = ceilf((CGRectGetMaxY(lastLine.frame) - _frame.origin.y + 1.5));
+    
+    if (dirtyRect)
+    {
+        CGRect redrawArea = CGRectUnion(replacedLinesRect, relayoutedLinesRect);
+        
+        if (replacedLinesRect.origin.y != relayoutedLinesRect.origin.y || replacedLinesRect.size.height != relayoutedLinesRect.size.height)
+        {
+            // rest of document shifted up or down
+            redrawArea.size.height = _frame.size.height - redrawArea.origin.y;
+        }
+        
+        *dirtyRect = redrawArea;
+    }
 	
 	// some attachments might have been overwritten, so we force refresh of the attachments list
 	_textAttachments = nil;
-//	
-//	CFAbsoluteTime endTime = CFAbsoluteTimeGetCurrent();
-//
-//	NSLog(@"%f", endTime-startTime);
 }
 
 - (void)setFrame:(CGRect)frame

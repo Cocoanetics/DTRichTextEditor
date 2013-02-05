@@ -131,20 +131,27 @@
 {
 	DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
 	
+    __block CGRect dirtyRect = self.bounds;
+    
 	dispatch_sync(self.layoutQueue, ^{
-		[layoutFrame replaceTextInRange:range withText:text];
+		[layoutFrame replaceTextInRange:range withText:text dirtyRect:&dirtyRect];
 		
 		// remove all link custom views
 		[self removeAllCustomViewsForLinks];
 	});
 	
 	// relayout / redraw
-	[self setNeedsDisplay];
+	[self setNeedsDisplayInRect:dirtyRect];
 	
 	// size might have changed
     layoutFrame.shouldRebuildLines = NO;
 	[self sizeToFit];
     layoutFrame.shouldRebuildLines = YES;
+}
+
+- (void)setNeedsDisplay
+{
+    [super setNeedsDisplay];
 }
 
 @end

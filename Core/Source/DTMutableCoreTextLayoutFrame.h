@@ -27,7 +27,7 @@
 // incremental layouting
 - (void)relayoutTextInRange:(NSRange)range;
 
-- (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text;
+- (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text dirtyRect:(CGRect *)dirtyRect;
 
 - (void)setFrame:(CGRect)frame;
 
