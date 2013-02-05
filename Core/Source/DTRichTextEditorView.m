@@ -24,6 +24,7 @@
 
 #import "DTTextPosition.h"
 #import "DTTextRange.h"
+#import "DTTextSelectionRect.h"
 
 #import "DTCursorView.h"
 #import "DTLoupeView.h"
@@ -404,6 +405,32 @@ typedef enum
 }
 
 #pragma mark Custom Selection/Marking/Cursor
+- (void)_scrollRectInContentViewToVisible:(CGRect)rect animated:(BOOL)animated
+{
+    UIEdgeInsets reverseInsets = self.attributedTextContentView.edgeInsets;
+	reverseInsets.top *= -1.0;
+	reverseInsets.bottom *= -1.0;
+	reverseInsets.left *= -1.0;
+	reverseInsets.right *= -1.0;
+	
+	CGRect scrollToRect = UIEdgeInsetsInsetRect(rect, reverseInsets);
+	
+	if (animated)
+	{
+		[UIView beginAnimations:nil context:nil];
+		
+		// this prevents multiple scrolling to same position
+		[UIView setAnimationBeginsFromCurrentState:YES];
+	}
+	
+	[self scrollRectToVisible:scrollToRect animated:NO];
+	
+	if (animated)
+	{
+		[UIView commitAnimations];
+	}
+}
+
 - (void)scrollCursorVisibleAnimated:(BOOL)animated
 {
 	if  (![_selectedTextRange isEmpty] || !_cursorIsShowing)
@@ -418,29 +445,8 @@ typedef enum
 	{
 		[self addSubview:_cursor];
 	}
-	
-	UIEdgeInsets reverseInsets = self.attributedTextContentView.edgeInsets;
-	reverseInsets.top *= -1.0;
-	reverseInsets.bottom *= -1.0;
-	reverseInsets.left *= -1.0;
-	reverseInsets.right *= -1.0;
-	
-	cursorFrame = UIEdgeInsetsInsetRect(cursorFrame, reverseInsets);
-	
-	if (animated)
-	{
-		[UIView beginAnimations:nil context:nil];
-		
-		// this prevents multiple scrolling to same position
-		[UIView setAnimationBeginsFromCurrentState:YES];
-	}
-	
-	[self scrollRectToVisible:cursorFrame animated:NO];
-	
-	if (animated)
-	{
-		[UIView commitAnimations];
-	}
+    
+    [self _scrollRectInContentViewToVisible:cursorFrame animated:animated];
 }
 
 - (void)_scrollCursorVisible
@@ -496,7 +502,23 @@ typedef enum
 		
 		// no cursor
 		[_cursor removeFromSuperview];
-		
+        
+        if ([textSelectionRects count])
+        {
+            // scroll the currently dragged handle to be visible
+            
+            if (_dragMode == DTDragModeLeftHandle)
+            {
+                DTTextSelectionRect *selectionRect = [textSelectionRects objectAtIndex:0];
+                [self _scrollRectInContentViewToVisible:selectionRect.rect animated:YES];
+            }
+            else if (_dragMode == DTDragModeRightHandle)
+            {
+                DTTextSelectionRect *selectionRect = [textSelectionRects lastObject];
+                [self _scrollRectInContentViewToVisible:selectionRect.rect animated:YES];
+            }
+        }
+        
 		return;
 	}
 	
@@ -679,16 +701,18 @@ typedef enum
 		if (CGRectContainsPoint(visibleArea, touchPoint))
 		{
 			loupe.seeThroughMode = NO;
+            loupe.touchPoint = touchPoint;
 		}
 		else
 		{
 			loupe.seeThroughMode = YES;
 			
 			// restrict bottom of loupe frame to visible area
-			touchPoint.y = MIN(touchPoint.y, CGRectGetMaxY(visibleArea)+3);
+            CGPoint restrictedTouchPoint = touchPoint;
+            restrictedTouchPoint.y = MIN(touchPoint.y, CGRectGetMaxY(visibleArea)+3);
+            
+			loupe.touchPoint = restrictedTouchPoint;
 		}
-
-		loupe.touchPoint = touchPoint;
 
 		[self hideContextMenu];
 		
@@ -737,8 +761,6 @@ typedef enum
 		if ([position compare:endPosition]==NSOrderedAscending)
 		{
 			newRange = [DTTextRange textRangeFromStart:position toEnd:endPosition];
-			
-			
 		}
 	}
 	else if (_dragMode == DTDragModeRightHandle)

@@ -7,6 +7,7 @@ Version 1.1.4
 - CHANGED: renamed contentView to attributedTextContentView to avoid possible conflict with internal ivar of UIScrollView
 - CHANGED: replaced semaphore-based sync with dispatch_queue
 - CHANGED: improved performance on re-drawing so that only the area affected by the re-layouted lines is actually redrawn
+- CHANGED: dragging a selection handle now also scrolls the view if the touch point moves outside of the visible area
 - UPDATED: DTCoreText to 1.2.1
 
 Version 1.1.3
