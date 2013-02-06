@@ -96,7 +96,10 @@
 
 - (void)testAttachmentDisplaySize
 {
-	NSString *string = @"<img src=\"Oliver.jpg\" style=\"foo:bar\">";
+	NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+	NSString *imagePath = [bundle pathForResource:@"Oliver" ofType:@"jpg"];
+	
+	NSString *string = [NSString stringWithFormat:@"<img src=\"file:%@\" style=\"foo:bar\">", imagePath];
 	NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
 	
 	DTHTMLAttributedStringBuilder *builder = [[DTHTMLAttributedStringBuilder alloc] initWithHTML:data options:nil documentAttributes:NULL];
@@ -112,6 +115,23 @@
 	CGSize expectedSize = CGSizeMake(300, 300);
 	STAssertEquals(attachment.originalSize, expectedSize, @"Expected displaySize to be 300x300");
 	STAssertEquals(attachment.displaySize, expectedSize, @"Expected displaySize to be 300x300");
+}
+
+- (void)testFontTagWithStyle
+{
+	NSString *string = @"<font style=\"font-size: 17pt;\"> <u>BOLUS DOSE&nbsp;&nbsp; = xx.x mg&nbsp;</u> </font>";
+	NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
+	
+	DTHTMLAttributedStringBuilder *builder = [[DTHTMLAttributedStringBuilder alloc] initWithHTML:data options:nil documentAttributes:NULL];
+	builder.shouldKeepDocumentNodeTree = YES;
+	
+	NSAttributedString *output = [builder generatedAttributedString];
+	
+	CTFontRef font = (__bridge CTFontRef)([output attribute:(id)kCTFontAttributeName atIndex:0 effectiveRange:NULL]);
+	
+	CGFloat pointSize = CTFontGetSize(font);
+	
+	STAssertEquals(pointSize, (CGFloat)17.0f, @"Font Size should be 17");
 }
 
 

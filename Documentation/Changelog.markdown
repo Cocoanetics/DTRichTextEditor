@@ -1,3 +1,6 @@
+Version 1.2
+- ADDED: dictation placeholder
+
 Version 1.1.4
 - FIXED: horizontal flickering when moving round loupe over text
 - FIXED: cursor does not stop blinking during selection

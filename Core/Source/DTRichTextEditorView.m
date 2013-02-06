@@ -10,7 +10,7 @@
 
 #import "DTLoupeView.h"
 
-#import "DTCoreText.h"
+#import "DTRichTextEditor.h"
 
 #import "DTCoreTextLayoutFrame+DTRichText.h"
 #import "DTMutableCoreTextLayoutFrame.h"
@@ -21,16 +21,17 @@
 #import "NSMutableDictionary+DTRichText.h"
 #import "DTRichTextEditorView.h"
 #import "DTRichTextEditorView+Manipulation.h"
+#import "DTDictationPlaceholderView.h"
 
-#import "DTTextPosition.h"
-#import "DTTextRange.h"
-#import "DTTextSelectionRect.h"
+//#import "DTTextPosition.h"
+//#import "DTTextRange.h"
+//#import "DTTextSelectionRect.h"
 
 #import "DTCursorView.h"
 #import "DTLoupeView.h"
 #import "DTCoreTextLayouter.h"
 
-#import "DTTextSelectionView.h"
+//#import "DTTextSelectionView.h"
 #import "CGUtils.h"
 #import "DTCoreTextFontDescriptor.h"
 #import "DTTiledLayerWithoutFade.h"
@@ -68,6 +69,8 @@ typedef enum
 @property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
 @property (nonatomic, retain) DTMutableCoreTextLayoutFrame *mutableLayoutFrame;
 @property (nonatomic, retain) DTUndoManager *undoManager;
+@property (nonatomic, assign) BOOL waitingForDictionationResult;
+@property (nonatomic, retain) DTDictationPlaceholderView *dictationPlaceholderView;
 
 - (void)setDefaultText;
 - (void)showContextMenuFromSelection;
@@ -118,6 +121,8 @@ typedef enum
 	BOOL _shouldReshowContextMenuAfterHide;
 	BOOL _shouldShowContextMenuAfterLoupeHide;
 	BOOL _shouldShowContextMenuAfterMovementEnded;
+    BOOL _waitingForDictationResult;
+    DTDictationPlaceholderView *_dictationPlaceholderView;
 	
 	BOOL _showsKeyboardWhenBecomingFirstResponder;
 	BOOL _keyboardIsShowing;
@@ -1607,6 +1612,18 @@ typedef enum
 - (void)replaceRange:(DTTextRange *)range withText:(id)text
 {
 	NSParameterAssert(range);
+    
+    if (_waitingForDictationResult)
+    {
+        // get selection range of placeholder
+        range = (DTTextRange *)[self textRangeOfDictationPlaceholder];
+        
+        // we don't want extra whitespace
+        text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+        
+        self.waitingForDictionationResult = NO;
+    }
+    
 	
 	NSMutableAttributedString *attributedString = (NSMutableAttributedString *)self.attributedTextContentView.layoutFrame.attributedStringFragment;
 	NSString *string = [attributedString string];
@@ -2456,6 +2473,23 @@ typedef enum
 	[super setFrame:frame];
 }
 
+- (void)setWaitingForDictionationResult:(BOOL)waitingForDictionationResult
+{
+    if (_waitingForDictationResult != waitingForDictionationResult)
+    {
+        _waitingForDictationResult = waitingForDictionationResult;
+        
+        if (_waitingForDictationResult)
+        {
+            _cursor.state = DTCursorStateStatic;
+        }
+        else
+        {
+            _cursor.state = DTCursorStateBlinking;
+        }
+    }
+}
+
 // overrides
 @synthesize maxImageDisplaySize = _maxImageDisplaySize;
 @synthesize defaultFontFamily = _defaultFontFamily;
@@ -2485,6 +2519,8 @@ typedef enum
 @synthesize overrideInsertionAttributes = _overrideInsertionAttributes;
 @synthesize replaceParagraphsWithLineFeeds = _replaceParagraphsWithLineFeeds;
 @synthesize selectionView = _selectionView;
+@synthesize waitingForDictionationResult = _waitingForDictionationResult;
+@synthesize dictationPlaceholderView = _dictationPlaceholderView;
 
 @end
 
