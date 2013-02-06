@@ -20,10 +20,16 @@
 	CGRect frame = [UIScreen mainScreen].applicationFrame;
 	UIView *view = [[UIView alloc] initWithFrame:frame];
    
-	richEditor = [[DTRichTextEditorView alloc] initWithFrame:view.bounds];
+    CGRect editorFrame = view.bounds;
+    editorFrame.size.height = 100;
+	richEditor = [[DTRichTextEditorView alloc] initWithFrame:editorFrame];
 	richEditor.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	richEditor.textDelegate = self;
 	[view addSubview:richEditor];
+    
+    UIView *testView = [[UIView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(editorFrame), editorFrame.size.width, view.bounds.size.height-CGRectGetMaxY(editorFrame))];
+    testView.backgroundColor = [UIColor blueColor];
+    [view addSubview:testView];
 	
 	self.view = view;
 }

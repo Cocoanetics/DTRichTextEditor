@@ -6,7 +6,9 @@ Version 1.1.4
 - FIXED: cursor does not stop blinking during selection
 - FIXED: see-through mode of loupe used when touch leaves visible content area
 - FIXED: content size problem caused by DTCoreText change
+- FIXED: avoid redrawing of loupe if in see-through mode
 - CHANGED: restrict loupe towards bottom so that it does not go under keyboard
+- CHANGED: loupe no goes into see-through mode if touch point goes outside of visible area
 - CHANGED: renamed contentView to attributedTextContentView to avoid possible conflict with internal ivar of UIScrollView
 - CHANGED: replaced semaphore-based sync with dispatch_queue
 - CHANGED: improved performance on re-drawing so that only the area affected by the re-layouted lines is actually redrawn
