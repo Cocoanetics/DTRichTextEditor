@@ -163,7 +163,7 @@
 		A7E8082315EBAC2A00525855 /* NSMutableString+HTML.h in Headers */ = {isa = PBXBuildFile; fileRef = A7E8082215EBAC2900525855 /* NSMutableString+HTML.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7E82CE015D5384700BD47AB /* DTLoupeView.h in Headers */ = {isa = PBXBuildFile; fileRef = A7E82CDF15D5384700BD47AB /* DTLoupeView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7E8442E16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.h in Headers */ = {isa = PBXBuildFile; fileRef = A7E8442C16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.h */; };
-		A7E8442F16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.h in Headers */ = {isa = PBXBuildFile; fileRef = A7E8442C16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.h */; };
+		A7E8442F16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.h in Headers */ = {isa = PBXBuildFile; fileRef = A7E8442C16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7E8443016C1419D00F3EEDE /* DTRichTextEditorView+Dictation.m in Sources */ = {isa = PBXBuildFile; fileRef = A7E8442D16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.m */; };
 		A7E8443116C1419D00F3EEDE /* DTRichTextEditorView+Dictation.m in Sources */ = {isa = PBXBuildFile; fileRef = A7E8442D16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.m */; };
 		A7F0C84313C326E900EBD027 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84213C326E900EBD027 /* UIKit.framework */; };
