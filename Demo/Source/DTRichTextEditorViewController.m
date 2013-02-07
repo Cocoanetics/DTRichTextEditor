@@ -14,24 +14,20 @@
 @implementation DTRichTextEditorViewController
 
 
-// Implement loadView to create a view hierarchy programmatically, without using a nib.
+ // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView
 {
-	CGRect frame = [UIScreen mainScreen].applicationFrame;
-	UIView *view = [[UIView alloc] initWithFrame:frame];
-   
-    CGRect editorFrame = view.bounds;
-    editorFrame.size.height = 100;
-	richEditor = [[DTRichTextEditorView alloc] initWithFrame:editorFrame];
-	richEditor.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	richEditor.textDelegate = self;
-	[view addSubview:richEditor];
+    CGRect frame = [UIScreen mainScreen].applicationFrame;
     
-    UIView *testView = [[UIView alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(editorFrame), editorFrame.size.width, view.bounds.size.height-CGRectGetMaxY(editorFrame))];
-    testView.backgroundColor = [UIColor blueColor];
-    [view addSubview:testView];
-	
-	self.view = view;
+    UIView *view = [[UIView alloc] initWithFrame:frame];
+    
+    richEditor = [[DTRichTextEditorView alloc] initWithFrame:view.bounds];
+    richEditor.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    richEditor.textDelegate = self;
+    
+    [view addSubview:richEditor];
+    
+    self.view = view;
 }
 
 
