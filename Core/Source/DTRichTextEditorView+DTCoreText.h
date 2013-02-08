@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 Cocoanetics. All rights reserved.
 //
 
-#import <DTRichTextEditor/DTRichTextEditor.h>
+#import "DTRichTextEditor.h"
 
 /**
  Enhancements for DTRichTextEditorView to interact with DTCoreText internal information.
