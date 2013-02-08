@@ -10,10 +10,7 @@ Lists
 - selection is not properly preserved when toggling a paragraph between list and non-list
 - paragraph space following a list is not preserved
 
-HTML
-====
-- there is a bug in processing CSS that might cause a large document to lose all paragraphs. (This causes performance problems layouting since always all affected paragraphs are re-layouted when replacing substrings)
-
-Performance
+Auto Layout
 ===========
-- instead of just the changed region always the entire content view area is dirtied causing slow redrawing on long documents
+
+At this time DTRichTextEditor does not support auto layout. When using it in a storyboard that uses auto layout please disable auto layout for the editor view. It works fine, but some work is needed to add the necessary code to deal with the different way how subview frames are managed with auto layout.
