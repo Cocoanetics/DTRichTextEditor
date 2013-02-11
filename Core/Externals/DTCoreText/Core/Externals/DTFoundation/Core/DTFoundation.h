@@ -6,7 +6,6 @@
 // this prevents problems if you include DTFoundation.h in your PCH file but are missing these other system frameworks
 #if TARGET_OS_IPHONE
 	#import <UIKit/UIKit.h>
-	#import <MobileCoreServices/MobileCoreServices.h>
 #else
 	#import <AppKit/AppKit.h>
 	#import <Cocoa/Cocoa.h>
@@ -17,16 +16,16 @@
 
 // Classes
 #import "DTASN1Parser.h"
-#import "DTAsyncFileDeleter.h"
-#import "DTDownload.h"
 #import "DTExtendedFileAttributes.h"
 #import "DTHTMLParser.h"
 #import "DTVersion.h"
 #import "DTZipArchive.h"
 
 #if TARGET_OS_IPHONE
-	#import "DTPieProgressIndicator.h"
 	#import "DTActionSheet.h"
+    #import "DTAsyncFileDeleter.h"
+    #import "DTCustomColoredAccessory.h"
+    #import "DTPieProgressIndicator.h"
 #endif
 
 // Categories
