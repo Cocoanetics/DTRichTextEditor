@@ -61,7 +61,7 @@
             lineContainsStart = YES;
             haveStart = YES;
             
-           fromCaretOffset = [oneLine offsetForStringIndex:fromIndex];
+           fromCaretOffset = [oneLine offsetForStringIndex:fromIndex] + oneLine.frame.origin.x;
         }
 
         if (NSLocationInRange(toIndex, [oneLine stringRange]))
@@ -69,7 +69,7 @@
             lineContainsEnd = YES;;
             haveEnd = YES;
             
-            toCaretOffset = [oneLine offsetForStringIndex:toIndex];
+            toCaretOffset = [oneLine offsetForStringIndex:toIndex] + oneLine.frame.origin.x;
         }
         
         CGRect rectToAddForThisLine = oneLine.frame;
