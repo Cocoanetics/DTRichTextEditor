@@ -91,6 +91,8 @@ typedef enum
 	
 	UIView *_inputView;
 	UIView *_inputAccessoryView;
+    
+    CGFloat _heightCoveredByKeyboard;
 	
 	// private stuff
 	id<UITextInputTokenizer> tokenizer;
@@ -365,7 +367,7 @@ typedef enum
 	{
 		BOOL previousState = _showsKeyboardWhenBecomingFirstResponder;
 		
-		if (!_keyboardIsShowing)
+		if (!_keyboardIsShowing && !self.isEditable)
 		{
 			// prevent keyboard from showing if it is not visible
 			_showsKeyboardWhenBecomingFirstResponder = NO;
@@ -946,6 +948,8 @@ typedef enum
 	
 	// now this might be rotated, so convert it back
 	coveredFrame = [self.window convertRect:coveredFrame toView:self.superview];
+    
+    _heightCoveredByKeyboard = coveredFrame.size.height;
 	
 	// set inset to make up for covered array at bottom
     _shouldNotRecordChangedContentInsets = YES;
@@ -966,6 +970,8 @@ typedef enum
 	self.scrollIndicatorInsets = self.contentInset;
 	
 	_keyboardIsShowing = NO;
+    
+    _heightCoveredByKeyboard = 0;
 }
 
 
@@ -977,7 +983,7 @@ typedef enum
 		if (self.editable)
 		{
 			// this mode has the drag handles showing
-			self.selectionView.showsDragHandlesForSelection	= YES;
+			self.selectionView.dragHandlesVisible	= YES;
 			
 			// show the keyboard and cursor
 			[self becomeFirstResponder];
@@ -1022,7 +1028,7 @@ typedef enum
 		
 		UITextRange *wordRange = [self textRangeOfWordAtPosition:position];
 		
-		self.selectionView.showsDragHandlesForSelection = _keyboardIsShowing;
+		self.selectionView.dragHandlesVisible = YES;
 		
 		if (wordRange)
 		{
@@ -1034,8 +1040,17 @@ typedef enum
 			DTUndoManager *undoManager = self.undoManager;
 			[undoManager closeAllOpenGroups];
 			
-			_showsKeyboardWhenBecomingFirstResponder = NO;
+            if (self.isEditable)
+            {
+                _showsKeyboardWhenBecomingFirstResponder = YES;
+            }
+            else
+            {
+                _showsKeyboardWhenBecomingFirstResponder = NO;
+            }
+            
 			[self showContextMenuFromSelection];
+            
 			_showsKeyboardWhenBecomingFirstResponder = YES;
 		}
 	}
@@ -1083,14 +1098,14 @@ typedef enum
                         [self extendSelectionToIncludeWordInDirection:UITextStorageDirectionForward];
                     }
                 }
-                
-				_shouldShowContextMenuAfterLoupeHide = YES;
-                _selectionView.showsDragHandlesForSelection = YES;
 			}
 		}
 			
 		case UIGestureRecognizerStateCancelled:
 		{
+            _shouldShowContextMenuAfterLoupeHide = YES;
+            _selectionView.dragHandlesVisible = YES;
+            
 			[self dismissLoupeWithTouchPoint:touchPoint];
 			
 			break;
@@ -1209,7 +1224,7 @@ typedef enum
 - (BOOL)resignFirstResponder
 {
 	// selecting via long press does not show handles
-	_selectionView.showsDragHandlesForSelection	= NO;
+	_selectionView.dragHandlesVisible	= NO;
 	
 	_cursorIsShowing = NO;
 	[self updateCursorAnimated:NO];
@@ -1227,7 +1242,7 @@ typedef enum
 		if (_showsKeyboardWhenBecomingFirstResponder)
 		{
 			_keyboardIsShowing = YES;
-            self.selectionView.showsDragHandlesForSelection = YES;
+            self.selectionView.dragHandlesVisible = YES;
 			
 			// set cursor at end of document if nothing selected
 			if (!_selectedTextRange)
@@ -1474,7 +1489,7 @@ typedef enum
 	{
 		_shouldReshowContextMenuAfterHide = YES;
 		
-		self.selectionView.showsDragHandlesForSelection = _keyboardIsShowing;
+		self.selectionView.dragHandlesVisible = _keyboardIsShowing;
 		
 		self.selectedTextRange = wordRange;
 	}
@@ -1628,7 +1643,6 @@ typedef enum
         self.waitingForDictionationResult = NO;
     }
     
-	
 	NSMutableAttributedString *attributedString = (NSMutableAttributedString *)self.attributedTextContentView.layoutFrame.attributedStringFragment;
 	NSString *string = [attributedString string];
 	
@@ -2121,9 +2135,8 @@ typedef enum
 
 - (NSArray *)selectionRectsForRange:(UITextRange *)range
 {
-	return [self.attributedTextContentView.layoutFrame  selectionRectsForRange:[(DTTextRange *)range NSRangeValue]];
+    return [self.attributedTextContentView.layoutFrame  selectionRectsForRange:[(DTTextRange *)range NSRangeValue]];
 }
-
 
 - (UITextPosition *)closestPositionToPoint:(CGPoint)point
 {
@@ -2243,7 +2256,8 @@ typedef enum
 - (CGRect)visibleContentRect
 {
 	CGRect rect = self.bounds;
-	rect.size.height -= self.contentInset.bottom;
+    
+    rect.size.height -= _heightCoveredByKeyboard;
 	
 	return rect;
 }
@@ -2371,7 +2385,7 @@ typedef enum
     {
         self.selectedTextRange = [DTTextRange emptyRangeAtPosition:self.endOfDocument];
     }
-	
+    
 	[self.undoManager removeAllActions];
 }
 
@@ -2477,12 +2491,9 @@ typedef enum
 
 - (void)setFrame:(CGRect)frame
 {
-    NSLog(@"%@ %s", NSStringFromClass([self class]), __PRETTY_FUNCTION__);
-    
 	if ([[UIMenuController sharedMenuController] isMenuVisible])
 	{
 		_shouldShowContextMenuAfterMovementEnded = YES;
-		
 	}
 	
 	[super setFrame:frame];

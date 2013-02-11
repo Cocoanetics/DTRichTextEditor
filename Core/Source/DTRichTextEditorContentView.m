@@ -98,8 +98,6 @@
 
 - (void)setFrame:(CGRect)frame
 {
-    NSLog(@"%@ %s", NSStringFromClass([self class]), __PRETTY_FUNCTION__);
-
 	[super setFrame:frame];
 	
     // don't bother with layout if we are not visible yet

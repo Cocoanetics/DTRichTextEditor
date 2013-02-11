@@ -248,15 +248,13 @@
 - (void)adjustDragHandlesAnimated:(BOOL)animated
 {
 	// show/hide handles
-    if ([_selectionRectangles count] && _showsDragHandlesForSelection)
+    if ([_selectionRectangles count] && _dragHandlesVisible)
     {
         self.dragHandleLeft.hidden = NO;
         self.dragHandleRight.hidden = NO;
 
 		_beginCaretView.hidden = NO;
 		_endCaretView.hidden = NO;
-		
-		_dragHandlesVisible = YES;
     }
     else
     {
@@ -265,8 +263,6 @@
 		
 		_beginCaretView.hidden = YES;
 		_endCaretView.hidden = YES;
-		
-		_dragHandlesVisible = NO;
     }
     
 	if (![_selectionRectangles count])
@@ -506,21 +502,6 @@
 	[self setSelectionRectangles:selectionRectangles animated:NO];
 }
 
-- (void)setShowsDragHandlesForSelection:(BOOL)showsDragHandlesForSelection
-{
-	if (_showsDragHandlesForSelection != showsDragHandlesForSelection)
-	{
-		_showsDragHandlesForSelection = showsDragHandlesForSelection;
-		
-		if (_dragHandlesVisible && !_showsDragHandlesForSelection)
-		{
-			_dragHandlesVisible = NO;
-		}
-		
-		[self adjustDragHandlesAnimated:NO];
-	}
-}
-
 
 @synthesize selectionRectangles = _selectionRectangles;
 @synthesize selectionRectangleViews = _selectionRectangleViews;
@@ -528,7 +509,6 @@
 @synthesize endCaretView = _endCaretView;
 @synthesize style = _style;
 @synthesize dragHandlesVisible = _dragHandlesVisible;
-@synthesize showsDragHandlesForSelection = _showsDragHandlesForSelection;
 @synthesize dragHandleLeft = _dragHandleLeft;
 @synthesize dragHandleRight = _dragHandleRight;
 @synthesize textView = _textView;

@@ -9,8 +9,13 @@
 #import "DTMutableCoreTextLayoutFrame.h"
 #import "DTRichTextCategories.h"
 #import "DTCoreText.h"
+#import "DTCoreTextLayoutFrame+DTRichText.h"
 
 @implementation DTMutableCoreTextLayoutFrame
+{
+    NSRange _cachedSelectionRectanglesRange;
+    NSArray *_cachedSelectionRectangles;
+}
 
 @synthesize shouldRebuildLines;
 
@@ -51,7 +56,8 @@
 
 - (void)relayoutText
 {
-    NSLog(@"relayout");
+    // next call needs new selection rectangles
+    _cachedSelectionRectangles = nil;
     
 	// layout the new text
 	DTCoreTextLayouter *tmpLayouter = [[DTCoreTextLayouter alloc] initWithAttributedString:_attributedStringFragment];
@@ -388,7 +394,26 @@
 	
 	// some attachments might have been overwritten, so we force refresh of the attachments list
 	_textAttachments = nil;
+    
+    // next call needs new selection rectangles
+    _cachedSelectionRectangles = nil;
 }
+
+- (NSArray *)selectionRectsForRange:(NSRange)range
+{
+    if (_cachedSelectionRectangles && NSEqualRanges(range, _cachedSelectionRectanglesRange))
+    {
+        return _cachedSelectionRectangles;
+    }
+    
+    _cachedSelectionRectangles = [super selectionRectsForRange:range];
+    _cachedSelectionRectanglesRange = range;
+
+    return _cachedSelectionRectangles;
+}
+
+
+#pragma mark - Properties
 
 - (void)setFrame:(CGRect)frame
 {
@@ -397,9 +422,10 @@
         return;
     }
     
-    NSLog(@"%@ -> %@", NSStringFromCGRect(_frame), NSStringFromCGRect(frame));
-    
 	_frame = frame;
+    
+    // next call needs new selection rectangles
+    _cachedSelectionRectangles = nil;
     
     if (shouldRebuildLines)
 	 {

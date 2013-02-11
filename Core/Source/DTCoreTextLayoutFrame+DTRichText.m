@@ -40,74 +40,103 @@
 
 - (NSArray *)selectionRectsForRange:(NSRange)range
 {
-	NSInteger firstIndex = range.location;
-	NSInteger firstIndexLine = [self lineIndexForGlyphIndex:firstIndex];
-	
-	NSInteger lastIndex = range.location + range.length;
-	NSInteger lastIndexLine = [self lineIndexForGlyphIndex:lastIndex];
-	
-	NSMutableArray *tmpArray = [NSMutableArray array];
+    NSInteger fromIndex = range.location;
+    NSInteger toIndex = range.location + range.length;
     
-	
-	NSInteger numberOfLines = [self.lines count];
-	if (firstIndexLine>=numberOfLines || lastIndexLine>=numberOfLines)
+    CGFloat fromCaretOffset;
+    CGFloat toCaretOffset;
+    
+    BOOL haveStart = NO;
+    BOOL haveEnd = NO;
+    
+    NSMutableArray *retArray = [NSMutableArray arrayWithCapacity:[self.lines count]];
+    
+    for (DTCoreTextLayoutLine *oneLine in self.lines)
 	{
-		lastIndexLine = MIN(numberOfLines-1, lastIndexLine);
-	}
-	
-	for (NSInteger i = firstIndexLine; i<=lastIndexLine; i++)
-	{
-		DTCoreTextLayoutLine *line = [self.lines objectAtIndex:i];
-		
-		NSRange range = [line stringRange];
-		NSInteger lastInRange = range.location + range.length;
-		
-		NSInteger firstIndexInLine = MIN(MAX(range.location, firstIndex), lastInRange);
-		
-		CGRect firstIndexRect = [self cursorRectAtIndex:firstIndexInLine];
-		
-		CGRect rect;
-		
-		if (lastIndex > range.location)
+        BOOL lineContainsStart = NO;
+        BOOL lineContainsEnd = NO;
+        
+		if (NSLocationInRange(fromIndex, [oneLine stringRange]))
 		{
-			if (lastIndex < lastInRange)
-			{
-				// in same line
-				CGRect lastIndexRect = [self cursorRectAtIndex:lastIndex];
-				rect =  CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, lastIndexRect.origin.x - firstIndexRect.origin.x, line.frame.size.height);
-			}
-			else
-			{
-				// ending after this line
+            lineContainsStart = YES;
+            haveStart = YES;
+            
+           fromCaretOffset = [oneLine offsetForStringIndex:fromIndex];
+        }
+
+        if (NSLocationInRange(toIndex, [oneLine stringRange]))
+		{
+            lineContainsEnd = YES;;
+            haveEnd = YES;
+            
+            toCaretOffset = [oneLine offsetForStringIndex:toIndex];
+        }
+        
+        CGRect rectToAddForThisLine = oneLine.frame;
+        
+        // continue looping through lines until we find the start
+        if (!haveStart)
+        {
+            continue;
+        }
+
+        if (lineContainsStart)
+        {
+            if (lineContainsEnd)
+            {
+                rectToAddForThisLine = CGRectStandardize(CGRectMake(fromCaretOffset, oneLine.frame.origin.y, toCaretOffset - fromCaretOffset, oneLine.frame.size.height));
+            }
+            else
+            {
+                // ending after this line
                 
-                if (line.writingDirectionIsRightToLeft)
+                if (oneLine.writingDirectionIsRightToLeft)
                 {
                     // extend to left side of line
-                    rect = CGRectMake(line.frame.origin.x, line.frame.origin.y, firstIndexRect.origin.x - line.frame.origin.x, line.frame.size.height);
+                    rectToAddForThisLine = CGRectMake(oneLine.frame.origin.x, oneLine.frame.origin.y, fromCaretOffset - oneLine.frame.origin.x, oneLine.frame.size.height);
                 }
-                else 
+                else
                 {
                     // extend to right side of line
-                    rect = CGRectMake(firstIndexRect.origin.x, line.frame.origin.y, line.frame.origin.x + self.frame.size.width - firstIndexRect.origin.x, line.frame.size.height);
+                    rectToAddForThisLine = CGRectMake(fromCaretOffset, oneLine.frame.origin.y, oneLine.frame.origin.x + self.frame.size.width - fromCaretOffset, oneLine.frame.size.height);
                 }
-			}
-			
-			// make new DTTextSelectionRect, was NSValue with CGRect before
-			DTTextSelectionRect *selectionRect = [DTTextSelectionRect textSelectionRectWithRect:rect];
-			
-			[tmpArray addObject:selectionRect];
-		}
-	}
-	
-    if ([tmpArray count])
+            }
+        }
+        else
+        {
+            if (lineContainsEnd)
+            {
+                if (oneLine.writingDirectionIsRightToLeft)
+                {
+                    // extend to right side of line
+                    rectToAddForThisLine = CGRectMake(toCaretOffset, oneLine.frame.origin.y, oneLine.frame.origin.x + self.frame.size.width - toCaretOffset, oneLine.frame.size.height);
+                }
+                else
+                {
+                    // extend to left side of line
+                    rectToAddForThisLine = CGRectMake(oneLine.frame.origin.x, oneLine.frame.origin.y, toCaretOffset - oneLine.frame.origin.x, oneLine.frame.size.height);
+                }
+            }
+        }
+        
+        // make new DTTextSelectionRect, was NSValue with CGRect before
+        DTTextSelectionRect *selectionRect = [DTTextSelectionRect textSelectionRectWithRect:CGRectIntegral(rectToAddForThisLine)];
+        
+        selectionRect.containsStart = lineContainsStart;
+        selectionRect.containsEnd = lineContainsEnd;
+        
+        [retArray addObject:selectionRect];
+        
+        if (haveStart && haveEnd)
+        {
+            // we're done
+            break;
+        }
+    }
+    
+    if ([retArray count])
     {
-        DTTextSelectionRect *firstSelection = [tmpArray objectAtIndex:0];
-        firstSelection.containsStart = YES;
-        
-        DTTextSelectionRect *lastSelection = [tmpArray lastObject];
-        lastSelection.containsEnd = YES;
-        
-        return [NSArray arrayWithArray:tmpArray];
+        return retArray;
     }
     
     return nil;
