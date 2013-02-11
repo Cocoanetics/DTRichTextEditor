@@ -122,6 +122,7 @@ typedef enum
 	DTDragMode _dragMode;
 	BOOL _shouldReshowContextMenuAfterHide;
 	BOOL _shouldShowContextMenuAfterLoupeHide;
+    BOOL _shouldShowDragHandlesAfterLoupeHide;
 	BOOL _shouldShowContextMenuAfterMovementEnded;
     BOOL _waitingForDictationResult;
     DTDictationPlaceholderView *_dictationPlaceholderView;
@@ -402,6 +403,13 @@ typedef enum
 		
 		[self performSelector:@selector(showContextMenuFromSelection) withObject:nil afterDelay:0.10];
 	}
+    
+    if (_shouldShowDragHandlesAfterLoupeHide)
+    {
+        _shouldShowDragHandlesAfterLoupeHide = NO;
+        
+        _selectionView.dragHandlesVisible = YES;
+    }
 }
 
 - (void)movementDidEnd
@@ -1104,10 +1112,10 @@ typedef enum
 		case UIGestureRecognizerStateCancelled:
 		{
             _shouldShowContextMenuAfterLoupeHide = YES;
-            _selectionView.dragHandlesVisible = YES;
+            _shouldShowDragHandlesAfterLoupeHide = YES;
             
 			[self dismissLoupeWithTouchPoint:touchPoint];
-			
+            
 			break;
 		}
 			
