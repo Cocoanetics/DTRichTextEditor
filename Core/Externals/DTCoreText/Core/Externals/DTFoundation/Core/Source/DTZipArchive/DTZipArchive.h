@@ -6,18 +6,35 @@
 //  Copyright (c) 2012 Cocoanetics. All rights reserved.
 //
 
+
+#include "zip.h"
+#include "unzip.h"
+
+/**
+ Buffer size when unzipping in blocks
+ */
+#define BUFFER_SIZE 4096
+
 /** This is how the enumeration block needs to look like. Setting *stop to YES will stop the enumeration.
  */
 typedef void (^DTZipArchiveEnumerationResultsBlock)(NSString *fileName, NSData *data, BOOL *stop);
-typedef void (^DTZipArchiveUncompressionCompletionBlock)();
 
-/** Supported compression schemes
+
+/**
+ Completion block for uncompressToPath:withCompletion:
  */
-typedef enum
-{
-	DTZipArchiveFormatPKZip = 0,
-	DTZipArchiveFormatGZip
-} DTZipArchiveFormat;
+typedef void (^DTZipArchiveUncompressionCompletionBlock)(NSError *error);
+
+/**
+ Notification for the progress of the uncompressing process
+ */
+extern NSString * const DTZipArchiveProgressNotification;
+
+/**
+* Error domain for NSErrors
+*/
+extern NSString * const DTZipArchiveErrorDomain;
+
 
 /** This class represents a compressed file in GZIP or PKZIP format. The used format is auto-detected. 
  
@@ -25,6 +42,17 @@ typedef enum
  */
 
 @interface DTZipArchive : NSObject
+
+
+/**
+ Path of zip file
+*/
+@property (nonatomic, copy, readonly) NSString *path;
+
+/**
+ All files and directories in zip archive
+ */
+@property (nonatomic, strong, readonly) NSArray *listOfEntries;
 
 /**-------------------------------------------------------------------------------------
  @name Creating A Zip Archive
@@ -38,7 +66,7 @@ typedef enum
  @param path A Path to a compressed file
  @returns An instance of DTZipArchive or `nil` if an error occured
  */
-- (id)initWithFileAtPath:(NSString *)path;
++ (DTZipArchive *)archiveAtPath:(NSString *)path;
 
 /** Enumerates through the files contained in the archive.
  
@@ -47,5 +75,20 @@ typedef enum
  @param enumerationBlock An enumeration block that gets executed for each found and decompressed file
  */
 - (void)enumerateUncompressedFilesAsDataUsingBlock:(DTZipArchiveEnumerationResultsBlock)enumerationBlock;
+
+@end
+
+/**
+ Here uncompressing to a targetPath is done
+ */
+@interface DTZipArchive(Uncompressing)
+
+/**
+ Uncompresses the receiver to a given path overwriting existing files.
+
+ @param targetPath path where the zip archive is being uncompressed
+ @param completion block that executes when uncompressing is finished. Error is `nil` if successful.
+ */
+- (void)uncompressToPath:(NSString *)targetPath completion:(DTZipArchiveUncompressionCompletionBlock)completion;
 
 @end

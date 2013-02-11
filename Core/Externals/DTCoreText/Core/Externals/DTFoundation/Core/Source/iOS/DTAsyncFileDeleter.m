@@ -68,7 +68,7 @@ static DTAsyncFileDeleter *_sharedInstance;
 		
 		if ([fileManager moveItemAtPath:path toPath:tmpPath error:NULL])
 		{
-			// schedule the removal and immediately return	
+			// schedule the removal and immediately return
 			dispatch_group_async(_delGroup, _delQueue, ^{
 				__block UIBackgroundTaskIdentifier backgroundTaskID = UIBackgroundTaskInvalid;
 				
@@ -90,11 +90,11 @@ static DTAsyncFileDeleter *_sharedInstance;
 				// ... when the task completes:
 				if (backgroundTaskID != UIBackgroundTaskInvalid)
 				{
-					completionBlock();		
+					completionBlock();
 				}
 			});
 		}
-	});	
+	});
 }
 
 - (void)removeItemAtURL:(NSURL *)URL
