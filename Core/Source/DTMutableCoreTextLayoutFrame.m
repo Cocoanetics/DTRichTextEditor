@@ -51,6 +51,8 @@
 
 - (void)relayoutText
 {
+    NSLog(@"relayout");
+    
 	// layout the new text
 	DTCoreTextLayouter *tmpLayouter = [[DTCoreTextLayouter alloc] initWithAttributedString:_attributedStringFragment];
 	CGRect rect = _frame;
@@ -390,6 +392,13 @@
 
 - (void)setFrame:(CGRect)frame
 {
+    if (CGPointEqualToPoint(_frame.origin, frame.origin) && _frame.size.width == frame.size.width)
+    {
+        return;
+    }
+    
+    NSLog(@"%@ -> %@", NSStringFromCGRect(_frame), NSStringFromCGRect(frame));
+    
 	_frame = frame;
     
     if (shouldRebuildLines)

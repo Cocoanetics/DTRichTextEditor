@@ -36,9 +36,10 @@
     if (self) 
 	{
 		self.textView = view;
-	//	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 		self.contentMode = UIViewContentModeTopLeft;
 		self.backgroundColor = [UIColor clearColor];
+        
+        self.userInteractionEnabled = NO;
     }
     return self;
 }

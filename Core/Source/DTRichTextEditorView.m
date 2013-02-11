@@ -148,6 +148,10 @@ typedef enum
 	CGFloat _textSizeMultiplier;
 
 	NSDictionary *_textDefaults;
+    
+    // tracking of content insets
+    UIEdgeInsets _userSetContentInsets;
+    BOOL _shouldNotRecordChangedContentInsets;
 	
 	// the undo manager
 	DTUndoManager *_undoManager;
@@ -187,6 +191,8 @@ typedef enum
 {
 	_canInteractWithPasteboard = YES;
 	_showsKeyboardWhenBecomingFirstResponder = YES;
+    
+    self.contentInset = UIEdgeInsetsMake(10, 10, 10, 10);
 	
 	// --- text input
     self.autocapitalizationType = UITextAutocapitalizationTypeSentences;
@@ -201,8 +207,6 @@ typedef enum
 	
 	// --- look
     self.backgroundColor = [UIColor whiteColor];
-	self.attributedTextContentView.backgroundColor = [UIColor whiteColor];
-	self.attributedTextContentView.edgeInsets = UIEdgeInsetsMake(20, 10, 10, 10);
 	self.editable = YES;
     self.selectionAffinity = UITextStorageDirectionForward;
 	self.userInteractionEnabled = YES; 	// for autocorrection candidate view
@@ -241,8 +245,6 @@ typedef enum
 		[self addGestureRecognizer:longPressGesture];
 	}
 	
-	//self.attributedTextContentView.userInteractionEnabled = YES;
-	self.selectionView.userInteractionEnabled = NO;
 	// --- notifications
 	
 	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
@@ -946,7 +948,9 @@ typedef enum
 	coveredFrame = [self.window convertRect:coveredFrame toView:self.superview];
 	
 	// set inset to make up for covered array at bottom
-	self.contentInset = UIEdgeInsetsMake(0, 0, coveredFrame.size.height, 0);
+    _shouldNotRecordChangedContentInsets = YES;
+	self.contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, coveredFrame.size.height + _userSetContentInsets.bottom, _userSetContentInsets.right);
+    _shouldNotRecordChangedContentInsets = YES;
 	self.scrollIndicatorInsets = self.contentInset;
 	
 	SEL selector = @selector(_scrollCursorVisible);
@@ -958,7 +962,7 @@ typedef enum
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
-	self.contentInset = UIEdgeInsetsMake(0, 0, 0, 0);
+	self.contentInset = _userSetContentInsets;
 	self.scrollIndicatorInsets = self.contentInset;
 	
 	_keyboardIsShowing = NO;
@@ -2338,6 +2342,7 @@ typedef enum
 }
 
 #pragma mark Properties
+
 - (void)setAttributedText:(NSAttributedString *)newAttributedText
 {
 	// setting new text should remove all selections
@@ -2397,6 +2402,16 @@ typedef enum
 	
 	self.selectionView.frame = self.attributedTextContentView.frame;
 	[self updateCursorAnimated:NO];
+}
+
+- (void)setContentInset:(UIEdgeInsets)contentInset
+{
+    [super setContentInset:contentInset];
+    
+    if (!_shouldNotRecordChangedContentInsets)
+    {
+        _userSetContentInsets = contentInset;
+    }
 }
 
 - (DTCursorView *)cursor

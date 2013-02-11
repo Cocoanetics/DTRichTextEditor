@@ -35,11 +35,14 @@
 			layoutFrame.frame = rect;
 			
 			// trigger new layout
-			CGSize contentSize = [self intrinsicContentSize];
+			CGSize neededSize = [self intrinsicContentSize];
 			
-			// adjust own size with this info
-			CGRect frame = CGRectMake(0, 0, contentSize.width, contentSize.height);
-			[super setFrame:frame];
+			CGRect optimalFrame = CGRectMake(self.frame.origin.x, self.frame.origin.y, neededSize.width, neededSize.height);
+			NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[NSValue valueWithCGRect:optimalFrame] forKey:@"OptimalFrame"];
+			
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[[NSNotificationCenter defaultCenter] postNotificationName:DTAttributedTextContentViewDidFinishLayoutNotification object:self userInfo:userInfo];
+			});
 		}
 		
 		[self setNeedsDisplay];
@@ -95,15 +98,19 @@
 
 - (void)setFrame:(CGRect)frame
 {
-	[self willChangeValueForKey:@"frame"];
 	[super setFrame:frame];
 	
+    // don't bother with layout if we are not visible yet
+    if (!self.superview)
+    {
+        return;
+    }
+    
 	// reduce frame by edgeinsets
 	CGRect frameForLayout = UIEdgeInsetsInsetRect(frame, _edgeInsets);
 	frameForLayout.size.height = CGFLOAT_OPEN_HEIGHT;
 	
 	[(DTMutableCoreTextLayoutFrame *)self.layoutFrame setFrame:frameForLayout];
-	[self didChangeValueForKey:@"frame"];
 }
 
 // incremental layouting
