@@ -2358,8 +2358,6 @@ typedef enum
 		}
 		
 		[super setAttributedString:tmpString];
-		
-		[self.attributedTextContentView sizeToFit];
 	}
 	else
 	{
@@ -2479,6 +2477,8 @@ typedef enum
 
 - (void)setFrame:(CGRect)frame
 {
+    NSLog(@"%@ %s", NSStringFromClass([self class]), __PRETTY_FUNCTION__);
+    
 	if ([[UIMenuController sharedMenuController] isMenuVisible])
 	{
 		_shouldShowContextMenuAfterMovementEnded = YES;

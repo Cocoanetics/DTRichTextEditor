@@ -21,7 +21,7 @@
 - (void)relayoutText
 {
 	// Make sure we actually have a superview before attempting to relayout the text.
-	if (self.superview)
+	if (_layoutFrame)
 	{
 		// remove all links because they might have merged or split
 		[self removeAllCustomViewsForLinks];
@@ -98,6 +98,8 @@
 
 - (void)setFrame:(CGRect)frame
 {
+    NSLog(@"%@ %s", NSStringFromClass([self class]), __PRETTY_FUNCTION__);
+
 	[super setFrame:frame];
 	
     // don't bother with layout if we are not visible yet
