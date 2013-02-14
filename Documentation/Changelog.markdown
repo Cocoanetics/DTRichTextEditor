@@ -1,5 +1,6 @@
 Version 1.2
 - ADDED: dictation placeholder
+- ADDED: setFont convenience method to set fontFamily and pointSize for default font
 - FIXED: Loupe contents where not adjusted for Retina
 - FIXED: Problems when Editor View being initialized with CGRectZero
 - FIXED: Selection problem in readonly mode, words at line ends cannot be selected
@@ -11,6 +12,7 @@ Version 1.2
 - CHANGED: Adopted resizing contentSize through content view notification instead of KVO, since content views no longer resize themselves
 - CHANGED: Prevent unnecessary re-layouting in several places (e.g. changing orientation)
 - CHANGED: selectedTextRange now set to nil in resignFirstResponder
+- CHANGED: textDefault and individual properties now set each other
 
 
 Version 1.1.4
