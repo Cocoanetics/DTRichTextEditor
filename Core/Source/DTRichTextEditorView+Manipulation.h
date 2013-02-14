@@ -147,6 +147,10 @@
 - (void)toggleHyperlinkInRange:(UITextRange *)range URL:(NSURL *)URL;
 
 /**
+ @name Working with Fonts
+ */
+
+/**
  Replaces the font for a given range preserving bold or italic ranges.
  @param range The text range
  @param fontName The postscript font family name, or `nil` if the font family should be preserved.
@@ -161,6 +165,12 @@
  @returns The font descriptor
  */
 - (DTCoreTextFontDescriptor *)fontDescriptorForRange:(UITextRange *)range;
+
+/**
+ Convenience method to set the defaultFontFamily and defaultFontSize to the given font's values. Updates the entire string with this.
+ @param font The font to use the values from
+ */
+- (void)setFont:(UIFont *)font;
 
 /**
  @name Working with Attachments

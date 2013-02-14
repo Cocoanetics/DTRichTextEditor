@@ -60,6 +60,7 @@
     NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	[richEditor setHTMLString:html];
 
+    [richEditor setFont:[UIFont boldSystemFontOfSize:30]];
 //	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	// image as drawn by your custom views which you return in the delegate method

@@ -80,6 +80,8 @@ typedef enum
 - (BOOL)selectionIsVisible;
 - (void)relayoutText;
 
+- (NSDictionary *)_attributedStringAttributesForTextDefaults;
+
 @end
 
 @implementation DTRichTextEditorView
@@ -195,7 +197,10 @@ typedef enum
 	_canInteractWithPasteboard = YES;
 	_showsKeyboardWhenBecomingFirstResponder = YES;
     
-    self.contentInset = UIEdgeInsetsMake(10, 10, 10, 10);
+    // text defaults
+    _textSizeMultiplier = 1.0;
+    _defaultFontSize = 12.0f;
+    _defaultFontFamily = @"Times New Roman";
 	
 	// --- text input
     self.autocapitalizationType = UITextAutocapitalizationTypeSentences;
@@ -213,6 +218,7 @@ typedef enum
 	self.editable = YES;
     self.selectionAffinity = UITextStorageDirectionForward;
 	self.userInteractionEnabled = YES; 	// for autocorrection candidate view
+    self.contentInset = UIEdgeInsetsMake(10, 10, 10, 10);
 	
 	// --- gestures
 	if (!doubleTapGesture)
@@ -1805,7 +1811,7 @@ typedef enum
     // if it's just one character remaining then set text defaults on this
     if ([[self.attributedTextContentView.layoutFrame.attributedStringFragment string] isEqualToString:@"\n"])
     {
-        NSDictionary *typingDefaults = [self defaultAttributes];
+        NSDictionary *typingDefaults = [self _attributedStringAttributesForTextDefaults];
         
         [(NSMutableAttributedString *)self.attributedTextContentView.layoutFrame.attributedStringFragment setAttributes:typingDefaults range:NSMakeRange(0, 1)];
     }
@@ -2316,20 +2322,24 @@ typedef enum
 		[tmpDict setObject:_baseURL forKey:NSBaseURLDocumentOption];
 	}
 	
-	if (_textSizeMultiplier)
+	if (_textSizeMultiplier>0)
 	{
 		[tmpDict setObject:[NSNumber numberWithFloat:_textSizeMultiplier] forKey:NSTextSizeMultiplierDocumentOption];
 	}
+    else
+    {
+		[tmpDict setObject:[NSNumber numberWithFloat:1.0f] forKey:NSTextSizeMultiplierDocumentOption];
+    }
 	
 	if (_defaultFontFamily)
 	{
 		[tmpDict setObject:_defaultFontFamily forKey:DTDefaultFontFamily];
 	}
-	else
-	{
-		[tmpDict setObject:@"Times New Roman" forKey:DTDefaultFontFamily];
-	}
-	
+    
+    if (_defaultFontSize>0)
+    {
+        [tmpDict setObject:[NSNumber numberWithFloat:_defaultFontSize] forKey:DTDefaultFontSize];
+    }
 	
 	// otherwise use set defaults
 	return tmpDict;
@@ -2340,25 +2350,55 @@ typedef enum
 	if (_textDefaults != textDefaults)
 	{
 		_textDefaults = textDefaults;
+        
+        // extract values
+        
+        NSValue *maxImageSizeValue = [_textDefaults objectForKey:DTMaxImageSize];
+        
+        if (maxImageSizeValue)
+        {
+            _maxImageDisplaySize = [maxImageSizeValue CGSizeValue];
+        }
+        
+        NSURL *baseURL = [_textDefaults objectForKey:NSBaseURLDocumentOption];
+        
+        if (baseURL)
+        {
+            _baseURL = baseURL;
+        }
+        
+        NSNumber *textSizeNum = [_textDefaults objectForKey:NSTextSizeMultiplierDocumentOption];
+        
+        if (textSizeNum)
+        {
+            _textSizeMultiplier = [textSizeNum floatValue];
+        }
+        
+        NSString *fontFamily = [_textDefaults objectForKey:DTDefaultFontFamily];
+        
+        if (fontFamily)
+        {
+            _defaultFontFamily = fontFamily;
+        }
+        
+        NSNumber *fontSizeNum = [_textDefaults objectForKey:DTDefaultFontSize];
+        
+        if (fontSizeNum)
+        {
+            _defaultFontSize = [fontSizeNum floatValue];
+        }
 	}
 }
 
-- (NSDictionary *)defaultAttributes
+// helper method for converting text defaults dictionary into actual text attributes
+- (NSDictionary *)_attributedStringAttributesForTextDefaults
 {
-	NSDictionary *defaults = [self textDefaults];
-	NSString *fontFamily = [defaults objectForKey:DTDefaultFontFamily];
-	
-	CGFloat multiplier = [[defaults objectForKey:NSTextSizeMultiplierDocumentOption] floatValue];
-	
-	if (!multiplier)
-	{
-		multiplier = 1.0;
-	}
-	
+	// build a font descriptor from the defaults
 	DTCoreTextFontDescriptor *desc = [[DTCoreTextFontDescriptor alloc] init];
-	desc.fontFamily = fontFamily;
-	desc.pointSize = 12.0 * multiplier;
+	desc.fontFamily = _defaultFontFamily;
+	desc.pointSize = _defaultFontSize * _textSizeMultiplier;
 	
+    // create a font for this
 	CTFontRef defaultFont = [desc newMatchingFont];
 	
 	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
@@ -2406,6 +2446,11 @@ typedef enum
 - (NSAttributedString *)attributedText
 {
 	return self.attributedTextContentView.layoutFrame.attributedStringFragment;
+}
+
+- (NSAttributedString *)attributedString
+{
+    return self.attributedString;
 }
 
 - (void)setMarkedTextRange:(UITextRange *)markedTextRange
@@ -2462,10 +2507,7 @@ typedef enum
 	return _selectionView;
 }
 
-- (NSAttributedString *)attributedString
-{
-	return self.attributedTextContentView.layoutFrame.attributedStringFragment;
-}
+
 
 - (UIView *)inputView
 {
@@ -2533,6 +2575,7 @@ typedef enum
 // overrides
 @synthesize maxImageDisplaySize = _maxImageDisplaySize;
 @synthesize defaultFontFamily = _defaultFontFamily;
+@synthesize defaultFontSize = _defaultFontSize;
 @synthesize baseURL = _baseURL;
 @synthesize textSizeMultiplier = _textSizeMultiplier;
 

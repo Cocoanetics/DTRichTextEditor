@@ -267,7 +267,7 @@
 - (void)_updateSubstringInRange:(NSRange)range withAttributedString:(NSAttributedString *)attributedString actionName:(NSString *)actionName
 {
 	NSAssert([attributedString length] == range.length, @"lenght of updated string and update attributed string must match");
-	
+
 	NSUndoManager *undoManager = self.undoManager;
 	
 	NSAttributedString *replacedString = [self.attributedTextContentView.attributedString attributedSubstringFromRange:range];
@@ -504,6 +504,8 @@
 	[self hideContextMenu];
 }
 
+#pragma mark - Working with Fonts
+
 - (void)updateFontInRange:(UITextRange *)range withFontFamilyName:(NSString *)fontFamilyName pointSize:(CGFloat)pointSize
 {
     // close off typing group, this is a new operations
@@ -577,6 +579,25 @@
     }
     
     return [DTCoreTextFontDescriptor fontDescriptorForCTFont:font];
+}
+
+- (void)setFont:(UIFont *)font
+{
+    NSParameterAssert(font);
+    
+    CTFontRef ctFont = DTCTFontCreateWithUIFont(font);
+    
+    DTCoreTextFontDescriptor *fontDescriptor = [DTCoreTextFontDescriptor fontDescriptorForCTFont:ctFont];
+    
+    // put these values into the defaults
+    self.defaultFontSize = fontDescriptor.pointSize;
+    self.defaultFontFamily = fontDescriptor.fontFamily;
+    
+    UITextRange *entireDocument = [self textRangeFromPosition:[self beginningOfDocument] toPosition:[self endOfDocument]];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateFontInRange:entireDocument withFontFamilyName:self.defaultFontFamily pointSize:self.defaultFontSize];
+    });
 }
 
 #pragma mark - Changing Paragraph Styles

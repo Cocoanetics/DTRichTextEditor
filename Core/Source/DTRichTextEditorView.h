@@ -43,6 +43,7 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
  */
 @property (nonatomic, assign) CGSize maxImageDisplaySize;
 @property (nonatomic, copy) NSString *defaultFontFamily;
+@property (nonatomic, assign) CGFloat defaultFontSize;
 @property (nonatomic, copy) NSURL *baseURL;
 @property (nonatomic, assign) CGFloat textSizeMultiplier;
 
@@ -53,6 +54,7 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
  
  - maxImageDisplaySize
  - defaultFontFamily
+ - defaultFontSize
  - baseURL;
  - textSizeMultiplier;
  
