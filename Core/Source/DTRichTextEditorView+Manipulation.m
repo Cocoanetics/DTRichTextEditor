@@ -586,18 +586,35 @@
     NSParameterAssert(font);
     
     CTFontRef ctFont = DTCTFontCreateWithUIFont(font);
-    
     DTCoreTextFontDescriptor *fontDescriptor = [DTCoreTextFontDescriptor fontDescriptorForCTFont:ctFont];
+	CFRelease(ctFont);
+	
     
     // put these values into the defaults
     self.defaultFontSize = fontDescriptor.pointSize;
     self.defaultFontFamily = fontDescriptor.fontFamily;
-    
-    UITextRange *entireDocument = [self textRangeFromPosition:[self beginningOfDocument] toPosition:[self endOfDocument]];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self updateFontInRange:entireDocument withFontFamilyName:self.defaultFontFamily pointSize:self.defaultFontSize];
-    });
+	
+	// scale it
+	fontDescriptor.pointSize *= self.textSizeMultiplier;
+
+	// create a new font
+	ctFont = [fontDescriptor newMatchingFont];
+   
+	NSAttributedString *attributedString = self.attributedTextContentView.layoutFrame.attributedStringFragment;
+	
+	if (![attributedString length])
+	{
+		return;
+	}
+	
+	NSRange fullRange = NSMakeRange(0, [attributedString length]);
+	NSMutableAttributedString *fragment = [[attributedString attributedSubstringFromRange:fullRange] mutableCopy];
+
+	[fragment addAttribute:(id)kCTFontAttributeName value:(__bridge id)ctFont range:fullRange];
+	
+	CFRelease(ctFont);
+	
+	[self _updateSubstringInRange:fullRange withAttributedString:fragment actionName:NSLocalizedString(@"Set Font", @"Undo Action that replaces the font for a range")];
 }
 
 #pragma mark - Changing Paragraph Styles

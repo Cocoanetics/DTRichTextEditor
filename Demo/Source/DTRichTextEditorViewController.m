@@ -46,8 +46,9 @@
 	// defaults
 	richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
     richEditor.textDelegate = self;
-	richEditor.defaultFontFamily = @"Helvetica";
-	richEditor.textSizeMultiplier = 2.2;
+//	richEditor.defaultFontFamily = @"Helvetica";
+	[richEditor setFont:[UIFont systemFontOfSize:12.0]];
+	richEditor.textSizeMultiplier = 2.0;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
     richEditor.autocorrectionType = UITextAutocorrectionTypeNo;
 	
@@ -60,7 +61,7 @@
     NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
 	[richEditor setHTMLString:html];
 
-//    [richEditor setFont:[UIFont boldSystemFontOfSize:30]];
+    [richEditor setFont:[UIFont boldSystemFontOfSize:30]];
 //	[DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 	
 	// image as drawn by your custom views which you return in the delegate method
