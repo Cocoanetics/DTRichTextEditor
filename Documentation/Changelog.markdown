@@ -4,6 +4,7 @@ Version 1.2
 - FIXED: Problems when Editor View being initialized with CGRectZero
 - FIXED: Selection problem in readonly mode, words at line ends cannot be selected
 - FIXED: Drag handles showing during readonly dragging
+- FIXED: Default for shouldDrawLinks was defaulting to NO which would cause links to be invisible if not drawin in custom subview
 - CHANGED: Refactored selectionRectsForRange: for RTL support and better performance
 - CHANGED: DTMutableCoreTextLayoutFrame now caches selection rects for latest requested range
 - CHANGED: Margin around edited text is now set via contentInset instead of content view's edgeInsets

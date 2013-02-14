@@ -259,7 +259,7 @@
 		A7697CC61410CC6400F25129 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0450;
+				LastUpgradeCheck = 0460;
 			};
 			buildConfigurationList = A7697CC91410CC6400F25129 /* Build configuration list for PBXProject "DTWebArchive" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -431,7 +431,6 @@
 		A7697CF11410CC6400F25129 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_WARN_OBJCPP_ARC_ABI = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/DemoApp-Prefix.pch";
 				INFOPLIST_FILE = "Demo/DemoApp-Info.plist";
@@ -447,7 +446,6 @@
 		A7697CF21410CC6400F25129 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_WARN_OBJCPP_ARC_ABI = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/DemoApp-Prefix.pch";
 				INFOPLIST_FILE = "Demo/DemoApp-Info.plist";
