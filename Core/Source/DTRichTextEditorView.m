@@ -1231,12 +1231,18 @@ typedef enum
 
 - (BOOL)resignFirstResponder
 {
-	// selecting via long press does not show handles
-	_selectionView.dragHandlesVisible	= NO;
+    if ([self isFirstResponder])
+    {
+        // selecting via long press does not show handles
+        _selectionView.dragHandlesVisible	= NO;
+    
+        // no longer anything selected
+        self.selectedTextRange = nil;
 	
-	_cursorIsShowing = NO;
-	[self updateCursorAnimated:NO];
-	[self hideContextMenu];
+        _cursorIsShowing = NO;
+        [self updateCursorAnimated:NO];
+        [self hideContextMenu];
+    }
 	
 	return [super resignFirstResponder];
 }

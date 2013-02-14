@@ -15,7 +15,6 @@
 @synthesize viewController;
 @synthesize navController;
 
-
 #pragma mark -
 #pragma mark Application lifecycle
 

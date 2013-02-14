@@ -225,6 +225,14 @@
 		return;
 	}
 	
+    if ([popover isPopoverVisible])
+    {
+        [popover dismissPopoverAnimated:YES];
+        popover = nil;
+        
+        return;
+    }
+    
 	UIImagePickerController *picker = [[UIImagePickerController alloc] init];
 	picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
 	picker.delegate = self;

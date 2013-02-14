@@ -10,6 +10,7 @@ Version 1.2
 - CHANGED: Margin around edited text is now set via contentInset instead of content view's edgeInsets
 - CHANGED: Adopted resizing contentSize through content view notification instead of KVO, since content views no longer resize themselves
 - CHANGED: Prevent unnecessary re-layouting in several places (e.g. changing orientation)
+- CHANGED: selectedTextRange now set to nil in resignFirstResponder
 
 
 Version 1.1.4

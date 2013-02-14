@@ -1418,7 +1418,6 @@
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "Demo/DTRichTextEditor-Info.plist";
 				OTHER_LDFLAGS = (
-					"-fobjc-arc",
 					"-ObjC",
 					"-all_load",
 				);
@@ -1438,7 +1437,6 @@
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "Demo/DTRichTextEditor-Info.plist";
 				OTHER_LDFLAGS = (
-					"-fobjc-arc",
 					"-ObjC",
 					"-all_load",
 				);
