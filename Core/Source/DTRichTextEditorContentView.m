@@ -26,7 +26,7 @@
 		// remove all links because they might have merged or split
 		[self removeAllCustomViewsForLinks];
 		
-		if (_attributedString)
+		if ([_attributedString length])
 		{
 			CGRect rect = UIEdgeInsetsInsetRect(self.bounds, _edgeInsets);
 			rect.size.height = CGFLOAT_OPEN_HEIGHT; // necessary height set as soon as we know it.
