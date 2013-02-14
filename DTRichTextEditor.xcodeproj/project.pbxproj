@@ -393,7 +393,7 @@
 		A743515A1486772100F4C766 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A7556EC31679BCE5000AC6D9 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		A76F898113C73421007B37C0 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
-		A777834A16CAADD70048BED1 /* DTHTMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTHTMLParser.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/DTHTMLParser/DTHTMLParser.h; sourceTree = "<group>"; };
+		A777834A16CAADD70048BED1 /* DTHTMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLParser.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/DTHTMLParser/DTHTMLParser.h; sourceTree = "<group>"; };
 		A7840CCC1524A98200FA9F9D /* DTLoupe.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = DTLoupe.bundle; sourceTree = "<group>"; };
 		A784849E15E28DF400595102 /* DTAttributedTextContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextContentView.h; path = DTCoreText/Core/Source/DTAttributedTextContentView.h; sourceTree = "<group>"; };
 		A7851870168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTHTMLWriter+DTWebArchive.h"; sourceTree = "<group>"; };
@@ -1317,6 +1317,10 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LINK_WITH_STANDARD_LIBRARIES = NO;
 				MACH_O_TYPE = mh_object;
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
 				PRODUCT_NAME = DTRichTextEditor;
 				SKIP_INSTALL = YES;
 				UNLOCALIZED_RESOURCES_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Resources";
@@ -1345,6 +1349,10 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LINK_WITH_STANDARD_LIBRARIES = NO;
 				MACH_O_TYPE = mh_object;
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-ObjC",
+				);
 				PRODUCT_NAME = DTRichTextEditor;
 				SKIP_INSTALL = YES;
 				UNLOCALIZED_RESOURCES_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Resources";

@@ -91,6 +91,8 @@
 		A73AE79A1686FC6A009CF8C3 /* DTHTMLWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = A73AE7901686FC6A009CF8C3 /* DTHTMLWriter.m */; };
 		A73AE79B1686FC6A009CF8C3 /* DTHTMLWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = A73AE7901686FC6A009CF8C3 /* DTHTMLWriter.m */; };
 		A73BC42912DA014300F064C6 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A73BC42812DA014300F064C6 /* CoreText.framework */; };
+		A743A80A16CCE76100B25266 /* DTLinkButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A788C92F14863E8700E1AFD9 /* DTLinkButton.m */; };
+		A743A80B16CCE76500B25266 /* DTLinkButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A788C92F14863E8700E1AFD9 /* DTLinkButton.m */; };
 		A74C953614DC0C69002B5A45 /* MalformedURL.html in Resources */ = {isa = PBXBuildFile; fileRef = A74C953514DC0C69002B5A45 /* MalformedURL.html */; };
 		A74C973E14DC5294002B5A45 /* Emoji.html in Resources */ = {isa = PBXBuildFile; fileRef = A74C973D14DC5294002B5A45 /* Emoji.html */; };
 		A758FC9614DBC7A2007DF8B2 /* default.css in Sources */ = {isa = PBXBuildFile; fileRef = A76994F914DBB5F70047CC8D /* default.css */; };
@@ -164,7 +166,6 @@
 		A788C9A814863E8700E1AFD9 /* DTLinkButton.h in Headers */ = {isa = PBXBuildFile; fileRef = A788C92E14863E8700E1AFD9 /* DTLinkButton.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A788C9A914863E8700E1AFD9 /* DTLinkButton.h in Headers */ = {isa = PBXBuildFile; fileRef = A788C92E14863E8700E1AFD9 /* DTLinkButton.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A788C9AB14863E8700E1AFD9 /* DTLinkButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A788C92F14863E8700E1AFD9 /* DTLinkButton.m */; };
-		A788C9AC14863E8700E1AFD9 /* DTLinkButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A788C92F14863E8700E1AFD9 /* DTLinkButton.m */; };
 		A788C9B714863E8700E1AFD9 /* DTTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A788C93414863E8700E1AFD9 /* DTTextAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A788C9B814863E8700E1AFD9 /* DTTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A788C93414863E8700E1AFD9 /* DTTextAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A788C9BA14863E8700E1AFD9 /* DTTextAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = A788C93514863E8700E1AFD9 /* DTTextAttachment.m */; };
@@ -427,7 +428,6 @@
 		A7F7EF851573603100F5A4D0 /* DTCSSStylesheet.m in Sources */ = {isa = PBXBuildFile; fileRef = A788C92914863E8700E1AFD9 /* DTCSSStylesheet.m */; };
 		A7F7EF861573603100F5A4D0 /* DTHTMLElement.m in Sources */ = {isa = PBXBuildFile; fileRef = A788C92B14863E8700E1AFD9 /* DTHTMLElement.m */; };
 		A7F7EF871573603100F5A4D0 /* DTLazyImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = A788C92D14863E8700E1AFD9 /* DTLazyImageView.m */; };
-		A7F7EF881573603100F5A4D0 /* DTLinkButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A788C92F14863E8700E1AFD9 /* DTLinkButton.m */; };
 		A7F7EF891573603100F5A4D0 /* DTTextAttachment.m in Sources */ = {isa = PBXBuildFile; fileRef = A788C93514863E8700E1AFD9 /* DTTextAttachment.m */; };
 		A7F7EF8A1573603100F5A4D0 /* DTWebVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = A788C93714863E8700E1AFD9 /* DTWebVideoView.m */; };
 		A7F7EF8B1573603100F5A4D0 /* NSAttributedString+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = A788C93B14863E8700E1AFD9 /* NSAttributedString+HTML.m */; };
@@ -628,6 +628,13 @@
 			remoteGlobalIDString = A70B4CE61486637E00873A4A;
 			remoteInfo = "Static Library";
 		};
+		A743A80816CCE75D00B25266 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7E383AB160DFEA700CF72D6 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7E889A416A9B190009EF0DF;
+			remoteInfo = "DTUTI (Mac)";
+		};
 		A788CA611486428F00E1AFD9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -669,20 +676,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = A7E383DA160DFF8600CF72D6;
 			remoteInfo = DTZipArchive;
-		};
-		A7B4E2DB1686FDB300717707 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7E383AB160DFEA700CF72D6 /* DTFoundation.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A7E383F1160E002200CF72D6;
-			remoteInfo = DTDownloadCache;
-		};
-		A7B4E2DD1686FDB300717707 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7E383AB160DFEA700CF72D6 /* DTFoundation.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A7787A0D16441B1800AF5830;
-			remoteInfo = DTBonjour;
 		};
 		A7B4E2DF1686FDB300717707 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1401,9 +1394,8 @@
 				A7B4E2D61686FDB300717707 /* libDTHTMLParser.a */,
 				A7B4E2D81686FDB300717707 /* libDTHTMLParser.a */,
 				A7B4E2DA1686FDB300717707 /* libDTZipArchive.a */,
-				A7B4E2DC1686FDB300717707 /* libDTDownloadCache.a */,
-				A7B4E2DE1686FDB300717707 /* libDTBonjour.a */,
 				A7B4E2E01686FDB300717707 /* libDTUTI.a */,
+				A743A80916CCE75D00B25266 /* libDTUTI.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1815,6 +1807,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		A743A80916CCE75D00B25266 /* libDTUTI.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDTUTI.a;
+			remoteRef = A743A80816CCE75D00B25266 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		A7B4E2D21686FDB300717707 /* UnitTests.octest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
@@ -1848,20 +1847,6 @@
 			fileType = archive.ar;
 			path = libDTZipArchive.a;
 			remoteRef = A7B4E2D91686FDB300717707 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A7B4E2DC1686FDB300717707 /* libDTDownloadCache.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libDTDownloadCache.a;
-			remoteRef = A7B4E2DB1686FDB300717707 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A7B4E2DE1686FDB300717707 /* libDTBonjour.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libDTBonjour.a;
-			remoteRef = A7B4E2DD1686FDB300717707 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		A7B4E2E01686FDB300717707 /* libDTUTI.a */ = {
@@ -2145,7 +2130,6 @@
 				A788C99D14863E8700E1AFD9 /* DTCSSStylesheet.m in Sources */,
 				A788C9A214863E8700E1AFD9 /* DTHTMLElement.m in Sources */,
 				A788C9A714863E8700E1AFD9 /* DTLazyImageView.m in Sources */,
-				A788C9AC14863E8700E1AFD9 /* DTLinkButton.m in Sources */,
 				A788C9BB14863E8700E1AFD9 /* DTTextAttachment.m in Sources */,
 				A788C9C014863E8700E1AFD9 /* DTWebVideoView.m in Sources */,
 				A788C9CA14863E8700E1AFD9 /* NSAttributedString+HTML.m in Sources */,
@@ -2178,6 +2162,7 @@
 				A060479616A8B5770000CAA1 /* DTAttributedLabel.m in Sources */,
 				A70E62DB16C24905009B47BF /* DTDictationPlaceholderTextAttachment.m in Sources */,
 				A70E62E416C24DDF009B47BF /* DTDictationPlaceholderView.m in Sources */,
+				A743A80A16CCE76100B25266 /* DTLinkButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2257,7 +2242,6 @@
 				A7F7EF851573603100F5A4D0 /* DTCSSStylesheet.m in Sources */,
 				A7F7EF861573603100F5A4D0 /* DTHTMLElement.m in Sources */,
 				A7F7EF871573603100F5A4D0 /* DTLazyImageView.m in Sources */,
-				A7F7EF881573603100F5A4D0 /* DTLinkButton.m in Sources */,
 				A7F7EF891573603100F5A4D0 /* DTTextAttachment.m in Sources */,
 				A7F7EF8A1573603100F5A4D0 /* DTWebVideoView.m in Sources */,
 				A7F7EF8B1573603100F5A4D0 /* NSAttributedString+HTML.m in Sources */,
@@ -2289,6 +2273,7 @@
 				A060479816A8B5770000CAA1 /* DTAttributedLabel.m in Sources */,
 				A70E62DC16C24905009B47BF /* DTDictationPlaceholderTextAttachment.m in Sources */,
 				A70E62E516C24DDF009B47BF /* DTDictationPlaceholderView.m in Sources */,
+				A743A80B16CCE76500B25266 /* DTLinkButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
