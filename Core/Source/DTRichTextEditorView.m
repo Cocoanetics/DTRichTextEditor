@@ -504,10 +504,13 @@ typedef enum
 		CGRect cursorFrame = [self caretRectForPosition:position];
 		cursorFrame.size.width = 3.0;
 		
-		[CATransaction begin];
-		[CATransaction setDisableActions:YES];
-		self.cursor.frame = cursorFrame;
-		[CATransaction commit];
+        if (!CGRectEqualToRect(cursorFrame, self.cursor.frame))
+        {
+            [CATransaction begin];
+            [CATransaction setDisableActions:YES];
+            self.cursor.frame = cursorFrame;
+            [CATransaction commit];
+        }
 		
 		if (!_cursor.superview)
 		{
@@ -573,8 +576,6 @@ typedef enum
 {
 	BOOL didMove = NO;
 	
-	[self.inputDelegate selectionWillChange:self];
-	
 	DTTextRange *constrainingRange = nil;
 	
 	if ([_markedTextRange length])
@@ -600,9 +601,7 @@ typedef enum
 		didMove = YES;
 	}
 	
-	self.selectedTextRange = [DTTextRange emptyRangeAtPosition:position];
-	
-	[self.inputDelegate selectionDidChange:self];
+	self.selectedTextRange = [self textRangeFromPosition:position toPosition:position];
 	
 	// begins a new typing undo group
 	DTUndoManager *undoManager = self.undoManager;
@@ -1912,10 +1911,9 @@ typedef enum
 		markedText = @"";
 	}
 	
-	
 	DTTextRange *currentMarkedRange = (id)self.markedTextRange;
 	DTTextRange *currentSelection = (id)self.selectedTextRange;
-	DTTextRange *replaceRange;
+	UITextRange *replaceRange;
 	
 	if (currentMarkedRange)
 	{
@@ -1926,7 +1924,7 @@ typedef enum
 	{
 		if (!currentSelection)
 		{
-			replaceRange = [DTTextRange emptyRangeAtPosition:self.endOfDocument];
+			replaceRange = [self textRangeFromPosition:self.endOfDocument toPosition:self.endOfDocument];
 		}
 		else 
 		{
@@ -2437,7 +2435,7 @@ typedef enum
 	// always position cursor at the end of the text
     if (_keyboardIsShowing)
     {
-        self.selectedTextRange = [DTTextRange emptyRangeAtPosition:self.endOfDocument];
+        self.selectedTextRange = [self textRangeFromPosition:self.endOfDocument toPosition:self.endOfDocument];
     }
     
 	[self.undoManager removeAllActions];
