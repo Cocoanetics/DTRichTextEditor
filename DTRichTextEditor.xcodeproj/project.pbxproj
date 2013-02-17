@@ -85,7 +85,6 @@
 		A7D5467A15D56ABA00711CA1 /* NSString+CSS.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D5465C15D56A9B00711CA1 /* NSString+CSS.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7D5467B15D56ABB00711CA1 /* DTCoreTextFontDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D5465D15D56A9B00711CA1 /* DTCoreTextFontDescriptor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7D5467C15D56ABD00711CA1 /* DTCoreTextParagraphStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D5465E15D56A9B00711CA1 /* DTCoreTextParagraphStyle.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A7D5467D15D56ABF00711CA1 /* CGUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D5465F15D56A9B00711CA1 /* CGUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7D546A815D56BD500711CA1 /* NSAttributedString+DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D728631487C2F300A22742 /* NSAttributedString+DTWebArchive.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7D546A915D56BE600711CA1 /* DTCoreTextLayoutFrame+DTRichText.h in Headers */ = {isa = PBXBuildFile; fileRef = A743511E1486771700F4C766 /* DTCoreTextLayoutFrame+DTRichText.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7D546AA15D56BE600711CA1 /* NSAttributedString+DTRichText.h in Headers */ = {isa = PBXBuildFile; fileRef = A74351341486771700F4C766 /* NSAttributedString+DTRichText.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -505,7 +504,6 @@
 		A7D5465C15D56A9B00711CA1 /* NSString+CSS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = "NSString+CSS.h"; path = "DTCoreText/Core/Source/NSString+CSS.h"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		A7D5465D15D56A9B00711CA1 /* DTCoreTextFontDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTCoreTextFontDescriptor.h; path = DTCoreText/Core/Source/DTCoreTextFontDescriptor.h; sourceTree = "<group>"; };
 		A7D5465E15D56A9B00711CA1 /* DTCoreTextParagraphStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTCoreTextParagraphStyle.h; path = DTCoreText/Core/Source/DTCoreTextParagraphStyle.h; sourceTree = "<group>"; };
-		A7D5465F15D56A9B00711CA1 /* CGUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CGUtils.h; path = DTCoreText/Core/Source/CGUtils.h; sourceTree = "<group>"; };
 		A7D728631487C2F300A22742 /* NSAttributedString+DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributedString+DTWebArchive.h"; sourceTree = "<group>"; };
 		A7D728641487C2F300A22742 /* NSAttributedString+DTWebArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributedString+DTWebArchive.m"; sourceTree = "<group>"; };
 		A7D728921487C46600A22742 /* DTWebResource+DTRichText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTWebResource+DTRichText.h"; sourceTree = "<group>"; };
@@ -696,7 +694,6 @@
 		A7D545E115D5673000711CA1 /* Repackaged Headers (Framework) */ = {
 			isa = PBXGroup;
 			children = (
-				A7D5465F15D56A9B00711CA1 /* CGUtils.h */,
 				A7D545E215D567BC00711CA1 /* DTAttributedTextCell.h */,
 				A784849E15E28DF400595102 /* DTAttributedTextContentView.h */,
 				A7D545E415D567BC00711CA1 /* DTAttributedTextView.h */,
@@ -908,7 +905,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A7D5467D15D56ABF00711CA1 /* CGUtils.h in Headers */,
 				A721D67916925A5500C5A48F /* DTWebArchive.h in Headers */,
 				A721D67A16925A5500C5A48F /* DTWebResource.h in Headers */,
 				A721D67B16925A5500C5A48F /* UIPasteboard+DTWebArchive.h in Headers */,

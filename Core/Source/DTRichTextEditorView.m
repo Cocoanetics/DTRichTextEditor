@@ -23,16 +23,11 @@
 #import "DTRichTextEditorView+Manipulation.h"
 #import "DTDictationPlaceholderView.h"
 
-//#import "DTTextPosition.h"
-//#import "DTTextRange.h"
-//#import "DTTextSelectionRect.h"
-
 #import "DTCursorView.h"
 #import "DTLoupeView.h"
 #import "DTCoreTextLayouter.h"
 
-//#import "DTTextSelectionView.h"
-#import "CGUtils.h"
+#import "DTUtils.h"
 #import "DTCoreTextFontDescriptor.h"
 #import "DTTiledLayerWithoutFade.h"
 
@@ -1445,7 +1440,7 @@ typedef enum
 		{
 			if (_maxImageDisplaySize.width < image.size.width || _maxImageDisplaySize.height < image.size.height)
 			{
-				displaySize = sizeThatFitsKeepingAspectRatio2(image.size,_maxImageDisplaySize);
+				displaySize = sizeThatFitsKeepingAspectRatio(image.size,_maxImageDisplaySize);
 			}
 		}
 		attachment.displaySize = displaySize;

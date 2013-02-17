@@ -13,7 +13,7 @@
 #import "DTHTMLElementText.h"
 #import "DTTextAttachment.h"
 #import "DTCoreTextParagraphStyle.h"
-#import "CGUtils.h"
+#import "DTUtils.h"
 
 @implementation NSAttributedString (DTRichText)
 
@@ -71,7 +71,7 @@
 	{
 		if (maxDisplaySize.width < image.size.width || maxDisplaySize.height < image.size.height)
 		{
-			displaySize = sizeThatFitsKeepingAspectRatio2(image.size,maxDisplaySize);
+			displaySize = sizeThatFitsKeepingAspectRatio(image.size,maxDisplaySize);
 		}
 	}
 	attachment.displaySize = displaySize;
