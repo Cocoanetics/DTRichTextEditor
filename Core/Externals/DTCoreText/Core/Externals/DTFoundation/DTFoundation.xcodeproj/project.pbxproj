@@ -1556,7 +1556,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Core/DTFoundation-Prefix.pch";
 				GCC_THUMB_SUPPORT = NO;
-				LLVM_LTO = YES;
 				PRODUCT_NAME = DTFoundation;
 				PUBLIC_HEADERS_FOLDER_PATH = ../../DTFoundation;
 				SKIP_INSTALL = YES;
@@ -1570,7 +1569,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Core/DTFoundation-Prefix.pch";
 				GCC_THUMB_SUPPORT = NO;
-				LLVM_LTO = YES;
 				PRODUCT_NAME = DTFoundation;
 				PUBLIC_HEADERS_FOLDER_PATH = ../../DTFoundation;
 				SKIP_INSTALL = YES;
