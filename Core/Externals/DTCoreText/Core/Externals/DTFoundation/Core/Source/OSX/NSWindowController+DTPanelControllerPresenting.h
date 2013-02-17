@@ -7,7 +7,9 @@
 //
 
 /**
- Enhancement for `NSWindowController` to present a sheet modally, similar to iOS
+ Enhancement for `NSWindowController` to present a sheet modally, similar to iOS.
+ 
+ To use create a `NSWindowController` subclass with NIB and replace the root `NSWindow` with an `NSPanel`. Then from any `NSWindowController` you call presentModalPanelController: with the panel controller instance as parameter.
 */
 @interface NSWindowController (DTPanelControllerPresenting)
 
@@ -22,13 +24,15 @@
 @property (nonatomic, readonly, strong) NSWindowController *modalPanelController;
 
 /**
- Presents the panel modally
+ Presents the panel modally, the panel controller is being retained.
  @param panelController A window controller for the sheet, usually an NSWindowController with an NSPanel as window.
  */
 - (void)presentModalPanelController:(NSWindowController *)panelController;
 
 /**
- Dismisses a currently presented modal panel.
+ Dismisses a currently presented modal panel. The panel controller is being released after the out animation has finished.
+ 
+ You can presentModalPanelController: another panel controller right after dismissing one.
  */
 - (void)dismissModalPanelController;
 

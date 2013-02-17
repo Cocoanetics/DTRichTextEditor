@@ -7,12 +7,25 @@
 //
 
 #import "objc/runtime.h"
-
 #import "NSWindowController+DTPanelControllerPresenting.h"
 
 static char DTPresentedViewControllerKey;
+static char DTPresentedViewControllerDismissalQueueKey;
 
 @implementation NSWindowController (DTPanelControllerPresenting)
+
+#pragma mark - Private Methods
+
+// called as a result of the sheed ending
+- (void)_didFinishDismissingSheet:(NSWindow *)sheet returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo;
+{
+	NSAssert(contextInfo == &DTPresentedViewControllerDismissalQueueKey, @"Incorrect context info");
+	
+	// release the panel controller
+	objc_setAssociatedObject(self, &DTPresentedViewControllerDismissalQueueKey, nil, OBJC_ASSOCIATION_RETAIN);
+}
+
+#pragma mark - Public Methods
 
 - (void)presentModalPanelController:(NSWindowController *)panelController
 {
@@ -24,10 +37,11 @@ static char DTPresentedViewControllerKey;
 		return;
 	}
 
-	[NSApp beginSheet:panelController.window modalForWindow:self.window modalDelegate:nil didEndSelector:nil contextInfo:nil];
-	
 	// retain the panel view controller
-	objc_setAssociatedObject(self, &DTPresentedViewControllerKey, panelController, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	objc_setAssociatedObject(self, &DTPresentedViewControllerKey, panelController, OBJC_ASSOCIATION_RETAIN);
+
+	// begin the sheet and set our own custom didEndElector which frees the controller
+	[NSApp beginSheet:panelController.window modalForWindow:self.window modalDelegate:self didEndSelector:@selector(_didFinishDismissingSheet:returnCode:contextInfo:) contextInfo:&DTPresentedViewControllerDismissalQueueKey];
 }
 
 - (void)dismissModalPanelController
@@ -36,23 +50,19 @@ static char DTPresentedViewControllerKey;
 	
 	if (!windowController)
 	{
+		NSLog(@"%s called, but nothing to dismiss", (const char *)__PRETTY_FUNCTION__);
 		return;
 	}
-
-    // force it onto next run loop to prevent sendAction exception
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [windowController.window close];
-        [NSApp endSheet:windowController.window];
-//        [windowController.window orderOut:nil];
-    });
-    
-    //need to hold onto this during animation, or else we get a crash
-    double delayInSeconds = 0.40;
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-        // free the panel view controller
-        objc_setAssociatedObject(self, &DTPresentedViewControllerKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    });
+	
+	// retain it in the dismissal queue so that we can present a new one right after the out animation has finished
+	objc_setAssociatedObject(self, &DTPresentedViewControllerDismissalQueueKey, windowController, OBJC_ASSOCIATION_RETAIN);
+	
+	// dismiss the panel
+	[windowController.window close];
+	[NSApp endSheet:windowController.window];
+	
+	// free the controller reference
+	objc_setAssociatedObject(self, &DTPresentedViewControllerKey, nil, OBJC_ASSOCIATION_RETAIN);
 }
 
 - (NSWindowController *)modalPanelController
