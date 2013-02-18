@@ -748,21 +748,8 @@
 	rangeToSelectAfterwards = [entireAttributedString markedRangeRemove:YES];
 	
 	// relayout range of entire list
-	//NSRange listRange = [entireAttributedString rangeOfTextList:listStyle atIndex:styleRange.location];
-	//[(DTRichTextEditorContentView *)self.attributedTextContentView relayoutTextInRange:rangeToSelectAfterwards];
 	[self.attributedTextContentView relayoutText];
 	
-	// get fragment that is to be changed
-	//	NSMutableAttributedString *fragment = [[entireAttributedString attributedSubstringFromRange:styleRange] mutableCopy];
-	
-	//	NSRange fragmentRange = NSMakeRange(0, [fragment length]);
-	
-	//	[fragment toggleListStyle:listStyle inRange:fragmentRange numberFrom:nextItemNumber];
-	
-	// replace
-	//	[(DTRichTextEditorContentView *)self.attributedTextContentView replaceTextInRange:styleRange withText:fragment];
-	
-	//	styleRange.length = [fragment length];
 	self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
 	
 	// attachment positions might have changed

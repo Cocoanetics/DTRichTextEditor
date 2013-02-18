@@ -18,6 +18,10 @@
 
 
 @implementation DTTextRange
+{
+	DTTextPosition *_start;
+	DTTextPosition *_end;
+}
 
 + (DTTextRange *)textRangeFromStart:(UITextPosition *)start toEnd:(UITextPosition *)end
 {
@@ -28,7 +32,7 @@
 
 + (DTTextRange *)emptyRangeAtPosition:(UITextPosition *)position offset:(NSInteger)offset
 {
-	DTTextPosition *newPosition = [DTTextPosition textPositionWithLocation:[(DTTextPosition *)position location] + offset];
+	DTTextPosition *newPosition = [(DTTextPosition *)position textPositionWithOffset:offset];
 	
 	return [DTTextRange textRangeFromStart:newPosition toEnd:newPosition];
 }
@@ -68,8 +72,8 @@
 	self = [super init];
 	if (self)
 	{
-		_start = [[DTTextPosition alloc] initWithLocation:range.location];
-		_end = [[DTTextPosition alloc] initWithLocation:range.location + range.length];
+		_start = [DTTextPosition textPositionWithLocation:range.location];
+		_end = [_start textPositionWithOffset:range.length];
 	}
 	
 	return self;

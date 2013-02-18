@@ -9,7 +9,7 @@
 #import "DTRichTextEditor.h"
 
 /**
- Enhancements for DTRichTextEditorView to interact with DTCoreText internal information.
+ The **DTCore Text Category** features enhancements for DTRichTextEditorView to interact with DTCoreText internal information.
  */
 @interface DTRichTextEditorView (DTCoreText)
 

@@ -24,6 +24,15 @@ static NSString * const LegacyWebArchiveResourceResponseVersionKey = @"WebResour
 NSString * WebArchivePboardType = @"Apple Web Archive pasteboard type";
 
 
+/** Private interface to work with NSDictionary */
+@interface DTWebResource (Dictionary)
+
+- (id)initWithDictionary:(NSDictionary *)dictionary;
+- (NSDictionary *)dictionaryRepresentation;
+
+@end
+
+
 @interface DTWebArchive ()
 
 @property (nonatomic, retain, readwrite) DTWebResource *mainResource;

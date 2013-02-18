@@ -10,6 +10,10 @@
 
 @class DTWebArchive;
 
+/**
+ Creating web archive from a DTHTMLWriter. 
+ */
+
 @interface DTHTMLWriter (DTWebArchive)
 
 /**

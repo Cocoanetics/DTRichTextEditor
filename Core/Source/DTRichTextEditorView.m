@@ -668,7 +668,7 @@ typedef enum
 		loupe.style = DTLoupeStyleRectangleWithArrow;
 		loupe.magnification = 0.5;
 		loupe.touchPoint = loupeStartPoint;
-		loupe.touchPointOffset = CGPointMake(0, rect.origin.y - _dragCursorStartMidPoint.y);
+		loupe.touchPointOffset = CGSizeMake(0, rect.origin.y - _dragCursorStartMidPoint.y);
 		[loupe presentLoupeFromLocation:loupeStartPoint];
 		
 		return;
@@ -1631,7 +1631,7 @@ typedef enum
 	DTTextPosition *endPosition = (DTTextPosition *)range.end;
 	
 	// on iOS 5 the upper end of the range might be "unbounded" (NSIntegerMax)
-	if ([endPosition compare:self.endOfDocument]==NSOrderedDescending)
+	if ([endPosition compare:(DTTextPosition *)self.endOfDocument]==NSOrderedDescending)
 	{
 		endPosition = (DTTextPosition *)self.endOfDocument;
 	}

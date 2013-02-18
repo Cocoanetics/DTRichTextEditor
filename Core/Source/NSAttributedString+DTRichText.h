@@ -8,18 +8,31 @@
 
 @class DTCSSListStyle;
 
+/**
+ Methods to extend `NSAttributedString` for use by DTRichTextEditor
+ */
 @interface NSAttributedString (DTRichText)
 
-// the attributes that are used if typing starts at this position
+/**
+ Retrieves the attributes that are used if typing starts at this position.
+ @param range The string range to query
+ @returns A dictionary of CoreText attributes suitable for creating an attributed string to insert
+ */
 - (NSDictionary *)typingAttributesForRange:(NSRange)range;
 
-// create an attributed string with text attachment
+/**
+ Create an attributed string with text attachment for an image.
+ 
+ The maximum display size can be limited to a reasonable size.
+ @param image The image to embed in the attributed string
+ @param maxDisplaySize The maximum display size to allow for the embedded image
+ */
 + (NSAttributedString *)attributedStringWithImage:(UIImage *)image maxDisplaySize:(CGSize)maxDisplaySize;
 
-// create attributed string with hyperlink
-+ (NSAttributedString *)attributedStringWithURL:(NSURL *)url;
-
-// for debugging
-- (NSString *)dumpString;
+/**
+ Creates an attributed string with a hyperlink.
+ @param URL The `NSURL` for the hyperlink
+ */
++ (NSAttributedString *)attributedStringWithURL:(NSURL *)URL;
 
 @end

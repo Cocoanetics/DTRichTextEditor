@@ -9,17 +9,32 @@
 #import "DTCoreTextGlyphRun.h"
 #import "DTCoreTextLayoutLine.h"
 
+/**
+ Editor-related extensions to <DTCoreTextGlyphRun>
+ */
 @interface DTCoreTextGlyphRun (DTRichText)
 
-// needed because due to incremental merging the string indices might change
+/** 
+ Modifies the internal string range to begin at a given index
+ 
+ This is needed because due to incremental merging the string indices might change
+ @param index The new starting string index to set
+ */
 - (void)adjustStringRangeToStartAtIndex:(NSInteger)index;
 
 @end
 
-
+/**
+ Editor-related extensions to <DTCoreTextLayoutLine>
+ */
 @interface DTCoreTextLayoutLine (DTRichText)
 
-// needed because due to incremental merging the string indices might change
+/**
+ Modifies the internal string range to begin at a given index
+ 
+ This is needed because due to incremental merging the string indices might change
+ @param index The new starting string index to set
+ */
 - (void)adjustStringRangeToStartAtIndex:(NSInteger)index;
 
 @end

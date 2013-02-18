@@ -22,29 +22,42 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
 @interface DTRichTextEditorView : DTAttributedTextView <UITextInputTraits, UITextInput>
 
 /**
- Specifies that the receiver can be edited. That means that on tapping it it becomes first responder and shows the current input view (keyboard). If it is not editable then dragging the finger over the view highlights entire words and does not show the selection dragging handles.
+ @name Setting Text Defaults
  */
-@property(nonatomic,getter=isEditable) BOOL editable;
 
 /**
- If this property is `YES` then all typed enters are replaced with the Line Feed (LF) character. 
+ Override for the maximum image display size. 
  
- Note: This causes all text to end up in a single paragraph and all paragraph-level styles are going to affect all of the text.
- */
-@property(nonatomic, assign) BOOL replaceParagraphsWithLineFeeds;
-
-/**
- The current attributedText displayed in the receiver
- */
-@property (nonatomic, copy) NSAttributedString *attributedText;
-
-/**
- Overrides for textDefaults. If they are set then they are used instead of the values contained in textDefaults.
+ This property represents part of the textDefaults. Setting those will set this property and vice versa.
  */
 @property (nonatomic, assign) CGSize maxImageDisplaySize;
+
+/**
+ Override for the default font family.
+ 
+ This property represents part of the textDefaults. Setting those will set this property and vice versa.
+ */
 @property (nonatomic, copy) NSString *defaultFontFamily;
+
+/**
+ Override for the default font size.
+ 
+ This property represents part of the textDefaults. Setting those will set this property and vice versa.
+ */
 @property (nonatomic, assign) CGFloat defaultFontSize;
+
+/**
+ Override for the base URL.
+ 
+ This property represents part of the textDefaults. Setting those will set this property and vice versa.
+ */
 @property (nonatomic, copy) NSURL *baseURL;
+
+/**
+ Override for the text size multiplier.
+ 
+ This property represents part of the textDefaults. Setting those will set this property and vice versa.
+ */
 @property (nonatomic, assign) CGFloat textSizeMultiplier;
 
 /**
@@ -62,6 +75,11 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
  */
 @property (nonatomic, retain) NSDictionary *textDefaults;
 
+
+/**
+ @name Accessing Views
+ */
+
 /**
  Overrides the `UIResponder` input view to be settable. The inputView is show instead of the system keyboard when input is possible.
  */
@@ -73,6 +91,10 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
 @property (retain, readwrite) UIView *inputAccessoryView;
 
 /**
+ @name Modifying Text Content
+ */
+
+/**
  Replaces a range of text. The current selection is adapted, too.
  
  This is an overwritten method that accepts either an `NSString` or `NSAttributedString`.
@@ -80,6 +102,11 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
  @param text The text for the replacement
  */
 - (void)replaceRange:(UITextRange *)range withText:(id)text;
+
+
+/**
+ @name Cursor and Selection
+ */
 
 /**
  Scrolls the receiver's content view so that the cursor is visible.
@@ -94,6 +121,11 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
  */
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated;
 
+
+/**
+ @name Getting Information
+ */
+
 /**
  Gets the bounds of the rectangle that encloses the cursor or an envelope around the current selection. Can be used for the target area of a context menu.
  */
@@ -103,6 +135,23 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
  Property to enable copy/paste support. If enabled the user can paste text into DTRichTextEditorView or copy text to the pasteboard.
  */
 @property (nonatomic, assign) BOOL canInteractWithPasteboard;
+
+/**
+ Specifies that the receiver can be edited. That means that on tapping it it becomes first responder and shows the current input view (keyboard). If it is not editable then dragging the finger over the view highlights entire words and does not show the selection dragging handles.
+ */
+@property(nonatomic,getter=isEditable) BOOL editable;
+
+/**
+ If this property is `YES` then all typed enters are replaced with the Line Feed (LF) character.
+ 
+ @warning This causes all text to end up in a single paragraph and all paragraph-level styles are going to affect all of the text. It therefore severely affects the display performance. We recommend you don't activate this if you don't want spaces between paragraphs but rather set the paragraph spacing to zero via a custom style set via textDefaults.
+ */
+@property(nonatomic, assign) BOOL replaceParagraphsWithLineFeeds;
+
+/**
+ The current attributedText displayed in the receiver
+ */
+@property (nonatomic, copy) NSAttributedString *attributedText;
 
 @end
 

@@ -82,35 +82,15 @@
 	return [element attributedString];
 }
 
-+ (NSAttributedString *)attributedStringWithURL:(NSURL *)url
++ (NSAttributedString *)attributedStringWithURL:(NSURL *)URL
 {
 	DTHTMLElementText *element = [[DTHTMLElementText alloc] init];
-	element.link = url;
+	element.link = URL;
 	element.underlineStyle = kCTUnderlineStyleSingle;
 	element.textColor = [UIColor blueColor];
-	element.text = [url absoluteString];
+	element.text = [URL absoluteString];
 	
 	return [element attributedString];
-}
-
-- (NSString *)dumpString
-{
-	NSMutableString *dumpOutput = [NSMutableString string];
-	NSDictionary *attributes = nil;
-	NSRange effectiveRange = NSMakeRange(0, 0);
-	
-		while ((attributes = [self attributesAtIndex:effectiveRange.location effectiveRange:&effectiveRange]))
-		{
-			NSString *plainString = [[self attributedSubstringFromRange:effectiveRange] string];
-			[dumpOutput appendFormat:@"'%@' (%d, %d), %@\n\n", plainString, effectiveRange.location, effectiveRange.length, attributes];
-			effectiveRange.location += effectiveRange.length;
-			
-			if (effectiveRange.location >= [self length])
-			{
-				break;
-			}
-		}
-	return dumpOutput;
 }
 
 @end

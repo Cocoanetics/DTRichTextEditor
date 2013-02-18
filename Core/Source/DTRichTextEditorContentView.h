@@ -16,10 +16,18 @@
 @interface DTRichTextEditorContentView : DTAttributedTextContentView
 
 /**
+ @name Layout
+ */
+
+/**
  Recalculates the layout for the paragraphs covered by the given range.
  @param range The string strange to relayout.
  */
 - (void)relayoutTextInRange:(NSRange)range;
+
+/**
+ @name Modifying the Content
+ */
 
 /**
  Replaces the attributed text in the given range.

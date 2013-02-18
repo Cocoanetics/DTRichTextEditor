@@ -9,7 +9,7 @@
 #import "DTRichTextEditorView.h"
 
 /**
- Methods to support dictation
+ The **Dictation** category contains methods to support dictation input.
  */
 
 @interface DTRichTextEditorView (Dictation)

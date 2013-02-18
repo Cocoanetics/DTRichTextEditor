@@ -1,4 +1,10 @@
+Change Log
+==========
+
+This is the history of version updates.
+
 Version 1.2
+
 - ADDED: dictation placeholder
 - ADDED: setFont convenience method to set fontFamily and pointSize for default font
 - FIXED: Loupe contents where not adjusted for Retina
@@ -17,6 +23,7 @@ Version 1.2
 
 
 Version 1.1.4
+
 - FIXED: horizontal flickering when moving round loupe over text
 - FIXED: cursor does not stop blinking during selection
 - FIXED: see-through mode of loupe used when touch leaves visible content area
@@ -31,21 +38,25 @@ Version 1.1.4
 - UPDATED: DTCoreText to 1.2.1
 
 Version 1.1.3
+
 - FIXED: Cursor would not show when becoming first responder
 - FIXED: Loupe would flash in top left corner when being presented the first time
 - ADDED: Known Issues file with warning not to use lists (incomplete)
 - CHANGED: refactored and made public boundsOfCurrentSelection method
 
 Version 1.1.2
+
 - FIXED: Crash when dragging beyond end of document with keyboard hidden
 - FIXED: Selection rectangles did not get correctly extended for RTL text
 - UPDATED: DTCoreText Fixes
 
 Version 1.1.1
+
 - UPDATED: DTCoreText to Version 1.1
 - FIXED: Hopefully a certain crash involving Undo
 
 Version 1.1.0
+
 - ADDED: Support for Undo/Redo
 - ADDED: Setting and changing font family and size for ranges
 - ADDED: Support for indenting
@@ -54,14 +65,17 @@ Version 1.1.0
 - UPDATED: DTCoreText + DTFoundation submodule
 
 Version 1.0.7
+
 - FIXED: Crash when selection goes beyond a paragraph, somehow left over from 1.0.6
 
 Version 1.0.6
+
 - FIXED: Crash when selection ends at beginning of line (introduced in 1.0.5)
 - CHANGED: Removed unnecessary logging of pasteboard types on paste
 - FIXED: Hitting backspace with cursor right of an Emoji would only delete half of the composed character sequence resulting in an extra glyph showing up
 
 Version 1.0.5
+
 - FIXED: Crash when dismissing modal view controller after loupe was shown once
 - CHANGED: Loupe is now a singleton with a dedicated UIWindow
 - FIXED: background-color attribute is no longer inherited from non-inline parent tag

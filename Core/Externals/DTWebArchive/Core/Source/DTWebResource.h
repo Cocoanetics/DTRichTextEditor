@@ -81,12 +81,3 @@ extern NSString * WebResourceResponseKey;
 - (NSString *)textEncodingName;
 
 @end
-
-
-/** Private interface to work with NSDictionary */
-@interface DTWebResource (Dictionary)
-
-- (id)initWithDictionary:(NSDictionary *)dictionary;
-- (NSDictionary *)dictionaryRepresentation;
-
-@end

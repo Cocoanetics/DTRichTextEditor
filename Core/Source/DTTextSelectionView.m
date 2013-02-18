@@ -29,13 +29,34 @@
 
 
 @implementation DTTextSelectionView
+{
+	UIImageView *_dragHandleLeft;
+	UIImageView *_dragHandleRight;
+	BOOL _showSelectionHandles;
+	
+	DTTextSelectionStyle _style;
+	
+	BOOL _dragHandlesVisible;
+	
+	NSArray *_selectionRectangles;
+	NSMutableArray *_selectionRectangleViews;
+	NSMutableSet *_reusableViews;
+	
+	UIView *_beginCaretView;
+	UIView *_endCaretView;
+	
+	__unsafe_unretained UIView *_textView;
+	
+	UIColor *_cursorColor;
+}
 
 - (id)initWithTextView:(UIView *)view
 {
     self = [super initWithFrame:view.bounds];
     if (self) 
 	{
-		self.textView = view;
+		_textView = view;
+		
 		self.contentMode = UIViewContentModeTopLeft;
 		self.backgroundColor = [UIColor clearColor];
         
@@ -170,10 +191,6 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    
-    //NSLog(@"layout");
-    
-    //[self layoutSubviewsInRect:CGRectInfinite];
 }
 
 #pragma mark Utilities

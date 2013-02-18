@@ -11,7 +11,7 @@
 @class DTTextRange, DTTextPosition, DTCSSListStyle;
 
 /**
- This category enhances DTRichTextEditorView with useful text format manipulation methods.
+ The **Manipulation** category enhances DTRichTextEditorView with useful text format manipulation methods.
  */
 @interface DTRichTextEditorView (Manipulation)
 
@@ -30,12 +30,14 @@
  Prepares a plain-text representation of the substring for the given range.
  
  If the attributed string in this range contains attachments then those are removed.
+ @param range The text range.
  @returns A substring of the receivers current contents
  */
 - (NSString *)plainTextForRange:(UITextRange *)range;
 
 /**
  Converts the given string to an `NSAttributedString` using the current textDefaults and sets it on the receiver.
+ @param string The string containing HTML text to convert to an attributed string and set as content of the receiver
  */
 - (void)setHTMLString:(NSString *)string;
 
@@ -109,7 +111,7 @@
 /**
  Toggles bold font style on the given range. 
  
- The first character of the range determins if the range is to be treated as bold or not.
+ The first character of the range determines if the range is to be treated as bold or not.
  @param range The text range
  */
 - (void)toggleBoldInRange:(UITextRange *)range;
@@ -117,7 +119,7 @@
 /**
  Toggles italic font style on the given range.
  
- The first character of the range determins if the range is to be treated as italic or not.
+ The first character of the range determines if the range is to be treated as italic or not.
  @param range The text range
  */
 - (void)toggleItalicInRange:(UITextRange *)range;
@@ -125,7 +127,7 @@
 /**
  Toggles underline font style on the given range.
  
- The first character of the range determins if the range is to be treated as underlined or not.
+ The first character of the range determines if the range is to be treated as underlined or not.
  @param range The text range
  */
 - (void)toggleUnderlineInRange:(UITextRange *)range;
@@ -133,7 +135,8 @@
 /**
  Highlights a given range.
  
- The first character of the range determins if the range is to be treated as already highlighted or not.
+ The first character of the range determines if the range is to be treated as already highlighted or not.
+ @param color The highlight color to mark the range with. If the range is already marked then this parameter is ignored.
  @param range The text range
  */
 - (void)toggleHighlightInRange:(UITextRange *)range color:(UIColor *)color;
@@ -141,8 +144,9 @@
 /**
  Toggles a hyperlink on the given range.
  
- The first character of the range determins if the range is to be treated as already hyperlinked or not.
+ The first character of the range determines if the range is to be treated as already hyperlinked or not.
  @param range The text range
+ @param URL The hyperlink URL to set on the range with. If the range already has a hyperlink then this parameter is ignored.
  */
 - (void)toggleHyperlinkInRange:(UITextRange *)range URL:(NSURL *)URL;
 
@@ -153,7 +157,7 @@
 /**
  Replaces the font for a given range preserving bold or italic ranges.
  @param range The text range
- @param fontName The postscript font family name, or `nil` if the font family should be preserved.
+ @param fontFamilyName The postscript font family name, or `nil` if the font family should be preserved.
  @param pointSize The point size in pixels to apply, or 0 if it should be preserved
 */
 - (void)updateFontInRange:(UITextRange *)range withFontFamilyName:(NSString *)fontFamilyName pointSize:(CGFloat)pointSize;

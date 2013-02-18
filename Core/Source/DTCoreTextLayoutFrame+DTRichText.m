@@ -15,7 +15,6 @@
 
 @implementation DTCoreTextLayoutFrame (DTRichText)
 
-// a rectangle starting encompassing the range, or first line whichever is smaller
 - (CGRect)firstRectForRange:(NSRange)range
 {
 	NSInteger firstIndex = range.location;
@@ -178,44 +177,6 @@
 	
 	return closestIndex;
 }
-
-- (NSInteger)closestIndexToPoint:(CGPoint)point
-{
-	NSRange range = [self visibleStringRange];
-    
-	NSInteger closestIndex = -1;
-	CGFloat closestDistance = CGFLOAT_MAX;
-	
-	for (int i=0; i<range.length; i++)
-	{
-		NSInteger testIndex = i + range.location;
-		
-		CGRect rect = [self cursorRectAtIndex:testIndex];
-		rect.size.width = 3.0;
-		
-		CGPoint center = CGPointMake(rect.origin.x + rect.size.width / 2.0, rect.origin.y + rect.size.height / 2.0);
-		
-		
-		CGFloat dx = center.x - point.x;
-		CGFloat dy = center.y - point.y;
-        
-		CGFloat distance = sqrtf(dx*dx + dy*dy);
-		
-		if (distance < closestDistance)
-		{
-			closestDistance = distance;
-			closestIndex = testIndex;
-		}
-	}
-	
-	if (closestIndex>=0)
-	{
-		return closestIndex;
-	}
-	
-	return -1;
-}
-
 
 - (NSInteger)closestCursorIndexToPoint:(CGPoint)point
 {

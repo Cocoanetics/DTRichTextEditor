@@ -8,9 +8,17 @@
 
 #import "DTTextPosition.h"
 
+@interface DTTextPosition () // private
+
+@property (nonatomic, assign) NSUInteger location;
+
+@end
+
 
 @implementation DTTextPosition
-
+{
+	NSUInteger _location;
+}
 
 + (DTTextPosition *)textPositionWithLocation:(NSUInteger)location
 {
@@ -29,14 +37,13 @@
 	return self;
 }
 
-- (NSComparisonResult)compare:(id)object
+- (NSComparisonResult)compare:(UITextPosition *)otherPosition
 {
-	DTTextPosition *otherPosition = (DTTextPosition *)object;
-	if (_location < otherPosition.location)
+	if (_location < [(DTTextPosition *)otherPosition location])
 	{
 		return NSOrderedAscending;
 	}
-	else if (_location > otherPosition.location)
+	else if (_location > [(DTTextPosition *)otherPosition location])
 	{
 		return NSOrderedDescending;
 	}
@@ -44,9 +51,8 @@
 	return NSOrderedSame;
 }
 
-- (BOOL)isEqual:(id)object;
+- (BOOL)isEqual:(DTTextPosition *)otherPosition;
 {
-	DTTextPosition *otherPosition = (DTTextPosition *)object;
 	return [self compare:otherPosition]==NSOrderedSame;
 }
 
@@ -66,7 +72,7 @@
 - (id)copyWithZone:(NSZone *)zone
 {
 	DTTextPosition *newPosition = [[DTTextPosition allocWithZone:zone] init];
-	newPosition.location = _location;
+	newPosition.location = self.location;
 	
 	return newPosition;
 }

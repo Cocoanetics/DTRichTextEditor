@@ -16,8 +16,26 @@ typedef enum
 	DTCursorStateStatic
 } DTCursorState;
 
+/**
+ Class for representing a caret (aka cursor) in DTRichTextEditorView.
+ 
+ The backgroundColor of the cursor view is the caret color, the default is the same blue that Apple uses.
+ */
 @interface DTCursorView : UIView 
 
+/**
+ @name Setting the State
+ */
+
+/**
+ The current state of the cursor.
+ 
+ Possible states are:
+ 
+ -	DTCursorStateBlinking
+ -	DTCursorStateStatic
+ 
+ */
 @property (nonatomic, assign) DTCursorState state;
 
 @end

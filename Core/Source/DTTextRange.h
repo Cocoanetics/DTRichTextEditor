@@ -10,15 +10,22 @@
 
 #import "DTTextPosition.h"
 
+/**
+ This class represents a range of text in an <DTRichTextEditorView>. It is a concrete subclass of `UITextRange`.
+ */
 @interface DTTextRange : UITextRange <NSCopying>
-{
-	DTTextPosition *_start;
-	DTTextPosition *_end;
-}
 
+/**
+ @name Creating Text Ranges
+ */
 
+/**
+ Convenience method to create a text range from a start and end position
+ @param start The starting position
+ @param end The ending position
+ @returns A text range with those positions as end points
+ */
 + (DTTextRange *)textRangeFromStart:(UITextPosition *)start toEnd:(UITextPosition *)end;
-//+ (DTTextRange *)textRangeFromStartLocation:(NSInteger)start toEndLocation:(NSInteger)end;
 
 /**
  Creates an empty text range with position.
@@ -43,11 +50,19 @@
 + (DTTextRange *)rangeWithNSRange:(NSRange)range;
 
 
+/**
+ @name Getting Information about Text Ranges
+ */
+
+/**
+ Retrieves the NSRange value of the receiver
+ @returns The range value
+ */
 - (NSRange)NSRangeValue;
+
+/**
+ The length of the string range represented by the receiver
+ */
 - (NSUInteger)length;
-
-//- (DTTextPosition *)start;
-//- (DTTextPosition *)end;
-
 
 @end

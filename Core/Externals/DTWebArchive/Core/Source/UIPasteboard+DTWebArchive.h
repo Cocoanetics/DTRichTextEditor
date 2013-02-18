@@ -10,8 +10,14 @@
 
 @class DTWebArchive;
 
+/**
+ Convenient addition to `UIPasteboard` to get a web archive
+ */
 @interface UIPasteboard (DTWebArchive)
 
+/**
+ Retrieves a web archive contained in the receiver, or `nil` if there is none
+ */
 @property(nonatomic,copy) DTWebArchive *webArchive;
 
 @end
