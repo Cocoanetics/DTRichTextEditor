@@ -79,6 +79,9 @@
 		A72D97631684B38B005F8BA5 /* DTCoreTextFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = A72D975D1684B38B005F8BA5 /* DTCoreTextFunctions.m */; };
 		A72D97641684B38B005F8BA5 /* DTCoreTextFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = A72D975D1684B38B005F8BA5 /* DTCoreTextFunctions.m */; };
 		A72D97651684B38B005F8BA5 /* DTCoreTextFunctions.m in Sources */ = {isa = PBXBuildFile; fileRef = A72D975D1684B38B005F8BA5 /* DTCoreTextFunctions.m */; };
+		A730BCD716D29588003B849F /* Languages.html in Resources */ = {isa = PBXBuildFile; fileRef = A730BCD616D29588003B849F /* Languages.html */; };
+		A730BCD816D29588003B849F /* Languages.html in Resources */ = {isa = PBXBuildFile; fileRef = A730BCD616D29588003B849F /* Languages.html */; };
+		A730BCD916D29588003B849F /* Languages.html in Resources */ = {isa = PBXBuildFile; fileRef = A730BCD616D29588003B849F /* Languages.html */; };
 		A7358D701680F2B0005F1352 /* libDTFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7E383B9160DFEA800CF72D6 /* libDTFoundation.a */; };
 		A73885A51606E9B2001D60C4 /* EmojiTest.html in Resources */ = {isa = PBXBuildFile; fileRef = A73885A41606E9B2001D60C4 /* EmojiTest.html */; };
 		A73AE7911686FC6A009CF8C3 /* DTHTMLWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = A73AE78F1686FC6A009CF8C3 /* DTHTMLWriter.h */; };
@@ -479,6 +482,7 @@
 		A7F7EFC51573603100F5A4D0 /* DTCoreText.h in Headers */ = {isa = PBXBuildFile; fileRef = A70B4C9E1486558200873A4A /* DTCoreText.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7F7EFC61573603100F5A4D0 /* DTImage+HTML.h in Headers */ = {isa = PBXBuildFile; fileRef = A7C5D01314D7E3BB00AF1D75 /* DTImage+HTML.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7F7EFC81573603100F5A4D0 /* DTCompatibility.h in Headers */ = {isa = PBXBuildFile; fileRef = A7A672B91532F2D100920A18 /* DTCompatibility.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A7F842F416D38BC300BCD63F /* FontSizes.html in Resources */ = {isa = PBXBuildFile; fileRef = A7EB84FB168ED63A00D686B7 /* FontSizes.html */; };
 		DE08BAB5148808B20054DC84 /* DTCoreTextFontOverrides.plist in Resources */ = {isa = PBXBuildFile; fileRef = A788CA2114863EF100E1AFD9 /* DTCoreTextFontOverrides.plist */; };
 		E2262DC71638331500BFDAD7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F5671C14D8469000D1F167 /* Cocoa.framework */; };
 		E2262DD51638336700BFDAD7 /* DTColor+HTML.m in Sources */ = {isa = PBXBuildFile; fileRef = A788C95314863E8700E1AFD9 /* DTColor+HTML.m */; };
@@ -714,12 +718,19 @@
 			remoteGlobalIDString = A70B4CE61486637E00873A4A;
 			remoteInfo = "Static Library";
 		};
-		A7F34D9D16D0E3A30054A512 /* PBXContainerItemProxy */ = {
+		A7F842F016D37A5A00BCD63F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7E383AB160DFEA700CF72D6 /* DTFoundation.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = A7E889A416A9B190009EF0DF;
-			remoteInfo = "DTUTI (Mac)";
+			remoteGlobalIDString = A7E383F1160E002200CF72D6;
+			remoteInfo = DTDownloadCache;
+		};
+		A7F842F216D37A5A00BCD63F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7E383AB160DFEA700CF72D6 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7787A0D16441B1800AF5830;
+			remoteInfo = DTBonjour;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -748,6 +759,7 @@
 		A72C15C61592FAF70064A67F /* CoreTextIssues.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = CoreTextIssues.html; sourceTree = "<group>"; };
 		A72D975C1684B38B005F8BA5 /* DTCoreTextFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTCoreTextFunctions.h; sourceTree = "<group>"; };
 		A72D975D1684B38B005F8BA5 /* DTCoreTextFunctions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTCoreTextFunctions.m; sourceTree = "<group>"; };
+		A730BCD616D29588003B849F /* Languages.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = Languages.html; sourceTree = "<group>"; };
 		A73885A41606E9B2001D60C4 /* EmojiTest.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = EmojiTest.html; sourceTree = "<group>"; };
 		A73AE78F1686FC6A009CF8C3 /* DTHTMLWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTHTMLWriter.h; sourceTree = "<group>"; };
 		A73AE7901686FC6A009CF8C3 /* DTHTMLWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTHTMLWriter.m; sourceTree = "<group>"; };
@@ -1205,6 +1217,7 @@
 				A78C241015073BC50045651E /* TextBoxes.html */,
 				A72C15C61592FAF70064A67F /* CoreTextIssues.html */,
 				A73885A41606E9B2001D60C4 /* EmojiTest.html */,
+				A730BCD616D29588003B849F /* Languages.html */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1389,8 +1402,9 @@
 				A7B4E2D61686FDB300717707 /* libDTHTMLParser.a */,
 				A7B4E2D81686FDB300717707 /* libDTHTMLParser.a */,
 				A7B4E2DA1686FDB300717707 /* libDTZipArchive.a */,
+				A7F842F116D37A5A00BCD63F /* libDTDownloadCache.a */,
+				A7F842F316D37A5A00BCD63F /* libDTBonjour.a */,
 				A7B4E2E01686FDB300717707 /* libDTUTI.a */,
-				A7F34D9E16D0E3A30054A512 /* libDTUTI.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1854,11 +1868,18 @@
 			remoteRef = A7E383B8160DFEA800CF72D6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A7F34D9E16D0E3A30054A512 /* libDTUTI.a */ = {
+		A7F842F116D37A5A00BCD63F /* libDTDownloadCache.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libDTUTI.a;
-			remoteRef = A7F34D9D16D0E3A30054A512 /* PBXContainerItemProxy */;
+			path = libDTDownloadCache.a;
+			remoteRef = A7F842F016D37A5A00BCD63F /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7F842F316D37A5A00BCD63F /* libDTBonjour.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDTBonjour.a;
+			remoteRef = A7F842F216D37A5A00BCD63F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1897,6 +1918,7 @@
 				A7D63CDA1611B9AC00D4712A /* Default-568h@2x.png in Resources */,
 				A72418171678BACE001362C4 /* iOS6.html in Resources */,
 				A7EB84FC168ED63A00D686B7 /* FontSizes.html in Resources */,
+				A730BCD716D29588003B849F /* Languages.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1918,6 +1940,8 @@
 				A70E630216C25734009B47BF /* Oliver.jpg in Resources */,
 				A7F34D4016CFC7C90054A512 /* RTL.html in Resources */,
 				A7E8E1D416D22B7E001EDE51 /* EmptyLinesAndFontAttribute.html in Resources */,
+				A730BCD816D29588003B849F /* Languages.html in Resources */,
+				A7F842F416D38BC300BCD63F /* FontSizes.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1957,6 +1981,7 @@
 				A70E630516C25AC6009B47BF /* KeepMeTogether.html in Resources */,
 				A7F34D4116CFC7C90054A512 /* RTL.html in Resources */,
 				A7E8E1D516D22B7E001EDE51 /* EmptyLinesAndFontAttribute.html in Resources */,
+				A730BCD916D29588003B849F /* Languages.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,6 +11,7 @@
 #import <MediaPlayer/MediaPlayer.h>
 
 #import "DTVersion.h"
+#import "DTTiledLayerWithoutFade.h"
 
 @interface DemoTextViewController ()
 - (void)_segmentedControlChanged:(id)sender;
@@ -108,7 +109,7 @@
 	[self.view addSubview:_htmlView];
 
 	// Create text view
-	[DTAttributedTextContentView setLayerClass:[CATiledLayer class]];
+	[DTAttributedTextContentView setLayerClass:[DTTiledLayerWithoutFade class]];
 	_textView = [[DTAttributedTextView alloc] initWithFrame:frame];
 	
 	// we draw images and links via subviews provided by delegate methods
@@ -553,7 +554,9 @@
 		}
 	}
 	
-	// redo layout
+	// need to reset the layouter because otherwise we get the old framesetter or cached layout frames
+	_textView.attributedTextContentView.layouter=nil;
+	
 	// here we're layouting the entire string, might be more efficient to only relayout the paragraphs that contain these attachments
 	[_textView.attributedTextContentView relayoutText];
 }
