@@ -429,7 +429,7 @@
 		A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTWebArchive.xcodeproj; path = DTWebArchive/DTWebArchive.xcodeproj; sourceTree = "<group>"; };
 		A7239FC716A6A22F0071E902 /* KnownIssues.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = KnownIssues.markdown; sourceTree = "<group>"; };
 		A730BCCB16D27EE1003B849F /* Readme.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.markdown; sourceTree = "<group>"; };
-		A730BCD216D28957003B849F /* DTTiledLayerWithoutFade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTTiledLayerWithoutFade.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/iOS/DTTiledLayerWithoutFade.h; sourceTree = "<group>"; };
+		A730BCD216D28957003B849F /* DTTiledLayerWithoutFade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTTiledLayerWithoutFade.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/iOS/DTTiledLayerWithoutFade.h; sourceTree = "<group>"; };
 		A7402D4A167F4E5200BE0AAF /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		A7402D4D167F571A00BE0AAF /* DTRichTextEditorView+Manipulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTRichTextEditorView+Manipulation.h"; sourceTree = "<group>"; };
 		A7402D4E167F571B00BE0AAF /* DTRichTextEditorView+Manipulation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DTRichTextEditorView+Manipulation.m"; sourceTree = "<group>"; };
@@ -1651,6 +1651,7 @@
 				A730BCB616D23DE9003B849F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A7D728DB1487D12A00A22742 /* Build configuration list for PBXNativeTarget "Static Library" */ = {
 			isa = XCConfigurationList;
