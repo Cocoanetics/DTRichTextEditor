@@ -1,6 +1,6 @@
 //
-//  TextView.m
-//  CoreTextExtensions
+//  DTAttributedTextContentView.h
+//  DTCoreText
 //
 //  Created by Oliver Drobnik on 1/9/11.
 //  Copyright 2011 Drobnik.com. All rights reserved.
@@ -345,14 +345,7 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 					{
 						UIView *newCustomLinkView = nil;
 						
-						// make sure that the frame height is no less than the line height for hyperlinks
-						if (frameForSubview.size.height < oneLine.frame.size.height)
-						{
-							frameForSubview.origin.y = truncf(oneLine.frame.origin.y);
-							frameForSubview.size.height = ceilf(oneLine.frame.size.height);
-						}
-						
-						if (existingLinkView)
+						if (_delegateFlags.delegateSupportsCustomViewsForLinks)
 						{
 							NSDictionary *attributes = [layoutString attributesAtIndex:runRange.location effectiveRange:NULL];
 							
@@ -451,15 +444,11 @@ static Class _layerClassToUseForDTAttributedTextContentView = nil;
 			CGRect optimalFrame = CGRectMake(self.frame.origin.x, self.frame.origin.y, neededSize.width, neededSize.height);
 			NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[NSValue valueWithCGRect:optimalFrame] forKey:@"OptimalFrame"];
 			
-			dispatch_async(dispatch_get_main_queue(), ^{
-				[[NSNotificationCenter defaultCenter] postNotificationName:DTAttributedTextContentViewDidFinishLayoutNotification object:self userInfo:userInfo];
-			});
+			[[NSNotificationCenter defaultCenter] postNotificationName:DTAttributedTextContentViewDidFinishLayoutNotification object:self userInfo:userInfo];
         }
 		
-		dispatch_async(dispatch_get_main_queue(), ^{
-			[self setNeedsLayout];
-			[self setNeedsDisplayInRect:self.bounds];
-		});
+		[self setNeedsLayout];
+		[self setNeedsDisplayInRect:self.bounds];
     }
 }
 
