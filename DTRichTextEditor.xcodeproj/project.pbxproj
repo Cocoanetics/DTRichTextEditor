@@ -48,6 +48,7 @@
 		A743515F1486772100F4C766 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A74351521486772100F4C766 /* Icon.png */; };
 		A74351601486772100F4C766 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A74351531486772100F4C766 /* Icon@2x.png */; };
 		A74351641486772100F4C766 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A743515A1486772100F4C766 /* main.m */; };
+		A7439C1116D77CED0004363C /* DTAttributedLabel.h in Resources */ = {isa = PBXBuildFile; fileRef = A7439C1016D77CED0004363C /* DTAttributedLabel.h */; };
 		A7470F7814E2A5F10015477A /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FF8814E2939600BF8CCD /* libDTLoupe.a */; };
 		A7470F7914E2A6920015477A /* DTLoupe.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A7D8FF8A14E2939600BF8CCD /* DTLoupe.bundle */; };
 		A7470F8314E2A6D90015477A /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FF8814E2939600BF8CCD /* libDTLoupe.a */; };
@@ -473,7 +474,8 @@
 		A74351581486772100F4C766 /* DTRichTextEditorViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditorViewController.h; sourceTree = "<group>"; };
 		A74351591486772100F4C766 /* DTRichTextEditorViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorViewController.m; sourceTree = "<group>"; };
 		A743515A1486772100F4C766 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		A74D940316D4CA4600824C2B /* DTUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTUtils.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/DTUtils.h; sourceTree = "<group>"; };
+		A7439C1016D77CED0004363C /* DTAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTAttributedLabel.h; path = DTCoreText/Core/Source/DTAttributedLabel.h; sourceTree = "<group>"; };
+		A74D940316D4CA4600824C2B /* DTUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTUtils.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/DTUtils.h; sourceTree = "<group>"; };
 		A7556EC31679BCE5000AC6D9 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		A76F898113C73421007B37C0 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		A777834A16CAADD70048BED1 /* DTHTMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLParser.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/DTHTMLParser/DTHTMLParser.h; sourceTree = "<group>"; };
@@ -705,6 +707,7 @@
 		A7D545E115D5673000711CA1 /* Repackaged Headers (Framework) */ = {
 			isa = PBXGroup;
 			children = (
+				A7439C1016D77CED0004363C /* DTAttributedLabel.h */,
 				A7D545E215D567BC00711CA1 /* DTAttributedTextCell.h */,
 				A784849E15E28DF400595102 /* DTAttributedTextContentView.h */,
 				A7D545E415D567BC00711CA1 /* DTAttributedTextView.h */,
@@ -1268,6 +1271,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A7470F7914E2A6920015477A /* DTLoupe.bundle in Resources */,
+				A7439C1116D77CED0004363C /* DTAttributedLabel.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
