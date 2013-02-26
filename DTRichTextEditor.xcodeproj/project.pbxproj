@@ -25,6 +25,7 @@
 		A704273613C37EFE00EE0776 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273513C37EFE00EE0776 /* CoreText.framework */; };
 		A704273813C37F0500EE0776 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273713C37F0500EE0776 /* QuartzCore.framework */; };
 		A704273A13C37F0B00EE0776 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273913C37F0B00EE0776 /* MediaPlayer.framework */; };
+		A70D380016DD1434003F21C9 /* libDTHTMLParser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F34D7216D0E32F0054A512 /* libDTHTMLParser.a */; };
 		A70E62F216C25340009B47BF /* DTDictationPlaceholderView.h in Headers */ = {isa = PBXBuildFile; fileRef = A70E62F016C25340009B47BF /* DTDictationPlaceholderView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A70E62F316C25340009B47BF /* DTDictationPlaceholderTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A70E62F116C25340009B47BF /* DTDictationPlaceholderTextAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A70E62F416C2534E009B47BF /* DTDictationPlaceholderView.h in Headers */ = {isa = PBXBuildFile; fileRef = A70E62F016C25340009B47BF /* DTDictationPlaceholderView.h */; };
@@ -197,6 +198,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		A70D37FE16DD142E003F21C9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7E383C1160DFEDB00CF72D6;
+			remoteInfo = DTHTMLParser;
+		};
 		A7235AA31487A9C100C9F926 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */;
@@ -569,6 +577,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A70D380016DD1434003F21C9 /* libDTHTMLParser.a in Frameworks */,
 				A7F34D8D16D0E3790054A512 /* libDTFoundation.a in Frameworks */,
 				A7F34D5B16D0E30E0054A512 /* libDTCoreText_no_DTFoundation.a in Frameworks */,
 				A7470F8314E2A6D90015477A /* libDTLoupe.a in Frameworks */,
@@ -1039,6 +1048,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A70D37FF16DD142E003F21C9 /* PBXTargetDependency */,
 				A7F34D7E16D0E3450054A512 /* PBXTargetDependency */,
 				A7F34D7C16D0E33D0054A512 /* PBXTargetDependency */,
 				A7470F7F14E2A6C70015477A /* PBXTargetDependency */,
@@ -1403,6 +1413,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		A70D37FF16DD142E003F21C9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DTHTMLParser;
+			targetProxy = A70D37FE16DD142E003F21C9 /* PBXContainerItemProxy */;
+		};
 		A7470F7B14E2A6C70015477A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Static Library";
