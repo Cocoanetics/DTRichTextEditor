@@ -437,7 +437,7 @@
 		A721D67816925A5500C5A48F /* UIPasteboard+DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIPasteboard+DTWebArchive.h"; path = "DTWebArchive/Core/Source/UIPasteboard+DTWebArchive.h"; sourceTree = "<group>"; };
 		A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTCoreText.xcodeproj; path = DTCoreText/DTCoreText.xcodeproj; sourceTree = "<group>"; };
 		A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTWebArchive.xcodeproj; path = DTWebArchive/DTWebArchive.xcodeproj; sourceTree = "<group>"; };
-		A7239FC716A6A22F0071E902 /* KnownIssues.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = KnownIssues.markdown; sourceTree = "<group>"; };
+		A7239FC716A6A22F0071E902 /* Known Issues-template.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Known Issues-template.markdown"; sourceTree = "<group>"; };
 		A730BCCB16D27EE1003B849F /* Readme.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.markdown; sourceTree = "<group>"; };
 		A730BCD216D28957003B849F /* DTTiledLayerWithoutFade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTTiledLayerWithoutFade.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/iOS/DTTiledLayerWithoutFade.h; sourceTree = "<group>"; };
 		A7402D4A167F4E5200BE0AAF /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -495,6 +495,7 @@
 		A7851877168737B400DACF4B /* DTCoreTextFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTCoreTextFunctions.h; path = DTCoreText/Core/Source/DTCoreTextFunctions.h; sourceTree = "<group>"; };
 		A7914A77153EF6BB00F6CC86 /* icon_smile.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = icon_smile.gif; path = ../../Core/Externals/DTCoreText/Demo/Resources/icon_smile.gif; sourceTree = "<group>"; };
 		A79646E115DEA0EE0091CD4C /* NSString+Paragraphs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+Paragraphs.h"; path = "DTCoreText/Core/Source/NSString+Paragraphs.h"; sourceTree = "<group>"; };
+		A7CF231016DE5354005A4A6E /* AppledocSettings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = AppledocSettings.plist; sourceTree = "<group>"; };
 		A7D545E215D567BC00711CA1 /* DTAttributedTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextCell.h; path = DTCoreText/Core/Source/DTAttributedTextCell.h; sourceTree = "<group>"; };
 		A7D545E415D567BC00711CA1 /* DTAttributedTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextView.h; path = DTCoreText/Core/Source/DTAttributedTextView.h; sourceTree = "<group>"; };
 		A7D545E515D567BC00711CA1 /* DTLazyImageView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = DTLazyImageView.h; path = DTCoreText/Core/Source/DTLazyImageView.h; sourceTree = "<group>"; };
@@ -544,7 +545,7 @@
 		A7E82CDF15D5384700BD47AB /* DTLoupeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTLoupeView.h; path = DTLoupeView/Core/Source/DTLoupeView.h; sourceTree = "<group>"; };
 		A7E8442C16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTRichTextEditorView+Dictation.h"; sourceTree = "<group>"; };
 		A7E8442D16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DTRichTextEditorView+Dictation.m"; sourceTree = "<group>"; };
-		A7E994DD154E79DA00FEB5DB /* Changelog.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = Changelog.markdown; sourceTree = "<group>"; };
+		A7E994DD154E79DA00FEB5DB /* Changelog-template.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Changelog-template.markdown"; sourceTree = "<group>"; };
 		A7F0C83E13C326E900EBD027 /* RTEDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RTEDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7F0C84213C326E900EBD027 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		A7F0C84413C326E900EBD027 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -829,8 +830,8 @@
 			isa = PBXGroup;
 			children = (
 				A730BCCB16D27EE1003B849F /* Readme.markdown */,
-				A7E994DD154E79DA00FEB5DB /* Changelog.markdown */,
-				A7239FC716A6A22F0071E902 /* KnownIssues.markdown */,
+				A7E994DD154E79DA00FEB5DB /* Changelog-template.markdown */,
+				A7239FC716A6A22F0071E902 /* Known Issues-template.markdown */,
 				A7556EC31679BCE5000AC6D9 /* LICENSE.txt */,
 			);
 			path = Documentation;
@@ -839,6 +840,7 @@
 		A7F0C83313C326E900EBD027 = {
 			isa = PBXGroup;
 			children = (
+				A7CF231016DE5354005A4A6E /* AppledocSettings.plist */,
 				A7402D4A167F4E5200BE0AAF /* Default-568h@2x.png */,
 				A743511C1486771700F4C766 /* Core */,
 				A743514B1486772100F4C766 /* Demo */,
@@ -1313,7 +1315,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp \"${PROJECT_DIR}/Documentation/Changelog.markdown\" \"/var/tmp/Changelog-template.markdown\"\ncp \"${PROJECT_DIR}/Documentation/KnownIssues.markdown\" \"/var/tmp/KnownIssues-template.markdown\"\n\n/usr/local/bin/appledoc \\\n--project-name \"DTRichTextEditor\" \\\n--project-company \"Cocoanetics\" \\\n--company-id \"com.cocoanetics\" \\\n--docset-atom-filename \"DTRichTextEditor.atom\" \\\n--docset-feed-url \"http://cocoanetics.github.com/DTCoreText/DTRichTextEditor/%DOCSETATOMFILENAME\" \\\n--docset-package-url \"http://cocoanetics.github.com/DTCoreText/DTRichTextEditor/%DOCSETPACKAGEFILENAME\" \\\n--docset-fallback-url \"http://cocoanetics.github.com/DTCoreText/DTRichTextEditor/\" \\\n--output \"~/help/DTRichTextEditor\" \\\n--publish-docset \\\n--logformat xcode \\\n--keep-undocumented-objects \\\n--keep-undocumented-members \\\n--keep-intermediate-files \\\n--no-repeat-first-par \\\n--include \"/var/tmp/Changelog-template.markdown\" \\\n--include \"/var/tmp/KnownIssues-template.markdown\" \\\n--ignore \"*.m\" \\\n--index-desc \"${PROJECT_DIR}/Documentation/Readme.markdown\" \\\n\"${PROJECT_DIR}/Core/Source\" \"${PROJECT_DIR}/Core/Externals/DTLoupeView/Core/Source\"";
+			shellScript = "/usr/local/bin/appledoc --verbose 3 --print-settings --output \"${BUILD_DIR}/Documentation/\" \"${PROJECT_DIR}\"\necho \"Documentation Output directory: ${BUILD_DIR}/Documentation/\"";
+			showEnvVarsInLog = 0;
 		};
 		A7D7290D1487D58A00A22742 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
