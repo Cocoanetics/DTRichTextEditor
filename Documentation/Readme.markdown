@@ -13,7 +13,7 @@ Documentation
 
 View the [Change Log](docs/Change%20Log.html) about what was recently changed and the [Known Issues](docs/Known%20Issues.html) to learn about current limitations of DTRichTextEditor.
 
-Documentation for **DTRichTextEditor** can be [browsed online](https://svn.cocoanetics.com/DTRichTextEditor) or installed in your Xcode Organizer via the [Atom Feed URL](https://svn.cocoanetics.com/DTRichTextEditor/DTRichTextEditor.atom).
+Documentation for **DTRichTextEditor** can be [browsed online](https://docs.cocoanetics.com/DTRichTextEditor) or installed in your Xcode Organizer via the [Atom Feed URL](https://docs.cocoanetics.com/DTRichTextEditor/DTRichTextEditor.atom).
 
 Documentation for **DTWebArchive** can be [browsed online](http://cocoanetics.github.com/DTWebArchive) or installed in your Xcode Organizer via the [Atom Feed URL](http://cocoanetics.github.com/DTWebArchive/DTWebArchive.atom).
 
