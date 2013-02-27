@@ -11,7 +11,7 @@ This project aims to provide a replacement for Apple's severely limited `UITextV
 Documentation
 -------------
 
-View the [Change Log](Changelog) about what was recently changed and the [Known Issues](KnownIssues) to learn about current limitations of DTRichTextEditor.
+View the [Change Log](docs/Change%20Log.html) about what was recently changed and the [Known Issues](docs/Known%20Issues.html) to learn about current limitations of DTRichTextEditor.
 
 Documentation for **DTRichTextEditor** can be [browsed online](http://cocoanetics.github.com/DTCoreText/DTRichTextEditor) or installed in your Xcode Organizer via the [Atom Feed URL](http://cocoanetics.github.com/DTCoreText/DTRichTextEditor/DTRichTextEditor.atom).
 
