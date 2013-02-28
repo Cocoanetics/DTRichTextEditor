@@ -16,3 +16,9 @@ Auto Layout
 ===========
 
 - At this time DTRichTextEditor does not support auto layout. When using it in a storyboard that uses auto layout please disable auto layout for the editor view. It works fine, but some work is needed to add the necessary code to deal with the different way how subview frames are managed with auto layout.
+
+Performance
+===========
+
+- There appears to a limit in size for the document coming from some involved CALayers becoming to big for iOS. This causes the entire screen to become black.
+- At present parsing a lengthy HTML is only half as performant as it could be on dual core CPUs.
