@@ -9,6 +9,7 @@
 #import "DTRichTextEditorContentView.h"
 #import "DTMutableCoreTextLayoutFrame.h"
 #import "DTCoreTextLayoutFrame.h"
+#import "DTTiledLayerWithoutFade.h"
 
 
 // Commented code useful to find deadlocks
@@ -17,6 +18,11 @@
 
 
 @implementation DTRichTextEditorContentView
+
++ (Class)layerClass
+{
+    return [DTTiledLayerWithoutFade class];
+}
 
 - (void)relayoutText
 {

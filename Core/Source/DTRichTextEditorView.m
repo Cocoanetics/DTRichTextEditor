@@ -268,7 +268,7 @@ typedef enum
     
     if (self)
     {
-        [self setDefaults]; 
+        [self setDefaults];
     }
     
     return self;
@@ -1266,7 +1266,7 @@ typedef enum
 			}
 		}
 	}
-	
+    
 	return [super becomeFirstResponder];
 }
 
