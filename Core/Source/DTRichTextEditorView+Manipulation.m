@@ -193,6 +193,7 @@
 	
 	NSDictionary *defaults = [self textDefaults];
 	NSString *fontFamily = [defaults objectForKey:DTDefaultFontFamily];
+    NSNumber *fontSize = [defaults objectForKey:DTDefaultFontSize];
 	
 	CGFloat multiplier = [[defaults objectForKey:NSTextSizeMultiplierDocumentOption] floatValue];
 	
@@ -208,7 +209,7 @@
 	{
 		DTCoreTextFontDescriptor *desc = [[DTCoreTextFontDescriptor alloc] init];
 		desc.fontFamily = fontFamily;
-		desc.pointSize = 12.0 * multiplier;
+        desc.pointSize = [fontSize floatValue] * multiplier;
 		
 		CTFontRef defaultFont = [desc newMatchingFont];
 		
@@ -220,7 +221,7 @@
 	if (!paragraphStyle)
 	{
 		DTCoreTextParagraphStyle *defaultStyle = [DTCoreTextParagraphStyle defaultParagraphStyle];
-		defaultStyle.paragraphSpacing = 12.0 * multiplier;
+		defaultStyle.paragraphSpacing = [fontSize floatValue]  * multiplier;
 		
 		paragraphStyle = [defaultStyle createCTParagraphStyle];
 		
