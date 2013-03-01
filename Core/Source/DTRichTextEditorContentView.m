@@ -24,6 +24,18 @@
     return [DTTiledLayerWithoutFade class];
 }
 
+- (void)_sendFinishLayoutNotification
+{
+    // trigger new layout if needed
+    CGSize neededSize = [self intrinsicContentSize];
+    
+    CGRect optimalFrame = CGRectMake(self.frame.origin.x, self.frame.origin.y, neededSize.width, neededSize.height);
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[NSValue valueWithCGRect:optimalFrame] forKey:@"OptimalFrame"];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:DTAttributedTextContentViewDidFinishLayoutNotification object:self userInfo:userInfo];
+}
+
+
 - (void)relayoutText
 {
 	// Make sure we actually have a superview before attempting to relayout the text.
@@ -40,15 +52,7 @@
 			DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
 			layoutFrame.frame = rect;
 			
-			// trigger new layout
-			CGSize neededSize = [self intrinsicContentSize];
-			
-			CGRect optimalFrame = CGRectMake(self.frame.origin.x, self.frame.origin.y, neededSize.width, neededSize.height);
-			NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[NSValue valueWithCGRect:optimalFrame] forKey:@"OptimalFrame"];
-			
-			dispatch_async(dispatch_get_main_queue(), ^{
-				[[NSNotificationCenter defaultCenter] postNotificationName:DTAttributedTextContentViewDidFinishLayoutNotification object:self userInfo:userInfo];
-			});
+            [self _sendFinishLayoutNotification];
 		}
 		
 		[self setNeedsDisplay];
@@ -134,10 +138,7 @@
 	// relayout / redraw
 	[self setNeedsDisplay];
 	
-	// size might have changed
-    layoutFrame.shouldRebuildLines = NO;
-	[self sizeToFit];
-    layoutFrame.shouldRebuildLines = YES;
+    [self _sendFinishLayoutNotification];
 }
 
 - (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text
@@ -156,10 +157,7 @@
 	// relayout / redraw
 	[self setNeedsDisplayInRect:dirtyRect];
 	
-	// size might have changed
-    layoutFrame.shouldRebuildLines = NO;
-	[self sizeToFit];
-    layoutFrame.shouldRebuildLines = YES;
+    [self _sendFinishLayoutNotification];
 }
 
 - (void)setNeedsDisplay

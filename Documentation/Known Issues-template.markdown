@@ -22,3 +22,4 @@ Performance
 
 - There appears to a limit in size for the document coming from some involved CALayers becoming to big for iOS. This causes the entire screen to become black.
 - At present parsing a lengthy HTML is only half as performant as it could be on dual core CPUs.
+- On retina displays you might see the longer axis to be displayed in two steps. This is caused by `CATiledLayer` which limits the maximum tile size.

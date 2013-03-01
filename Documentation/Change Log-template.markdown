@@ -3,6 +3,12 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.2.1
+
+- FIXED: Too large documents would cause editor to go black. Changed content layer to tiled for fix.
+- FIXED: Making incremental changes right after setting string would cause incorrect content view height (e.g. contents in loupe be invisible)
+
+
 Version 1.2
 
 - ADDED: dictation placeholder
