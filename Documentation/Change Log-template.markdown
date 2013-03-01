@@ -7,6 +7,7 @@ Version 1.2.1
 
 - FIXED: Too large documents would cause editor to go black. Changed content layer to tiled for fix.
 - FIXED: Making incremental changes right after setting string would cause incorrect content view height (e.g. contents in loupe be invisible)
+- REMOVED: defunct debug crosshairs functionality which stopped working when loupe was change to be layer-based
 
 
 Version 1.2
