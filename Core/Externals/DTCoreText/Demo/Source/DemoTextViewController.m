@@ -12,7 +12,6 @@
 
 #import "DTVersion.h"
 #import "DTTiledLayerWithoutFade.h"
-#import "DTStripedLayer.h"
 
 @interface DemoTextViewController ()
 - (void)_segmentedControlChanged:(id)sender;
@@ -110,7 +109,7 @@
 	[self.view addSubview:_htmlView];
 
 	// Create text view
-	[DTAttributedTextContentView setLayerClass:[DTStripedLayer class]];
+	[DTAttributedTextContentView setLayerClass:[DTTiledLayerWithoutFade class]];
 	_textView = [[DTAttributedTextView alloc] initWithFrame:frame];
 	
 	// we draw images and links via subviews provided by delegate methods
