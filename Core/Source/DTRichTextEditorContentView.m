@@ -26,15 +26,14 @@
 
 - (void)_sendFinishLayoutNotification
 {
-    // trigger new layout if needed
+    // trigger new layout
     CGSize neededSize = [self intrinsicContentSize];
     
     CGRect optimalFrame = CGRectMake(self.frame.origin.x, self.frame.origin.y, neededSize.width, neededSize.height);
     NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[NSValue valueWithCGRect:optimalFrame] forKey:@"OptimalFrame"];
     
-    [[NSNotificationCenter defaultCenter] postNotificationName:DTAttributedTextContentViewDidFinishLayoutNotification object:self userInfo:userInfo];
+        [[NSNotificationCenter defaultCenter] postNotificationName:DTAttributedTextContentViewDidFinishLayoutNotification object:self userInfo:userInfo];
 }
-
 
 - (void)relayoutText
 {
