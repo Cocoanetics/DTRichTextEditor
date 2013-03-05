@@ -2500,6 +2500,23 @@ typedef enum
 	return _selectionView;
 }
 
+// make sure that the selection rectangles are always in front of content view
+- (void)addSubview:(UIView *)view
+{
+	[super addSubview:view];
+	
+	// content view should always be at back
+	if (_attributedTextContentView)
+	{
+		[self sendSubviewToBack:_attributedTextContentView];
+	}
+	
+	// selection view should be in front of everything
+	if (_selectionView)
+	{
+		[self bringSubviewToFront:_selectionView];
+	}
+}
 
 
 - (UIView *)inputView
