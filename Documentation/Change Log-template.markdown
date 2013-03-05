@@ -6,6 +6,7 @@ This is the history of version updates.
 Version 1.2.2
 
 - CHANGED: Updated to DTCoreText 1.3.2
+- CHANGED: Scaling for ranged selection loupe is now being calculated from the caret size
 - FIXED: This removed the synchronization by queue and replaced it with @synchronized as this was causing display problems
 
 Version 1.2.1

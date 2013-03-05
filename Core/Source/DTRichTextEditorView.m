@@ -796,12 +796,19 @@ typedef enum
 	if (_dragMode == DTDragModeLeftHandle)
 	{
 		CGRect rect = [_selectionView beginCaretRect];
+		
+		CGFloat zoom =  25.0f / rect.size.height;
+		[DTLoupeView sharedLoupe].magnification = zoom;
+		
 		CGPoint point = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
 		loupe.touchPoint = point;
 	}
 	else if (_dragMode == DTDragModeRightHandle)
 	{
 		CGRect rect = [_selectionView endCaretRect];
+		CGFloat zoom = 25.0f / rect.size.height;
+		[DTLoupeView sharedLoupe].magnification = zoom;
+		
 		CGPoint point = CGRectCenter(rect);
 		loupe.touchPoint = point;
 	}
