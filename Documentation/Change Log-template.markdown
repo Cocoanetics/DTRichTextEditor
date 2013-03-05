@@ -3,6 +3,11 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.2.2
+
+- CHANGED: Updated to DTCoreText 1.3.2
+- FIXED: This removed the synchronization by queue and replaced it with @synchronized as this was causing display problems
+
 Version 1.2.1
 
 - FIXED: Too large documents would cause editor to go black. Changed content layer to tiled for fix.
