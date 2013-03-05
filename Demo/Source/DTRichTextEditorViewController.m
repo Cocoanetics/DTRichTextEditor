@@ -57,7 +57,7 @@
 	
 	richEditor.textDefaults = defaults;
    
-    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p>";
+    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p><p><b style=\"font-size:20px\">bold text for test</b></p><p><b style=\"font-size:7px\">bold text for test</b></p>";
 	[richEditor setHTMLString:html];
 
 	// image as drawn by your custom views which you return in the delegate method
