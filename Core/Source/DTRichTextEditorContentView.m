@@ -12,27 +12,22 @@
 #import "DTTiledLayerWithoutFade.h"
 
 
-// Commented code useful to find deadlocks
-#define SYNCHRONIZE_START(lock) /* NSLog(@"LOCK: FUNC=%s Line=%d", __func__, __LINE__), */dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);
-#define SYNCHRONIZE_END(lock) dispatch_semaphore_signal(lock) /*, NSLog(@"UN-LOCK")*/;
-
-
 @implementation DTRichTextEditorContentView
 
 + (Class)layerClass
 {
-    return [DTTiledLayerWithoutFade class];
+	return [DTTiledLayerWithoutFade class];
 }
 
 - (void)_sendFinishLayoutNotification
 {
-    // trigger new layout
-    CGSize neededSize = [self intrinsicContentSize];
-    
-    CGRect optimalFrame = CGRectMake(self.frame.origin.x, self.frame.origin.y, neededSize.width, neededSize.height);
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[NSValue valueWithCGRect:optimalFrame] forKey:@"OptimalFrame"];
-    
-        [[NSNotificationCenter defaultCenter] postNotificationName:DTAttributedTextContentViewDidFinishLayoutNotification object:self userInfo:userInfo];
+	// trigger new layout
+	CGSize neededSize = [self intrinsicContentSize];
+	
+	CGRect optimalFrame = CGRectMake(self.frame.origin.x, self.frame.origin.y, neededSize.width, neededSize.height);
+	NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[NSValue valueWithCGRect:optimalFrame] forKey:@"OptimalFrame"];
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:DTAttributedTextContentViewDidFinishLayoutNotification object:self userInfo:userInfo];
 }
 
 - (void)relayoutText
@@ -51,7 +46,7 @@
 			DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
 			layoutFrame.frame = rect;
 			
-            [self _sendFinishLayoutNotification];
+			[self _sendFinishLayoutNotification];
 		}
 		
 		[self setNeedsDisplay];
@@ -61,7 +56,8 @@
 
 - (DTCoreTextLayoutFrame *)layoutFrame
 {
-	dispatch_sync(self.layoutQueue, ^{
+	@synchronized(self)
+	{
 		if (!_layoutFrame)
 		{
 			CGRect rect = UIEdgeInsetsInsetRect(self.bounds, _edgeInsets);
@@ -76,9 +72,9 @@
 				[self setNeedsDisplay];
 			}
 		}
-	});
-	
-	return _layoutFrame;
+		
+		return _layoutFrame;
+	}
 }
 
 - (void)setAttributedString:(NSAttributedString *)attributedString
@@ -109,12 +105,12 @@
 {
 	[super setFrame:frame];
 	
-    // don't bother with layout if we are not visible yet
-    if (!self.superview)
-    {
-        return;
-    }
-    
+	// don't bother with layout if we are not visible yet
+	if (!self.superview)
+	{
+		return;
+	}
+	
 	// reduce frame by edgeinsets
 	CGRect frameForLayout = UIEdgeInsetsInsetRect(frame, _edgeInsets);
 	frameForLayout.size.height = CGFLOAT_OPEN_HEIGHT;
@@ -125,43 +121,45 @@
 // incremental layouting
 - (void)relayoutTextInRange:(NSRange)range
 {
-	DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
-	
-	dispatch_sync(self.layoutQueue, ^{
+	@synchronized(self)
+	{
+		DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
+		
 		[layoutFrame relayoutTextInRange:range];
 		
 		// remove all link custom views
 		[self removeAllCustomViewsForLinks];
-	});
-	
-	// relayout / redraw
-	[self setNeedsDisplay];
-	
-    [self _sendFinishLayoutNotification];
+		
+		// relayout / redraw
+		[self setNeedsDisplay];
+		
+		[self _sendFinishLayoutNotification];
+	}
 }
 
 - (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text
 {
-	DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
-	
-    __block CGRect dirtyRect = self.bounds;
-    
-	dispatch_sync(self.layoutQueue, ^{
+	@synchronized(self)
+	{
+		DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
+		
+		__block CGRect dirtyRect = self.bounds;
+		
 		[layoutFrame replaceTextInRange:range withText:text dirtyRect:&dirtyRect];
 		
 		// remove all link custom views
 		[self removeAllCustomViewsForLinks];
-	});
-	
-	// relayout / redraw
-	[self setNeedsDisplayInRect:dirtyRect];
-	
-    [self _sendFinishLayoutNotification];
+		
+		// relayout / redraw
+		[self setNeedsDisplayInRect:dirtyRect];
+		
+		[self _sendFinishLayoutNotification];
+	}
 }
 
 - (void)setNeedsDisplay
 {
-    [super setNeedsDisplay];
+	[super setNeedsDisplay];
 }
 
 @end
