@@ -12,6 +12,8 @@ List support is incomplete. We recommend to not implement it at this time.
 - selection is not properly preserved when toggling a paragraph between list and non-list
 - paragraph space following a list is not preserved
 
+We are looking for somebody to chip in so that we can finish this functionality.
+
 Auto Layout
 ===========
 
@@ -20,6 +22,4 @@ Auto Layout
 Performance
 ===========
 
-- There appears to a limit in size for the document coming from some involved CALayers becoming to big for iOS. This causes the entire screen to become black.
-- At present parsing a lengthy HTML is only half as performant as it could be on dual core CPUs.
 - On retina displays you might see the longer axis to be displayed in two steps. This is caused by `CATiledLayer` which limits the maximum tile size.
