@@ -8,8 +8,15 @@
 
 #import "DTAttributedLabel.h"
 #import "DTCoreTextLayoutFrame.h"
+#import <QuartzCore/QuartzCore.h>
 
 @implementation DTAttributedLabel
+
++ (Class)layerClass
+{
+	// most likely the label will be less than a screen size and so we don't want any tiling behavior
+	return [CALayer class];
+}
 
 - (DTCoreTextLayoutFrame *)layoutFrame
 {
@@ -33,6 +40,19 @@
 	}
 	
 	return self;
+}
+
+#pragma mark - Sizing
+
+- (CGSize)intrinsicContentSize
+{
+	if (!self.layoutFrame) // creates new layout frame if possible
+	{
+		return CGSizeMake(-1, -1);  // UIViewNoIntrinsicMetric as of iOS 6
+	}
+	
+	//  we have a layout frame and from this we get the needed size
+	return [_layoutFrame intrinsicContentFrame].size;
 }
 
 #pragma mark - Properties 
@@ -62,12 +82,6 @@
         _truncationString = trunctionString;
         [self relayoutText];
     }
-}
-
-- (void)sizeToFit
-{
-	CGSize size = [self suggestedFrameSizeToFitEntireStringConstraintedToWidth:CGFLOAT_OPEN_HEIGHT];
-	self.frame = CGRectMake(self.frame.origin.x, self.frame.origin.y, size.width, size.height);
 }
 
 @synthesize numberOfLines = _numberOfLines;
