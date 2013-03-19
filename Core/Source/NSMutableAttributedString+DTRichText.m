@@ -130,7 +130,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
     NSRange attrRange;
     NSUInteger index=range.location;
     
-    while (index < NSMaxRange(range)) 
+    while (index < NSMaxRange(range))
     {
         NSMutableDictionary *attrs = [[self attributesAtIndex:index effectiveRange:&attrRange] mutableCopy];
 		CTFontRef currentFont = (__bridge CTFontRef)[attrs objectForKey:(id)kCTFontAttributeName];
@@ -197,7 +197,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
     NSRange attrRange;
     NSUInteger index=range.location;
     
-    while (index < NSMaxRange(range)) 
+    while (index < NSMaxRange(range))
     {
         NSMutableDictionary *attrs = [[self attributesAtIndex:index effectiveRange:&attrRange] mutableCopy];
 		CTFontRef currentFont = (__bridge CTFontRef)[attrs objectForKey:(id)kCTFontAttributeName];
@@ -255,7 +255,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
     NSRange attrRange;
     NSUInteger index=range.location;
     
-    while (index < NSMaxRange(range)) 
+    while (index < NSMaxRange(range))
     {
         NSMutableDictionary *attrs = [[self attributesAtIndex:index effectiveRange:&attrRange] mutableCopy];
 		
@@ -303,7 +303,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
     NSRange attrRange;
     NSUInteger index=range.location;
     
-    while (index < NSMaxRange(range)) 
+    while (index < NSMaxRange(range))
     {
         NSMutableDictionary *attrs = [[self attributesAtIndex:index effectiveRange:&attrRange] mutableCopy];
 		
@@ -344,7 +344,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 	// remove existing attributes
 	[self removeAttribute:DTLinkAttribute range:range];
 	[self removeAttribute:DTGUIDAttribute range:range];
-
+    
 	if (URL)
 	{
 		// we want to set the URL
@@ -360,7 +360,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 	[self beginEditing];
     
     [self removeAttribute:(id)kCTFontAttributeName range:range];
-
+    
     CTFontRef ctFont = DTCTFontCreateWithUIFont(font);
     [self addAttribute:(id)kCTFontAttributeName value:CFBridgingRelease(ctFont) range:range];
     
@@ -420,7 +420,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 - (BOOL)enumerateAndUpdateFontInRange:(NSRange)range block:(NSMutableAttributedStringFontStyleEnumerationBlock)block
 {
     NSAssert(block, @"Block cannot be NULL");
-
+    
     __block BOOL didChange = NO;
     
     [self enumerateAttribute:(id)kCTFontAttributeName inRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id value, NSRange range, BOOL *stop) {
@@ -450,7 +450,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
     return didChange;
 }
 
-     
+
 - (void)extendPreviousList:(DTCSSListStyle *)listStyle toIncludeRange:(NSRange)range numberingFrom:(NSInteger)nextItemNumber
 {
 	[self beginEditing];
@@ -547,7 +547,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 		 
 		 NSRange paragraphRange = NSMakeRange(0, [paragraphString length]);
 		 
-		 [paragraphString addAttribute:DTTextListsAttribute value:[NSArray arrayWithObject:listStyle] range:paragraphRange]; 
+		 [paragraphString addAttribute:DTTextListsAttribute value:[NSArray arrayWithObject:listStyle] range:paragraphRange];
 		 
 		 [tmpString appendAttributedString:paragraphString];
 		 
@@ -708,7 +708,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 			 }
 			 else
 			 {
-				 NSLog(@"should not get here!!! No paragraph and no font style!!!"); 
+				 NSLog(@"should not get here!!! No paragraph and no font style!!!");
 			 }
 		 }
 		 
@@ -716,7 +716,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 		 
 		 if (setNewLists)
 		 {
-			 [paragraphString addAttribute:DTTextListsAttribute value:[NSArray arrayWithObject:listStyle] range:paragraphRange]; 
+			 [paragraphString addAttribute:DTTextListsAttribute value:[NSArray arrayWithObject:listStyle] range:paragraphRange];
 		 }
 		 else
 		 {
@@ -807,7 +807,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 	[self enumerateAttribute:DTSelectionMarkerAttribute inRange:NSMakeRange(0, [self length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
 		if (value)
 		{
-			switch (index) 
+			switch (index)
 			{
 				case 0:
 					firstLocation = range.location;
