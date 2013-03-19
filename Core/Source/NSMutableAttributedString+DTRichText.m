@@ -41,29 +41,32 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 	BOOL needsParagraphBefore = NO;
 	BOOL needsParagraphAfter = NO;
 	
-	if (range.location>0)
-	{
-		NSInteger index = range.location-1;
-		
-		unichar character = [[self string] characterAtIndex:index];
-		
-		if (character != '\n')
-		{
-			needsParagraphBefore = YES;
-		}
-	}
-	
-	if (range.location+range.length<[self length])
-	{
-		NSUInteger index = range.location+range.length;
-		
-        unichar character = [[self string] characterAtIndex:index];
-		
-		if (character != '\n')
-		{
-			needsParagraphAfter = YES;
-		}
-	}
+    if (inParagraph)
+    {
+        if (range.location>0)
+        {
+            NSInteger index = range.location-1;
+            
+            unichar character = [[self string] characterAtIndex:index];
+            
+            if (character != '\n')
+            {
+                needsParagraphBefore = YES;
+            }
+        }
+        
+        if (range.location+range.length<[self length])
+        {
+            NSUInteger index = range.location+range.length;
+            
+            unichar character = [[self string] characterAtIndex:index];
+            
+            if (character != '\n')
+            {
+                needsParagraphAfter = YES;
+            }
+        }
+    }
 	
 	NSMutableAttributedString *tmpAttributedString = [[NSMutableAttributedString alloc] initWithString:@""];
 	
