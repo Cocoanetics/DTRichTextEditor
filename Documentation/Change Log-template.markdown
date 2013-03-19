@@ -3,6 +3,10 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.2.3 (in Progress)
+
+- FIXED: inParagraph being ignored in replaceRange:withAttachment:inParagraph:
+
 Version 1.2.2
 
 - CHANGED: Scaling for ranged selection loupe is now being calculated from the caret size
