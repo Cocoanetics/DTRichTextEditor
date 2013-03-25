@@ -50,9 +50,6 @@
 		A74351601486772100F4C766 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A74351531486772100F4C766 /* Icon@2x.png */; };
 		A74351641486772100F4C766 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A743515A1486772100F4C766 /* main.m */; };
 		A7439C1116D77CED0004363C /* DTAttributedLabel.h in Headers */ = {isa = PBXBuildFile; fileRef = A7439C1016D77CED0004363C /* DTAttributedLabel.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A7470F7814E2A5F10015477A /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FF8814E2939600BF8CCD /* libDTLoupe.a */; };
-		A7470F7914E2A6920015477A /* DTLoupe.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A7D8FF8A14E2939600BF8CCD /* DTLoupe.bundle */; };
-		A7470F8314E2A6D90015477A /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FF8814E2939600BF8CCD /* libDTLoupe.a */; };
 		A7470F8414E2A6D90015477A /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7235AA61487A9C100C9F926 /* libDTWebArchive.a */; };
 		A74D940416D4CA4600824C2B /* DTUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = A74D940316D4CA4600824C2B /* DTUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
@@ -161,7 +158,6 @@
 		A7D8FEC714E1570000BF8CCD /* libDTCoreText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FEBA14E14E4500BF8CCD /* libDTCoreText.a */; };
 		A7D8FEC814E1570000BF8CCD /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7235AA61487A9C100C9F926 /* libDTWebArchive.a */; };
 		A7D8FECA14E1571900BF8CCD /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FEC914E1571900BF8CCD /* libxml2.dylib */; };
-		A7D8FF9414E294D600BF8CCD /* DTLoupe.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A7D8FF8A14E2939600BF8CCD /* DTLoupe.bundle */; };
 		A7DA0C5516822CEC007637A2 /* DTUndoManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A7DA0C5316822CEC007637A2 /* DTUndoManager.h */; };
 		A7DA0C5616822CEC007637A2 /* DTUndoManager.h in Headers */ = {isa = PBXBuildFile; fileRef = A7DA0C5316822CEC007637A2 /* DTUndoManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7DA0C5716822CEC007637A2 /* DTUndoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DA0C5416822CEC007637A2 /* DTUndoManager.m */; };
@@ -233,18 +229,25 @@
 			remoteGlobalIDString = A743530914867ACD00F4C766;
 			remoteInfo = "Static Library";
 		};
-		A7470F7E14E2A6C70015477A /* PBXContainerItemProxy */ = {
+		A75D430217005893003CAF38 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A7D8FEE314E1693300BF8CCD;
+			proxyType = 2;
+			remoteGlobalIDString = 0F01D88C13B248CB00419BD7;
+			remoteInfo = "Demo App";
+		};
+		A75D430417005893003CAF38 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7D8FEE414E1693300BF8CCD;
 			remoteInfo = "Static Library";
 		};
-		A7470F8014E2A6C70015477A /* PBXContainerItemProxy */ = {
+		A75D430617005893003CAF38 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A7D8FF5A14E17A6600BF8CCD;
+			proxyType = 2;
+			remoteGlobalIDString = A7D8FF5B14E17A6600BF8CCD;
 			remoteInfo = "Resource Bundle";
 		};
 		A782209516805EBB005B602D /* PBXContainerItemProxy */ = {
@@ -253,20 +256,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = E2262DC61638331500BFDAD7;
 			remoteInfo = "Mac Framework";
-		};
-		A7840CCD1524A99B00FA9F9D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A7D8FF5A14E17A6600BF8CCD;
-			remoteInfo = "Resource Bundle";
-		};
-		A79646B015DE9D5E0091CD4C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A7D8FEE314E1693300BF8CCD;
-			remoteInfo = "Static Library";
 		};
 		A7D649AC16359C9A002166D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -323,27 +312,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = A7D728D21487D12A00A22742;
 			remoteInfo = "Static Library";
-		};
-		A7D8FF8514E2939600BF8CCD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 0F01D88C13B248CB00419BD7;
-			remoteInfo = "Demo App";
-		};
-		A7D8FF8714E2939600BF8CCD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A7D8FEE414E1693300BF8CCD;
-			remoteInfo = "Static Library";
-		};
-		A7D8FF8914E2939600BF8CCD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A7D8FF5B14E17A6600BF8CCD;
-			remoteInfo = "Resource Bundle";
 		};
 		A7F34D6916D0E32F0054A512 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -538,7 +506,7 @@
 		A7D7293D1487D9EE00A22742 /* DTRichTextEditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditor.h; sourceTree = "<group>"; };
 		A7D729511487DAB100A22742 /* DTRichTextEditor-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DTRichTextEditor-Info.plist"; sourceTree = "<group>"; };
 		A7D8FEC914E1571900BF8CCD /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
-		A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTLoupe.xcodeproj; path = DTLoupeView/DTLoupe.xcodeproj; sourceTree = "<group>"; };
+		A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTLoupe.xcodeproj; path = DTLoupe/DTLoupe.xcodeproj; sourceTree = "<group>"; };
 		A7DA0C5316822CEC007637A2 /* DTUndoManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTUndoManager.h; sourceTree = "<group>"; };
 		A7DA0C5416822CEC007637A2 /* DTUndoManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTUndoManager.m; sourceTree = "<group>"; };
 		A7E8082215EBAC2900525855 /* NSMutableString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSMutableString+HTML.h"; path = "DTCoreText/Core/Source/NSMutableString+HTML.h"; sourceTree = "<group>"; };
@@ -568,7 +536,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A7470F7814E2A5F10015477A /* libDTLoupe.a in Frameworks */,
 				A7D8FEC714E1570000BF8CCD /* libDTCoreText.a in Frameworks */,
 				A7D8FEC814E1570000BF8CCD /* libDTWebArchive.a in Frameworks */,
 			);
@@ -581,7 +548,6 @@
 				A70D380016DD1434003F21C9 /* libDTHTMLParser.a in Frameworks */,
 				A7F34D8D16D0E3790054A512 /* libDTFoundation.a in Frameworks */,
 				A7F34D5B16D0E30E0054A512 /* libDTCoreText_no_DTFoundation.a in Frameworks */,
-				A7470F8314E2A6D90015477A /* libDTLoupe.a in Frameworks */,
 				A7470F8414E2A6D90015477A /* libDTWebArchive.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -714,6 +680,16 @@
 			path = Source;
 			sourceTree = "<group>";
 		};
+		A75D42FD17005893003CAF38 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A75D430317005893003CAF38 /* Demo App.app */,
+				A75D430517005893003CAF38 /* libDTLoupe.a */,
+				A75D430717005893003CAF38 /* DTLoupe.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		A7D545E115D5673000711CA1 /* Repackaged Headers (Framework) */ = {
 			isa = PBXGroup;
 			children = (
@@ -812,16 +788,6 @@
 				A7D8FEBE14E14E4500BF8CCD /* MacUnitTest.octest */,
 				A73129CC15A5E69900971C55 /* libDTCoreText_no_DTFoundation.a */,
 				A782209616805EBB005B602D /* DTCoreText.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		A7D8FF7C14E2939500BF8CCD /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				A7D8FF8614E2939600BF8CCD /* Demo App.app */,
-				A7D8FF8814E2939600BF8CCD /* libDTLoupe.a */,
-				A7D8FF8A14E2939600BF8CCD /* DTLoupe.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1028,7 +994,6 @@
 			);
 			dependencies = (
 				A7D649AD16359C9A002166D2 /* PBXTargetDependency */,
-				A79646B115DE9D5E0091CD4C /* PBXTargetDependency */,
 				A7D729221487D5DD00A22742 /* PBXTargetDependency */,
 			);
 			name = "Static Library";
@@ -1053,8 +1018,6 @@
 				A70D37FF16DD142E003F21C9 /* PBXTargetDependency */,
 				A7F34D7E16D0E3450054A512 /* PBXTargetDependency */,
 				A7F34D7C16D0E33D0054A512 /* PBXTargetDependency */,
-				A7470F7F14E2A6C70015477A /* PBXTargetDependency */,
-				A7470F8114E2A6C70015477A /* PBXTargetDependency */,
 				A7470F7B14E2A6C70015477A /* PBXTargetDependency */,
 			);
 			name = "Static Framework";
@@ -1073,7 +1036,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				A7840CCE1524A99B00FA9F9D /* PBXTargetDependency */,
 				A7D8FEC414E14FA300BF8CCD /* PBXTargetDependency */,
 			);
 			name = "Demo App";
@@ -1110,7 +1072,7 @@
 					ProjectRef = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
 				},
 				{
-					ProductGroup = A7D8FF7C14E2939500BF8CCD /* Products */;
+					ProductGroup = A75D42FD17005893003CAF38 /* Products */;
 					ProjectRef = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
 				},
 				{
@@ -1148,6 +1110,27 @@
 			fileType = archive.ar;
 			path = libDTCoreText_no_DTFoundation.a;
 			remoteRef = A73129CB15A5E69900971C55 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A75D430317005893003CAF38 /* Demo App.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "Demo App.app";
+			remoteRef = A75D430217005893003CAF38 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A75D430517005893003CAF38 /* libDTLoupe.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDTLoupe.a;
+			remoteRef = A75D430417005893003CAF38 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A75D430717005893003CAF38 /* DTLoupe.bundle */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = DTLoupe.bundle;
+			remoteRef = A75D430617005893003CAF38 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		A782209616805EBB005B602D /* DTCoreText.framework */ = {
@@ -1190,27 +1173,6 @@
 			fileType = wrapper.cfbundle;
 			path = MacUnitTest.octest;
 			remoteRef = A7D8FEBD14E14E4500BF8CCD /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A7D8FF8614E2939600BF8CCD /* Demo App.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = "Demo App.app";
-			remoteRef = A7D8FF8514E2939600BF8CCD /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A7D8FF8814E2939600BF8CCD /* libDTLoupe.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libDTLoupe.a;
-			remoteRef = A7D8FF8714E2939600BF8CCD /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		A7D8FF8A14E2939600BF8CCD /* DTLoupe.bundle */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = DTLoupe.bundle;
-			remoteRef = A7D8FF8914E2939600BF8CCD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		A7F34D6A16D0E32F0054A512 /* DTFoundation.framework */ = {
@@ -1283,7 +1245,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A7470F7914E2A6920015477A /* DTLoupe.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1295,7 +1256,6 @@
 				A743515D1486772100F4C766 /* 43-film-roll@2x.png in Resources */,
 				A743515F1486772100F4C766 /* Icon.png in Resources */,
 				A74351601486772100F4C766 /* Icon@2x.png in Resources */,
-				A7D8FF9414E294D600BF8CCD /* DTLoupe.bundle in Resources */,
 				A7914A78153EF6BB00F6CC86 /* icon_smile.gif in Resources */,
 				A7402D4B167F4E5200BE0AAF /* Default-568h@2x.png in Resources */,
 			);
@@ -1425,26 +1385,6 @@
 			isa = PBXTargetDependency;
 			name = "Static Library";
 			targetProxy = A7470F7A14E2A6C70015477A /* PBXContainerItemProxy */;
-		};
-		A7470F7F14E2A6C70015477A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Static Library";
-			targetProxy = A7470F7E14E2A6C70015477A /* PBXContainerItemProxy */;
-		};
-		A7470F8114E2A6C70015477A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Resource Bundle";
-			targetProxy = A7470F8014E2A6C70015477A /* PBXContainerItemProxy */;
-		};
-		A7840CCE1524A99B00FA9F9D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Resource Bundle";
-			targetProxy = A7840CCD1524A99B00FA9F9D /* PBXContainerItemProxy */;
-		};
-		A79646B115DE9D5E0091CD4C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "Static Library";
-			targetProxy = A79646B015DE9D5E0091CD4C /* PBXContainerItemProxy */;
 		};
 		A7D649AD16359C9A002166D2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

@@ -1,0 +1,3 @@
+[submodule "Core/Externals/DTLoupe"]
+	path = Core/Externals/DTLoupe
+	url = git@git.cocoanetics.com:parts/dtloupe.git
