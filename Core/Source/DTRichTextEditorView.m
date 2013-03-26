@@ -43,8 +43,6 @@
 #import "DTHTMLWriter+DTWebArchive.h"
 
 
-NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextEditorTextDidBeginEditingNotification";
-
 // the modes that can be dragged in
 typedef enum
 {
@@ -66,6 +64,8 @@ typedef enum
 @property (nonatomic, retain) DTUndoManager *undoManager;
 @property (nonatomic, assign) BOOL waitingForDictionationResult;
 @property (nonatomic, retain) DTDictationPlaceholderView *dictationPlaceholderView;
+
+@property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing; // default is NO, starts up and shuts down editing state
 
 - (void)setDefaultText;
 - (void)showContextMenuFromSelection;
@@ -124,15 +124,11 @@ typedef enum
     BOOL _waitingForDictationResult;
     DTDictationPlaceholderView *_dictationPlaceholderView;
 	
-	BOOL _showsKeyboardWhenBecomingFirstResponder;
-	BOOL _keyboardIsShowing;
-	
 	CGPoint _dragCursorStartMidPoint;
 	CGPoint _touchDownPoint;
 	NSDictionary *_overrideInsertionAttributes;
 
 	BOOL _contextMenuVisible;
-	BOOL _cursorIsShowing;
 	NSTimeInterval _lastCursorMovementTimestamp;
 
 	// gesture recognizers
@@ -190,7 +186,6 @@ typedef enum
 - (void)setDefaults
 {
 	_canInteractWithPasteboard = YES;
-	_showsKeyboardWhenBecomingFirstResponder = YES;
     
     // text defaults
     _textSizeMultiplier = 1.0;
@@ -339,7 +334,8 @@ typedef enum
 	return [DTRichTextEditorContentView class];
 }
 
-#pragma mark Menu
+
+#pragma mark - Menu
 
 - (void)hideContextMenu
 {
@@ -355,31 +351,26 @@ typedef enum
 
 - (void)showContextMenuFromSelection
 {
+    // Bail out if selection isn't visible
 	if (![self selectionIsVisible])
 	{
 		// don't show it
 		return;
 	}
 	
-	CGRect targetRect = [self boundsOfCurrentSelection];
-
-	_contextMenuVisible = YES;
-	
+    // Attempt to become first responder if needed for context menu
 	if (!self.isFirstResponder)
 	{
-		BOOL previousState = _showsKeyboardWhenBecomingFirstResponder;
-		
-		if (!_keyboardIsShowing && !self.isEditable)
-		{
-			// prevent keyboard from showing if it is not visible
-			_showsKeyboardWhenBecomingFirstResponder = NO;
-		}
-		
 		[self becomeFirstResponder];
-		
-		_showsKeyboardWhenBecomingFirstResponder = previousState;
+        
+        if (!self.isFirstResponder)
+            return;
 	}
-	
+    
+    // Display the context menu
+    _contextMenuVisible = YES;
+    CGRect targetRect = [self boundsOfCurrentSelection];
+    
 	UIMenuController *menuController = [UIMenuController sharedMenuController];
 	
 	[menuController setTargetRect:targetRect inView:self];
@@ -451,10 +442,8 @@ typedef enum
 
 - (void)scrollCursorVisibleAnimated:(BOOL)animated
 {
-	if  (![_selectedTextRange isEmpty] || !_cursorIsShowing)
-	{
-		return;
-	}
+    if (!self.isEditing)
+        return;
 	
 	CGRect cursorFrame = [self caretRectForPosition:self.selectedTextRange.start];
     cursorFrame.size.width = 3.0;
@@ -478,7 +467,7 @@ typedef enum
 	DTTextPosition *position = (id)self.selectedTextRange.start;
 	
 	// no selection
-	if (!position || !_cursorIsShowing)
+    if ((self.isEditable && !self.isEditing) || !self.isFirstResponder)
 	{
 		// remove cursor
 		[_cursor removeFromSuperview];
@@ -573,34 +562,28 @@ typedef enum
 	
 	DTTextRange *constrainingRange = nil;
 	
-	if ([_markedTextRange length])
+	if ([_markedTextRange length] && [self selectionIsVisible])
 	{
-		if ([self selectionIsVisible])
-		{
-			constrainingRange = _markedTextRange;
-		}
+        constrainingRange = _markedTextRange;
 	}
-	else if ([_selectedTextRange length])
+	else if ([_selectedTextRange length] && [self selectionIsVisible])
 	{
-		if ([self selectionIsVisible])
-		{
-			constrainingRange =_selectedTextRange;
-		}
+        constrainingRange =_selectedTextRange;
 	}
 	
 	DTTextPosition *position = (id)[self closestPositionToPoint:location withinRange:constrainingRange];
-	
-	if (![(DTTextPosition *)_selectedTextRange.start isEqual:position] && ![(DTTextPosition *)_selectedTextRange.end isEqual:position])
-	{
-		// tap on same position
-		didMove = YES;
-	}
-	
-	self.selectedTextRange = [self textRangeFromPosition:position toPosition:position];
-	
-	// begins a new typing undo group
-	DTUndoManager *undoManager = self.undoManager;
-	[undoManager closeAllOpenGroups];
+    
+    // Move if there is a selection or if the position is not the same as the cursor
+    if (![_selectedTextRange isEmpty] || ![(DTTextPosition *)_selectedTextRange.start isEqual:position])
+    {
+        didMove = YES;
+
+        self.selectedTextRange = [self textRangeFromPosition:position toPosition:position];
+
+        // begins a new typing undo group
+        DTUndoManager *undoManager = self.undoManager;
+        [undoManager closeAllOpenGroups];
+    }
 	
 	return didMove;
 }
@@ -733,7 +716,7 @@ typedef enum
 
 		[self hideContextMenu];
 		
-		if (self.editable && _keyboardIsShowing)
+		if (self.isEditable && self.isEditing)
 		{
 			[self moveCursorToPositionClosestToLocation:touchPoint];
 		}
@@ -822,7 +805,7 @@ typedef enum
 	{
 		if (self.editable)
 		{
-			if (_keyboardIsShowing)
+			if (self.isEditing)
 			{
 				[loupe dismissLoupeTowardsLocation:self.cursor.center];
 				_cursor.state = DTCursorStateBlinking;
@@ -928,7 +911,7 @@ typedef enum
 	{
 		targetRect = [_selectionView selectionEnvelope];
 	}
-	else if (_cursorIsShowing)
+	else if (self.isEditing)
 	{
 		targetRect = self.cursor.frame;
 	}
@@ -975,100 +958,115 @@ typedef enum
 	SEL selector = @selector(_scrollCursorVisible);
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
 	[self performSelector:selector withObject:nil afterDelay:0.3];
-	
-	_keyboardIsShowing = YES;
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
 	self.contentInset = _userSetContentInsets;
 	self.scrollIndicatorInsets = self.contentInset;
-	
-	_keyboardIsShowing = NO;
-    
+
     _heightCoveredByKeyboard = 0;
 }
 
 
-#pragma mark Gestures
+#pragma mark - Gestures
+
 - (void)handleTap:(UITapGestureRecognizer *)gesture
 {
-	if (gesture.state == UIGestureRecognizerStateRecognized)
-	{
-		if (self.editable)
-		{
-			// this mode has the drag handles showing
-			self.selectionView.dragHandlesVisible	= YES;
-			
-			// show the keyboard and cursor
-			[self becomeFirstResponder];
-			
-			if (!_keyboardIsShowing && ![_selectedTextRange isEmpty])
-			{
-				[self resignFirstResponder];
-				return;
-			}
-			
-			CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
-			
-			if (!_markedTextRange)
-			{
-				if ([self moveCursorToPositionClosestToLocation:touchPoint])
-				{
-					// did move
-					[self hideContextMenu];
-				}
-				else
-				{
-					// was same position as before
-					[self showContextMenuFromSelection];
-				}
-			}
-			[self unmarkText];
-		}
-		else
-		{
-			[self hideContextMenu];
-		}
-	}
+    // Bail out if not recognized
+    if (gesture.state != UIGestureRecognizerStateRecognized)
+        return;
+    
+    // If not editable, simple resign first responder (hides context menu, cursors, and selections if showing)
+    if (!self.isEditable)
+    {
+        [self resignFirstResponder];
+        return;
+    }
+    
+    // If not editing, attempt to start editing
+    BOOL wasEditing = self.isEditing;
+    _cursor.state = DTCursorStateBlinking;
+    
+    if (!self.isFirstResponder)
+    {
+        [self becomeFirstResponder];
+        
+        // Bail out if we couldn't start editing (This may occur if editorViewShouldBeginEditing: returns NO)
+        if (!self.isEditing)
+            return;
+    }
+    
+    // Move the cursor if there isn't marked text, otherwise unmark it
+    if (self.markedTextRange == nil)
+    {
+        CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
+    
+        if ([self moveCursorToPositionClosestToLocation:touchPoint])
+        {
+            // did move
+            [self hideContextMenu];
+        }
+        else
+        {
+            // was same position as before and did not start an editing session in response to this tap
+            // an editing view that lost first responder and therefore stopped editing retains it's selectedTextRange(cursor position)
+            // therefore a tap that initiates editing can reach this point and we don't want to display the menu.
+            if (wasEditing)
+            {
+                [self showContextMenuFromSelection];
+            }
+        }
+    }
+    else
+    {
+        [self unmarkText];
+    }
 }
 
 - (void)handleDoubleTap:(UITapGestureRecognizer *)gesture
 {
-	if (gesture.state == UIGestureRecognizerStateRecognized)
-	{
-		CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
-		
-		UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
-		
-		UITextRange *wordRange = [self textRangeOfWordAtPosition:position];
-		
-		self.selectionView.dragHandlesVisible = YES;
-		
-		if (wordRange)
-		{
-			[self hideContextMenu];
-			
-			self.selectedTextRange = wordRange;
-			
-			// begins a new typing undo group
-			DTUndoManager *undoManager = self.undoManager;
-			[undoManager closeAllOpenGroups];
-			
-            if (self.isEditable)
-            {
-                _showsKeyboardWhenBecomingFirstResponder = YES;
-            }
-            else
-            {
-                _showsKeyboardWhenBecomingFirstResponder = NO;
-            }
-            
-			[self showContextMenuFromSelection];
-            
-			_showsKeyboardWhenBecomingFirstResponder = YES;
-		}
-	}
+    // Bail out if not recognized
+    if (gesture.state != UIGestureRecognizerStateRecognized)
+        return;
+    
+    // Attempt to become first responder (for selection, menu, possibly editing)
+    if (!self.isFirstResponder)
+    {
+        [self becomeFirstResponder];
+        
+        // Bail out if we couldn't become first responder
+        if (!self.isEditable && !self.isFirstResponder)
+            return;
+        
+        // Bail out if we couldn't start editing but we're editable (This may occur if editorViewShouldBeginEditing: returns NO)
+        if (self.isEditable && !self.isEditing)
+            return;
+    }
+
+    // Select a word closest to the touchPoint
+    CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
+    UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
+    UITextRange *wordRange = [self textRangeOfWordAtPosition:position];
+    
+    // Bail out if there isn't a word range or if we are editing and it's the same as the current word range
+    if (wordRange == nil || (self.isEditing && [self.selectedTextRange isEqual:wordRange]))
+        return;
+    
+    self.selectionView.dragHandlesVisible = YES;
+    
+    [self hideContextMenu];
+    
+    self.selectedTextRange = wordRange;
+    
+    [self showContextMenuFromSelection];
+    
+    if (self.isEditing)
+    {
+        // begins a new typing undo group
+        DTUndoManager *undoManager = self.undoManager;
+        [undoManager closeAllOpenGroups];
+    }
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
@@ -1080,8 +1078,11 @@ typedef enum
 		case UIGestureRecognizerStateBegan:
 		{
 			[self presentLoupeWithTouchPoint:touchPoint];
-			_cursorIsShowing = YES;
 			_cursor.state = DTCursorStateStatic;
+            
+            // become first responder to bring up editing and show the cursor
+            if (!self.isFirstResponder)
+                [self becomeFirstResponder];
 			
 			// begins a new typing undo group
 			DTUndoManager *undoManager = self.undoManager;
@@ -1116,6 +1117,7 @@ typedef enum
 			}
 		}
 			
+        case UIGestureRecognizerStateFailed:
 		case UIGestureRecognizerStateCancelled:
 		{
             _shouldShowContextMenuAfterLoupeHide = YES;
@@ -1171,9 +1173,17 @@ typedef enum
                     [self extendSelectionToIncludeWordInDirection:UITextStorageDirectionForward];
                 }
             }
-			
-			_shouldShowContextMenuAfterLoupeHide = YES;
+		}
+            
+        case UIGestureRecognizerStateFailed:
+		case UIGestureRecognizerStateCancelled:
+		{
+            _shouldShowContextMenuAfterLoupeHide = YES;
+            _shouldShowDragHandlesAfterLoupeHide = YES;
+            
 			[self dismissLoupeWithTouchPoint:touchPoint];
+            
+			break;
 		}
 			
 		default:
@@ -1228,53 +1238,93 @@ typedef enum
 	return YES;
 }
 
-#pragma mark -
-#pragma mark UIResponder
+
+#pragma mark - Editing State
+
+@synthesize editable = _editable;
+
+- (void)setEditable:(BOOL)editable
+{
+    if (_editable == editable)
+        return;
+    
+    _editable = editable;
+    
+    [self resignFirstResponder];
+}
+
+@synthesize editing = _editing;
+
+- (void)setEditing:(BOOL)editing
+{
+    if (_editing == editing)
+        return;
+    
+    _editing = editing;
+    
+    if (editing && !_selectedTextRange)
+    {
+        // set cursor at end of document if nothing selected
+        UITextPosition *end = [self endOfDocument];
+        self.selectedTextRange = [self textRangeFromPosition:end toPosition:end];
+    }
+    else
+    {
+        // Hide context menu if visible
+        [self hideContextMenu];
+    }
+
+    [self updateCursorAnimated:NO];
+}
+
+
+#pragma mark - UIResponder
 
 - (BOOL)canBecomeFirstResponder
 {
-	return YES;
-}
-
-- (BOOL)resignFirstResponder
-{
-    if ([self isFirstResponder])
-    {
-        // selecting via long press does not show handles
-        _selectionView.dragHandlesVisible	= NO;
-    
-        // no longer anything selected
-        self.selectedTextRange = nil;
-	
-        _cursorIsShowing = NO;
-        [self updateCursorAnimated:NO];
-        [self hideContextMenu];
-    }
-	
-	return [super resignFirstResponder];
+    return YES;
 }
 
 - (BOOL)becomeFirstResponder
 {
-	if (![self isFirstResponder] && [self canBecomeFirstResponder])
-	{
-        _cursorIsShowing = YES;
-        
-		if (_showsKeyboardWhenBecomingFirstResponder)
-		{
-			_keyboardIsShowing = YES;
-            self.selectionView.dragHandlesVisible = YES;
-			
-			// set cursor at end of document if nothing selected
-			if (!_selectedTextRange)
-			{
-				UITextPosition *end = [self endOfDocument];
-				self.selectedTextRange = [self textRangeFromPosition:end toPosition:end];
-			}
-		}
-	}
+    [super becomeFirstResponder];
     
-	return [super becomeFirstResponder];
+    if (!self.isFirstResponder)
+        return NO;
+    
+    // Initiate editing
+    if (self.isEditable)
+    {
+        [self setEditing:YES];
+    }
+    
+    return YES;
+}
+
+- (BOOL)canResignFirstResponder
+{
+    return YES;
+}
+
+- (BOOL)resignFirstResponder
+{
+    [super resignFirstResponder];
+    
+    if (!self.isFirstResponder)
+    {
+        if (self.isEditable)
+        {
+            [self setEditing:NO];
+        }
+        else
+        {
+            // Clear markings
+            [self updateCursorAnimated:YES];
+            [self hideContextMenu];
+        }
+    }
+
+    return !self.isFirstResponder;
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
@@ -1317,7 +1367,7 @@ typedef enum
 	
 	if (action == @selector(paste:))
 	{
-        if (!_keyboardIsShowing)
+        if (!self.isEditing)
         {
             return NO;
         }
@@ -1332,7 +1382,7 @@ typedef enum
 	
 	if (action == @selector(cut:))
 	{
-        if (!_keyboardIsShowing)
+        if (!self.isEditing)
         {
             return NO;
         }
@@ -1346,12 +1396,6 @@ typedef enum
 	
 	
 	return NO;
-}
-
-- (BOOL)isEditable
-{
-	// return NO if we don't want keyboard to show e.g. context menu only on double tap
-	return _editable && _showsKeyboardWhenBecomingFirstResponder;
 }
 
 - (void)delete:(id)sender
@@ -1509,8 +1553,7 @@ typedef enum
 	if (wordRange)
 	{
 		_shouldReshowContextMenuAfterHide = YES;
-		
-		self.selectionView.dragHandlesVisible = _keyboardIsShowing;
+		self.selectionView.dragHandlesVisible = YES;
 		
 		self.selectedTextRange = wordRange;
 	}
@@ -1519,6 +1562,7 @@ typedef enum
 - (void)selectAll:(id)sender
 {
 	_shouldReshowContextMenuAfterHide = YES;
+    self.selectionView.dragHandlesVisible = YES;
 	
 	self.selectedTextRange = [DTTextRange textRangeFromStart:self.beginningOfDocument toEnd:self.endOfDocument];
 }
@@ -1534,7 +1578,9 @@ typedef enum
 	return _undoManager;
 }
 
-#pragma mark UIKeyInput Protocol
+
+#pragma mark - UIKeyInput Protocol
+
 - (BOOL)hasText
 {
 	// there should always be a \n with the default format
@@ -1820,7 +1866,7 @@ typedef enum
     // need to call extra because we control layouting
     [self setNeedsLayout];
 	
-	if (self->_keyboardIsShowing)
+	if (self.isEditing)
 	{
 		self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterReplace];
 	}
@@ -1828,12 +1874,9 @@ typedef enum
 	{
 		self.selectedTextRange = nil;
 	}
-	
+
 	[self updateCursorAnimated:NO];
 	[self scrollCursorVisibleAnimated:YES];
-	
-	// send change notification
-	[[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidBeginEditingNotification object:self userInfo:nil];
 }
 
 #pragma mark Working with Marked and Selected Text 
@@ -1843,17 +1886,7 @@ typedef enum
 }
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated
-{
-    // having a selected range implies that the cursor is showing
-    if (newTextRange)
-    {
-        _cursorIsShowing = YES;
-    }
-    else
-    {
-        _cursorIsShowing = NO;
-    }
-    
+{    
 	// check if the selected range fits with the attributed text
 	DTTextPosition *start = (DTTextPosition *)newTextRange.start;
 	DTTextPosition *end = (DTTextPosition *)newTextRange.end;
@@ -2435,7 +2468,7 @@ typedef enum
     [self setNeedsLayout];
 
 	// always position cursor at the end of the text
-    if (_keyboardIsShowing)
+    if (self.isEditing)
     {
         self.selectedTextRange = [self textRangeFromPosition:self.endOfDocument toPosition:self.endOfDocument];
     }
@@ -2528,7 +2561,7 @@ typedef enum
 
 - (UIView *)inputView
 {
-	if (_keyboardIsShowing || _showsKeyboardWhenBecomingFirstResponder)
+    if (self.isEditable)
 	{
 		return _inputView;
 	}
@@ -2546,7 +2579,7 @@ typedef enum
 
 - (UIView *)inputAccessoryView
 {
-	if (_keyboardIsShowing || _showsKeyboardWhenBecomingFirstResponder)
+    if (self.isEditable)
 	{
 		return _inputAccessoryView;
 	}
@@ -2610,7 +2643,6 @@ typedef enum
 // other properties
 @synthesize canInteractWithPasteboard = _canInteractWithPasteboard;
 @synthesize cursor = _cursor;
-@synthesize editable = _editable;
 @synthesize markedTextRange = _markedTextRange;
 @synthesize markedTextStyle = _markedTextStyle;
 @synthesize mutableLayoutFrame = _mutableLayoutFrame;

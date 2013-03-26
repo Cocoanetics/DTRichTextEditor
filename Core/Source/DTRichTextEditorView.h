@@ -8,8 +8,6 @@
 
 #import "DTAttributedTextView.h"
 
-extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
-
 @class DTTextRange, DTTextPosition;
 @class DTCursorView;
 @class DTLoupeView;
@@ -140,6 +138,11 @@ extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
  Specifies that the receiver can be edited. That means that on tapping it it becomes first responder and shows the current input view (keyboard). If it is not editable then dragging the finger over the view highlights entire words and does not show the selection dragging handles.
  */
 @property(nonatomic,getter=isEditable) BOOL editable;
+
+/**
+ Specifies that the receiver is in an editing state.  That means that the editor is first responder, and an inputView(usually the system keyboard) and cursor are showing. To programmatically enter an editing state, call becomeFirstResponder on the editor object when isEditable = YES(the default).  To programmatically end editing, call resignFirstResponder.
+ */
+@property (nonatomic, assign, readonly, getter = isEditing) BOOL editing;
 
 /**
  If this property is `YES` then all typed enters are replaced with the Line Feed (LF) character.

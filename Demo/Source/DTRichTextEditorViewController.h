@@ -15,7 +15,6 @@
 	
 	UITextRange *lastSelection;
 	
-	BOOL isDirty;
     UIPopoverController *popover;
     
     NSCache *_imageViewCache;

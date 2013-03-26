@@ -64,24 +64,11 @@
 	richEditor.attributedTextContentView.shouldDrawImages = NO;
 	
 	photoButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];
-	photoButton.enabled = NO;
-	
 	boldButton = [[UIBarButtonItem alloc] initWithTitle:@"B" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleBold:)];
-	boldButton.enabled = NO;
-
 	italicButton = [[UIBarButtonItem alloc] initWithTitle:@"I" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleItalic:)];
-	italicButton.enabled = NO;
-
 	underlineButton = [[UIBarButtonItem alloc] initWithTitle:@"U" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleUnderline:)];
-	underlineButton.enabled = NO;
-    
     highlightButton = [[UIBarButtonItem alloc] initWithTitle:@"H" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleHighlight:)];
-	highlightButton.enabled = NO;
-    
     fontButton = [[UIBarButtonItem alloc] initWithTitle:@"Font" style:UIBarButtonItemStyleBordered target:self action:@selector(changeFont:)];
-	fontButton.enabled = NO;
-    
-    
 
 	UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 	
@@ -111,12 +98,6 @@
 	richEditor.inputAccessoryView = toolbar;
 	
 	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, highlightButton, fontButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, increaseIndentButton, decreaseIndentButton, spacer3, orderedListButton, unorderedListButton, spacer4, photoButton, smile, linkButton, nil]];
-	
-	// watch the selectedTextRange property
-	[richEditor addObserver:self forKeyPath:@"selectedTextRange" options:NSKeyValueObservingOptionNew context:nil];
-	
-	// notification for isDirty
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChanged:) name:DTRichTextEditorTextDidBeginEditingNotification object:richEditor];
 }
 
 
@@ -377,42 +358,6 @@
     NSLog(@"font-family: %@, size: %.0f", fontDescriptor.fontFamily, fontDescriptor.pointSize);
     
     [richEditor updateFontInRange:range withFontFamilyName:@"American Typewriter" pointSize:60];
-}
-
-#pragma mark Notifications
-- (void)textChanged:(NSNotification *)notification
-{
-	isDirty = YES;
-	//NSLog(@"Text Changed");
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if ([keyPath isEqualToString:@"selectedTextRange"])
-	{
-		id newRange = [change objectForKey:NSKeyValueChangeNewKey];
-		
-		// disable photo/bold button if there is no selection
-		if (newRange == [NSNull null])
-		{
-			for (UIBarButtonItem *oneItem in toolbar.items)
-			{
-				oneItem.enabled = NO;
-			}
-		}
-		else
-		{
-			for (UIBarButtonItem *oneItem in toolbar.items)
-			{
-				oneItem.enabled = YES;
-			}
-			
-			if (richEditor.selectedTextRange.start)
-			{
-				lastSelection = richEditor.selectedTextRange;
-			}
-		}
-	}
 }
 
 #pragma mark - DTAttributedTextContentViewDelegate
