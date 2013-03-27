@@ -136,6 +136,7 @@ typedef enum
 
 	BOOL _contextMenuVisible;
 	NSTimeInterval _lastCursorMovementTimestamp;
+    CGPoint _lastCursorMovementTouchPoint;
 
 	// gesture recognizers
 	UITapGestureRecognizer *tapGesture;
@@ -1121,8 +1122,12 @@ typedef enum
 		}
 			
 		case UIGestureRecognizerStateChanged:
-		{	
-			_lastCursorMovementTimestamp = [[NSDate date] timeIntervalSinceReferenceDate];
+		{
+            if (fabs(touchPoint.x - _lastCursorMovementTouchPoint.x) > 1.0)
+                _lastCursorMovementTimestamp = [NSDate timeIntervalSinceReferenceDate];
+            
+            _lastCursorMovementTouchPoint = touchPoint;
+            
 			[self moveLoupeWithTouchPoint:touchPoint];
             
             // long press can get touches when dragging handle so notify here same as handleDragHandle:
@@ -1138,9 +1143,9 @@ typedef enum
 		{
 			if (_dragMode != DTDragModeCursorInsideMarking)
 			{
-                NSTimeInterval delta = [[NSDate date] timeIntervalSinceReferenceDate] - _lastCursorMovementTimestamp;
+                NSTimeInterval delta = [NSDate timeIntervalSinceReferenceDate] - _lastCursorMovementTimestamp;
                 
-                if (delta < 0.5)
+                if (delta < 0.25)
                 {
                     if (_dragMode == DTDragModeLeftHandle)
                     {
@@ -1191,8 +1196,12 @@ typedef enum
 			
 		case UIGestureRecognizerStateChanged:
 		{
-			[self moveLoupeWithTouchPoint:touchPoint];
-            _lastCursorMovementTimestamp = [[NSDate date] timeIntervalSinceReferenceDate];
+            if (fabs(touchPoint.x - _lastCursorMovementTouchPoint.x) > 1.0)
+                _lastCursorMovementTimestamp = [NSDate timeIntervalSinceReferenceDate];
+            
+            _lastCursorMovementTouchPoint = touchPoint;
+            
+            [self moveLoupeWithTouchPoint:touchPoint];
             
             [self notifyDelegateDidChangeSelection];
 			
@@ -1201,9 +1210,9 @@ typedef enum
 			
 		case UIGestureRecognizerStateEnded:
 		{
-            NSTimeInterval delta = [[NSDate date] timeIntervalSinceReferenceDate] - _lastCursorMovementTimestamp;
-            
-            if (delta < 0.5)
+            NSTimeInterval delta = [NSDate timeIntervalSinceReferenceDate] - _lastCursorMovementTimestamp;
+        
+            if (delta < 0.25)
             {
                 if (_dragMode == DTDragModeLeftHandle)
                 {
