@@ -8,6 +8,22 @@
 
 #import "DTAttributedTextView.h"
 
+/**
+ Notifies observers that an editing session began in an editor view. The affected view is stored in the object parameter of the notification. The userInfo dictionary is not used.
+ */
+extern NSString * const DTRichTextEditorTextDidBeginEditingNotification;
+
+/**
+ Notifies observers that the text in a text view changed. The affected view is stored in the object parameter of the notification. The userInfo dictionary is not used.
+ */
+extern NSString * const DTRichTextEditorTextDidChangeNotification;
+
+/**
+ Notifies observers that an editing session ended for an editor view. The affected view is stored in the object parameter of the notification. The userInfo dictionary is not used.
+ */
+extern NSString * const DTRichTextEditorTextDidEndEditingNotification;
+
+
 @class DTTextRange, DTTextPosition;
 @class DTCursorView;
 @class DTLoupeView;

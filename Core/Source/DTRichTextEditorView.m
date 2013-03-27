@@ -43,6 +43,11 @@
 #import "DTHTMLWriter+DTWebArchive.h"
 
 
+NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextEditorTextDidBeginEditingNotification";
+NSString * const DTRichTextEditorTextDidChangeNotification = @"DTRichTextEditorTextDidChangeNotification";
+NSString * const DTRichTextEditorTextDidEndEditingNotification = @"DTRichTextEditorTextDidEndEditingNotification";
+
+
 // the modes that can be dragged in
 typedef enum
 {
@@ -1307,6 +1312,9 @@ typedef enum
     {
         [self.editorViewDelegate editorViewDidChange:self];
     }
+    
+    // Post DTRichTextEditorTextDidChangeNotification
+    [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidChangeNotification object:self];
 }
 
 
@@ -1354,6 +1362,9 @@ typedef enum
         {
             [self.editorViewDelegate editorViewDidBeginEditing:self];
         }
+        
+        // Post the DTRichTextEditorTextDidBeginEditing notification
+        [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidBeginEditingNotification object:self];
     }
     else
     {
@@ -1366,6 +1377,9 @@ typedef enum
         {
             [self.editorViewDelegate editorViewDidEndEditing:self];
         }
+        
+        // Post the DTRichTextEditorTextDidEndEditing notification
+        [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidEndEditingNotification object:self];
     }
 }
 
