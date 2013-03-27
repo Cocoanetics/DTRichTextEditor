@@ -274,4 +274,29 @@ extern NSString * const DTRichTextEditorTextDidEndEditingNotification;
  */
 - (void)editorViewDidChangeSelection:(DTRichTextEditorView *)editorView;
 
+/**
+ @name Managing Editing Menu Items
+ */
+
+/**
+ The delegate's custom menu items to include in the editing menu.
+ 
+ This property contains an array of UIMenuItem objects to display in the standard editing menu, an instance of UIMenuController.  Menu items may not override the editor views standard functionality.  For example, a menu item with action copy: will not be included in the menu.  To override methods in the UIResponderStandardEditActions informal protocol you must subclass DTRichTextEditorView.
+ */
+@property (nonatomic, retain) NSArray *menuItems;
+
+/**
+ Asks the delegate if the editing menu should omit or show the commands.
+ 
+ The delegate can use this method to disable standard edit commands such as copy: and paste: by returning NO.
+ 
+ This method might be called more than once for the same action but with a different sender each time. You should be prepared for any kind of sender including nil.
+ 
+ @param editorView The editor view which is making this request.
+ @param action A selector type identifying the method to show in the editing menu.  This includes both the actions of the UIResponderStandardEditActions informal protocol and the actions of the delegate's custom menuItems.
+ @param sender The object calling this method. For the editing menu commands, this is the shared UIApplication object. Depending on the context, you can query the sender for information to help you determine whether a command should be enabled.
+ @return YES if the the command identified by action should be enabled or NO if it should be disabled. Returning YES means that your class can handle your custom menu item command in the current context, or that the editor view is allowed to handle standard edit actions.
+ */
+- (BOOL)editorView:(DTRichTextEditorView *)editorView canPerformAction:(SEL)action withSender:(id)sender;
+
 @end

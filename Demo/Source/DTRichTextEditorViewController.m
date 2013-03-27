@@ -111,6 +111,10 @@
 	richEditor.inputAccessoryView = toolbar;
 	
 	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, highlightButton, fontButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, increaseIndentButton, decreaseIndentButton, spacer3, orderedListButton, unorderedListButton, spacer4, photoButton, smile, linkButton, nil]];
+    
+    // notifications
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+	[center addObserver:self selector:@selector(menuDidHide:) name:UIMenuControllerDidHideMenuNotification object:nil];
 }
 
 
@@ -497,6 +501,76 @@
 - (void)editorViewDidChange:(DTRichTextEditorView *)editorView
 {
     NSLog(@"editorViewDidChange:");
+}
+
+@synthesize menuItems = _menuItems;
+
+- (NSArray *)menuItems
+{
+    if (_menuItems == nil)
+    {
+        UIMenuItem *insertItem = [[UIMenuItem alloc] initWithTitle:@"Insert" action:@selector(displayInsertMenu:)];
+        UIMenuItem *insertStarItem = [[UIMenuItem alloc] initWithTitle:@"★" action:@selector(insertStar:)];
+        UIMenuItem *insertCheckItem = [[UIMenuItem alloc] initWithTitle:@"☆" action:@selector(insertWhiteStar:)];
+        _menuItems = @[insertItem, insertStarItem, insertCheckItem];
+    }
+    
+    return _menuItems;
+}
+
+- (BOOL)editorView:(DTRichTextEditorView *)editorView canPerformAction:(SEL)action withSender:(id)sender
+{
+    DTTextRange *selectedTextRange = (DTTextRange *)editorView.selectedTextRange;
+    BOOL hasSelection = ![selectedTextRange isEmpty];
+    
+    if (action == @selector(insertStar:) || action == @selector(insertWhiteStar:))
+    {
+        return _showInsertMenu;
+    }
+    
+    if (_showInsertMenu)
+    {
+        return NO;
+    }
+    
+    if (action == @selector(displayInsertMenu:))
+    {
+        return (!hasSelection && _showInsertMenu == NO);
+    }
+    
+    // For fun, disable selectAll:
+    if (action == @selector(selectAll:))
+    {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (void)menuDidHide:(NSNotification *)notification
+{
+    _showInsertMenu = NO;
+}
+
+- (void)displayInsertMenu:(id)sender
+{
+    _showInsertMenu = YES;
+    
+    [[UIMenuController sharedMenuController] setMenuVisible:YES animated:YES];
+}
+
+- (void)insertStar:(id)sender
+{
+    _showInsertMenu = NO;
+    
+    [richEditor insertText:@"★"];
+}
+
+- (void)insertWhiteStar:(id)sender
+{
+    _showInsertMenu = NO;
+    
+    [richEditor insertText:@"☆"];
 }
 
 

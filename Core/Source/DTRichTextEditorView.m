@@ -171,7 +171,14 @@ typedef enum
         unsigned int delegateShouldChangeTextInRangeReplacementText:1;
         unsigned int delegateDidChange:1;
         unsigned int delegateDidChangeSelection:1;
+        
+        // Editing Menu Items
+        unsigned int delegateMenuItems:1;
+        unsigned int delegateCanPerformActionsWithSender:1;
     } _editorViewDelegateFlags;
+    
+    // Use to disallow canPerformAction: to proceed up the responder chain (-nextResponder)
+    BOOL _stopResponderChain;
 }
 
 #pragma mark -
@@ -393,7 +400,7 @@ typedef enum
     // Display the context menu
     _contextMenuVisible = YES;
     CGRect targetRect = [self boundsOfCurrentSelection];
-    
+
 	UIMenuController *menuController = [UIMenuController sharedMenuController];
 	
 	[menuController setTargetRect:targetRect inView:self];
@@ -1294,6 +1301,8 @@ typedef enum
     _editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText = [editorViewDelegate respondsToSelector:@selector(editorView:shouldChangeTextInRange:replacementText:)];
     _editorViewDelegateFlags.delegateDidChange = [editorViewDelegate respondsToSelector:@selector(editorViewDidChange:)];
     _editorViewDelegateFlags.delegateDidChangeSelection = [editorViewDelegate respondsToSelector:@selector(editorViewDidChangeSelection:)];
+    _editorViewDelegateFlags.delegateMenuItems = [editorViewDelegate respondsToSelector:@selector(menuItems)];
+    _editorViewDelegateFlags.delegateCanPerformActionsWithSender = [editorViewDelegate respondsToSelector:@selector(editorView:canPerformAction:withSender:)];
 }
 
 - (void)notifyDelegateDidChangeSelection
@@ -1409,6 +1418,28 @@ typedef enum
         [self setEditing:YES];
     }
     
+    // Add custom menu items if implemented by the editor view delegate
+    if (_editorViewDelegateFlags.delegateMenuItems)
+    {
+        NSArray *delegateMenuItems = self.editorViewDelegate.menuItems;
+        
+        if (delegateMenuItems)
+        {
+            // Filter delegate's menu items to remove any that would interfere with our code
+            NSMutableArray *acceptableMenuItems = [[NSMutableArray alloc] init];
+            
+            for (UIMenuItem *menuItem in delegateMenuItems)
+            {
+                if (![self respondsToSelector:menuItem.action])
+                {
+                    [acceptableMenuItems addObject:menuItem];
+                }
+            }
+            
+            [[UIMenuController sharedMenuController] setMenuItems:acceptableMenuItems];
+        }
+    }
+    
     return YES;
 }
 
@@ -1438,13 +1469,63 @@ typedef enum
             [self updateCursorAnimated:YES];
             [self hideContextMenu];
         }
+        
+        // Remove custom menu items
+        [[UIMenuController sharedMenuController] setMenuItems:nil];
     }
 
     return !self.isFirstResponder;
 }
 
+- (UIResponder *)nextResponder
+{
+    if (_stopResponderChain)
+    {
+        _stopResponderChain = NO;
+        return nil;
+    }
+    
+    return [super nextResponder];
+}
+
+- (id)forwardingTargetForSelector:(SEL)aSelector
+{
+    // If the delegate provides custom menu items, check to see if this selector is one of the menu items
+    if (_editorViewDelegateFlags.delegateMenuItems)
+    {
+        // Check delegate's custom menu items and return the delegate as the forwarding target if action matches
+        for (UIMenuItem *menuItem in self.editorViewDelegate.menuItems)
+        {
+            if (menuItem.action == aSelector)
+                return self.editorViewDelegate;
+        }
+    }
+    
+    return nil;
+}
+
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
+    // Delegate gets the first say, can disable any action
+    if (_editorViewDelegateFlags.delegateCanPerformActionsWithSender)
+    {
+        if (![self.editorViewDelegate editorView:self canPerformAction:action withSender:sender])
+        {
+            _stopResponderChain = YES;
+            return NO;
+        }
+        
+        if (_editorViewDelegateFlags.delegateMenuItems)
+        {
+            // Check delegate's custom menu items and return YES if action matches
+            for (UIMenuItem *menuItem in self.editorViewDelegate.menuItems)
+            {
+                if (menuItem.action == action && ![self respondsToSelector:menuItem.action])
+                    return YES;
+            }
+        }
+    }
+    
 	if (action == @selector(selectAll:))
 	{
 		if (([[_selectedTextRange start] isEqual:(id)[self beginningOfDocument]] && [[_selectedTextRange end] isEqual:(id)[self endOfDocument]]) || ![_selectedTextRange isEmpty])
@@ -1513,6 +1594,8 @@ typedef enum
 	
 	return NO;
 }
+
+
 
 - (void)delete:(id)sender
 {
