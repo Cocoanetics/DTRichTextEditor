@@ -14,6 +14,8 @@
 @class DTTextSelectionView;
 @class DTCSSListStyle;
 
+@protocol DTRichTextEditorViewDelegate;
+
 /**
  DTRichTextEditorView is a subclass of UIScrollView and offers rich text edtiting capabilities. It has a single content view of type DTRichTextEditorContentView which is repsonsible for displaying the rich text.
  */
@@ -72,6 +74,18 @@
  NOTE: Changing these defaults does not affect the current `NSAttributedString`. They are used when calling setHTMLString.
  */
 @property (nonatomic, retain) NSDictionary *textDefaults;
+
+
+/**
+ @name Accessing the Editor Delegate
+ */
+
+/**
+ An editor view delegate responds to editing-related messages from the editor view. You can use the delegate to track changes to the text itself and to the current selection.
+ 
+ @see DTRichTextEditorViewDelegate
+ */
+@property (nonatomic, assign) id<DTRichTextEditorViewDelegate> editorViewDelegate;
 
 
 /**
@@ -158,3 +172,90 @@
 
 @end
 
+
+/**
+ The DTRichTextEditorViewDelegate protocol defines a set of optional methods you can use to receive editing-related messages for DTRichTextEditorView objects. All of the methods in this protocol are optional. You can use them in situations where you might want to adjust the text being edited (such as in the case of a spell checker program) or modify the intended insertion point.
+ */
+@protocol DTRichTextEditorViewDelegate <NSObject>
+
+@optional
+
+/**
+ @name Responding to Editing Notifications
+ */
+
+/**
+ Asks the delegate if editing should begin in the specified editor view.
+ 
+ @param editorView The editor view for which editing is about to begin.
+ @return YES if an editing session should be initiated; otherwise, NO to disallow editing.
+ */
+- (BOOL)editorViewShouldBeginEditing:(DTRichTextEditorView *)editorView;
+
+/**
+ Tells the delegate that editing of the specified editor view has begun.
+ 
+ @param editorView The editor view in which editing began.
+ */
+- (void)editorViewDidBeginEditing:(DTRichTextEditorView *)editorView;
+
+/**
+ Asks the delegate if editing should stop in the specified editor view.
+ 
+ @param editorView The editor view for which editing is about to end.
+ @return YES if editing should stop; otherwise, NO if the editing session should continue
+ */
+- (BOOL)editorViewShouldEndEditing:(DTRichTextEditorView *)editorView;
+
+/**
+ Tells the delegate that editing of the specified text view has ended.
+ 
+ @param editorView The editor view in which editing ended.
+ */
+- (void)editorViewDidEndEditing:(DTRichTextEditorView *)editorView;
+
+/**
+ @name Responding to Text Changes
+ */
+
+/**
+ Asks the delegate whether the specified DTTextAttachment object should be inserted in the given range.
+ 
+ The delegate can return NO to disallow pasting of text attachments. 
+ 
+ @param editorView The editor view containing the changes.
+ @param textAttachment The text attachment to insert.
+ @param range The current selection range.  If the length of the range is 0, range reflects the current insertion point.
+ @return YES if the text attachment should be inserted, replacing any text or attachments in the selected range.
+ */
+- (BOOL)editorView:(DTRichTextEditorView *)editorView shouldInsertTextAttachment:(DTTextAttachment *)textAttachment inRange:(NSRange)range;
+
+/**
+ Asks the delegate whether the specified text should be replaced in the text view.
+ 
+ @param editorView The editor view containing the changes.
+ @param range The current selection range.  If the length of the range is 0, range reflects the current insertion point.  If the user presses the Delete key, the length of the range is 1 and an empty string object replaces that single character.
+ @param text The text to insert.
+ @return YES if the old text should be replaced by the new text; NO if the replacement operation should be aborted.
+ */
+- (BOOL)editorView:(DTRichTextEditorView *)editorView shouldChangeTextInRange:(NSRange)range replacementText:(NSAttributedString *)text;
+
+/**
+ Tells the delegate that the text or attributes in the specified editor view were changed by the user
+ 
+ @param editorView The editor view containing the changes.
+ */
+- (void)editorViewDidChange:(DTRichTextEditorView *)editorView;
+
+/**
+ @name Responding to Selection Changes
+ */
+
+/**
+ Tells the delegate that the text selection changed in the specified editor view.
+ 
+ @param editorView The editor view whose selection changed.
+ */
+- (void)editorViewDidChangeSelection:(DTRichTextEditorView *)editorView;
+
+@end

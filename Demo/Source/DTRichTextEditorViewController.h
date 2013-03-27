@@ -9,7 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "DTRichTextEditorView.h"
 
-@interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate, DTAttributedTextContentViewDelegate> {
+@class DTRichTextEditorTestState;
+
+@interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate, DTAttributedTextContentViewDelegate, DTRichTextEditorViewDelegate> {
 
 	IBOutlet DTRichTextEditorView *richEditor;
 	
@@ -50,5 +52,8 @@
 }
 
 @property (nonatomic, retain) NSCache *imageViewCache;
+
+@property (nonatomic, retain) DTRichTextEditorTestState *testState;
+@property (nonatomic, retain) UIPopoverController *testOptionsPopover;
 @end
 

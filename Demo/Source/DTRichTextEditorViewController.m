@@ -11,6 +11,9 @@
 #import "NSAttributedString+DTRichText.h"
 #import "DTRichTextEditor.h"
 
+#import "DTRichTextEditorTestState.h"
+#import "DTRichTextEditorTestStateController.h"
+
 @implementation DTRichTextEditorViewController
 
 
@@ -43,6 +46,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    // test state
+    DTRichTextEditorTestState *testState = [[DTRichTextEditorTestState alloc] init];
+    testState.editable = YES;
+    self.testState = testState;
+    
+    UIBarButtonItem *testStateItem = [[UIBarButtonItem alloc] initWithTitle:@"Test Options" style:UIBarButtonItemStyleBordered target:self action:@selector(presentTestOptions:)];
+    self.navigationItem.rightBarButtonItem = testStateItem;
+    
 	// defaults
 	richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
     richEditor.textDelegate = self;
@@ -50,6 +61,8 @@
 	richEditor.textSizeMultiplier = 2.0;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
     richEditor.autocorrectionType = UITextAutocorrectionTypeNo;
+    richEditor.editable = YES;
+    richEditor.editorViewDelegate = self;
 	
 	NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
 	[defaults setObject:[NSNumber numberWithBool:YES] forKey:DTDefaultLinkDecoration];
@@ -411,6 +424,79 @@
 - (void)linkPushed:(id)sender
 {
 	// do something when a link was pushed
+}
+
+
+#pragma mark - Presenting Test Options
+
+@synthesize testOptionsPopover = _testOptionsPopover;
+
+- (void)presentTestOptions:(id)sender
+{
+    if (self.testOptionsPopover == nil)
+    {
+        DTRichTextEditorTestStateController *controller = [[DTRichTextEditorTestStateController alloc] initWithStyle:UITableViewStylePlain];
+        controller.testState = self.testState;
+        controller.completion = ^(DTRichTextEditorTestState *modifiedTestState) {
+            richEditor.editable = modifiedTestState.editable;
+        };
+        
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+        UIPopoverController *toPopover = [[UIPopoverController alloc] initWithContentViewController:navController];
+        
+        self.testOptionsPopover = toPopover;
+    }
+    
+    [self.testOptionsPopover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    self.testOptionsPopover.passthroughViews = nil;
+}
+
+
+#pragma mark - DTRichTextEditorViewDelegate
+
+- (BOOL)editorViewShouldBeginEditing:(DTRichTextEditorView *)editorView
+{
+    NSLog(@"editorViewShouldBeginEditing:");
+    return !self.testState.blockShouldBeginEditing;
+}
+
+- (void)editorViewDidBeginEditing:(DTRichTextEditorView *)editorView
+{
+    NSLog(@"editorViewDidBeginEditing:");
+}
+
+- (BOOL)editorViewShouldEndEditing:(DTRichTextEditorView *)editorView
+{
+    NSLog(@"editorViewShouldEndEditing:");
+    return !self.testState.blockShouldEndEditing;
+}
+
+- (void)editorViewDidEndEditing:(DTRichTextEditorView *)editorView
+{
+    NSLog(@"editorViewDidEndEditing:");
+}
+
+- (BOOL)editorView:(DTRichTextEditorView *)editorView shouldInsertTextAttachment:(DTTextAttachment *)textAttachment inRange:(NSRange)range
+{
+    NSLog(@"editorView:shouldInsertTextAttachment:inRange:");
+    return YES;
+}
+
+- (BOOL)editorView:(DTRichTextEditorView *)editorView shouldChangeTextInRange:(NSRange)range replacementText:(NSAttributedString *)text
+{
+    NSLog(@"editorView:shouldChangeTextInRange:replacementText:");
+    
+    return YES;
+}
+
+- (void)editorViewDidChangeSelection:(DTRichTextEditorView *)editorView
+{
+    NSLog(@"editorViewDidChangeSelection:");
+}
+
+- (void)editorViewDidChange:(DTRichTextEditorView *)editorView
+{
+    NSLog(@"editorViewDidChange:");
 }
 
 
