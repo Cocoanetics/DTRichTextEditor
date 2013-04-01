@@ -141,6 +141,7 @@ typedef enum
 	// gesture recognizers
 	UITapGestureRecognizer *tapGesture;
 	UITapGestureRecognizer *doubleTapGesture;
+    UITapGestureRecognizer *tripleTapGesture;
 	UILongPressGestureRecognizer *longPressGesture;
 	UIPanGestureRecognizer *panGesture;
 	
@@ -240,6 +241,15 @@ typedef enum
     self.contentInset = UIEdgeInsetsMake(10, 10, 10, 10);
 	
 	// --- gestures
+    if (!tripleTapGesture)
+    {
+        tripleTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTripleTap:)];
+        tripleTapGesture.delegate = self;
+        tripleTapGesture.numberOfTapsRequired = 3;
+        tripleTapGesture.numberOfTouchesRequired = 1;
+        [self addGestureRecognizer:tripleTapGesture];
+    }
+    
 	if (!doubleTapGesture)
 	{
 		doubleTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
@@ -1090,6 +1100,52 @@ typedef enum
     [self hideContextMenu];
     
     self.selectedTextRange = wordRange;
+    
+    [self showContextMenuFromSelection];
+    
+    if (self.isEditing)
+    {
+        // begins a new typing undo group
+        DTUndoManager *undoManager = self.undoManager;
+        [undoManager closeAllOpenGroups];
+    }
+}
+
+- (void)handleTripleTap:(UITapGestureRecognizer *)gesture
+{
+    // Bail out if not recognized
+    if (gesture.state != UIGestureRecognizerStateRecognized)
+        return;
+    
+    // Attempt to become first responder (for selection, menu, possibly editing)
+    if (!self.isFirstResponder)
+    {
+        [self becomeFirstResponder];
+        
+        // Bail out if we couldn't become first responder
+        if (!self.isEditable && !self.isFirstResponder)
+            return;
+        
+        // Bail out if we couldn't start editing but we're editable (This may occur if editorViewShouldBeginEditing: returns NO)
+        if (self.isEditable && !self.isEditing)
+            return;
+    }
+    
+    // Select a paragraph containing the touchPoint
+    CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
+    UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
+    UITextRange *textRange = [DTTextRange textRangeFromStart:position toEnd:position];
+    textRange = [self textRangeOfParagraphsContainingRange:textRange];
+    
+    // Bail out if there isn't a paragraph range or if we are editing and it's the same as the current selected range
+    if (textRange == nil || (self.isEditing && [self.selectedTextRange isEqual:textRange]))
+        return;
+    
+    self.selectionView.dragHandlesVisible = YES;
+    
+    [self hideContextMenu];
+    
+    self.selectedTextRange = textRange;
     
     [self showContextMenuFromSelection];
     
