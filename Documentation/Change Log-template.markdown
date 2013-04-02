@@ -3,7 +3,11 @@ Change Log
 
 This is the history of version updates.
 
-Version 1.2.3 (in Progress)
+Version 1.3
+
+- NO CHANGES: This is an interim version since we want to have the version number catch up to DTCoreText. Also this is the first tagged version on our git server.
+
+Version 1.2.3
 
 - FIXED: inParagraph being ignored in replaceRange:withAttachment:inParagraph:
 
