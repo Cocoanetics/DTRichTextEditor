@@ -548,6 +548,7 @@ typedef enum
 	{
         // show as a blue selection range
 		self.selectionView.style = DTTextSelectionStyleSelection;
+        self.selectionView.dragHandlesVisible = YES;
 		NSArray *textSelectionRects = [self selectionRectsForRange:_selectedTextRange];
 		[_selectionView setSelectionRectangles:textSelectionRects animated:animated];
 		
