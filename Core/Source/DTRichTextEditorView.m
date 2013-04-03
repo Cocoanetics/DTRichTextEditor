@@ -44,6 +44,9 @@
 
 
 NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextEditorTextDidBeginEditingNotification";
+NSString * const DTRichTextEditorTextDidChangeNotification = @"DTRichTextEditorTextDidChangeNotification";
+NSString * const DTRichTextEditorTextDidEndEditingNotification = @"DTRichTextEditorTextDidEndEditingNotification";
+
 
 // the modes that can be dragged in
 typedef enum
@@ -66,6 +69,9 @@ typedef enum
 @property (nonatomic, retain) DTUndoManager *undoManager;
 @property (nonatomic, assign) BOOL waitingForDictionationResult;
 @property (nonatomic, retain) DTDictationPlaceholderView *dictationPlaceholderView;
+
+@property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing; // default is NO, starts up and shuts down editing state
+@property (nonatomic, assign) BOOL overrideEditorViewDelegate; // default is NO, used when forcing change in editing state
 
 - (void)setDefaultText;
 - (void)showContextMenuFromSelection;
@@ -124,20 +130,18 @@ typedef enum
     BOOL _waitingForDictationResult;
     DTDictationPlaceholderView *_dictationPlaceholderView;
 	
-	BOOL _showsKeyboardWhenBecomingFirstResponder;
-	BOOL _keyboardIsShowing;
-	
 	CGPoint _dragCursorStartMidPoint;
 	CGPoint _touchDownPoint;
 	NSDictionary *_overrideInsertionAttributes;
 
 	BOOL _contextMenuVisible;
-	BOOL _cursorIsShowing;
 	NSTimeInterval _lastCursorMovementTimestamp;
+    CGPoint _lastCursorMovementTouchPoint;
 
 	// gesture recognizers
 	UITapGestureRecognizer *tapGesture;
 	UITapGestureRecognizer *doubleTapGesture;
+    UITapGestureRecognizer *tripleTapGesture;
 	UILongPressGestureRecognizer *longPressGesture;
 	UIPanGestureRecognizer *panGesture;
 	
@@ -155,6 +159,28 @@ typedef enum
 	
 	// the undo manager
 	DTUndoManager *_undoManager;
+    
+    // editor view delegate respondsTo cache flags
+    struct {
+        // Editing State
+        unsigned int delegateShouldBeginEditing:1;
+        unsigned int delegateDidBeginEditing:1;
+        unsigned int delegateShouldEndEditing:1;
+        unsigned int delegateDidEndEditing:1;
+        
+        // Text and Selection Changes
+        unsigned int delegateShouldInsertTextAttachmentInRange:1;
+        unsigned int delegateShouldChangeTextInRangeReplacementText:1;
+        unsigned int delegateDidChange:1;
+        unsigned int delegateDidChangeSelection:1;
+        
+        // Editing Menu Items
+        unsigned int delegateMenuItems:1;
+        unsigned int delegateCanPerformActionsWithSender:1;
+    } _editorViewDelegateFlags;
+    
+    // Use to disallow canPerformAction: to proceed up the responder chain (-nextResponder)
+    BOOL _stopResponderChain;
 }
 
 #pragma mark -
@@ -190,7 +216,6 @@ typedef enum
 - (void)setDefaults
 {
 	_canInteractWithPasteboard = YES;
-	_showsKeyboardWhenBecomingFirstResponder = YES;
     
     // text defaults
     _textSizeMultiplier = 1.0;
@@ -216,6 +241,15 @@ typedef enum
     self.contentInset = UIEdgeInsetsMake(10, 10, 10, 10);
 	
 	// --- gestures
+    if (!tripleTapGesture)
+    {
+        tripleTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTripleTap:)];
+        tripleTapGesture.delegate = self;
+        tripleTapGesture.numberOfTapsRequired = 3;
+        tripleTapGesture.numberOfTouchesRequired = 1;
+        [self addGestureRecognizer:tripleTapGesture];
+    }
+    
 	if (!doubleTapGesture)
 	{
 		doubleTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDoubleTap:)];
@@ -276,6 +310,8 @@ typedef enum
 
 - (void)dealloc
 {
+    self.editorViewDelegate = nil;
+    
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -339,7 +375,8 @@ typedef enum
 	return [DTRichTextEditorContentView class];
 }
 
-#pragma mark Menu
+
+#pragma mark - Menu
 
 - (void)hideContextMenu
 {
@@ -355,31 +392,26 @@ typedef enum
 
 - (void)showContextMenuFromSelection
 {
+    // Bail out if selection isn't visible
 	if (![self selectionIsVisible])
 	{
 		// don't show it
 		return;
 	}
 	
-	CGRect targetRect = [self boundsOfCurrentSelection];
-
-	_contextMenuVisible = YES;
-	
+    // Attempt to become first responder if needed for context menu
 	if (!self.isFirstResponder)
 	{
-		BOOL previousState = _showsKeyboardWhenBecomingFirstResponder;
-		
-		if (!_keyboardIsShowing && !self.isEditable)
-		{
-			// prevent keyboard from showing if it is not visible
-			_showsKeyboardWhenBecomingFirstResponder = NO;
-		}
-		
 		[self becomeFirstResponder];
-		
-		_showsKeyboardWhenBecomingFirstResponder = previousState;
+        
+        if (!self.isFirstResponder)
+            return;
 	}
-	
+    
+    // Display the context menu
+    _contextMenuVisible = YES;
+    CGRect targetRect = [self boundsOfCurrentSelection];
+
 	UIMenuController *menuController = [UIMenuController sharedMenuController];
 	
 	[menuController setTargetRect:targetRect inView:self];
@@ -451,10 +483,8 @@ typedef enum
 
 - (void)scrollCursorVisibleAnimated:(BOOL)animated
 {
-	if  (![_selectedTextRange isEmpty] || !_cursorIsShowing)
-	{
-		return;
-	}
+    if (!self.isEditing)
+        return;
 	
 	CGRect cursorFrame = [self caretRectForPosition:self.selectedTextRange.start];
     cursorFrame.size.width = 3.0;
@@ -478,7 +508,7 @@ typedef enum
 	DTTextPosition *position = (id)self.selectedTextRange.start;
 	
 	// no selection
-	if (!position || !_cursorIsShowing)
+    if ((self.isEditable && !self.isEditing) || !self.isFirstResponder)
 	{
 		// remove cursor
 		[_cursor removeFromSuperview];
@@ -573,34 +603,28 @@ typedef enum
 	
 	DTTextRange *constrainingRange = nil;
 	
-	if ([_markedTextRange length])
+	if ([_markedTextRange length] && [self selectionIsVisible])
 	{
-		if ([self selectionIsVisible])
-		{
-			constrainingRange = _markedTextRange;
-		}
+        constrainingRange = _markedTextRange;
 	}
-	else if ([_selectedTextRange length])
+	else if ([_selectedTextRange length] && [self selectionIsVisible])
 	{
-		if ([self selectionIsVisible])
-		{
-			constrainingRange =_selectedTextRange;
-		}
+        constrainingRange =_selectedTextRange;
 	}
 	
 	DTTextPosition *position = (id)[self closestPositionToPoint:location withinRange:constrainingRange];
-	
-	if (![(DTTextPosition *)_selectedTextRange.start isEqual:position] && ![(DTTextPosition *)_selectedTextRange.end isEqual:position])
-	{
-		// tap on same position
-		didMove = YES;
-	}
-	
-	self.selectedTextRange = [self textRangeFromPosition:position toPosition:position];
-	
-	// begins a new typing undo group
-	DTUndoManager *undoManager = self.undoManager;
-	[undoManager closeAllOpenGroups];
+    
+    // Move if there is a selection or if the position is not the same as the cursor
+    if (![_selectedTextRange isEmpty] || ![(DTTextPosition *)_selectedTextRange.start isEqual:position])
+    {
+        didMove = YES;
+
+        self.selectedTextRange = [self textRangeFromPosition:position toPosition:position];
+
+        // begins a new typing undo group
+        DTUndoManager *undoManager = self.undoManager;
+        [undoManager closeAllOpenGroups];
+    }
 	
 	return didMove;
 }
@@ -733,7 +757,7 @@ typedef enum
 
 		[self hideContextMenu];
 		
-		if (self.editable && _keyboardIsShowing)
+		if (self.isEditable && self.isEditing)
 		{
 			[self moveCursorToPositionClosestToLocation:touchPoint];
 		}
@@ -822,7 +846,7 @@ typedef enum
 	{
 		if (self.editable)
 		{
-			if (_keyboardIsShowing)
+			if (self.isEditing)
 			{
 				[loupe dismissLoupeTowardsLocation:self.cursor.center];
 				_cursor.state = DTCursorStateBlinking;
@@ -928,7 +952,7 @@ typedef enum
 	{
 		targetRect = [_selectionView selectionEnvelope];
 	}
-	else if (_cursorIsShowing)
+	else if (self.isEditing)
 	{
 		targetRect = self.cursor.frame;
 	}
@@ -975,100 +999,162 @@ typedef enum
 	SEL selector = @selector(_scrollCursorVisible);
 	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
 	[self performSelector:selector withObject:nil afterDelay:0.3];
-	
-	_keyboardIsShowing = YES;
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
 	self.contentInset = _userSetContentInsets;
 	self.scrollIndicatorInsets = self.contentInset;
-	
-	_keyboardIsShowing = NO;
-    
+
     _heightCoveredByKeyboard = 0;
 }
 
 
-#pragma mark Gestures
+#pragma mark - Gestures
+
 - (void)handleTap:(UITapGestureRecognizer *)gesture
 {
-	if (gesture.state == UIGestureRecognizerStateRecognized)
-	{
-		if (self.editable)
-		{
-			// this mode has the drag handles showing
-			self.selectionView.dragHandlesVisible	= YES;
-			
-			// show the keyboard and cursor
-			[self becomeFirstResponder];
-			
-			if (!_keyboardIsShowing && ![_selectedTextRange isEmpty])
-			{
-				[self resignFirstResponder];
-				return;
-			}
-			
-			CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
-			
-			if (!_markedTextRange)
-			{
-				if ([self moveCursorToPositionClosestToLocation:touchPoint])
-				{
-					// did move
-					[self hideContextMenu];
-				}
-				else
-				{
-					// was same position as before
-					[self showContextMenuFromSelection];
-				}
-			}
-			[self unmarkText];
-		}
-		else
-		{
-			[self hideContextMenu];
-		}
-	}
+    // Bail out if not recognized
+    if (gesture.state != UIGestureRecognizerStateRecognized)
+        return;
+    
+    // If not editable, simple resign first responder (hides context menu, cursors, and selections if showing)
+    if (!self.isEditable)
+    {
+        [self resignFirstResponder];
+        return;
+    }
+    
+    // If not editing, attempt to start editing
+    BOOL wasEditing = self.isEditing;
+    _cursor.state = DTCursorStateBlinking;
+    
+    if (!self.isFirstResponder)
+    {
+        [self becomeFirstResponder];
+        
+        // Bail out if we couldn't start editing (This may occur if editorViewShouldBeginEditing: returns NO)
+        if (!self.isEditing)
+            return;
+    }
+    
+    // Move the cursor if there isn't marked text, otherwise unmark it
+    if (self.markedTextRange == nil)
+    {
+        CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
+    
+        if ([self moveCursorToPositionClosestToLocation:touchPoint])
+        {
+            // did move
+            [self hideContextMenu];
+            [self notifyDelegateDidChangeSelection];
+        }
+        else
+        {
+            // was same position as before and did not start an editing session in response to this tap
+            // an editing view that lost first responder and therefore stopped editing retains it's selectedTextRange(cursor position)
+            // therefore a tap that initiates editing can reach this point and we don't want to display the menu.
+            if (wasEditing)
+            {
+                [self showContextMenuFromSelection];
+            }
+        }
+    }
+    else
+    {
+        [self unmarkText];
+    }
 }
 
 - (void)handleDoubleTap:(UITapGestureRecognizer *)gesture
 {
-	if (gesture.state == UIGestureRecognizerStateRecognized)
-	{
-		CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
-		
-		UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
-		
-		UITextRange *wordRange = [self textRangeOfWordAtPosition:position];
-		
-		self.selectionView.dragHandlesVisible = YES;
-		
-		if (wordRange)
-		{
-			[self hideContextMenu];
-			
-			self.selectedTextRange = wordRange;
-			
-			// begins a new typing undo group
-			DTUndoManager *undoManager = self.undoManager;
-			[undoManager closeAllOpenGroups];
-			
-            if (self.isEditable)
-            {
-                _showsKeyboardWhenBecomingFirstResponder = YES;
-            }
-            else
-            {
-                _showsKeyboardWhenBecomingFirstResponder = NO;
-            }
-            
-			[self showContextMenuFromSelection];
-            
-			_showsKeyboardWhenBecomingFirstResponder = YES;
-		}
-	}
+    // Bail out if not recognized
+    if (gesture.state != UIGestureRecognizerStateRecognized)
+        return;
+    
+    // Attempt to become first responder (for selection, menu, possibly editing)
+    if (!self.isFirstResponder)
+    {
+        [self becomeFirstResponder];
+        
+        // Bail out if we couldn't become first responder
+        if (!self.isEditable && !self.isFirstResponder)
+            return;
+        
+        // Bail out if we couldn't start editing but we're editable (This may occur if editorViewShouldBeginEditing: returns NO)
+        if (self.isEditable && !self.isEditing)
+            return;
+    }
+
+    // Select a word closest to the touchPoint
+    CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
+    UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
+    UITextRange *wordRange = [self textRangeOfWordAtPosition:position];
+    
+    // Bail out if there isn't a word range or if we are editing and it's the same as the current word range
+    if (wordRange == nil || (self.isEditing && [self.selectedTextRange isEqual:wordRange]))
+        return;
+    
+    self.selectionView.dragHandlesVisible = YES;
+    
+    [self hideContextMenu];
+    
+    self.selectedTextRange = wordRange;
+    
+    [self showContextMenuFromSelection];
+    
+    if (self.isEditing)
+    {
+        // begins a new typing undo group
+        DTUndoManager *undoManager = self.undoManager;
+        [undoManager closeAllOpenGroups];
+    }
+}
+
+- (void)handleTripleTap:(UITapGestureRecognizer *)gesture
+{
+    // Bail out if not recognized
+    if (gesture.state != UIGestureRecognizerStateRecognized)
+        return;
+    
+    // Attempt to become first responder (for selection, menu, possibly editing)
+    if (!self.isFirstResponder)
+    {
+        [self becomeFirstResponder];
+        
+        // Bail out if we couldn't become first responder
+        if (!self.isEditable && !self.isFirstResponder)
+            return;
+        
+        // Bail out if we couldn't start editing but we're editable (This may occur if editorViewShouldBeginEditing: returns NO)
+        if (self.isEditable && !self.isEditing)
+            return;
+    }
+    
+    // Select a paragraph containing the touchPoint
+    CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
+    UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
+    UITextRange *textRange = [DTTextRange textRangeFromStart:position toEnd:position];
+    textRange = [self textRangeOfParagraphsContainingRange:textRange];
+    
+    // Bail out if there isn't a paragraph range or if we are editing and it's the same as the current selected range
+    if (textRange == nil || (self.isEditing && [self.selectedTextRange isEqual:textRange]))
+        return;
+    
+    self.selectionView.dragHandlesVisible = YES;
+    
+    [self hideContextMenu];
+    
+    self.selectedTextRange = textRange;
+    
+    [self showContextMenuFromSelection];
+    
+    if (self.isEditing)
+    {
+        // begins a new typing undo group
+        DTUndoManager *undoManager = self.undoManager;
+        [undoManager closeAllOpenGroups];
+    }
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
@@ -1080,8 +1166,11 @@ typedef enum
 		case UIGestureRecognizerStateBegan:
 		{
 			[self presentLoupeWithTouchPoint:touchPoint];
-			_cursorIsShowing = YES;
 			_cursor.state = DTCursorStateStatic;
+            
+            // become first responder to bring up editing and show the cursor
+            if (!self.isFirstResponder)
+                [self becomeFirstResponder];
 			
 			// begins a new typing undo group
 			DTUndoManager *undoManager = self.undoManager;
@@ -1089,9 +1178,19 @@ typedef enum
 		}
 			
 		case UIGestureRecognizerStateChanged:
-		{	
-			_lastCursorMovementTimestamp = [[NSDate date] timeIntervalSinceReferenceDate];
+		{
+            if (fabs(touchPoint.x - _lastCursorMovementTouchPoint.x) > 1.0)
+                _lastCursorMovementTimestamp = [NSDate timeIntervalSinceReferenceDate];
+            
+            _lastCursorMovementTouchPoint = touchPoint;
+            
 			[self moveLoupeWithTouchPoint:touchPoint];
+            
+            // long press can get touches when dragging handle so notify here same as handleDragHandle:
+            if (_dragMode == DTDragModeLeftHandle || _dragMode == DTDragModeRightHandle)
+            {
+                [self notifyDelegateDidChangeSelection];
+            }
 			
 			break;
 		}
@@ -1100,9 +1199,9 @@ typedef enum
 		{
 			if (_dragMode != DTDragModeCursorInsideMarking)
 			{
-                NSTimeInterval delta = [[NSDate date] timeIntervalSinceReferenceDate] - _lastCursorMovementTimestamp;
+                NSTimeInterval delta = [NSDate timeIntervalSinceReferenceDate] - _lastCursorMovementTimestamp;
                 
-                if (delta < 0.5)
+                if (delta < 0.25)
                 {
                     if (_dragMode == DTDragModeLeftHandle)
                     {
@@ -1114,8 +1213,11 @@ typedef enum
                     }
                 }
 			}
+            
+            [self notifyDelegateDidChangeSelection];
 		}
 			
+        case UIGestureRecognizerStateFailed:
 		case UIGestureRecognizerStateCancelled:
 		{
             _shouldShowContextMenuAfterLoupeHide = YES;
@@ -1150,17 +1252,23 @@ typedef enum
 			
 		case UIGestureRecognizerStateChanged:
 		{
-			[self moveLoupeWithTouchPoint:touchPoint];
-            _lastCursorMovementTimestamp = [[NSDate date] timeIntervalSinceReferenceDate];
+            if (fabs(touchPoint.x - _lastCursorMovementTouchPoint.x) > 1.0)
+                _lastCursorMovementTimestamp = [NSDate timeIntervalSinceReferenceDate];
+            
+            _lastCursorMovementTouchPoint = touchPoint;
+            
+            [self moveLoupeWithTouchPoint:touchPoint];
+            
+            [self notifyDelegateDidChangeSelection];
 			
 			break;
 		}
 			
 		case UIGestureRecognizerStateEnded:
 		{
-            NSTimeInterval delta = [[NSDate date] timeIntervalSinceReferenceDate] - _lastCursorMovementTimestamp;
-            
-            if (delta < 0.5)
+            NSTimeInterval delta = [NSDate timeIntervalSinceReferenceDate] - _lastCursorMovementTimestamp;
+        
+            if (delta < 0.25)
             {
                 if (_dragMode == DTDragModeLeftHandle)
                 {
@@ -1171,9 +1279,17 @@ typedef enum
                     [self extendSelectionToIncludeWordInDirection:UITextStorageDirectionForward];
                 }
             }
-			
-			_shouldShowContextMenuAfterLoupeHide = YES;
+		}
+            
+        case UIGestureRecognizerStateFailed:
+		case UIGestureRecognizerStateCancelled:
+		{
+            _shouldShowContextMenuAfterLoupeHide = YES;
+            _shouldShowDragHandlesAfterLoupeHide = YES;
+            
 			[self dismissLoupeWithTouchPoint:touchPoint];
+            
+			break;
 		}
 			
 		default:
@@ -1228,57 +1344,253 @@ typedef enum
 	return YES;
 }
 
-#pragma mark -
-#pragma mark UIResponder
+
+#pragma mark - Editor Delegate
+
+@synthesize editorViewDelegate = _editorViewDelegate;
+
+- (id<DTRichTextEditorViewDelegate>)editorViewDelegate
+{
+    return _editorViewDelegate;
+}
+
+- (void)setEditorViewDelegate:(id<DTRichTextEditorViewDelegate>)editorViewDelegate
+{
+    _editorViewDelegate = editorViewDelegate;
+    
+    _editorViewDelegateFlags.delegateShouldBeginEditing = [editorViewDelegate respondsToSelector:@selector(editorViewShouldBeginEditing:)];
+    _editorViewDelegateFlags.delegateDidBeginEditing = [editorViewDelegate respondsToSelector:@selector(editorViewDidBeginEditing:)];
+    _editorViewDelegateFlags.delegateShouldEndEditing = [editorViewDelegate respondsToSelector:@selector(editorViewShouldEndEditing:)];
+    _editorViewDelegateFlags.delegateDidEndEditing = [editorViewDelegate respondsToSelector:@selector(editorViewDidEndEditing:)];
+    _editorViewDelegateFlags.delegateShouldInsertTextAttachmentInRange = [editorViewDelegate respondsToSelector:@selector(editorView:shouldInsertTextAttachment:inRange:)];
+    _editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText = [editorViewDelegate respondsToSelector:@selector(editorView:shouldChangeTextInRange:replacementText:)];
+    _editorViewDelegateFlags.delegateDidChange = [editorViewDelegate respondsToSelector:@selector(editorViewDidChange:)];
+    _editorViewDelegateFlags.delegateDidChangeSelection = [editorViewDelegate respondsToSelector:@selector(editorViewDidChangeSelection:)];
+    _editorViewDelegateFlags.delegateMenuItems = [editorViewDelegate respondsToSelector:@selector(menuItems)];
+    _editorViewDelegateFlags.delegateCanPerformActionsWithSender = [editorViewDelegate respondsToSelector:@selector(editorView:canPerformAction:withSender:)];
+}
+
+- (void)notifyDelegateDidChangeSelection
+{
+    // only notify on user input while editing
+    if (self.isEditing && _editorViewDelegateFlags.delegateDidChangeSelection)
+    {
+        [self.editorViewDelegate editorViewDidChangeSelection:self];
+    }
+}
+
+- (void)notifyDelegateDidChange
+{
+    // Notify delegate
+    if (self.isEditing && _editorViewDelegateFlags.delegateDidChange)
+    {
+        [self.editorViewDelegate editorViewDidChange:self];
+    }
+    
+    // Post DTRichTextEditorTextDidChangeNotification
+    [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidChangeNotification object:self];
+}
+
+
+#pragma mark - Editing State
+
+@synthesize editable = _editable;
+
+- (void)setEditable:(BOOL)editable
+{
+    if (_editable == editable)
+        return;
+    
+    _editable = editable;
+    
+    self.overrideEditorViewDelegate = YES;
+    [self resignFirstResponder];
+    self.overrideEditorViewDelegate = NO;
+}
+
+@synthesize editing = _editing;
+
+- (void)setEditing:(BOOL)editing
+{
+    if (_editing == editing)
+        return;
+    
+    _editing = editing;
+    
+    if (editing)
+    {
+        // set cursor at end of document if nothing selected
+        if (!_selectedTextRange)
+        {
+            UITextPosition *end = [self endOfDocument];
+            DTTextRange *textRange = (DTTextRange *)[self textRangeFromPosition:end toPosition:end];
+            [self setSelectedTextRange:textRange animated:NO];
+        }
+        else
+        {
+            [self updateCursorAnimated:NO];
+        }
+        
+        // Notify editor delegate that editing began
+        if (_editorViewDelegateFlags.delegateDidBeginEditing)
+        {
+            [self.editorViewDelegate editorViewDidBeginEditing:self];
+        }
+        
+        // Post the DTRichTextEditorTextDidBeginEditing notification
+        [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidBeginEditingNotification object:self];
+    }
+    else
+    {
+        // Cleanup cursor, selection view, and context menu
+        [self updateCursorAnimated:NO];
+        [self hideContextMenu];
+        
+        // Notify editor delegate that editing ended
+        if (_editorViewDelegateFlags.delegateDidEndEditing)
+        {
+            [self.editorViewDelegate editorViewDidEndEditing:self];
+        }
+        
+        // Post the DTRichTextEditorTextDidEndEditing notification
+        [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidEndEditingNotification object:self];
+    }
+}
+
+
+#pragma mark - UIResponder
 
 - (BOOL)canBecomeFirstResponder
 {
-	return YES;
-}
-
-- (BOOL)resignFirstResponder
-{
-    if ([self isFirstResponder])
+    if (self.isEditable && _editorViewDelegateFlags.delegateShouldBeginEditing && !self.overrideEditorViewDelegate)
     {
-        // selecting via long press does not show handles
-        _selectionView.dragHandlesVisible	= NO;
-    
-        // no longer anything selected
-        self.selectedTextRange = nil;
-	
-        _cursorIsShowing = NO;
-        [self updateCursorAnimated:NO];
-        [self hideContextMenu];
+        return [self.editorViewDelegate editorViewShouldBeginEditing:self];
     }
-	
-	return [super resignFirstResponder];
+    
+    return YES;
 }
 
 - (BOOL)becomeFirstResponder
 {
-	if (![self isFirstResponder] && [self canBecomeFirstResponder])
-	{
-        _cursorIsShowing = YES;
-        
-		if (_showsKeyboardWhenBecomingFirstResponder)
-		{
-			_keyboardIsShowing = YES;
-            self.selectionView.dragHandlesVisible = YES;
-			
-			// set cursor at end of document if nothing selected
-			if (!_selectedTextRange)
-			{
-				UITextPosition *end = [self endOfDocument];
-				self.selectedTextRange = [self textRangeFromPosition:end toPosition:end];
-			}
-		}
-	}
+    [super becomeFirstResponder];
     
-	return [super becomeFirstResponder];
+    if (!self.isFirstResponder)
+        return NO;
+    
+    // Initiate editing
+    if (self.isEditable)
+    {
+        [self setEditing:YES];
+    }
+    
+    // Add custom menu items if implemented by the editor view delegate
+    if (_editorViewDelegateFlags.delegateMenuItems)
+    {
+        NSArray *delegateMenuItems = self.editorViewDelegate.menuItems;
+        
+        if (delegateMenuItems)
+        {
+            // Filter delegate's menu items to remove any that would interfere with our code
+            NSMutableArray *acceptableMenuItems = [[NSMutableArray alloc] init];
+            
+            for (UIMenuItem *menuItem in delegateMenuItems)
+            {
+                if (![self respondsToSelector:menuItem.action])
+                {
+                    [acceptableMenuItems addObject:menuItem];
+                }
+            }
+            
+            [[UIMenuController sharedMenuController] setMenuItems:acceptableMenuItems];
+        }
+    }
+    
+    return YES;
+}
+
+- (BOOL)canResignFirstResponder
+{
+    if (self.isEditing && !self.overrideEditorViewDelegate && _editorViewDelegateFlags.delegateShouldEndEditing)
+    {
+        return [self.editorViewDelegate editorViewShouldEndEditing:self];
+    }
+
+    return YES;
+}
+
+- (BOOL)resignFirstResponder
+{
+    [super resignFirstResponder];
+    
+    if (!self.isFirstResponder)
+    {
+        if (self.isEditing)
+        {
+            [self setEditing:NO];
+        }
+        else
+        {
+            // Clear markings
+            [self updateCursorAnimated:YES];
+            [self hideContextMenu];
+        }
+        
+        // Remove custom menu items
+        [[UIMenuController sharedMenuController] setMenuItems:nil];
+    }
+
+    return !self.isFirstResponder;
+}
+
+- (UIResponder *)nextResponder
+{
+    if (_stopResponderChain)
+    {
+        _stopResponderChain = NO;
+        return nil;
+    }
+    
+    return [super nextResponder];
+}
+
+- (id)forwardingTargetForSelector:(SEL)aSelector
+{
+    // If the delegate provides custom menu items, check to see if this selector is one of the menu items
+    if (_editorViewDelegateFlags.delegateMenuItems)
+    {
+        // Check delegate's custom menu items and return the delegate as the forwarding target if action matches
+        for (UIMenuItem *menuItem in self.editorViewDelegate.menuItems)
+        {
+            if (menuItem.action == aSelector)
+                return self.editorViewDelegate;
+        }
+    }
+    
+    return nil;
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
+    // Delegate gets the first say, can disable any action
+    if (_editorViewDelegateFlags.delegateCanPerformActionsWithSender)
+    {
+        if (![self.editorViewDelegate editorView:self canPerformAction:action withSender:sender])
+        {
+            _stopResponderChain = YES;
+            return NO;
+        }
+        
+        if (_editorViewDelegateFlags.delegateMenuItems)
+        {
+            // Check delegate's custom menu items and return YES if action matches
+            for (UIMenuItem *menuItem in self.editorViewDelegate.menuItems)
+            {
+                if (menuItem.action == action && ![self respondsToSelector:menuItem.action])
+                    return YES;
+            }
+        }
+    }
+    
 	if (action == @selector(selectAll:))
 	{
 		if (([[_selectedTextRange start] isEqual:(id)[self beginningOfDocument]] && [[_selectedTextRange end] isEqual:(id)[self endOfDocument]]) || ![_selectedTextRange isEmpty])
@@ -1317,7 +1629,7 @@ typedef enum
 	
 	if (action == @selector(paste:))
 	{
-        if (!_keyboardIsShowing)
+        if (!self.isEditing)
         {
             return NO;
         }
@@ -1332,7 +1644,7 @@ typedef enum
 	
 	if (action == @selector(cut:))
 	{
-        if (!_keyboardIsShowing)
+        if (!self.isEditing)
         {
             return NO;
         }
@@ -1348,11 +1660,7 @@ typedef enum
 	return NO;
 }
 
-- (BOOL)isEditable
-{
-	// return NO if we don't want keyboard to show e.g. context menu only on double tap
-	return _editable && _showsKeyboardWhenBecomingFirstResponder;
-}
+
 
 - (void)delete:(id)sender
 {
@@ -1372,6 +1680,16 @@ typedef enum
 		return;
 	}
     
+    // Check with editor delegate to allow change
+    if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
+    {
+        NSRange selectedTextRange = [(DTTextRange *)self.selectedTextRange NSRangeValue];
+        NSAttributedString *replacementText = [[NSAttributedString alloc] init];
+        
+        if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:selectedTextRange replacementText:replacementText])
+            return;
+    }
+    
 	// first step is identical with copy
 	[self copy:sender];
 	
@@ -1379,6 +1697,9 @@ typedef enum
 	[self delete:sender];
 	
 	[self.undoManager setActionName:NSLocalizedString(@"Cut", @"Undo Action that cuts text")];
+    
+    // Notify editor delegate of change
+    [self notifyDelegateDidChange];
 }
 
 - (void)copy:(id)sender
@@ -1431,6 +1752,7 @@ typedef enum
 	}
 	
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+    NSRange selectedRange = [_selectedTextRange NSRangeValue];
 	
 	UIImage *image = [pasteboard image];
 	
@@ -1451,9 +1773,15 @@ typedef enum
 			}
 		}
 		attachment.displaySize = displaySize;
+        
+        if (_editorViewDelegateFlags.delegateShouldInsertTextAttachmentInRange)
+            if (![self.editorViewDelegate editorView:self shouldInsertTextAttachment:attachment inRange:selectedRange])
+                return;
 		
 		[self replaceRange:_selectedTextRange withAttachment:attachment inParagraph:NO];
 		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
+        
+        [self notifyDelegateDidChange];
 		
 		return;
 	}
@@ -1462,9 +1790,16 @@ typedef enum
 	
 	if (url)
 	{
-		NSAttributedString *tmpString = [NSAttributedString attributedStringWithURL:url];
-		[self replaceRange:_selectedTextRange withText:tmpString];
-		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
+		NSAttributedString *attributedText = [NSAttributedString attributedStringWithURL:url];
+        
+        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
+            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:selectedRange replacementText:attributedText])
+                return;
+
+        [self replaceRange:_selectedTextRange withText:attributedText];
+        [self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
+        
+        [self notifyDelegateDidChange];
 		
 		return;
 	}
@@ -1473,11 +1808,16 @@ typedef enum
 	
 	if (webArchive)
 	{
-		NSAttributedString *attrString = [[NSAttributedString alloc] initWithWebArchive:webArchive options:[self textDefaults] documentAttributes:NULL];
-		
-		[self replaceRange:_selectedTextRange withText:attrString];
+		NSAttributedString *attributedText = [[NSAttributedString alloc] initWithWebArchive:webArchive options:[self textDefaults] documentAttributes:NULL];
+        
+        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
+            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:selectedRange replacementText:attributedText])
+                return;
+        
+		[self replaceRange:_selectedTextRange withText:attributedText];
 		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
-		
+        
+		[self notifyDelegateDidChange];
 		return;
 	}
 
@@ -1485,9 +1825,16 @@ typedef enum
     
     if (HTMLdata)
     {
-		NSAttributedString *attrString = [[NSAttributedString alloc] initWithHTMLData:HTMLdata options:[self textDefaults] documentAttributes:NULL];
-		[self replaceRange:_selectedTextRange withText:attrString];
+		NSAttributedString *attributedText = [[NSAttributedString alloc] initWithHTMLData:HTMLdata options:[self textDefaults] documentAttributes:NULL];
+        
+        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
+            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:selectedRange replacementText:attributedText])
+                return;
+        
+		[self replaceRange:_selectedTextRange withText:attributedText];
 		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
+        
+        [self notifyDelegateDidChange];
 		
 		return;
     }
@@ -1496,8 +1843,16 @@ typedef enum
 	
 	if (string)
 	{
-		[self replaceRange:_selectedTextRange withText:string];
+        NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:string];
+        
+        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
+            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:selectedRange replacementText:attributedText])
+                return;
+
+		[self replaceRange:_selectedTextRange withText:attributedText];
 		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
+        
+        [self notifyDelegateDidChange];
 	}
 }
 
@@ -1509,18 +1864,26 @@ typedef enum
 	if (wordRange)
 	{
 		_shouldReshowContextMenuAfterHide = YES;
+		self.selectionView.dragHandlesVisible = YES;
 		
-		self.selectionView.dragHandlesVisible = _keyboardIsShowing;
-		
+        [self.inputDelegate selectionWillChange:self];
 		self.selectedTextRange = wordRange;
+        [self.inputDelegate selectionDidChange:self];
+        
+        [self notifyDelegateDidChangeSelection];
 	}
 }
 
 - (void)selectAll:(id)sender
 {
 	_shouldReshowContextMenuAfterHide = YES;
+    self.selectionView.dragHandlesVisible = YES;
 	
+    [self.inputDelegate selectionWillChange:self];
 	self.selectedTextRange = [DTTextRange textRangeFromStart:self.beginningOfDocument toEnd:self.endOfDocument];
+    [self.inputDelegate selectionDidChange:self];
+    
+    [self notifyDelegateDidChangeSelection];
 }
 
 // creates an undo manager lazily in response to a shake gesture or first edit action
@@ -1534,7 +1897,9 @@ typedef enum
 	return _undoManager;
 }
 
-#pragma mark UIKeyInput Protocol
+
+#pragma mark - UIKeyInput Protocol
+
 - (BOOL)hasText
 {
 	// there should always be a \n with the default format
@@ -1559,6 +1924,16 @@ typedef enum
 
 - (void)insertText:(NSString *)text
 {
+    // Check with editor delegate to allow change
+    if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
+    {
+        NSRange range = [(DTTextRange *)self.selectedTextRange NSRangeValue];
+        NSAttributedString *replacementText = [[NSAttributedString alloc] initWithString:text];
+        
+        if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:range replacementText:replacementText])
+            return;
+    }
+    
 	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	if (!undoManager.numberOfOpenGroups)
 	{
@@ -1590,10 +1965,24 @@ typedef enum
 	
 	// hide context menu on inserting text
 	[self hideContextMenu];
+    
+    // Notify editor delegate of change
+    [self notifyDelegateDidChange];
 }
 
 - (void)deleteBackward
 {
+    // Check with editor delegate to allow change
+    if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
+    {
+        NSRange selectedTextRange = [(DTTextRange *)self.selectedTextRange NSRangeValue];
+        NSRange range = NSMakeRange(selectedTextRange.location - 1, 1);
+        NSAttributedString *replacementText = [[NSAttributedString alloc] init];
+        
+        if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:range replacementText:replacementText])
+            return;
+    }
+    
 	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	if (!undoManager.numberOfOpenGroups)
 	{
@@ -1625,6 +2014,9 @@ typedef enum
 	
 	// hide context menu on deleting text
 	[self hideContextMenu];
+    
+    // Notify editor delegate of change
+    [self notifyDelegateDidChange];
 }
 
 #pragma mark UITextInput Protocol
@@ -1820,7 +2212,7 @@ typedef enum
     // need to call extra because we control layouting
     [self setNeedsLayout];
 	
-	if (self->_keyboardIsShowing)
+	if (self.isEditing)
 	{
 		self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterReplace];
 	}
@@ -1828,12 +2220,9 @@ typedef enum
 	{
 		self.selectedTextRange = nil;
 	}
-	
+
 	[self updateCursorAnimated:NO];
 	[self scrollCursorVisibleAnimated:YES];
-	
-	// send change notification
-	[[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidBeginEditingNotification object:self userInfo:nil];
 }
 
 #pragma mark Working with Marked and Selected Text 
@@ -1843,17 +2232,7 @@ typedef enum
 }
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated
-{
-    // having a selected range implies that the cursor is showing
-    if (newTextRange)
-    {
-        _cursorIsShowing = YES;
-    }
-    else
-    {
-        _cursorIsShowing = NO;
-    }
-    
+{    
 	// check if the selected range fits with the attributed text
 	DTTextPosition *start = (DTTextPosition *)newTextRange.start;
 	DTTextPosition *end = (DTTextPosition *)newTextRange.end;
@@ -2435,7 +2814,7 @@ typedef enum
     [self setNeedsLayout];
 
 	// always position cursor at the end of the text
-    if (_keyboardIsShowing)
+    if (self.isEditing)
     {
         self.selectedTextRange = [self textRangeFromPosition:self.endOfDocument toPosition:self.endOfDocument];
     }
@@ -2528,7 +2907,7 @@ typedef enum
 
 - (UIView *)inputView
 {
-	if (_keyboardIsShowing || _showsKeyboardWhenBecomingFirstResponder)
+    if (self.isEditable)
 	{
 		return _inputView;
 	}
@@ -2546,7 +2925,7 @@ typedef enum
 
 - (UIView *)inputAccessoryView
 {
-	if (_keyboardIsShowing || _showsKeyboardWhenBecomingFirstResponder)
+    if (self.isEditable)
 	{
 		return _inputAccessoryView;
 	}
@@ -2610,7 +2989,6 @@ typedef enum
 // other properties
 @synthesize canInteractWithPasteboard = _canInteractWithPasteboard;
 @synthesize cursor = _cursor;
-@synthesize editable = _editable;
 @synthesize markedTextRange = _markedTextRange;
 @synthesize markedTextStyle = _markedTextStyle;
 @synthesize mutableLayoutFrame = _mutableLayoutFrame;

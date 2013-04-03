@@ -9,13 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "DTRichTextEditorView.h"
 
-@interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate, DTAttributedTextContentViewDelegate> {
+@class DTRichTextEditorTestState;
+
+@interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate, DTAttributedTextContentViewDelegate, DTRichTextEditorViewDelegate> {
 
 	IBOutlet DTRichTextEditorView *richEditor;
 	
 	UITextRange *lastSelection;
 	
-	BOOL isDirty;
     UIPopoverController *popover;
     
     NSCache *_imageViewCache;
@@ -48,8 +49,15 @@
 	
 	// URL
 	UIBarButtonItem *linkButton;
+    
+    // Insert Menu
+    BOOL _showInsertMenu;
 }
 
 @property (nonatomic, retain) NSCache *imageViewCache;
+
+@property (nonatomic, retain) NSArray *menuItems;
+@property (nonatomic, retain) DTRichTextEditorTestState *testState;
+@property (nonatomic, retain) UIPopoverController *testOptionsPopover;
 @end
 

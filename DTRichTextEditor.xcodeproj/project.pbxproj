@@ -21,6 +21,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		20D63B021701A1BD001E854F /* DTRichTextEditorTestState.m in Sources */ = {isa = PBXBuildFile; fileRef = 20D63AFF1701A1BD001E854F /* DTRichTextEditorTestState.m */; };
+		20D63B031701A1BD001E854F /* DTRichTextEditorTestStateController.m in Sources */ = {isa = PBXBuildFile; fileRef = 20D63B011701A1BD001E854F /* DTRichTextEditorTestStateController.m */; };
 		A704273413C37EF500EE0776 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273313C37EF500EE0776 /* ImageIO.framework */; };
 		A704273613C37EFE00EE0776 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273513C37EFE00EE0776 /* CoreText.framework */; };
 		A704273813C37F0500EE0776 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273713C37F0500EE0776 /* QuartzCore.framework */; };
@@ -418,6 +420,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		20D63AFE1701A1BD001E854F /* DTRichTextEditorTestState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditorTestState.h; sourceTree = "<group>"; };
+		20D63AFF1701A1BD001E854F /* DTRichTextEditorTestState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorTestState.m; sourceTree = "<group>"; };
+		20D63B001701A1BD001E854F /* DTRichTextEditorTestStateController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditorTestStateController.h; sourceTree = "<group>"; };
+		20D63B011701A1BD001E854F /* DTRichTextEditorTestStateController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorTestStateController.m; sourceTree = "<group>"; };
 		A704273313C37EF500EE0776 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		A704273513C37EFE00EE0776 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		A704273713C37F0500EE0776 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -701,6 +707,10 @@
 				A74351571486772100F4C766 /* DTRichTextEditorAppDelegate.m */,
 				A74351581486772100F4C766 /* DTRichTextEditorViewController.h */,
 				A74351591486772100F4C766 /* DTRichTextEditorViewController.m */,
+				20D63AFE1701A1BD001E854F /* DTRichTextEditorTestState.h */,
+				20D63AFF1701A1BD001E854F /* DTRichTextEditorTestState.m */,
+				20D63B001701A1BD001E854F /* DTRichTextEditorTestStateController.h */,
+				20D63B011701A1BD001E854F /* DTRichTextEditorTestStateController.m */,
 				A743515A1486772100F4C766 /* main.m */,
 			);
 			path = Source;
@@ -1401,6 +1411,8 @@
 				A74351641486772100F4C766 /* main.m in Sources */,
 				A7D142081508DCC000ACC855 /* DTRichTextEditorAppDelegate.m in Sources */,
 				A7D142091508DCC000ACC855 /* DTRichTextEditorViewController.m in Sources */,
+				20D63B021701A1BD001E854F /* DTRichTextEditorTestState.m in Sources */,
+				20D63B031701A1BD001E854F /* DTRichTextEditorTestStateController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

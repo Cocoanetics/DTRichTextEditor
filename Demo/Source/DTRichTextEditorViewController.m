@@ -11,6 +11,9 @@
 #import "NSAttributedString+DTRichText.h"
 #import "DTRichTextEditor.h"
 
+#import "DTRichTextEditorTestState.h"
+#import "DTRichTextEditorTestStateController.h"
+
 @implementation DTRichTextEditorViewController
 
 
@@ -43,6 +46,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    // test state
+    DTRichTextEditorTestState *testState = [[DTRichTextEditorTestState alloc] init];
+    testState.editable = YES;
+    self.testState = testState;
+    
+    UIBarButtonItem *testStateItem = [[UIBarButtonItem alloc] initWithTitle:@"Test Options" style:UIBarButtonItemStyleBordered target:self action:@selector(presentTestOptions:)];
+    self.navigationItem.rightBarButtonItem = testStateItem;
+    
 	// defaults
 	richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
     richEditor.textDelegate = self;
@@ -50,6 +61,8 @@
 	richEditor.textSizeMultiplier = 2.0;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
     richEditor.autocorrectionType = UITextAutocorrectionTypeNo;
+    richEditor.editable = YES;
+    richEditor.editorViewDelegate = self;
 	
 	NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
 	[defaults setObject:[NSNumber numberWithBool:YES] forKey:DTDefaultLinkDecoration];
@@ -64,24 +77,11 @@
 	richEditor.attributedTextContentView.shouldDrawImages = NO;
 	
 	photoButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];
-	photoButton.enabled = NO;
-	
 	boldButton = [[UIBarButtonItem alloc] initWithTitle:@"B" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleBold:)];
-	boldButton.enabled = NO;
-
 	italicButton = [[UIBarButtonItem alloc] initWithTitle:@"I" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleItalic:)];
-	italicButton.enabled = NO;
-
 	underlineButton = [[UIBarButtonItem alloc] initWithTitle:@"U" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleUnderline:)];
-	underlineButton.enabled = NO;
-    
     highlightButton = [[UIBarButtonItem alloc] initWithTitle:@"H" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleHighlight:)];
-	highlightButton.enabled = NO;
-    
     fontButton = [[UIBarButtonItem alloc] initWithTitle:@"Font" style:UIBarButtonItemStyleBordered target:self action:@selector(changeFont:)];
-	fontButton.enabled = NO;
-    
-    
 
 	UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 	
@@ -111,12 +111,10 @@
 	richEditor.inputAccessoryView = toolbar;
 	
 	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, highlightButton, fontButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, increaseIndentButton, decreaseIndentButton, spacer3, orderedListButton, unorderedListButton, spacer4, photoButton, smile, linkButton, nil]];
-	
-	// watch the selectedTextRange property
-	[richEditor addObserver:self forKeyPath:@"selectedTextRange" options:NSKeyValueObservingOptionNew context:nil];
-	
-	// notification for isDirty
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textChanged:) name:DTRichTextEditorTextDidBeginEditingNotification object:richEditor];
+    
+    // notifications
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+	[center addObserver:self selector:@selector(menuDidHide:) name:UIMenuControllerDidHideMenuNotification object:nil];
 }
 
 
@@ -379,42 +377,6 @@
     [richEditor updateFontInRange:range withFontFamilyName:@"American Typewriter" pointSize:60];
 }
 
-#pragma mark Notifications
-- (void)textChanged:(NSNotification *)notification
-{
-	isDirty = YES;
-	//NSLog(@"Text Changed");
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if ([keyPath isEqualToString:@"selectedTextRange"])
-	{
-		id newRange = [change objectForKey:NSKeyValueChangeNewKey];
-		
-		// disable photo/bold button if there is no selection
-		if (newRange == [NSNull null])
-		{
-			for (UIBarButtonItem *oneItem in toolbar.items)
-			{
-				oneItem.enabled = NO;
-			}
-		}
-		else
-		{
-			for (UIBarButtonItem *oneItem in toolbar.items)
-			{
-				oneItem.enabled = YES;
-			}
-			
-			if (richEditor.selectedTextRange.start)
-			{
-				lastSelection = richEditor.selectedTextRange;
-			}
-		}
-	}
-}
-
 #pragma mark - DTAttributedTextContentViewDelegate
 
 - (UIView *)attributedTextContentView:(DTAttributedTextContentView *)attributedTextContentView viewForAttachment:(DTTextAttachment *)attachment frame:(CGRect)frame
@@ -466,6 +428,149 @@
 - (void)linkPushed:(id)sender
 {
 	// do something when a link was pushed
+}
+
+
+#pragma mark - Presenting Test Options
+
+@synthesize testOptionsPopover = _testOptionsPopover;
+
+- (void)presentTestOptions:(id)sender
+{
+    if (self.testOptionsPopover == nil)
+    {
+        DTRichTextEditorTestStateController *controller = [[DTRichTextEditorTestStateController alloc] initWithStyle:UITableViewStylePlain];
+        controller.testState = self.testState;
+        controller.completion = ^(DTRichTextEditorTestState *modifiedTestState) {
+            richEditor.editable = modifiedTestState.editable;
+        };
+        
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+        UIPopoverController *toPopover = [[UIPopoverController alloc] initWithContentViewController:navController];
+        
+        self.testOptionsPopover = toPopover;
+    }
+    
+    [self.testOptionsPopover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    self.testOptionsPopover.passthroughViews = nil;
+}
+
+
+#pragma mark - DTRichTextEditorViewDelegate
+
+- (BOOL)editorViewShouldBeginEditing:(DTRichTextEditorView *)editorView
+{
+    NSLog(@"editorViewShouldBeginEditing:");
+    return !self.testState.blockShouldBeginEditing;
+}
+
+- (void)editorViewDidBeginEditing:(DTRichTextEditorView *)editorView
+{
+    NSLog(@"editorViewDidBeginEditing:");
+}
+
+- (BOOL)editorViewShouldEndEditing:(DTRichTextEditorView *)editorView
+{
+    NSLog(@"editorViewShouldEndEditing:");
+    return !self.testState.blockShouldEndEditing;
+}
+
+- (void)editorViewDidEndEditing:(DTRichTextEditorView *)editorView
+{
+    NSLog(@"editorViewDidEndEditing:");
+}
+
+- (BOOL)editorView:(DTRichTextEditorView *)editorView shouldInsertTextAttachment:(DTTextAttachment *)textAttachment inRange:(NSRange)range
+{
+    NSLog(@"editorView:shouldInsertTextAttachment:inRange:");
+    return YES;
+}
+
+- (BOOL)editorView:(DTRichTextEditorView *)editorView shouldChangeTextInRange:(NSRange)range replacementText:(NSAttributedString *)text
+{
+    NSLog(@"editorView:shouldChangeTextInRange:replacementText:");
+    
+    return YES;
+}
+
+- (void)editorViewDidChangeSelection:(DTRichTextEditorView *)editorView
+{
+    NSLog(@"editorViewDidChangeSelection:");
+}
+
+- (void)editorViewDidChange:(DTRichTextEditorView *)editorView
+{
+    NSLog(@"editorViewDidChange:");
+}
+
+@synthesize menuItems = _menuItems;
+
+- (NSArray *)menuItems
+{
+    if (_menuItems == nil)
+    {
+        UIMenuItem *insertItem = [[UIMenuItem alloc] initWithTitle:@"Insert" action:@selector(displayInsertMenu:)];
+        UIMenuItem *insertStarItem = [[UIMenuItem alloc] initWithTitle:@"★" action:@selector(insertStar:)];
+        UIMenuItem *insertCheckItem = [[UIMenuItem alloc] initWithTitle:@"☆" action:@selector(insertWhiteStar:)];
+        _menuItems = @[insertItem, insertStarItem, insertCheckItem];
+    }
+    
+    return _menuItems;
+}
+
+- (BOOL)editorView:(DTRichTextEditorView *)editorView canPerformAction:(SEL)action withSender:(id)sender
+{
+    DTTextRange *selectedTextRange = (DTTextRange *)editorView.selectedTextRange;
+    BOOL hasSelection = ![selectedTextRange isEmpty];
+    
+    if (action == @selector(insertStar:) || action == @selector(insertWhiteStar:))
+    {
+        return _showInsertMenu;
+    }
+    
+    if (_showInsertMenu)
+    {
+        return NO;
+    }
+    
+    if (action == @selector(displayInsertMenu:))
+    {
+        return (!hasSelection && _showInsertMenu == NO);
+    }
+    
+    // For fun, disable selectAll:
+    if (action == @selector(selectAll:))
+    {
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (void)menuDidHide:(NSNotification *)notification
+{
+    _showInsertMenu = NO;
+}
+
+- (void)displayInsertMenu:(id)sender
+{
+    _showInsertMenu = YES;
+    
+    [[UIMenuController sharedMenuController] setMenuVisible:YES animated:YES];
+}
+
+- (void)insertStar:(id)sender
+{
+    _showInsertMenu = NO;
+    
+    [richEditor insertText:@"★"];
+}
+
+- (void)insertWhiteStar:(id)sender
+{
+    _showInsertMenu = NO;
+    
+    [richEditor insertText:@"☆"];
 }
 
 
