@@ -2216,6 +2216,13 @@ typedef enum
 	if (self.isEditing)
 	{
 		self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterReplace];
+        
+        // changing the selected text range resets the override attributes, so we need to these if the user hit enter
+        if (newlineEntered && [_selectedTextRange isEmpty])
+        {
+            // without this it takes the typing attributes of the following line, losing e.g. boldness
+            self.overrideInsertionAttributes = typingAttributes;
+        }
 	}
 	else
 	{
