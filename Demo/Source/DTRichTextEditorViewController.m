@@ -480,12 +480,6 @@
     NSLog(@"editorViewDidEndEditing:");
 }
 
-- (BOOL)editorView:(DTRichTextEditorView *)editorView shouldInsertTextAttachment:(DTTextAttachment *)textAttachment inRange:(NSRange)range
-{
-    NSLog(@"editorView:shouldInsertTextAttachment:inRange:");
-    return YES;
-}
-
 - (BOOL)editorView:(DTRichTextEditorView *)editorView shouldChangeTextInRange:(NSRange)range replacementText:(NSAttributedString *)text
 {
     NSLog(@"editorView:shouldChangeTextInRange:replacementText:");
