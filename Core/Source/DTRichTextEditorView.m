@@ -169,7 +169,6 @@ typedef enum
         unsigned int delegateDidEndEditing:1;
         
         // Text and Selection Changes
-        unsigned int delegateShouldInsertTextAttachmentInRange:1;
         unsigned int delegateShouldChangeTextInRangeReplacementText:1;
         unsigned int delegateDidChange:1;
         unsigned int delegateDidChangeSelection:1;
@@ -1363,7 +1362,6 @@ typedef enum
     _editorViewDelegateFlags.delegateDidBeginEditing = [editorViewDelegate respondsToSelector:@selector(editorViewDidBeginEditing:)];
     _editorViewDelegateFlags.delegateShouldEndEditing = [editorViewDelegate respondsToSelector:@selector(editorViewShouldEndEditing:)];
     _editorViewDelegateFlags.delegateDidEndEditing = [editorViewDelegate respondsToSelector:@selector(editorViewDidEndEditing:)];
-    _editorViewDelegateFlags.delegateShouldInsertTextAttachmentInRange = [editorViewDelegate respondsToSelector:@selector(editorView:shouldInsertTextAttachment:inRange:)];
     _editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText = [editorViewDelegate respondsToSelector:@selector(editorView:shouldChangeTextInRange:replacementText:)];
     _editorViewDelegateFlags.delegateDidChange = [editorViewDelegate respondsToSelector:@selector(editorViewDidChange:)];
     _editorViewDelegateFlags.delegateDidChangeSelection = [editorViewDelegate respondsToSelector:@selector(editorViewDidChangeSelection:)];
@@ -1752,6 +1750,9 @@ typedef enum
 		return;
 	}
 	
+    DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
+	[undoManager closeAllOpenGroups];
+    
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     NSRange selectedRange = [_selectedTextRange NSRangeValue];
 	
@@ -1775,11 +1776,13 @@ typedef enum
 		}
 		attachment.displaySize = displaySize;
         
-        if (_editorViewDelegateFlags.delegateShouldInsertTextAttachmentInRange)
-            if (![self.editorViewDelegate editorView:self shouldInsertTextAttachment:attachment inRange:selectedRange])
+        NSAttributedString *attachmentString = [self attributedStringForTextRange:_selectedTextRange wrappingAttachment:attachment inParagraph:NO];
+        
+        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
+            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:[_selectedTextRange NSRangeValue] replacementText:attachmentString])
                 return;
 		
-		[self replaceRange:_selectedTextRange withAttachment:attachment inParagraph:NO];
+		[self replaceRange:_selectedTextRange withText:attachmentString];
 		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
         
         [self notifyDelegateDidChange];
@@ -2794,6 +2797,85 @@ typedef enum
 	CFRelease(defaultFont);
 	
 	return attributes;
+}
+
+// helper method for wrapping a text attachment, optionally in its own paragraph
+- (NSAttributedString *)attributedStringForTextRange:(DTTextRange *)textRange wrappingAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph
+{
+    NSRange range = [textRange NSRangeValue];
+	NSMutableDictionary *attributes = [[self typingAttributesForRange:textRange] mutableCopy];
+	
+	// just in case if there is an attachment at the insertion point
+	[attributes removeAttachment];
+	
+	BOOL needsParagraphBefore = NO;
+	BOOL needsParagraphAfter = NO;
+	
+	NSString *plainText = [self.attributedTextContentView.layoutFrame.attributedStringFragment string];
+	
+	if (inParagraph)
+	{
+		// determine if we need a paragraph break before or after the item
+		if (range.location>0)
+		{
+			NSInteger index = range.location-1;
+			
+			unichar character = [plainText characterAtIndex:index];
+			
+			if (character != '\n')
+			{
+				needsParagraphBefore = YES;
+			}
+		}
+		
+		NSUInteger indexAfterRange = NSMaxRange(range);
+		if (indexAfterRange<[plainText length])
+		{
+			unichar character = [plainText characterAtIndex:indexAfterRange];
+			
+			if (character != '\n')
+			{
+				needsParagraphAfter = YES;
+			}
+		}
+	}
+    
+    // Build the wrapper string
+	NSMutableAttributedString *wrapperString = [[NSMutableAttributedString alloc] initWithString:@""];
+	
+	if (needsParagraphBefore)
+	{
+		NSAttributedString *formattedNL = [[NSAttributedString alloc] initWithString:@"\n" attributes:attributes];
+		[wrapperString appendAttributedString:formattedNL];
+	}
+	
+	NSMutableDictionary *objectAttributes = [attributes mutableCopy];
+	
+	// need run delegate for sizing
+	CTRunDelegateRef embeddedObjectRunDelegate = createEmbeddedObjectRunDelegate((id)attachment);
+	[objectAttributes setObject:(__bridge id)embeddedObjectRunDelegate forKey:(id)kCTRunDelegateAttributeName];
+	CFRelease(embeddedObjectRunDelegate);
+	
+	// add attachment
+	[objectAttributes setObject:attachment forKey:NSAttachmentAttributeName];
+	
+	// get the font
+	CTFontRef font = (__bridge CTFontRef)[objectAttributes objectForKey:(__bridge NSString *) kCTFontAttributeName];
+	if (font)
+	{
+		[attachment adjustVerticalAlignmentForFont:font];
+	}
+	
+	NSAttributedString *tmpStr = [[NSAttributedString alloc] initWithString:UNICODE_OBJECT_PLACEHOLDER attributes:objectAttributes];
+	[wrapperString appendAttributedString:tmpStr];
+	
+	if (needsParagraphAfter)
+	{
+		NSAttributedString *formattedNL = [[NSAttributedString alloc] initWithString:@"\n" attributes:attributes];
+		[wrapperString appendAttributedString:formattedNL];
+	}
+    
+    return wrapperString;
 }
 
 #pragma mark Properties

@@ -235,18 +235,6 @@ extern NSString * const DTRichTextEditorTextDidEndEditingNotification;
  */
 
 /**
- Asks the delegate whether the specified DTTextAttachment object should be inserted in the given range.
- 
- The delegate can return NO to disallow pasting of text attachments. 
- 
- @param editorView The editor view containing the changes.
- @param textAttachment The text attachment to insert.
- @param range The current selection range.  If the length of the range is 0, range reflects the current insertion point.
- @return YES if the text attachment should be inserted, replacing any text or attachments in the selected range.
- */
-- (BOOL)editorView:(DTRichTextEditorView *)editorView shouldInsertTextAttachment:(DTTextAttachment *)textAttachment inRange:(NSRange)range;
-
-/**
  Asks the delegate whether the specified text should be replaced in the text view.
  
  @param editorView The editor view containing the changes.
