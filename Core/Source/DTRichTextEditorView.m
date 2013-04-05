@@ -2600,7 +2600,7 @@ typedef enum
 }
 
 #pragma mark Returning Text Styling Information
-- (NSDictionary *)textStylingAtPosition:(DTTextPosition *)position inDirection:(UITextStorageDirection)direction;
+- (NSDictionary *)textStylingAtPosition:(DTTextPosition *)position inDirection:(UITextStorageDirection)direction
 {
 	if (!position)
 	{
