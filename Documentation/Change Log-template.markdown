@@ -3,6 +3,13 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.4
+
+- ADDED: A delegation protocol that gives it feature parity with UITextView.
+- FIXED: override typing attributes (like setting bold with no selection) would be reset on a new line
+- FIXED: Autocorrection was broken due to removal of input delegate notification
+- UPDATED: DTCoreText to 1.4
+
 Version 1.3
 
 - NO CHANGES: This is an interim version since we want to have the version number catch up to DTCoreText. Also this is the first tagged version on our git server.
