@@ -1749,12 +1749,8 @@ typedef enum
 	{
 		return;
 	}
-	
-    DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
-	[undoManager closeAllOpenGroups];
     
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    NSRange selectedRange = [_selectedTextRange NSRangeValue];
 	
 	UIImage *image = [pasteboard image];
 	
@@ -1777,15 +1773,7 @@ typedef enum
 		attachment.displaySize = displaySize;
         
         NSAttributedString *attachmentString = [self attributedStringForTextRange:_selectedTextRange wrappingAttachment:attachment inParagraph:NO];
-        
-        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
-            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:[_selectedTextRange NSRangeValue] replacementText:attachmentString])
-                return;
-		
-		[self replaceRange:_selectedTextRange withText:attachmentString];
-		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
-        
-        [self notifyDelegateDidChange];
+        [self _pasteAttributedString:attachmentString inRange:_selectedTextRange];
 		
 		return;
 	}
@@ -1795,15 +1783,7 @@ typedef enum
 	if (url)
 	{
 		NSAttributedString *attributedText = [NSAttributedString attributedStringWithURL:url];
-        
-        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
-            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:selectedRange replacementText:attributedText])
-                return;
-
-        [self replaceRange:_selectedTextRange withText:attributedText];
-        [self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
-        
-        [self notifyDelegateDidChange];
+        [self _pasteAttributedString:attributedText inRange:_selectedTextRange];
 		
 		return;
 	}
@@ -1813,15 +1793,8 @@ typedef enum
 	if (webArchive)
 	{
 		NSAttributedString *attributedText = [[NSAttributedString alloc] initWithWebArchive:webArchive options:[self textDefaults] documentAttributes:NULL];
+        [self _pasteAttributedString:attributedText inRange:_selectedTextRange];
         
-        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
-            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:selectedRange replacementText:attributedText])
-                return;
-        
-		[self replaceRange:_selectedTextRange withText:attributedText];
-		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
-        
-		[self notifyDelegateDidChange];
 		return;
 	}
 
@@ -1830,15 +1803,7 @@ typedef enum
     if (HTMLdata)
     {
 		NSAttributedString *attributedText = [[NSAttributedString alloc] initWithHTMLData:HTMLdata options:[self textDefaults] documentAttributes:NULL];
-        
-        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
-            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:selectedRange replacementText:attributedText])
-                return;
-        
-		[self replaceRange:_selectedTextRange withText:attributedText];
-		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
-        
-        [self notifyDelegateDidChange];
+        [self _pasteAttributedString:attributedText inRange:_selectedTextRange];
 		
 		return;
     }
@@ -1848,16 +1813,27 @@ typedef enum
 	if (string)
 	{
         NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:string];
+        [self _pasteAttributedString:attributedText inRange:_selectedTextRange];
         
-        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
-            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:selectedRange replacementText:attributedText])
-                return;
-
-		[self replaceRange:_selectedTextRange withText:attributedText];
-		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
-        
-        [self notifyDelegateDidChange];
+        return;
 	}
+}
+
+- (void)_pasteAttributedString:(NSAttributedString *)attributedStringToPaste inRange:(DTTextRange *)textRange
+{
+    if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
+        if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:[textRange NSRangeValue] replacementText:attributedStringToPaste])
+            return;
+    
+    DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
+	[undoManager closeAllOpenGroups];
+    
+    [self.inputDelegate textWillChange:self];
+    [self replaceRange:textRange withText:attributedStringToPaste];
+    [self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
+    [self.inputDelegate textDidChange:self];
+    
+    [self notifyDelegateDidChange];
 }
 
 - (void)select:(id)sender
