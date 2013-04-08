@@ -597,7 +597,7 @@ typedef enum
 }
 
 
-- (BOOL)moveCursorToPositionClosestToLocation:(CGPoint)location
+- (BOOL)moveCursorToPositionClosestToLocation:(CGPoint)location notifyInputDelegate:(BOOL)notifyInputDelegate
 {
 	BOOL didMove = NO;
 	
@@ -619,7 +619,13 @@ typedef enum
     {
         didMove = YES;
 
+        if (notifyInputDelegate)
+            [self.inputDelegate selectionWillChange:self];
+        
         self.selectedTextRange = [self textRangeFromPosition:position toPosition:position];
+        
+        if (notifyInputDelegate)
+            [self.inputDelegate selectionDidChange:self];
 
         // begins a new typing undo group
         DTUndoManager *undoManager = self.undoManager;
@@ -718,7 +724,7 @@ typedef enum
 	
 	if (self.editable)
 	{
-		[self moveCursorToPositionClosestToLocation:touchPoint];
+		[self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:NO];
 	}
 	else
 	{
@@ -759,7 +765,7 @@ typedef enum
 		
 		if (self.isEditable && self.isEditing)
 		{
-			[self moveCursorToPositionClosestToLocation:touchPoint];
+			[self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:NO];
 		}
 		else
 		{
@@ -771,7 +777,7 @@ typedef enum
 	
 	if (_dragMode == DTDragModeCursorInsideMarking)
 	{
-		[self moveCursorToPositionClosestToLocation:touchPoint];
+		[self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:NO];
 		
 		loupe.touchPoint = CGRectCenter(_cursor.frame);
 		loupe.seeThroughMode = NO;
@@ -1043,7 +1049,7 @@ typedef enum
     {
         CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
     
-        if ([self moveCursorToPositionClosestToLocation:touchPoint])
+        if ([self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:YES])
         {
             // did move
             [self hideContextMenu];
@@ -1099,7 +1105,9 @@ typedef enum
     
     [self hideContextMenu];
     
+    [self.inputDelegate selectionWillChange:self];
     self.selectedTextRange = wordRange;
+    [self.inputDelegate selectionDidChange:self];
     
     [self showContextMenuFromSelection];
     
@@ -1145,7 +1153,9 @@ typedef enum
     
     [self hideContextMenu];
     
+    [self.inputDelegate selectionWillChange:self];
     self.selectedTextRange = textRange;
+    [self.inputDelegate selectionDidChange:self];
     
     [self showContextMenuFromSelection];
     
@@ -1165,6 +1175,9 @@ typedef enum
 	{
 		case UIGestureRecognizerStateBegan:
 		{
+            // wrap long press/drag handles in calls to the input delegate because the intermediate selection changes are not important to editing
+            [self.inputDelegate selectionWillChange:self];
+            
 			[self presentLoupeWithTouchPoint:touchPoint];
 			_cursor.state = DTCursorStateStatic;
             
@@ -1224,12 +1237,14 @@ typedef enum
             _shouldShowDragHandlesAfterLoupeHide = YES;
             
 			[self dismissLoupeWithTouchPoint:touchPoint];
-            
-			break;
 		}
 			
 		default:
 		{
+            _dragMode = DTDragModeNone;
+            
+            // Notify that long press/drag handles has concluded and selection may be changed
+            [self.inputDelegate selectionDidChange:self];
 		}
 	}
 }
@@ -1243,6 +1258,9 @@ typedef enum
 	{
 		case UIGestureRecognizerStateBegan:
 		{
+            // wrap long press/drag handles in calls to the input delegate because the intermediate selection changes are not important to editing
+            [self.inputDelegate selectionWillChange:self];
+            
 			[self presentLoupeWithTouchPoint:touchPoint];
 			
 			[self hideContextMenu];
@@ -1295,6 +1313,9 @@ typedef enum
 		default:
 		{
 			_dragMode = DTDragModeNone;
+            
+            // Notify that long press/drag handles has concluded and selection may be changed
+            [self.inputDelegate selectionDidChange:self];
 			
 			break;
 		}
@@ -1423,7 +1444,10 @@ typedef enum
         {
             UITextPosition *end = [self endOfDocument];
             DTTextRange *textRange = (DTTextRange *)[self textRangeFromPosition:end toPosition:end];
+            
+            [self.inputDelegate selectionWillChange:self];
             [self setSelectedTextRange:textRange animated:NO];
+            [self.inputDelegate selectionDidChange:self];
         }
         else
         {
@@ -1668,7 +1692,10 @@ typedef enum
 		return;
 	}
 	
+    [self.inputDelegate textWillChange:self];
 	[self replaceRange:_selectedTextRange withText:@""];
+    [self.inputDelegate textDidChange:self];
+    
 	[self.undoManager setActionName:NSLocalizedString(@"Delete", @"Action that deletes text")];
 }
 
@@ -1749,12 +1776,8 @@ typedef enum
 	{
 		return;
 	}
-	
-    DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
-	[undoManager closeAllOpenGroups];
     
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-    NSRange selectedRange = [_selectedTextRange NSRangeValue];
 	
 	UIImage *image = [pasteboard image];
 	
@@ -1777,15 +1800,7 @@ typedef enum
 		attachment.displaySize = displaySize;
         
         NSAttributedString *attachmentString = [self attributedStringForTextRange:_selectedTextRange wrappingAttachment:attachment inParagraph:NO];
-        
-        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
-            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:[_selectedTextRange NSRangeValue] replacementText:attachmentString])
-                return;
-		
-		[self replaceRange:_selectedTextRange withText:attachmentString];
-		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
-        
-        [self notifyDelegateDidChange];
+        [self _pasteAttributedString:attachmentString inRange:_selectedTextRange];
 		
 		return;
 	}
@@ -1795,15 +1810,7 @@ typedef enum
 	if (url)
 	{
 		NSAttributedString *attributedText = [NSAttributedString attributedStringWithURL:url];
-        
-        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
-            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:selectedRange replacementText:attributedText])
-                return;
-
-        [self replaceRange:_selectedTextRange withText:attributedText];
-        [self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
-        
-        [self notifyDelegateDidChange];
+        [self _pasteAttributedString:attributedText inRange:_selectedTextRange];
 		
 		return;
 	}
@@ -1813,15 +1820,8 @@ typedef enum
 	if (webArchive)
 	{
 		NSAttributedString *attributedText = [[NSAttributedString alloc] initWithWebArchive:webArchive options:[self textDefaults] documentAttributes:NULL];
+        [self _pasteAttributedString:attributedText inRange:_selectedTextRange];
         
-        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
-            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:selectedRange replacementText:attributedText])
-                return;
-        
-		[self replaceRange:_selectedTextRange withText:attributedText];
-		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
-        
-		[self notifyDelegateDidChange];
 		return;
 	}
 
@@ -1830,15 +1830,7 @@ typedef enum
     if (HTMLdata)
     {
 		NSAttributedString *attributedText = [[NSAttributedString alloc] initWithHTMLData:HTMLdata options:[self textDefaults] documentAttributes:NULL];
-        
-        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
-            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:selectedRange replacementText:attributedText])
-                return;
-        
-		[self replaceRange:_selectedTextRange withText:attributedText];
-		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
-        
-        [self notifyDelegateDidChange];
+        [self _pasteAttributedString:attributedText inRange:_selectedTextRange];
 		
 		return;
     }
@@ -1848,16 +1840,27 @@ typedef enum
 	if (string)
 	{
         NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:string];
+        [self _pasteAttributedString:attributedText inRange:_selectedTextRange];
         
-        if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
-            if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:selectedRange replacementText:attributedText])
-                return;
-
-		[self replaceRange:_selectedTextRange withText:attributedText];
-		[self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
-        
-        [self notifyDelegateDidChange];
+        return;
 	}
+}
+
+- (void)_pasteAttributedString:(NSAttributedString *)attributedStringToPaste inRange:(DTTextRange *)textRange
+{
+    if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
+        if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:[textRange NSRangeValue] replacementText:attributedStringToPaste])
+            return;
+    
+    DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
+	[undoManager closeAllOpenGroups];
+    
+    [self.inputDelegate textWillChange:self];
+    [self replaceRange:textRange withText:attributedStringToPaste];
+    [self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
+    [self.inputDelegate textDidChange:self];
+    
+    [self notifyDelegateDidChange];
 }
 
 - (void)select:(id)sender
@@ -2600,7 +2603,7 @@ typedef enum
 }
 
 #pragma mark Returning Text Styling Information
-- (NSDictionary *)textStylingAtPosition:(DTTextPosition *)position inDirection:(UITextStorageDirection)direction;
+- (NSDictionary *)textStylingAtPosition:(DTTextPosition *)position inDirection:(UITextStorageDirection)direction
 {
 	if (!position)
 	{
@@ -2884,6 +2887,8 @@ typedef enum
 {
 	// setting new text should remove all selections
 	[self unmarkText];
+    
+    [self.inputDelegate textWillChange:self];
 	
 	if (newAttributedText)
 	{
@@ -2901,12 +2906,16 @@ typedef enum
 		[self setDefaultText];
 	}
     
+    [self.inputDelegate textDidChange:self];
+    
     [self setNeedsLayout];
 
 	// always position cursor at the end of the text
     if (self.isEditing)
     {
+        [self.inputDelegate selectionWillChange:self];
         self.selectedTextRange = [self textRangeFromPosition:self.endOfDocument toPosition:self.endOfDocument];
+        [self.inputDelegate selectionDidChange:self];
     }
     
 	[self.undoManager removeAllActions];
