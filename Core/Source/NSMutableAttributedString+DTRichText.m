@@ -793,7 +793,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 	
 	if (range.length)
 	{
-		[self addAttribute:DTSelectionMarkerAttribute value:[NSNumber numberWithBool:YES] range:NSMakeRange(range.location + range.length - 1, 1)];
+		[self addAttribute:DTSelectionMarkerAttribute value:[NSNumber numberWithBool:YES] range:NSMakeRange(range.location + range.length, 1)];
 	}
 }
 
@@ -828,7 +828,7 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 		}
 	}];
 	
-	return NSMakeRange(firstLocation, lastLocation-firstLocation+1);
+	return NSMakeRange(firstLocation, lastLocation-firstLocation);
 }
 
 @end

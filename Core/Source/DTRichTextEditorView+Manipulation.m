@@ -696,7 +696,66 @@
 {
 	// close off typing group, this is a new operations
 	[self _closeTypingUndoGroupIfNecessary];
+    
+    // extend range to full paragraphs
+    DTTextRange *fullParagraphsRange = (DTTextRange *)[self textRangeOfParagraphsContainingRange:range];
 
+    // get the mutable text for this range
+    NSMutableAttributedString *mutableText = [[self attributedSubstringForRange:fullParagraphsRange] mutableCopy];
+    
+    // remember the current selection in the mutableText
+    NSRange tmpRange = [(DTTextRange *)self.selectedTextRange NSRangeValue];
+    tmpRange.location -= [(DTTextPosition *)fullParagraphsRange.start location];
+    [mutableText addMarkersForSelectionRange:tmpRange];
+    
+    // check if we are extending a list in the paragraph before this one
+    DTCSSListStyle *extendingList = nil;
+	NSInteger nextItemNumber = 1;
+    
+    if ([self comparePosition:[self beginningOfDocument] toPosition:[range start]] == NSOrderedAscending)
+    {
+        // position before
+        DTTextPosition *positionBefore = (DTTextPosition *)[self positionFromPosition:[range start] offset:-1];
+        NSUInteger pos = [positionBefore location];
+        
+        NSMutableAttributedString *entireAttributedString = (NSMutableAttributedString *)[self.attributedTextContentView.layoutFrame attributedStringFragment];
+        
+        NSArray *lists = [entireAttributedString attribute:DTTextListsAttribute atIndex:pos effectiveRange:NULL];
+        
+        extendingList = [lists lastObject];
+        
+        if (extendingList.type == listStyle.type)
+        {
+            listStyle = extendingList;
+        }
+        
+        if (extendingList)
+        {
+            nextItemNumber = [entireAttributedString itemNumberInTextList:extendingList atIndex:pos]+1;
+        }
+    }
+    
+    if (!extendingList)
+    {
+        nextItemNumber = [listStyle startingItemNumber];
+    }
+
+    // toggle the list style in this mutable text
+    NSRange entireMutableRange = NSMakeRange(0, [mutableText length]);
+    [mutableText toggleListStyle:listStyle inRange:entireMutableRange numberFrom:nextItemNumber];
+    
+    // get modified selection range and remove marking from substitution string
+    NSRange rangeToSelectAfterwards = [mutableText markedRangeRemove:YES];
+    rangeToSelectAfterwards.location += [(DTTextPosition *)fullParagraphsRange.start location];
+    
+    // substitute
+    [self replaceRange:fullParagraphsRange withText:mutableText];
+    
+    // restore selection
+    self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
+
+    /*
+    
 	NSRange styleRange = [(DTTextRange *)range NSRangeValue];
 	
 	NSRange rangeToSelectAfterwards = styleRange;
@@ -749,10 +808,15 @@
 	rangeToSelectAfterwards = [entireAttributedString markedRangeRemove:YES];
 	
 	// relayout range of entire list
-	[self.attributedTextContentView relayoutText];
-	
+	//[self.attributedTextContentView relayoutText];
+    
+    [self replaceRange:<#(UITextRange *)#> withText:<#(id)#>]
+    
 	self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
 	
+
+     
+     */
 	// attachment positions might have changed
 	[self.attributedTextContentView layoutSubviewsInRect:self.bounds];
 	
