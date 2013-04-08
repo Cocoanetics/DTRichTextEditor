@@ -22,6 +22,11 @@
 
 - (void)endUndoGrouping
 {
+    if (_numberOfOpenGroups==0)
+    {
+        return;
+    }
+    
 	_numberOfOpenGroups--;
 	
 	[super endUndoGrouping];
@@ -46,6 +51,20 @@
 	[self closeAllOpenGroups];
 	
 	[super undo];
+}
+
+- (void)disableUndoRegistration
+{
+    [self closeAllOpenGroups];
+    
+    [super disableUndoRegistration];
+}
+
+- (void)enableUndoRegistration
+{
+    [self closeAllOpenGroups];
+    
+    [super enableUndoRegistration];
 }
 
 #pragma mark - Properties

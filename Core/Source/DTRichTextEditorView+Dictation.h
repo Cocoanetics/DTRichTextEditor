@@ -22,4 +22,13 @@
  */
 - (UITextRange *)textRangeOfDictationPlaceholder;
 
+
+/**
+ Convenience method to retrieve the placeholder object at the given position.
+ 
+ @param position The text position to retrieve the placeholder from
+ @returns The dictation placeholder or `nil` if there is none at the given text position.
+ */
+- (DTDictationPlaceholderTextAttachment *)dictationPlaceholderAtPosition:(UITextPosition *)position;
+
 @end

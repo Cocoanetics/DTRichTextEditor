@@ -2052,6 +2052,8 @@ typedef enum
 {
 	NSParameterAssert(range);
     
+    NSAttributedString *attributedStringBeingReplaced = nil;
+    
     if (_waitingForDictationResult)
     {
         // get selection range of placeholder
@@ -2060,7 +2062,9 @@ typedef enum
         // we don't want extra whitespace
         text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
         
-        self.waitingForDictionationResult = NO;
+        // get placeholder
+        DTDictationPlaceholderTextAttachment *attachment = [self dictationPlaceholderAtPosition:[range start]];
+        attributedStringBeingReplaced = attachment.replacedAttributedString;
     }
     
 	NSMutableAttributedString *attributedString = (NSMutableAttributedString *)self.attributedTextContentView.layoutFrame.attributedStringFragment;
@@ -2186,7 +2190,10 @@ typedef enum
 	[[undoManager prepareWithInvocationTarget:self] setSelectedTextRange:textRangeBeforeChange];
 	
 	// this is the string to restore if we undo
-	NSAttributedString *attributedStringBeingReplaced = [attributedString attributedSubstringFromRange:myRange];
+    if (!attributedStringBeingReplaced)
+    {
+        attributedStringBeingReplaced = [attributedString attributedSubstringFromRange:myRange];
+    }
 	
 	// the range that the replacement will have afterwards
 	NSRange replacedRange = NSMakeRange(myRange.location, [text length]);
@@ -2199,7 +2206,14 @@ typedef enum
 
 	if (![undoManager isUndoing] && ![undoManager isRedoing])
 	{
-		[self.undoManager setActionName:NSLocalizedString(@"Typing", @"Undo Action when text is entered")];
+        if (_waitingForDictationResult)
+        {
+            [self.undoManager setActionName:NSLocalizedString(@"Dictation", @"Undo Action when text is entered via dictation")];
+        }
+        else
+        {
+            [self.undoManager setActionName:NSLocalizedString(@"Typing", @"Undo Action when text is entered")];
+        }
 	}
 	
 	[undoManager endUndoGrouping];
@@ -2237,9 +2251,11 @@ typedef enum
 
 	[self updateCursorAnimated:NO];
 	[self scrollCursorVisibleAnimated:YES];
+    
+    self.waitingForDictionationResult = NO;
 }
 
-#pragma mark Working with Marked and Selected Text 
+#pragma mark Working with Marked and Selected Text
 - (DTTextRange *)selectedTextRange
 {
 	return (id)_selectedTextRange;
