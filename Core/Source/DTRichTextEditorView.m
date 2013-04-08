@@ -597,7 +597,7 @@ typedef enum
 }
 
 
-- (BOOL)moveCursorToPositionClosestToLocation:(CGPoint)location
+- (BOOL)moveCursorToPositionClosestToLocation:(CGPoint)location notifyInputDelegate:(BOOL)notifyInputDelegate
 {
 	BOOL didMove = NO;
 	
@@ -619,9 +619,13 @@ typedef enum
     {
         didMove = YES;
 
-        [self.inputDelegate selectionWillChange:self];
+        if (notifyInputDelegate)
+            [self.inputDelegate selectionWillChange:self];
+        
         self.selectedTextRange = [self textRangeFromPosition:position toPosition:position];
-        [self.inputDelegate selectionDidChange:self];
+        
+        if (notifyInputDelegate)
+            [self.inputDelegate selectionDidChange:self];
 
         // begins a new typing undo group
         DTUndoManager *undoManager = self.undoManager;
@@ -720,7 +724,7 @@ typedef enum
 	
 	if (self.editable)
 	{
-		[self moveCursorToPositionClosestToLocation:touchPoint];
+		[self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:NO];
 	}
 	else
 	{
@@ -761,7 +765,7 @@ typedef enum
 		
 		if (self.isEditable && self.isEditing)
 		{
-			[self moveCursorToPositionClosestToLocation:touchPoint];
+			[self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:NO];
 		}
 		else
 		{
@@ -773,7 +777,7 @@ typedef enum
 	
 	if (_dragMode == DTDragModeCursorInsideMarking)
 	{
-		[self moveCursorToPositionClosestToLocation:touchPoint];
+		[self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:NO];
 		
 		loupe.touchPoint = CGRectCenter(_cursor.frame);
 		loupe.seeThroughMode = NO;
@@ -816,9 +820,7 @@ typedef enum
 	
 	if (newRange && ![newRange isEqual:_selectedTextRange])
 	{
-        [self.inputDelegate selectionWillChange:self];
 		self.selectedTextRange = newRange;
-        [self.inputDelegate selectionDidChange:self];
 	}
 	
 	if (_dragMode == DTDragModeLeftHandle)
@@ -1047,7 +1049,7 @@ typedef enum
     {
         CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
     
-        if ([self moveCursorToPositionClosestToLocation:touchPoint])
+        if ([self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:YES])
         {
             // did move
             [self hideContextMenu];
@@ -1173,6 +1175,9 @@ typedef enum
 	{
 		case UIGestureRecognizerStateBegan:
 		{
+            // wrap long press/drag handles in calls to the input delegate because the intermediate selection changes are not important to editing
+            [self.inputDelegate selectionWillChange:self];
+            
 			[self presentLoupeWithTouchPoint:touchPoint];
 			_cursor.state = DTCursorStateStatic;
             
@@ -1232,12 +1237,14 @@ typedef enum
             _shouldShowDragHandlesAfterLoupeHide = YES;
             
 			[self dismissLoupeWithTouchPoint:touchPoint];
-            
-			break;
 		}
 			
 		default:
 		{
+            _dragMode = DTDragModeNone;
+            
+            // Notify that long press/drag handles has concluded and selection may be changed
+            [self.inputDelegate selectionDidChange:self];
 		}
 	}
 }
@@ -1251,6 +1258,9 @@ typedef enum
 	{
 		case UIGestureRecognizerStateBegan:
 		{
+            // wrap long press/drag handles in calls to the input delegate because the intermediate selection changes are not important to editing
+            [self.inputDelegate selectionWillChange:self];
+            
 			[self presentLoupeWithTouchPoint:touchPoint];
 			
 			[self hideContextMenu];
@@ -1303,6 +1313,9 @@ typedef enum
 		default:
 		{
 			_dragMode = DTDragModeNone;
+            
+            // Notify that long press/drag handles has concluded and selection may be changed
+            [self.inputDelegate selectionDidChange:self];
 			
 			break;
 		}
