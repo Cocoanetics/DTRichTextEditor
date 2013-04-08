@@ -48,6 +48,20 @@
 	[super undo];
 }
 
+- (void)disableUndoRegistration
+{
+    [self closeAllOpenGroups];
+    
+    [super disableUndoRegistration];
+}
+
+- (void)enableUndoRegistration
+{
+    [self closeAllOpenGroups];
+    
+    [super enableUndoRegistration];
+}
+
 #pragma mark - Properties
 
 @synthesize numberOfOpenGroups = _numberOfOpenGroups;

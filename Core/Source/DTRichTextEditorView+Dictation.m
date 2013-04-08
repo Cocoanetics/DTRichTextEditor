@@ -7,6 +7,7 @@
 //
 
 #import "DTRichTextEditor.h"
+#import "DTDictationPlaceholderView.h"
 
 @interface DTRichTextEditorView (private)
 
@@ -23,7 +24,18 @@
 	// make a placeholder attachment, will be creating a placeholderView at run time
 	DTDictationPlaceholderTextAttachment *attachment = [[DTDictationPlaceholderTextAttachment alloc] init];
     
-	[self replaceRange:[self selectedTextRange] withAttachment:attachment inParagraph:NO];
+    UITextRange *range = [self selectedTextRange];
+    
+    // remember the replaced text in the attachment
+    attachment.replacedAttributedString = [self attributedSubstringForRange:range];
+    
+    // we don't want the inserting of the image to be an undo step
+    [self.undoManager disableUndoRegistration];
+    
+    // replace the selected text with the placeholder
+	[self replaceRange:range withAttachment:attachment inParagraph:NO];
+
+    [self.undoManager enableUndoRegistration];
     
     // this hides the selection until replaceRange:withText: inserts the result
     self.waitingForDictionationResult = YES;
@@ -46,7 +58,31 @@
         return nil;
     }
     
+    
     return [DTTextRange rangeWithNSRange:foundRange];
+}
+
+- (DTDictationPlaceholderTextAttachment *)dictationPlaceholderAtPosition:(UITextPosition *)position
+{
+    DTTextPosition *myPosition = (DTTextPosition *)position;
+    NSUInteger index = myPosition.location;
+    
+    NSRange range;
+    DTDictationPlaceholderTextAttachment *attachment = [self.attributedText attribute:NSAttachmentAttributeName atIndex:index effectiveRange:&range];
+    
+    if (range.length!=1)
+    {
+        NSLog(@"Dictation Placholder range length should only be 1");
+        return nil;
+    }
+
+    if ([attachment isKindOfClass:[DTDictationPlaceholderTextAttachment class]])
+    {
+        return attachment;
+    }
+
+    NSLog(@"No dictation placeholder at index %d", index);
+    return nil;
 }
 
 @end
