@@ -60,7 +60,7 @@
 	richEditor.defaultFontFamily = @"Helvetica";
 	richEditor.textSizeMultiplier = 2.0;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
-    richEditor.autocorrectionType = UITextAutocorrectionTypeNo;
+    richEditor.autocorrectionType = UITextAutocorrectionTypeYes;
     richEditor.editable = YES;
     richEditor.editorViewDelegate = self;
 	

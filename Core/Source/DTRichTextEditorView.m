@@ -619,7 +619,9 @@ typedef enum
     {
         didMove = YES;
 
+        [self.inputDelegate selectionWillChange:self];
         self.selectedTextRange = [self textRangeFromPosition:position toPosition:position];
+        [self.inputDelegate selectionDidChange:self];
 
         // begins a new typing undo group
         DTUndoManager *undoManager = self.undoManager;
@@ -814,7 +816,9 @@ typedef enum
 	
 	if (newRange && ![newRange isEqual:_selectedTextRange])
 	{
+        [self.inputDelegate selectionWillChange:self];
 		self.selectedTextRange = newRange;
+        [self.inputDelegate selectionDidChange:self];
 	}
 	
 	if (_dragMode == DTDragModeLeftHandle)
@@ -1099,7 +1103,9 @@ typedef enum
     
     [self hideContextMenu];
     
+    [self.inputDelegate selectionWillChange:self];
     self.selectedTextRange = wordRange;
+    [self.inputDelegate selectionDidChange:self];
     
     [self showContextMenuFromSelection];
     
@@ -1145,7 +1151,9 @@ typedef enum
     
     [self hideContextMenu];
     
+    [self.inputDelegate selectionWillChange:self];
     self.selectedTextRange = textRange;
+    [self.inputDelegate selectionDidChange:self];
     
     [self showContextMenuFromSelection];
     
@@ -1423,7 +1431,10 @@ typedef enum
         {
             UITextPosition *end = [self endOfDocument];
             DTTextRange *textRange = (DTTextRange *)[self textRangeFromPosition:end toPosition:end];
+            
+            [self.inputDelegate selectionWillChange:self];
             [self setSelectedTextRange:textRange animated:NO];
+            [self.inputDelegate selectionDidChange:self];
         }
         else
         {
@@ -1668,7 +1679,10 @@ typedef enum
 		return;
 	}
 	
+    [self.inputDelegate textWillChange:self];
 	[self replaceRange:_selectedTextRange withText:@""];
+    [self.inputDelegate textDidChange:self];
+    
 	[self.undoManager setActionName:NSLocalizedString(@"Delete", @"Action that deletes text")];
 }
 
@@ -2860,6 +2874,8 @@ typedef enum
 {
 	// setting new text should remove all selections
 	[self unmarkText];
+    
+    [self.inputDelegate textWillChange:self];
 	
 	if (newAttributedText)
 	{
@@ -2877,12 +2893,16 @@ typedef enum
 		[self setDefaultText];
 	}
     
+    [self.inputDelegate textDidChange:self];
+    
     [self setNeedsLayout];
 
 	// always position cursor at the end of the text
     if (self.isEditing)
     {
+        [self.inputDelegate selectionWillChange:self];
         self.selectedTextRange = [self textRangeFromPosition:self.endOfDocument toPosition:self.endOfDocument];
+        [self.inputDelegate selectionDidChange:self];
     }
     
 	[self.undoManager removeAllActions];
