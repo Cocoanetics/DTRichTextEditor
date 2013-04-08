@@ -45,6 +45,9 @@
 			
 			DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
 			layoutFrame.frame = rect;
+            
+            // still need to relayout in the mutable frame
+            [layoutFrame relayoutText];
 			
 			[self _sendFinishLayoutNotification];
 		}
