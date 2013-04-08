@@ -24,13 +24,32 @@
 	// make a placeholder attachment, will be creating a placeholderView at run time
 	DTDictationPlaceholderTextAttachment *attachment = [[DTDictationPlaceholderTextAttachment alloc] init];
     
-    UITextRange *range = [self selectedTextRange];
-    
+    UITextRange *range = (DTTextRange *)[self selectedTextRange];
     // remember the replaced text in the attachment
     attachment.replacedAttributedString = [self attributedSubstringForRange:range];
-    
+
     // we don't want the inserting of the image to be an undo step
     [self.undoManager disableUndoRegistration];
+
+    // add an extra space if text before the dictation insertion does not end with whitespace
+    if ([self comparePosition:[self beginningOfDocument] toPosition:[range start]] == NSOrderedAscending)
+    {
+        // not at beginning of document, check that there is a space
+        UITextPosition *positionBefore = [self positionFromPosition:[range start] offset:-1];
+        
+        UITextRange *spaceRange = [self textRangeFromPosition:positionBefore toPosition:[range start]];
+        NSString *characterBefore = [[self attributedSubstringForRange:spaceRange] string];
+        
+        // is not whitespace
+        if ([[characterBefore stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length]>0)
+        {
+            [self replaceRange:range withText:@" "];
+            
+            // advance insertion position
+            UITextPosition *positionAfter = [self positionFromPosition:[range start] offset:1];
+            range = [self textRangeFromPosition:positionAfter toPosition:positionAfter];
+        }
+    }
     
     // replace the selected text with the placeholder
 	[self replaceRange:range withAttachment:attachment inParagraph:NO];

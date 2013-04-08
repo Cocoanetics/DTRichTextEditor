@@ -22,6 +22,11 @@
 
 - (void)endUndoGrouping
 {
+    if (_numberOfOpenGroups==0)
+    {
+        return;
+    }
+    
 	_numberOfOpenGroups--;
 	
 	[super endUndoGrouping];
