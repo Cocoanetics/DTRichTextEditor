@@ -135,6 +135,9 @@ The color parameter is ignored if the method call toggles a previous URL off.
  */
 - (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber;
 
+// deletes a list prefix from the beginning of the receiver
+- (void)deleteListPrefix;
+
 /**
  @name Marking Ranges
  */

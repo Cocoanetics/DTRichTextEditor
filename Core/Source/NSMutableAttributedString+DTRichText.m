@@ -449,7 +449,7 @@
     return didChange;
 }
 
-
+/*
 - (void)extendPreviousList:(DTCSSListStyle *)listStyle toIncludeRange:(NSRange)range numberingFrom:(NSInteger)nextItemNumber
 {
 	[self beginEditing];
@@ -558,7 +558,32 @@
 	
 	[self endEditing];
 }
+ */
 
+
+- (void)deleteListPrefix
+{
+    // get range of prefix
+    NSRange fieldRange = [self rangeOfListPrefixAtIndex:0];
+    
+    if (fieldRange.location == NSNotFound)
+    {
+        return ;
+    }
+    
+    do
+    {
+        NSString *fieldAttribute = [self attribute:DTFieldAttribute atIndex:0 effectiveRange:&fieldRange];
+        
+        if ([fieldAttribute isEqualToString:@"{listprefix}"])
+        {
+            [self deleteCharactersInRange:fieldRange];
+        }
+        
+        fieldRange = [self rangeOfListPrefixAtIndex:0];
+    }
+    while (fieldRange.location != NSNotFound);
+}
 
 - (void)toggleParagraphSpacing:(BOOL)spaceOn atIndex:(NSUInteger)index
 {
@@ -686,14 +711,7 @@
 		 // remove previous prefix in either case
 		 if (effectiveListStyle)
 		 {
-             // get range of prefix
-             NSRange fieldRange;
-             NSString *fieldAttribute = [paragraphString attribute:DTFieldAttribute atIndex:0 effectiveRange:&fieldRange];
-             
-             if ([fieldAttribute isEqualToString:@"{listprefix}"])
-             {
-                 [paragraphString deleteCharactersInRange:fieldRange];
-             }
+             [paragraphString deleteListPrefix];
 		 }
 		 
 		 // insert new prefix
@@ -814,12 +832,42 @@
 #pragma mark Marking
 - (void)addMarkersForSelectionRange:(NSRange)range
 {
+    // avoid setting a margine into a prefix
+    
+    NSUInteger startPos = range.location;
+    NSUInteger endPos = NSMaxRange(range);
+    
+    NSUInteger startOffset = 0;
+    NSUInteger endOffset = 0;
+    
+    NSRange listPrefixRange = [self rangeOfListPrefixAtIndex:startPos];
+    
+    if (listPrefixRange.location != NSNotFound)
+    {
+        // need to shift marker to the right
+        startPos = NSMaxRange(listPrefixRange);
+    }
+    
+    listPrefixRange = [self rangeOfListPrefixAtIndex:endPos];
+    
+    if (listPrefixRange.location != NSNotFound)
+    {
+        endPos = NSMaxRange(listPrefixRange);
+    }
+
+    // need to shift end marker to the right
+    if (endPos>=[self length])
+    {
+        endPos--;
+        endOffset = 1;
+    }
+    
 	// mark range
-	[self addAttribute:DTSelectionMarkerAttribute value:[NSNumber numberWithBool:YES] range:NSMakeRange(range.location, 1)];
+	[self addAttribute:DTSelectionMarkerAttribute value:[NSNumber numberWithInteger:startOffset] range:NSMakeRange(startPos, 1)];
 	
 	if (range.length)
 	{
-		[self addAttribute:DTSelectionMarkerAttribute value:[NSNumber numberWithBool:YES] range:NSMakeRange(range.location + range.length, 1)];
+		[self addAttribute:DTSelectionMarkerAttribute value:[NSNumber numberWithInteger:endOffset] range:NSMakeRange(endPos, 1)];
 	}
 }
 
@@ -830,17 +878,17 @@
 	__block NSInteger firstLocation = 0;
 	__block NSInteger lastLocation = NSNotFound;
 	
-	[self enumerateAttribute:DTSelectionMarkerAttribute inRange:NSMakeRange(0, [self length]) options:0 usingBlock:^(id value, NSRange range, BOOL *stop) {
+	[self enumerateAttribute:DTSelectionMarkerAttribute inRange:NSMakeRange(0, [self length]) options:0 usingBlock:^(NSNumber *value, NSRange range, BOOL *stop) {
 		if (value)
 		{
 			switch (index)
 			{
 				case 0:
-					firstLocation = range.location;
+					firstLocation = range.location + [value integerValue];
 					lastLocation = firstLocation;
 					break;
 				case 1:
-					lastLocation = range.location;
+					lastLocation = range.location + [value integerValue];
 					*stop = YES;
 					break;
 			}

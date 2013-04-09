@@ -2119,19 +2119,29 @@ typedef enum
 		if (myRange.length == 0)
 		{
 			NSRange paragraphRange = [string rangeOfParagraphAtIndex:myRange.location];
-			NSString *paragraphString = [string substringWithRange:paragraphRange];
-			
-			NSUInteger itemNumber = [attributedString itemNumberInTextList:effectiveList atIndex:myRange.location];
-			
-			NSString *listPrefix = [effectiveList prefixWithCounter:itemNumber];
-			
+            
 			NSMutableAttributedString *mutableParagraph = [[attributedString attributedSubstringFromRange:paragraphRange] mutableCopy];
+            
+            // get range of prefix
+            NSRange fieldRange;
+            NSString *fieldAttribute = [mutableParagraph attribute:DTFieldAttribute atIndex:0 effectiveRange:&fieldRange];
+
+            BOOL paragraphHasListPrefix = NO;
+            
+            if ([fieldAttribute isEqualToString:@"{listprefix}"])
+            {
+                paragraphHasListPrefix = YES;
+            }
 			
-			if ([paragraphString hasPrefix:listPrefix])
+		//	NSUInteger itemNumber = [attributedString itemNumberInTextList:effectiveList atIndex:myRange.location];
+			
+		//	NSString *listPrefix = [effectiveList prefixWithCounter:itemNumber];
+			
+			
+			if (paragraphHasListPrefix)
 			{
-				
 				// check if it is an empty line, then we'll remove the list
-				if (myRange.location == paragraphRange.location + [listPrefix length])
+				if (myRange.location == paragraphRange.location + fieldRange.length)
 				{
 					[mutableParagraph toggleListStyle:nil inRange:NSMakeRange(0, paragraphRange.length) numberFrom:0];
 					
@@ -2139,8 +2149,7 @@ typedef enum
 					myRange = paragraphRange;
 					
 					// adjust cursor position
-					rangeToSelectAfterReplace.location -= [listPrefix length] + 1;
-					
+					rangeToSelectAfterReplace.location -= fieldRange.length + 1;
 					
 					// paragraph before gets its spacing back
 					if (paragraphRange.location)

@@ -173,6 +173,7 @@
 - (UITextRange *)textRangeOfParagraphsContainingRange:(UITextRange *)range
 {
 	NSRange myRange = [(DTTextRange *)range NSRangeValue];
+    myRange.length ++;
 	
 	// get range containing all selected paragraphs
 	NSAttributedString *attributedString = [self.attributedTextContentView.layoutFrame attributedStringFragment];

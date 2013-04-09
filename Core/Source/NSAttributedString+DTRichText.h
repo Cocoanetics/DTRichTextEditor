@@ -35,4 +35,8 @@
  */
 + (NSAttributedString *)attributedStringWithURL:(NSURL *)URL;
 
+// returns a range if the receiver has a prefix of a list
+// return {NSNotFound,0} if no prefix
+- (NSRange)rangeOfListPrefixAtIndex:(NSUInteger)index;
+
 @end
