@@ -116,10 +116,9 @@ The color parameter is ignored if the method call toggles a previous URL off.
 
 /** 
  Method to correct paragraph styles on paragraphs belonging to list
- @param range The range to update
  @note List support is not complete
  */
-- (void)correctParagraphSpacingForRange:(NSRange)range;
+- (void)correctParagraphSpacing;
 
 /**
  @name Working with Lists

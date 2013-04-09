@@ -1,6 +1,8 @@
 // everything is based on this
 #import "DTCoreText.h"
 
+#import "DTRichTextEditorConstants.h"
+
 // utility categories
 #import "NSAttributedString+DTRichText.h"
 #import "NSMutableAttributedString+DTRichText.h"

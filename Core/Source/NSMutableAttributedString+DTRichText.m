@@ -23,9 +23,8 @@
 
 #import <CoreText/CoreText.h>
 #import "UIFont+DTCoreText.h"
+#import "DTRichTextEditorConstants.h"
 
-
-NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 
 @implementation NSMutableAttributedString (DTRichText)
 
@@ -581,14 +580,37 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 	// create our mutatable paragraph style
 	DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:para];
 	
+    NSNumber *overriddenSpacingNum = [self attribute:DTParagraphSpacingOverriddenByListAttribute atIndex:paragraphRange.location effectiveRange:NULL];
+
+    BOOL hasSpace = (paragraphStyle.paragraphSpacing>0) && !overriddenSpacingNum;
+    
+    if (hasSpace == spaceOn)
+    {
+        return;
+    }
+    
 	if (spaceOn)
 	{
-		CTFontRef font = (__bridge CTFontRef)[self attribute:(id)kCTFontAttributeName atIndex:index effectiveRange:NULL];
-		CGFloat fontSize = CTFontGetSize(font);
-		paragraphStyle.paragraphSpacing = fontSize;
+        CGFloat spacing;
+        if (overriddenSpacingNum)
+        {
+            spacing = [overriddenSpacingNum floatValue];
+        }
+        else
+        {
+            CTFontRef font = (__bridge CTFontRef)[self attribute:(id)kCTFontAttributeName atIndex:index effectiveRange:NULL];
+            spacing = CTFontGetSize(font);
+        }
+            
+		paragraphStyle.paragraphSpacing = spacing;
+        
+        [self removeAttribute:DTParagraphSpacingOverriddenByListAttribute range:paragraphRange];
 	}
 	else
 	{
+        // remember the previous paragraph spacing
+        [self addAttribute:DTParagraphSpacingOverriddenByListAttribute value:[NSNumber numberWithFloat:paragraphStyle.paragraphSpacing] range:paragraphRange];
+        
 		paragraphStyle.paragraphSpacing = 0;
 	}
 	
@@ -635,7 +657,6 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 		 BOOL setNewLists = NO;
 		 
 		 NSMutableAttributedString *paragraphString = [[self attributedSubstringFromRange:substringRange] mutableCopy];
-		 
 		 
 		 DTCSSListStyle *effectiveListStyle = [currentLists lastObject];
 		 
@@ -748,11 +769,11 @@ NSString *DTSelectionMarkerAttribute = @"DTSelectionMarker";
 	[self endEditing];
 }
 
-- (void)correctParagraphSpacingForRange:(NSRange)range
+- (void)correctParagraphSpacing
 {
 	NSString *string = [self string];
 	
-	range = NSMakeRange(0, [string length]);
+	NSRange range = NSMakeRange(0, [string length]);
 	
 	// extend to entire paragraphs
 	range = [string rangeOfParagraphsContainingRange:range parBegIndex:NULL parEndIndex:NULL];

@@ -157,6 +157,19 @@
 	return range;
 }
 
+// returns the text range containing a given string index
+- (UITextRange *)textRangeOfParagraphContainingPosition:(UITextPosition *)position
+{
+	NSAttributedString *attributedString = [self.attributedTextContentView.layoutFrame attributedStringFragment];
+	NSString *string = [attributedString string];
+	
+    NSRange range = [string rangeOfParagraphAtIndex:[(DTTextPosition *)position location]];
+    
+	DTTextRange *retRange = [DTTextRange rangeWithNSRange:range];
+    
+	return retRange;
+}
+
 - (UITextRange *)textRangeOfParagraphsContainingRange:(UITextRange *)range
 {
 	NSRange myRange = [(DTTextRange *)range NSRangeValue];
@@ -698,7 +711,7 @@
 	[self _closeTypingUndoGroupIfNecessary];
     
     // extend range to full paragraphs
-    DTTextRange *fullParagraphsRange = (DTTextRange *)[self textRangeOfParagraphsContainingRange:range];
+    UITextRange *fullParagraphsRange = (DTTextRange *)[self textRangeOfParagraphsContainingRange:range];
 
     // get the mutable text for this range
     NSMutableAttributedString *mutableText = [[self attributedSubstringForRange:fullParagraphsRange] mutableCopy];
@@ -710,23 +723,32 @@
     
     // check if we are extending a list in the paragraph before this one
     DTCSSListStyle *extendingList = nil;
-	NSInteger nextItemNumber = 1;
+	NSInteger nextItemNumber = [listStyle startingItemNumber];
     
-    if ([self comparePosition:[self beginningOfDocument] toPosition:[range start]] == NSOrderedAscending)
+    // we also need to adjust the paragraph spacing of the previous paragraph
+    UITextRange *rangeOfPreviousParagraph = nil;
+    NSMutableAttributedString *mutablePreviousParagraph = nil;
+    
+    // and the following paragraph is necessary to know if we need paragraph spacing
+    DTCSSListStyle *followingList = nil;
+
+    NSMutableAttributedString *entireAttributedString = (NSMutableAttributedString *)[self.attributedTextContentView.layoutFrame attributedStringFragment];
+    
+    // if there is text before the toggled paragraphs
+    if ([self comparePosition:[self beginningOfDocument] toPosition:[fullParagraphsRange start]] == NSOrderedAscending)
     {
-        // position before
-        DTTextPosition *positionBefore = (DTTextPosition *)[self positionFromPosition:[range start] offset:-1];
+        DTTextPosition *positionBefore = (DTTextPosition *)[self positionFromPosition:[fullParagraphsRange start] offset:-1];
         NSUInteger pos = [positionBefore location];
         
-        NSMutableAttributedString *entireAttributedString = (NSMutableAttributedString *)[self.attributedTextContentView.layoutFrame attributedStringFragment];
+        // get previous paragraph
+        rangeOfPreviousParagraph = [self textRangeOfParagraphContainingPosition:positionBefore];
+        mutablePreviousParagraph = [[self attributedSubstringForRange:rangeOfPreviousParagraph] mutableCopy];
         
-        NSArray *lists = [entireAttributedString attribute:DTTextListsAttribute atIndex:pos effectiveRange:NULL];
+        DTCSSListStyle *effectiveList = [[entireAttributedString attribute:DTTextListsAttribute atIndex:pos effectiveRange:NULL] lastObject];
         
-        extendingList = [lists lastObject];
-        
-        if (extendingList.type == listStyle.type)
+        if (effectiveList.type == listStyle.type)
         {
-            listStyle = extendingList;
+            extendingList = effectiveList;
         }
         
         if (extendingList)
@@ -735,22 +757,59 @@
         }
     }
     
-    if (!extendingList)
+    // get list style following toggled paragraphs
+    if ([self comparePosition:[self endOfDocument] toPosition:[fullParagraphsRange end]] == NSOrderedDescending)
     {
-        nextItemNumber = [listStyle startingItemNumber];
+        NSUInteger index = [(DTTextPosition *)[fullParagraphsRange end] location]+1;
+        
+        followingList = [[entireAttributedString attribute:DTTextListsAttribute atIndex:index effectiveRange:NULL] lastObject];
     }
-
+    
+    
     // toggle the list style in this mutable text
     NSRange entireMutableRange = NSMakeRange(0, [mutableText length]);
     [mutableText toggleListStyle:listStyle inRange:entireMutableRange numberFrom:nextItemNumber];
+
+    // check if this became a list item
+    DTCSSListStyle *effectiveList = [[mutableText attribute:DTTextListsAttribute atIndex:0 effectiveRange:NULL] lastObject];
+
+    if (extendingList && effectiveList)
+    {
+        [mutablePreviousParagraph toggleParagraphSpacing:NO atIndex:mutablePreviousParagraph.length-1];
+    }
+    else
+    {
+        [mutablePreviousParagraph toggleParagraphSpacing:YES atIndex:mutablePreviousParagraph.length-1];
+    }
+    
+    if (followingList && effectiveList)
+    {
+        [mutableText toggleParagraphSpacing:NO atIndex:mutableText.length-1];
+    }
+    else
+    {
+        [mutableText toggleParagraphSpacing:YES atIndex:mutableText.length-1];
+    }
     
     // get modified selection range and remove marking from substitution string
     NSRange rangeToSelectAfterwards = [mutableText markedRangeRemove:YES];
     rangeToSelectAfterwards.location += [(DTTextPosition *)fullParagraphsRange.start location];
     
+    if (mutablePreviousParagraph)
+    {
+        // append this before the mutableText
+        [mutableText insertAttributedString:mutablePreviousParagraph atIndex:0];
+        
+        // adjust the range to be replaced
+        fullParagraphsRange = [self textRangeFromPosition:[rangeOfPreviousParagraph start] toPosition:[fullParagraphsRange end]];
+    }
+    
     // substitute
     [self replaceRange:fullParagraphsRange withText:mutableText];
     
+    NSLog(@"%@", mutableText);
+    NSLog(@"%@", [self.attributedTextContentView.layoutFrame.attributedStringFragment htmlString]);
+
     // restore selection
     self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
 

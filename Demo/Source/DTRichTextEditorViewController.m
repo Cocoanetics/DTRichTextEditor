@@ -58,7 +58,7 @@
 	richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
     richEditor.textDelegate = self;
 	richEditor.defaultFontFamily = @"Helvetica";
-	richEditor.textSizeMultiplier = 2.0;
+	richEditor.textSizeMultiplier = 1.0;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
     richEditor.autocorrectionType = UITextAutocorrectionTypeYes;
     richEditor.editable = YES;
@@ -70,8 +70,10 @@
 	
 	richEditor.textDefaults = defaults;
    
-    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p><p><b style=\"font-size:20px\">bold text for test</b></p><p><b style=\"font-size:7px\">bold text for test</b></p>";
+    NSString *html = @"<style>p {font-size:30px; margin-bottom:50px} ol {margin-bottom:50px}</style><p>before</p><ol><li>one</li><li>two</li><li>three</li></ol><p>after</p>";
 	[richEditor setHTMLString:html];
+    
+    [DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
 
 	// image as drawn by your custom views which you return in the delegate method
 	richEditor.attributedTextContentView.shouldDrawImages = NO;
@@ -348,6 +350,7 @@
 	
 	DTCSSListStyle *listStyle = [[DTCSSListStyle alloc] init];
 	listStyle.startingItemNumber = 1;
+    listStyle.position = DTCSSListStylePositionOutside;
 	listStyle.type = DTCSSListStyleTypeDecimal;
 	
 	[richEditor toggleListStyle:listStyle inRange:range];
