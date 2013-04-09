@@ -686,9 +686,14 @@
 		 // remove previous prefix in either case
 		 if (effectiveListStyle)
 		 {
-			 NSString *prefix = [effectiveListStyle prefixWithCounter:itemNumber];
-			 
-			 [paragraphString deleteCharactersInRange:NSMakeRange(0, [prefix length])];
+             // get range of prefix
+             NSRange fieldRange;
+             NSString *fieldAttribute = [paragraphString attribute:DTFieldAttribute atIndex:0 effectiveRange:&fieldRange];
+             
+             if ([fieldAttribute isEqualToString:@"{listprefix}"])
+             {
+                 [paragraphString deleteCharactersInRange:fieldRange];
+             }
 		 }
 		 
 		 // insert new prefix
