@@ -806,77 +806,15 @@
     }
     
     // substitute
+    [self.inputDelegate textWillChange:self];
     [self replaceRange:fullParagraphsRange withText:mutableText];
-    
-    NSLog(@"%@", mutableText);
-    NSLog(@"%@", [self.attributedTextContentView.layoutFrame.attributedStringFragment htmlString]);
+    [self.inputDelegate textDidChange:self];
 
     // restore selection
+    [self.inputDelegate selectionWillChange:self];
     self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
+    [self.inputDelegate selectionDidChange:self];
 
-    /*
-    
-	NSRange styleRange = [(DTTextRange *)range NSRangeValue];
-	
-	NSRange rangeToSelectAfterwards = styleRange;
-	
-	// get range containing all selected paragraphs
-	NSAttributedString *attributedString = [self.attributedTextContentView.layoutFrame attributedStringFragment];
-	
-	NSString *string = [attributedString string];
-	
-	NSUInteger begIndex;
-	NSUInteger endIndex;
-	
-	[string rangeOfParagraphsContainingRange:styleRange parBegIndex:&begIndex parEndIndex:&endIndex];
-	styleRange = NSMakeRange(begIndex, endIndex - begIndex); // now extended to full paragraphs
-	
-	NSMutableAttributedString *entireAttributedString = (NSMutableAttributedString *)[self.attributedTextContentView.layoutFrame attributedStringFragment];
-	
-	// check if we are extending a list
-	DTCSSListStyle *extendingList = nil;
-	NSInteger nextItemNumber;
-	
-	if (styleRange.location>0)
-	{
-		NSArray *lists = [entireAttributedString attribute:DTTextListsAttribute atIndex:styleRange.location-1 effectiveRange:NULL];
-		
-		extendingList = [lists lastObject];
-		
-		if (extendingList.type == listStyle.type)
-		{
-			listStyle = extendingList;
-		}
-	}
-	
-	if (extendingList)
-	{
-		nextItemNumber = [entireAttributedString itemNumberInTextList:extendingList atIndex:styleRange.location-1]+1;
-	}
-	else
-	{
-		nextItemNumber = [listStyle startingItemNumber];
-	}
-	
-	// remember current markers
-	[entireAttributedString addMarkersForSelectionRange:rangeToSelectAfterwards];
-	
-	// toggle the list style
-	[entireAttributedString toggleListStyle:listStyle inRange:styleRange numberFrom:nextItemNumber];
-	
-	// selected range has shifted
-	rangeToSelectAfterwards = [entireAttributedString markedRangeRemove:YES];
-	
-	// relayout range of entire list
-	//[self.attributedTextContentView relayoutText];
-    
-    [self replaceRange:<#(UITextRange *)#> withText:<#(id)#>]
-    
-	self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
-	
-
-     
-     */
 	// attachment positions might have changed
 	[self.attributedTextContentView layoutSubviewsInRect:self.bounds];
 	
