@@ -17,24 +17,16 @@
 
 - (CGRect)firstRectForRange:(NSRange)range
 {
-	NSInteger firstIndex = range.location;
-	DTCoreTextLayoutLine *firstIndexLine = [self lineContainingIndex:firstIndex];
-	
-	NSInteger lastIndex = range.location + range.length;
-	DTCoreTextLayoutLine *lastIndexLine = [self lineContainingIndex:lastIndex];
-	
-	CGRect firstIndexRect = [self cursorRectAtIndex:firstIndex];
-	CGRect lastIndexRect;
-	
-	if (lastIndexLine==firstIndexLine)
-	{
-		lastIndexRect = [self cursorRectAtIndex:lastIndex];
-		
-		return CGRectMake(firstIndexRect.origin.x, firstIndexLine.frame.origin.y, lastIndexRect.origin.x - firstIndexRect.origin.x, firstIndexLine.frame.size.height);
-	}
-	
-	// get until end of line
-	return CGRectMake(roundf(firstIndexRect.origin.x), roundf(firstIndexLine.frame.origin.y), roundf(firstIndexLine.frame.origin.x + firstIndexLine.frame.size.width - firstIndexRect.origin.x), roundf(firstIndexLine.frame.size.height));
+    NSArray *tmpRects = [self selectionRectsForRange:range];
+    
+    if (![tmpRects count])
+    {
+        return CGRectZero;
+    }
+    
+    DTTextSelectionRect *firstRect = [tmpRects objectAtIndex:0];
+    
+    return firstRect.rect;
 }
 
 - (NSArray *)selectionRectsForRange:(NSRange)range
