@@ -677,6 +677,13 @@ typedef enum
 	{
 		CGPoint loupeStartPoint;
 		CGRect rect = [_selectionView beginCaretRect];
+        
+        // avoid presenting if there is no selection
+        if (CGRectIsNull(rect))
+        {
+            return;
+        }
+        
 		loupeStartPoint = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
 		
 		_dragCursorStartMidPoint = CGRectCenter(rect);
@@ -694,6 +701,13 @@ typedef enum
 		CGPoint loupeStartPoint;
 		
 		CGRect rect = [_selectionView endCaretRect];
+        
+        // avoid presenting if there is no selection
+        if (CGRectIsNull(rect))
+        {
+            return;
+        }
+
 		loupeStartPoint = CGRectCenter(rect);
 		_dragCursorStartMidPoint = CGRectCenter(rect);
 		
@@ -709,7 +723,6 @@ typedef enum
 	
 	if (_dragMode == DTDragModeCursorInsideMarking)
 	{
-		
 		loupe.style = DTLoupeStyleRectangleWithArrow;
 		loupe.magnification = 0.5;
 		
