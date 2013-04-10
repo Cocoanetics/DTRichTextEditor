@@ -2446,54 +2446,109 @@ typedef enum
 
 - (UITextPosition *)positionFromPosition:(DTTextPosition *)position inDirection:(UITextLayoutDirection)direction offset:(NSInteger)offset
 {
-	DTTextPosition *begin = (id)[self beginningOfDocument];
-	DTTextPosition *end = (id)[self endOfDocument];
-	
+	DTTextPosition *beginningOfDocument = (id)[self beginningOfDocument];
+	DTTextPosition *endOfDocument = (id)[self endOfDocument];
+    
 	switch (direction) 
 	{
 		case UITextLayoutDirectionRight:
 		{
-			if ([position location] < end.location)
-			{
-				return [DTTextPosition textPositionWithLocation:position.location+1];
-			}
-			
-			break;
+            if ([position compare:endOfDocument] != NSOrderedAscending)
+            {
+                // already at end
+                return endOfDocument;
+            }
+            
+            NSInteger index = position.location+1;
+            
+            // skip over list prefix
+            NSAttributedString *attributedString = self.attributedText;
+            NSRange listPrefixRange = [attributedString rangeOfListPrefixAtIndex:index];
+            
+            if (listPrefixRange.location != NSNotFound)
+            {
+                index = NSMaxRange(listPrefixRange);
+            }
+            
+             // still limit it to inside of document
+            index = MIN(index, endOfDocument.location);
+            
+            return [DTTextPosition textPositionWithLocation:index];
 		}
+            
 		case UITextLayoutDirectionLeft:
 		{
-			if (position.location > begin.location)
-			{
-				return [DTTextPosition textPositionWithLocation:position.location-1];
-			}
-			
-			break;
+            if ([beginningOfDocument compare:position] != NSOrderedAscending)
+            {
+                // already at start
+                return beginningOfDocument;
+            }
+            
+            NSInteger index = position.location-1;
+
+            // skip over list prefix
+            NSAttributedString *attributedString = self.attributedText;
+            NSRange listPrefixRange = [attributedString rangeOfListPrefixAtIndex:index];
+            
+            if (listPrefixRange.location != NSNotFound)
+            {
+                index = listPrefixRange.location-1;
+            }
+            
+            // still limit inside of document
+            index = MAX(beginningOfDocument.location, index);
+            
+            return [DTTextPosition textPositionWithLocation:index];
 		}
+            
 		case UITextLayoutDirectionDown:
 		{
-			NSInteger newIndex = [self.attributedTextContentView.layoutFrame indexForPositionDownwardsFromIndex:position.location offset:offset];
+            if ([position compare:endOfDocument] != NSOrderedAscending)
+            {
+                // already at end
+                return endOfDocument;
+            }
+            
+			NSInteger index = [self.attributedTextContentView.layoutFrame indexForPositionDownwardsFromIndex:position.location offset:offset];
 			
-			if (newIndex>=0)
-			{
-				return [DTTextPosition textPositionWithLocation:newIndex];
-			}
-			else 
-			{
-				return [self endOfDocument];
-			}
+            // skip over list prefix
+            NSAttributedString *attributedString = self.attributedText;
+            NSRange listPrefixRange = [attributedString rangeOfListPrefixAtIndex:index];
+            
+            if (listPrefixRange.location != NSNotFound)
+            {
+                index = NSMaxRange(listPrefixRange);
+            }
+            
+            // still limit it to inside of document
+            index = MIN(index, endOfDocument.location);
+            
+            return [DTTextPosition textPositionWithLocation:index];
 		}
+            
 		case UITextLayoutDirectionUp:
 		{
-			NSInteger newIndex = [self.attributedTextContentView.layoutFrame indexForPositionUpwardsFromIndex:position.location offset:offset];
+            if ([beginningOfDocument compare:position] != NSOrderedAscending)
+            {
+                // already at start
+                return beginningOfDocument;
+            }
+            
+			NSInteger index = [self.attributedTextContentView.layoutFrame indexForPositionUpwardsFromIndex:position.location offset:offset];
 			
-			if (newIndex>=0)
-			{
-				return [DTTextPosition textPositionWithLocation:newIndex];
-			}
-			else 
-			{
-				return [self beginningOfDocument];
-			}
+            // skip over list prefix
+            NSAttributedString *attributedString = self.attributedText;
+            NSRange listPrefixRange = [attributedString rangeOfListPrefixAtIndex:index];
+            
+            if (listPrefixRange.location != NSNotFound)
+            {
+                index = NSMaxRange(listPrefixRange);
+            }
+            
+            // still limit it to inside of document
+            index = MIN(index, endOfDocument.location);
+            
+            return [DTTextPosition textPositionWithLocation:index];
 		}
 	}
 	
@@ -2581,6 +2636,16 @@ typedef enum
 - (UITextPosition *)closestPositionToPoint:(CGPoint)point
 {
 	NSInteger newIndex = [self.attributedTextContentView.layoutFrame closestCursorIndexToPoint:point];
+    
+    // move cursor out of a list prefix, we don't want those
+    NSAttributedString *attributedString = self.attributedText;
+    
+    NSRange listPrefixRange = [attributedString rangeOfListPrefixAtIndex:newIndex];
+    
+    if (listPrefixRange.location != NSNotFound)
+    {
+        newIndex = NSMaxRange(listPrefixRange);
+    }
 	
 	return [DTTextPosition textPositionWithLocation:newIndex];
 }
