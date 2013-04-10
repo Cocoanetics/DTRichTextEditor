@@ -472,6 +472,9 @@ typedef enum
 		[UIView setAnimationBeginsFromCurrentState:YES];
 	}
 	
+    // make sure that the target scroll rect is inside the content view
+    scrollToRect = CGRectIntersection(scrollToRect, self.attributedTextContentView.bounds);
+    
 	[self scrollRectToVisible:scrollToRect animated:NO];
 	
 	if (animated)
