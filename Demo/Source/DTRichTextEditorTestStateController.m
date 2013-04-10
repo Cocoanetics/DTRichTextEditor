@@ -10,12 +10,30 @@
 #import "DTRichTextEditorTestState.h"
 
 typedef enum {
-    DTTableRowEditableRow = 0,
-    DTTableRowBlockBeginEditingRow,
-    DTTableRowBlockEndEditingRow
-} DTTableRow;
+    DTSectionDTCoreText = 0,
+    DTSectionDTRichTextEditor,
+    DTSectionDTRichTextEditorViewDelegate,
+    DTSectionCount
+} DTSection;
+
+typedef enum {
+    DTCoreTextSectionRowDrawDebugFrames = 0,
+    DTCoreTextSectionRowCount
+} DTCoreTextSectionRow;
+
+typedef enum {
+    DTRichTextEditorSectionRowEditable = 0,
+    DTRichTextEditorSectionRowCount
+} DTRichTextEditorSectionRow;
+
+typedef enum {
+    DTRichTextEditorViewDelegateSectionRowBeginEditing = 0,
+    DTRichTextEditorViewDelegateSectionRowEndEditing,
+    DTRichTextEditorViewDelegateSectionRowCount
+} DTRichTextEditorViewDelegateSectionRow;
 
 @interface DTRichTextEditorTestStateController ()
+@property (nonatomic, retain, readonly) UISwitch *drawDebugFramesSwitch;
 @property (nonatomic, retain, readonly) UISwitch *editableSwitch;
 @property (nonatomic, retain, readonly) UISwitch *beginEditingSwitch;
 @property (nonatomic, retain, readonly) UISwitch *endEditingSwitch;
@@ -24,6 +42,25 @@ typedef enum {
 @implementation DTRichTextEditorTestStateController
 
 #pragma mark - Switches
+
+@synthesize drawDebugFramesSwitch = _drawDebugFramesSwitch;
+
+- (UISwitch *)drawDebugFramesSwitch
+{
+    if (_drawDebugFramesSwitch == nil)
+    {
+        _drawDebugFramesSwitch = [[UISwitch alloc] init];
+        _drawDebugFramesSwitch.on = self.testState.shouldDrawDebugFrames;
+        [_drawDebugFramesSwitch addTarget:self action:@selector(drawDebugFramesValueChanged:) forControlEvents:UIControlEventValueChanged];
+    }
+    
+    return _drawDebugFramesSwitch;
+}
+
+- (void)drawDebugFramesValueChanged:(UISwitch *)aSwitch
+{
+    self.testState.shouldDrawDebugFrames = aSwitch.on;
+}
 
 @synthesize editableSwitch = _editableSwitch;
 
@@ -122,12 +159,24 @@ typedef enum {
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 1;
+    return DTSectionCount;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 3;
+    switch (section) {
+        case DTSectionDTCoreText:
+            return DTCoreTextSectionRowCount;
+            
+        case DTSectionDTRichTextEditor:
+            return DTRichTextEditorSectionRowCount;
+            
+        case DTSectionDTRichTextEditorViewDelegate:
+            return DTRichTextEditorViewDelegateSectionRowCount;
+            
+        default:
+            return 0;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -141,24 +190,75 @@ typedef enum {
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
-    switch (indexPath.row) {
-        case DTTableRowEditableRow:
-            cell.textLabel.text = @"Editor is Editable";
-            cell.accessoryView = self.editableSwitch;
+    switch (indexPath.section) {
+        case DTSectionDTCoreText:
+        {
+            switch (indexPath.row)
+            {
+                case DTCoreTextSectionRowDrawDebugFrames:
+                {
+                    cell.textLabel.text = @"Draw Debug Frames";
+                    cell.accessoryView = self.drawDebugFramesSwitch;
+                    break;
+                }
+            }
             break;
-
-        case DTTableRowBlockBeginEditingRow:
-            cell.textLabel.text = @"shouldBeginEditing: return NO";
-            cell.accessoryView = self.beginEditingSwitch;
-            break;
+        }
             
-        case DTTableRowBlockEndEditingRow:
-            cell.textLabel.text = @"shouldEndEditing: return NO";
-            cell.accessoryView = self.endEditingSwitch;
+        case DTSectionDTRichTextEditor:
+        {
+            switch (indexPath.row)
+            {
+                case DTRichTextEditorSectionRowEditable:
+                {
+                    cell.textLabel.text = @"Editor is Editable";
+                    cell.accessoryView = self.editableSwitch;
+                    break;
+                }
+            }
             break;
+        }
+            
+        case DTSectionDTRichTextEditorViewDelegate:
+        {
+            switch (indexPath.row)
+            {
+                case DTRichTextEditorViewDelegateSectionRowBeginEditing:
+                {
+                    cell.textLabel.text = @"shouldBeginEditing: return NO";
+                    cell.accessoryView = self.beginEditingSwitch;
+                    break;
+                }
+                    
+                case DTRichTextEditorViewDelegateSectionRowEndEditing:
+                {
+                    cell.textLabel.text = @"shouldEndEditing: return NO";
+                    cell.accessoryView = self.endEditingSwitch;
+                    break;
+                }
+            }
+            break;
+        }
     }
     
     return cell;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    switch (section) {
+        case DTSectionDTCoreText:
+            return @"DTCoreText";
+        
+        case DTSectionDTRichTextEditor:
+            return @"DTRichTextEditor";
+            
+        case DTSectionDTRichTextEditorViewDelegate:
+            return @"DTRichTextEditorViewDelegate";
+            
+        default:
+            return nil;
+    }
 }
 
 @end
