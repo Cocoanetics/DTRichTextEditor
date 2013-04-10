@@ -141,7 +141,7 @@
 	
 	if (newLineIndex<0)
 	{
-		return -1;
+		return NSNotFound;
 	}
 	
 	CGRect currentRect = [self cursorRectAtIndex:index];
@@ -159,7 +159,7 @@
 	
 	if (newLineIndex >= [self.lines count])
 	{
-		return -1;
+		return NSNotFound;
 	}
 	
 	CGRect currentRect = [self cursorRectAtIndex:index];

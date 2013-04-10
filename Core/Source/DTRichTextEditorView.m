@@ -2444,111 +2444,123 @@ typedef enum
 	return position;
 }
 
+
+// limits position to be inside the range
+- (UITextPosition *)positionFromPosition:(UITextPosition *)position withinRange:(UITextRange *)range
+{
+    UITextPosition *beginningOfDocument = [self beginningOfDocument];
+    UITextPosition *endOfDocument = [self endOfDocument];
+    
+    if ([self comparePosition:position toPosition:beginningOfDocument] == NSOrderedAscending)
+    {
+        // position is before begin
+        return beginningOfDocument;
+    }
+
+    if ([self comparePosition:position toPosition:endOfDocument] == NSOrderedDescending)
+    {
+        // position is after end
+        return endOfDocument;
+    }
+    
+    // position is inside range
+    return position;
+}
+
+// limits position to be in range and optionally skips list prefixes in the direction
+- (UITextPosition *)positionSkippingFieldsFromPosition:(UITextPosition *)position withinRange:(UITextRange *)range inDirection:(UITextStorageDirection)direction
+{
+    NSInteger index = [(DTTextPosition *)position location];
+    
+    // skip over list prefix
+    NSAttributedString *attributedString = self.attributedText;
+    NSRange listPrefixRange = [attributedString rangeOfListPrefixAtIndex:index];
+    
+    if (listPrefixRange.location != NSNotFound)
+    {
+        // there is a prefix, skip it according to direction
+        switch (direction)
+        {
+            case UITextStorageDirectionForward:
+            {
+                index = NSMaxRange(listPrefixRange);
+                break;
+            }
+                
+            case UITextStorageDirectionBackward:
+            {
+                index = listPrefixRange.location-1;
+                break;
+            }
+        }
+    }
+    
+    // limit the position to be within the range
+    return [self positionFromPosition:[DTTextPosition textPositionWithLocation:index] withinRange:range];
+}
+
+
 - (UITextPosition *)positionFromPosition:(DTTextPosition *)position inDirection:(UITextLayoutDirection)direction offset:(NSInteger)offset
 {
 	DTTextPosition *beginningOfDocument = (id)[self beginningOfDocument];
 	DTTextPosition *endOfDocument = (id)[self endOfDocument];
+    UITextRange *entireDocument = [self textRangeFromPosition:beginningOfDocument toPosition:endOfDocument];
+    UITextPosition *maxPosition = [self positionWithinRange:entireDocument farthestInDirection:direction];
     
-	switch (direction) 
+    if ([self comparePosition:position toPosition:maxPosition] == NSOrderedSame)
+    {
+        // already at limit
+        return position;
+    }
+    
+	switch (direction)
 	{
 		case UITextLayoutDirectionRight:
 		{
-            if ([position compare:endOfDocument] != NSOrderedAscending)
-            {
-                // already at end
-                return endOfDocument;
-            }
+            UITextPosition *newPosition = [self positionFromPosition:position offset:1];
             
-            NSInteger index = position.location+1;
-            
-            // skip over list prefix
-            NSAttributedString *attributedString = self.attributedText;
-            NSRange listPrefixRange = [attributedString rangeOfListPrefixAtIndex:index];
-            
-            if (listPrefixRange.location != NSNotFound)
-            {
-                index = NSMaxRange(listPrefixRange);
-            }
-            
-             // still limit it to inside of document
-            index = MIN(index, endOfDocument.location);
-            
-            return [DTTextPosition textPositionWithLocation:index];
+            // TODO: make the skipping direction dependend on the text direction in this paragraph
+            return [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
 		}
             
 		case UITextLayoutDirectionLeft:
 		{
-            if ([beginningOfDocument compare:position] != NSOrderedAscending)
-            {
-                // already at start
-                return beginningOfDocument;
-            }
+            UITextPosition *newPosition = [self positionFromPosition:position offset:-1];
             
-            NSInteger index = position.location-1;
-
-            // skip over list prefix
-            NSAttributedString *attributedString = self.attributedText;
-            NSRange listPrefixRange = [attributedString rangeOfListPrefixAtIndex:index];
-            
-            if (listPrefixRange.location != NSNotFound)
-            {
-                index = listPrefixRange.location-1;
-            }
-            
-            // still limit inside of document
-            index = MAX(beginningOfDocument.location, index);
-            
-            return [DTTextPosition textPositionWithLocation:index];
+            // TODO: make the skipping direction dependend on the text direction in this paragraph
+            return [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
 		}
             
 		case UITextLayoutDirectionDown:
 		{
-            if ([position compare:endOfDocument] != NSOrderedAscending)
-            {
-                // already at end
-                return endOfDocument;
-            }
-            
 			NSInteger index = [self.attributedTextContentView.layoutFrame indexForPositionDownwardsFromIndex:position.location offset:offset];
 			
-            // skip over list prefix
-            NSAttributedString *attributedString = self.attributedText;
-            NSRange listPrefixRange = [attributedString rangeOfListPrefixAtIndex:index];
-            
-            if (listPrefixRange.location != NSNotFound)
+            // document ends
+            if (index == NSNotFound)
             {
-                index = NSMaxRange(listPrefixRange);
+                return maxPosition;
             }
             
-            // still limit it to inside of document
-            index = MIN(index, endOfDocument.location);
-            
-            return [DTTextPosition textPositionWithLocation:index];
+            UITextPosition *newPosition = [DTTextPosition textPositionWithLocation:index];
+
+            // limit the position to be within the range and skip list prefixes
+            return [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
 		}
             
 		case UITextLayoutDirectionUp:
 		{
-            if ([beginningOfDocument compare:position] != NSOrderedAscending)
-            {
-                // already at start
-                return beginningOfDocument;
-            }
-            
 			NSInteger index = [self.attributedTextContentView.layoutFrame indexForPositionUpwardsFromIndex:position.location offset:offset];
-			
-            // skip over list prefix
-            NSAttributedString *attributedString = self.attributedText;
-            NSRange listPrefixRange = [attributedString rangeOfListPrefixAtIndex:index];
             
-            if (listPrefixRange.location != NSNotFound)
+            // nothing up there
+            if (index == NSNotFound)
             {
-                index = NSMaxRange(listPrefixRange);
+                return maxPosition;
             }
+			
+            UITextPosition *newPosition = [DTTextPosition textPositionWithLocation:index];
             
-            // still limit it to inside of document
-            index = MIN(index, endOfDocument.location);
-            
-            return [DTTextPosition textPositionWithLocation:index];
+            // limit the position to be within the range and skip list prefixes
+            return [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
 		}
 	}
 	
@@ -2582,14 +2594,24 @@ typedef enum
 }
 
 #pragma mark Determining Layout and Writing Direction
-// TODO: How is this implemented correctly?
 - (UITextPosition *)positionWithinRange:(UITextRange *)range farthestInDirection:(UITextLayoutDirection)direction
 {
-	return [self endOfDocument];
+    switch (direction)
+    {
+        case UITextLayoutDirectionRight:
+        case UITextLayoutDirectionDown:
+            return [range end];
+
+        case UITextLayoutDirectionLeft:
+        case UITextLayoutDirectionUp:
+            return [range start];
+    }
 }
 
 - (UITextRange *)characterRangeByExtendingPosition:(DTTextPosition *)position inDirection:(UITextLayoutDirection)direction
 {
+    [[NSException exceptionWithName:@"Not Implemented" reason:@"When is this method being used?" userInfo:nil] raise];
+    
 	DTTextPosition *end = (id)[self endOfDocument];
 	
 	return [DTTextRange textRangeFromStart:position toEnd:end];
