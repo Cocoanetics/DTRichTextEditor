@@ -86,8 +86,6 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     NSString *html = @"<style>p {font-size:30px; margin-bottom:50px} ol {margin-bottom:50px}</style><p>before</p><ol><li>one</li><li>two</li><li>three</li></ol><p>after</p>";
 	[richEditor setHTMLString:html];
     
-    [DTCoreTextLayoutFrame setShouldDrawDebugFrames:YES];
-
 	// image as drawn by your custom views which you return in the delegate method
 	richEditor.attributedTextContentView.shouldDrawImages = NO;
 	
