@@ -13,6 +13,9 @@
 
 #import "DTRichTextEditorTestState.h"
 #import "DTRichTextEditorTestStateController.h"
+#import "DTCoreTextLayoutFrame.h"
+
+NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 
 @implementation DTRichTextEditorViewController
 
@@ -46,22 +49,32 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    // test state
-    DTRichTextEditorTestState *testState = [[DTRichTextEditorTestState alloc] init];
-    testState.editable = YES;
-    self.testState = testState;
+    // initialize test state
+    NSData *testStateData = [[NSUserDefaults standardUserDefaults] dataForKey:DTTestStateDataKey];
+    
+    if (testStateData)
+    {
+        self.testState = [NSKeyedUnarchiver unarchiveObjectWithData:testStateData];
+    }
+    else
+    {
+        self.testState = [[DTRichTextEditorTestState alloc] init];
+        self.testState.editable = YES;
+    }
     
     UIBarButtonItem *testStateItem = [[UIBarButtonItem alloc] initWithTitle:@"Test Options" style:UIBarButtonItemStyleBordered target:self action:@selector(presentTestOptions:)];
     self.navigationItem.rightBarButtonItem = testStateItem;
     
 	// defaults
+    [DTCoreTextLayoutFrame setShouldDrawDebugFrames:self.testState.shouldDrawDebugFrames];
+    
 	richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
     richEditor.textDelegate = self;
 	richEditor.defaultFontFamily = @"Helvetica";
 	richEditor.textSizeMultiplier = 2.0;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
     richEditor.autocorrectionType = UITextAutocorrectionTypeYes;
-    richEditor.editable = YES;
+    richEditor.editable = self.testState.editable;
     richEditor.editorViewDelegate = self;
 	
 	NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
@@ -442,7 +455,17 @@
         DTRichTextEditorTestStateController *controller = [[DTRichTextEditorTestStateController alloc] initWithStyle:UITableViewStylePlain];
         controller.testState = self.testState;
         controller.completion = ^(DTRichTextEditorTestState *modifiedTestState) {
+            // Store test state in user defaults
+            NSData *testStateData = [NSKeyedArchiver archivedDataWithRootObject:modifiedTestState];
+            [[NSUserDefaults standardUserDefaults] setObject:testStateData forKey:DTTestStateDataKey];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            
+            // Update editable
             richEditor.editable = modifiedTestState.editable;
+            
+            // Update debug frames
+            [DTCoreTextLayoutFrame setShouldDrawDebugFrames:modifiedTestState.shouldDrawDebugFrames];
+            [richEditor.attributedTextContentView setNeedsDisplay];
         };
         
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
