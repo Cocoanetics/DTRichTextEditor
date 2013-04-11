@@ -60,11 +60,11 @@
 		A75D434117006087003CAF38 /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A75D430517005893003CAF38 /* libDTLoupe.a */; };
 		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
 		A776DBF21716C9C100E71F36 /* DTRichTextEditorView+Lists.h in Headers */ = {isa = PBXBuildFile; fileRef = A776DBF01716C9C100E71F36 /* DTRichTextEditorView+Lists.h */; };
-		A776DBF31716C9C100E71F36 /* DTRichTextEditorView+Lists.h in Headers */ = {isa = PBXBuildFile; fileRef = A776DBF01716C9C100E71F36 /* DTRichTextEditorView+Lists.h */; };
+		A776DBF31716C9C100E71F36 /* DTRichTextEditorView+Lists.h in Headers */ = {isa = PBXBuildFile; fileRef = A776DBF01716C9C100E71F36 /* DTRichTextEditorView+Lists.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A776DBF41716C9C100E71F36 /* DTRichTextEditorView+Lists.m in Sources */ = {isa = PBXBuildFile; fileRef = A776DBF11716C9C100E71F36 /* DTRichTextEditorView+Lists.m */; };
 		A776DBF51716C9C100E71F36 /* DTRichTextEditorView+Lists.m in Sources */ = {isa = PBXBuildFile; fileRef = A776DBF11716C9C100E71F36 /* DTRichTextEditorView+Lists.m */; };
 		A776DC1F1716CABA00E71F36 /* DTRichTextEditorView+Ranges.h in Headers */ = {isa = PBXBuildFile; fileRef = A776DC1D1716CABA00E71F36 /* DTRichTextEditorView+Ranges.h */; };
-		A776DC201716CABA00E71F36 /* DTRichTextEditorView+Ranges.h in Headers */ = {isa = PBXBuildFile; fileRef = A776DC1D1716CABA00E71F36 /* DTRichTextEditorView+Ranges.h */; };
+		A776DC201716CABA00E71F36 /* DTRichTextEditorView+Ranges.h in Headers */ = {isa = PBXBuildFile; fileRef = A776DC1D1716CABA00E71F36 /* DTRichTextEditorView+Ranges.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A776DC211716CABA00E71F36 /* DTRichTextEditorView+Ranges.m in Sources */ = {isa = PBXBuildFile; fileRef = A776DC1E1716CABA00E71F36 /* DTRichTextEditorView+Ranges.m */; };
 		A776DC221716CABA00E71F36 /* DTRichTextEditorView+Ranges.m in Sources */ = {isa = PBXBuildFile; fileRef = A776DC1E1716CABA00E71F36 /* DTRichTextEditorView+Ranges.m */; };
 		A777834B16CAADD70048BED1 /* DTHTMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = A777834A16CAADD70048BED1 /* DTHTMLParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -79,7 +79,7 @@
 		A785187B168737B500DACF4B /* DTCoreTextFunctions.h in Headers */ = {isa = PBXBuildFile; fileRef = A7851877168737B400DACF4B /* DTCoreTextFunctions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7914A78153EF6BB00F6CC86 /* icon_smile.gif in Resources */ = {isa = PBXBuildFile; fileRef = A7914A77153EF6BB00F6CC86 /* icon_smile.gif */; };
 		A7A02EE81714469A00789F2C /* DTRichTextEditorConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = A7A02EE61714469A00789F2C /* DTRichTextEditorConstants.h */; };
-		A7A02EE91714469A00789F2C /* DTRichTextEditorConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = A7A02EE61714469A00789F2C /* DTRichTextEditorConstants.h */; };
+		A7A02EE91714469A00789F2C /* DTRichTextEditorConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = A7A02EE61714469A00789F2C /* DTRichTextEditorConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7A02EEA1714469A00789F2C /* DTRichTextEditorConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = A7A02EE71714469A00789F2C /* DTRichTextEditorConstants.m */; };
 		A7A02EEB1714469A00789F2C /* DTRichTextEditorConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = A7A02EE71714469A00789F2C /* DTRichTextEditorConstants.m */; };
 		A7C9EB0615DFA98500BFE033 /* DTCoreTextLayoutFrame+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A743511F1486771700F4C766 /* DTCoreTextLayoutFrame+DTRichText.m */; };
