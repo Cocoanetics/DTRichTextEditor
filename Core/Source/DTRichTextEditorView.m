@@ -506,11 +506,8 @@ typedef enum
 
 - (void)updateCursorAnimated:(BOOL)animated
 {
-	// re-add cursor
-	DTTextPosition *position = (id)self.selectedTextRange.start;
-	
 	// no selection
-    if ((self.isEditable && !self.isEditing) || !self.isFirstResponder)
+    if ((self.selectedTextRange == nil) || (self.isEditable && !self.isEditing) || !self.isFirstResponder)
 	{
 		// remove cursor
 		[_cursor removeFromSuperview];
@@ -527,7 +524,8 @@ typedef enum
 	{
         // show as a single caret
 		_selectionView.dragHandlesVisible = NO;
-		
+        
+		DTTextPosition *position = (id)self.selectedTextRange.start;
 		CGRect cursorFrame = [self caretRectForPosition:position];
 		cursorFrame.size.width = 3.0;
 		
@@ -2278,22 +2276,25 @@ typedef enum
 }
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated
-{    
-	// check if the selected range fits with the attributed text
-	DTTextPosition *start = (DTTextPosition *)newTextRange.start;
-	DTTextPosition *end = (DTTextPosition *)newTextRange.end;
-	
-	if ([end compare:(DTTextPosition *)[self endOfDocument]] == NSOrderedDescending)
-	{
-		end = (DTTextPosition *)[self endOfDocument];
-	}
-	
-	if ([start compare:end] == NSOrderedDescending)
-	{
-		start = end;
-	}
-	
-	newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
+{
+    if (newTextRange != nil)
+    {
+        // check if the selected range fits with the attributed text
+        DTTextPosition *start = (DTTextPosition *)newTextRange.start;
+        DTTextPosition *end = (DTTextPosition *)newTextRange.end;
+        
+        if ([end compare:(DTTextPosition *)[self endOfDocument]] == NSOrderedDescending)
+        {
+            end = (DTTextPosition *)[self endOfDocument];
+        }
+        
+        if ([start compare:end] == NSOrderedDescending)
+        {
+            start = end;
+        }
+        
+        newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
+    }
 	
 	[self willChangeValueForKey:@"selectedTextRange"];
 	
