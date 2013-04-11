@@ -575,7 +575,7 @@
     {
         NSString *fieldAttribute = [self attribute:DTFieldAttribute atIndex:0 effectiveRange:&fieldRange];
         
-        if ([fieldAttribute isEqualToString:@"{listprefix}"])
+        if ([fieldAttribute isEqualToString:DTListPrefixField])
         {
             [self deleteCharactersInRange:fieldRange];
         }

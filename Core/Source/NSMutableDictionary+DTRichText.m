@@ -121,7 +121,7 @@
 {
     NSString *field = [self objectForKey:DTFieldAttribute];
     
-    if ([field isEqualToString:@"{listprefix}"])
+    if ([field isEqualToString:DTListPrefixField])
     {
         [self removeObjectForKey:DTFieldAttribute];
     }

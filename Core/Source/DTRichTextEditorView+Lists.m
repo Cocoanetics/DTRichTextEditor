@@ -186,7 +186,7 @@
         // check if character before the cursor is the list prefix
         NSString *field = ([attributedText attribute:DTFieldAttribute atIndex:selectionRange.location-1 effectiveRange:NULL]);
         
-        if ([field isEqualToString:@"{listprefix}"])
+        if ([field isEqualToString:DTListPrefixField])
         {
             BOOL paragraphIsEmpty = (NSMaxRange(selectedParagraphRange)-1 == selectionRange.location);
             
@@ -238,78 +238,6 @@
     [self updateCursorAnimated:NO];
     
     [self hideContextMenu];
-    /*
-    
-        
-		if ([range isEmpty])
-		{
-            DTTextRange *paragraphRange = [self textRangeOfParagraphContainingPosition:[range start]];
-            
-            
-			NSMutableAttributedString *mutableParagraph = [[attributedString attributedSubstringFromRange:paragraphRange] mutableCopy];
-            
-            // get range of prefix
-            NSRange fieldRange;
-            NSString *fieldAttribute = [mutableParagraph attribute:DTFieldAttribute atIndex:0 effectiveRange:&fieldRange];
-            
-            BOOL paragraphHasListPrefix = NO;
-            
-            if ([fieldAttribute isEqualToString:@"{listprefix}"])
-            {
-                paragraphHasListPrefix = YES;
-            }
-			
-			if (paragraphHasListPrefix)
-			{
-				// check if it is an empty line, then we'll remove the list
-				if (myRange.location == paragraphRange.location + fieldRange.length)
-				{
-					[mutableParagraph updateListStyle:nil inRange:NSMakeRange(0, paragraphRange.length) numberFrom:0];
-					
-					text = mutableParagraph;
-					myRange = paragraphRange;
-					
-					// adjust cursor position
-					rangeToSelectAfterReplace.location -= fieldRange.length + 1;
-					
-					// paragraph before gets its spacing back
-					if (paragraphRange.location)
-					{
-						[attributedString toggleParagraphSpacing:YES atIndex:paragraphRange.location-1];
-					}
-				}
-				else
-				{
-					NSInteger itemNumber = [attributedString itemNumberInTextList:effectiveList atIndex:myRange.location]+1;
-					NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:effectiveList listIndent:20 attributes:typingAttributes];
-					
-					// extend to include paragraph before in inserted string
-					[mutableParagraph toggleParagraphSpacing:NO atIndex:0];
-					
-					// remove part after the insertion point
-					NSInteger suffixLength = NSMaxRange(paragraphRange)-myRange.location;
-					NSRange suffixRange = NSMakeRange(myRange.location - paragraphRange.location, suffixLength);
-					[mutableParagraph deleteCharactersInRange:suffixRange];
-					
-					// adjust the insertion range to include the paragraph
-					myRange.length += (myRange.location-paragraphRange.location);
-					myRange.location = paragraphRange.location;
-					
-					// add the NL
-					[mutableParagraph appendAttributedString:text];
-					
-					// append the new prefix
-					[mutableParagraph appendAttributedString:prefixAttributedString];
-					
-					text = mutableParagraph;
-					
-					// adjust cursor position
-					rangeToSelectAfterReplace.location += [prefixAttributedString length];
-				}
-			}
-		}
-	}
-     */
     
     return YES;
 }
