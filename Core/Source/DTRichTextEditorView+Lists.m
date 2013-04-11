@@ -28,103 +28,88 @@
 	// close off typing group, this is a new operations
 	[self _closeTypingUndoGroupIfNecessary];
     
-    // extend range to full paragraphs
-    UITextRange *fullParagraphsRange = (DTTextRange *)[self textRangeOfParagraphsContainingRange:range];
+    NSAttributedString *attributedText = self.attributedText;
+
+    // get the full paragraph range of our selection
+    NSRange selectionRange = [(DTTextRange *)range NSRangeValue];
+    NSRange paragraphRange = [attributedText.string rangeOfParagraphsContainingRange:selectionRange parBegIndex:NULL parEndIndex:NULL];
+
+    // check if there is a list at this index
+    NSUInteger index = [(DTTextPosition *)[range start] location];
+    DTCSSListStyle *listAtPosition = [[attributedText attribute:DTTextListsAttribute atIndex:index effectiveRange:NULL] lastObject];
     
-    // get the mutable text for this range
-    NSMutableAttributedString *mutableText = [[self attributedSubstringForRange:fullParagraphsRange] mutableCopy];
+    NSRange totalRange = paragraphRange;
+    
+    if (listAtPosition)
+    {
+        // find extent of this list
+        NSRange listRange = [attributedText rangeOfTextList:listAtPosition atIndex:index];
+        
+        // join up all ranges, this is the range we want to modify in the end
+        totalRange = NSUnionRange(listRange, paragraphRange);
+        
+        if (listAtPosition.type == listStyle.type)
+        {
+            // remove list (= toggle)
+            listStyle = nil;
+        }
+    }
+    else
+    {
+        DTCSSListStyle *extendingList = nil;
+        
+        // check if extending a list on the paragraph before the selection
+        if (paragraphRange.location > 0)
+        {
+            extendingList = [[attributedText attribute:DTTextListsAttribute atIndex:paragraphRange.location-1 effectiveRange:NULL] lastObject];
+            
+            // if same type we extend the list
+            if (extendingList.type == listStyle.type)
+            {
+                // find extent of this list
+                NSRange listRange = [attributedText rangeOfTextList:extendingList atIndex:paragraphRange.location-1];
+                
+                // join up all ranges, this is the range we want to modify in the end
+                totalRange = NSUnionRange(listRange, totalRange);
+            }
+        }
+
+        // check if extending a list on the paragraph after the selection
+        if (NSMaxRange(paragraphRange) < attributedText.length)
+        {
+            extendingList = [[attributedText attribute:DTTextListsAttribute atIndex:NSMaxRange(paragraphRange) effectiveRange:NULL] lastObject];
+            
+            // if same type we extend the list
+            if (extendingList.type == listStyle.type)
+            {
+                // find extent of this list
+                NSRange listRange = [attributedText rangeOfTextList:extendingList atIndex:NSMaxRange(paragraphRange)];
+                
+                // join up all ranges, this is the range we want to modify in the end
+                totalRange = NSUnionRange(listRange, totalRange);
+            }
+        }
+    }
+    
+    // get a mutable substring for the total range
+    NSMutableAttributedString *mutableText = [[attributedText attributedSubstringFromRange:totalRange] mutableCopy];
     
     // remember the current selection in the mutableText
     NSRange tmpRange = [(DTTextRange *)self.selectedTextRange NSRangeValue];
-    tmpRange.location -= [(DTTextPosition *)fullParagraphsRange.start location];
+    tmpRange.location -= totalRange.location;
     [mutableText addMarkersForSelectionRange:tmpRange];
     
-    // check if we are extending a list in the paragraph before this one
-    DTCSSListStyle *extendingList = nil;
-	NSInteger nextItemNumber = [listStyle startingItemNumber];
-    
-    // we also need to adjust the paragraph spacing of the previous paragraph
-    UITextRange *rangeOfPreviousParagraph = nil;
-    NSMutableAttributedString *mutablePreviousParagraph = nil;
-    
-    // and the following paragraph is necessary to know if we need paragraph spacing
-    DTCSSListStyle *followingList = nil;
-    
-    NSAttributedString *attributedText = self.attributedText;
-    
-    // if there is text before the toggled paragraphs
-    if ([self comparePosition:[self beginningOfDocument] toPosition:[fullParagraphsRange start]] == NSOrderedAscending)
-    {
-        DTTextPosition *positionBefore = (DTTextPosition *)[self positionFromPosition:[fullParagraphsRange start] offset:-1];
-        NSUInteger pos = [positionBefore location];
-        
-        // get previous paragraph
-        rangeOfPreviousParagraph = [self textRangeOfParagraphContainingPosition:positionBefore];
-        mutablePreviousParagraph = [[self attributedSubstringForRange:rangeOfPreviousParagraph] mutableCopy];
-        
-        DTCSSListStyle *effectiveList = [[attributedText attribute:DTTextListsAttribute atIndex:pos effectiveRange:NULL] lastObject];
-        
-        if (effectiveList.type == listStyle.type)
-        {
-            extendingList = effectiveList;
-        }
-        
-        if (extendingList)
-        {
-            nextItemNumber = [attributedText itemNumberInTextList:extendingList atIndex:pos]+1;
-        }
-    }
-    
-    // get list style following toggled paragraphs
-    if ([self comparePosition:[self endOfDocument] toPosition:[fullParagraphsRange end]] == NSOrderedDescending)
-    {
-        NSUInteger index = [(DTTextPosition *)[fullParagraphsRange end] location]+1;
-        
-        followingList = [[attributedText attribute:DTTextListsAttribute atIndex:index effectiveRange:NULL] lastObject];
-    }
-    
-    
-    // toggle the list style in this mutable text
-    NSRange entireMutableRange = NSMakeRange(0, [mutableText length]);
-    [mutableText toggleListStyle:listStyle inRange:entireMutableRange numberFrom:nextItemNumber];
-    
-    // check if this became a list item
-    DTCSSListStyle *effectiveList = [[mutableText attribute:DTTextListsAttribute atIndex:0 effectiveRange:NULL] lastObject];
-    
-    if (extendingList && effectiveList)
-    {
-        [mutablePreviousParagraph toggleParagraphSpacing:NO atIndex:mutablePreviousParagraph.length-1];
-    }
-    else
-    {
-        [mutablePreviousParagraph toggleParagraphSpacing:YES atIndex:mutablePreviousParagraph.length-1];
-    }
-    
-    if (followingList && effectiveList)
-    {
-        [mutableText toggleParagraphSpacing:NO atIndex:mutableText.length-1];
-    }
-    else
-    {
-        [mutableText toggleParagraphSpacing:YES atIndex:mutableText.length-1];
-    }
+    // modify
+    NSRange mutableRange = NSMakeRange(0, mutableText.length);
+    [mutableText updateListStyle:listStyle inRange:mutableRange numberFrom:listStyle.startingItemNumber];
     
     // get modified selection range and remove marking from substitution string
     NSRange rangeToSelectAfterwards = [mutableText markedRangeRemove:YES];
-    rangeToSelectAfterwards.location += [(DTTextPosition *)fullParagraphsRange.start location];
-    
-    if (mutablePreviousParagraph)
-    {
-        // append this before the mutableText
-        [mutableText insertAttributedString:mutablePreviousParagraph atIndex:0];
-        
-        // adjust the range to be replaced
-        fullParagraphsRange = [self textRangeFromPosition:[rangeOfPreviousParagraph start] toPosition:[fullParagraphsRange end]];
-    }
+    rangeToSelectAfterwards.location += totalRange.location;
     
     // substitute
     [self.inputDelegate textWillChange:self];
-    [self replaceRange:fullParagraphsRange withText:mutableText];
+    [self replaceRange:[DTTextRange rangeWithNSRange:totalRange] withText:mutableText];
     [self.inputDelegate textDidChange:self];
     
     // restore selection
@@ -132,13 +117,13 @@
     self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
     [self.inputDelegate selectionDidChange:self];
     
-	// attachment positions might have changed
-	[self.attributedTextContentView layoutSubviewsInRect:self.bounds];
-	
-	// cursor positions might have changed
-	[self updateCursorAnimated:NO];
-	
-	[self hideContextMenu];
+    // attachment positions might have changed
+    [self.attributedTextContentView layoutSubviewsInRect:self.bounds];
+    
+    // cursor positions might have changed
+    [self updateCursorAnimated:NO];
+    
+    [self hideContextMenu];
 }
 
 @end

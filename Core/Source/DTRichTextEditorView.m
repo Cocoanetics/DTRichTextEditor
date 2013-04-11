@@ -2133,17 +2133,12 @@ typedef enum
                 paragraphHasListPrefix = YES;
             }
 			
-		//	NSUInteger itemNumber = [attributedString itemNumberInTextList:effectiveList atIndex:myRange.location];
-			
-		//	NSString *listPrefix = [effectiveList prefixWithCounter:itemNumber];
-			
-			
 			if (paragraphHasListPrefix)
 			{
 				// check if it is an empty line, then we'll remove the list
 				if (myRange.location == paragraphRange.location + fieldRange.length)
 				{
-					[mutableParagraph toggleListStyle:nil inRange:NSMakeRange(0, paragraphRange.length) numberFrom:0];
+					[mutableParagraph updateListStyle:nil inRange:NSMakeRange(0, paragraphRange.length) numberFrom:0];
 					
 					text = mutableParagraph;
 					myRange = paragraphRange;
