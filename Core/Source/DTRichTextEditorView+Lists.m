@@ -36,19 +36,21 @@
 
     // check if there is a list at this index
     NSUInteger index = [(DTTextPosition *)[range start] location];
-    DTCSSListStyle *listAtPosition = [[attributedText attribute:DTTextListsAttribute atIndex:index effectiveRange:NULL] lastObject];
+    DTCSSListStyle *listAroundSelection = [[attributedText attribute:DTTextListsAttribute atIndex:index effectiveRange:NULL] lastObject];
+    DTCSSListStyle *listBeforeSelection = nil;
+    DTCSSListStyle *listAfterSelection = nil;
     
-    NSRange totalRange = paragraphRange;
+    NSRange totalRange = paragraphRange; // range of the entire attributed string to modify
     
-    if (listAtPosition)
+    if (listAroundSelection)
     {
         // find extent of this list
-        NSRange listRange = [attributedText rangeOfTextList:listAtPosition atIndex:index];
+        NSRange listRange = [attributedText rangeOfTextList:listAroundSelection atIndex:index];
         
         // join up all ranges, this is the range we want to modify in the end
         totalRange = NSUnionRange(listRange, paragraphRange);
         
-        if (listAtPosition.type == listStyle.type)
+        if (listAroundSelection.type == listStyle.type)
         {
             // remove list (= toggle)
             listStyle = nil;
@@ -56,18 +58,16 @@
     }
     else
     {
-        DTCSSListStyle *extendingList = nil;
-        
         // check if extending a list on the paragraph before the selection
         if (paragraphRange.location > 0)
         {
-            extendingList = [[attributedText attribute:DTTextListsAttribute atIndex:paragraphRange.location-1 effectiveRange:NULL] lastObject];
+            listBeforeSelection = [[attributedText attribute:DTTextListsAttribute atIndex:paragraphRange.location-1 effectiveRange:NULL] lastObject];
             
             // if same type we extend the list
-            if (extendingList.type == listStyle.type)
+            if (listBeforeSelection.type == listStyle.type)
             {
                 // find extent of this list
-                NSRange listRange = [attributedText rangeOfTextList:extendingList atIndex:paragraphRange.location-1];
+                NSRange listRange = [attributedText rangeOfTextList:listBeforeSelection atIndex:paragraphRange.location-1];
                 
                 // join up all ranges, this is the range we want to modify in the end
                 totalRange = NSUnionRange(listRange, totalRange);
@@ -77,13 +77,13 @@
         // check if extending a list on the paragraph after the selection
         if (NSMaxRange(paragraphRange) < attributedText.length)
         {
-            extendingList = [[attributedText attribute:DTTextListsAttribute atIndex:NSMaxRange(paragraphRange) effectiveRange:NULL] lastObject];
+            listAfterSelection = [[attributedText attribute:DTTextListsAttribute atIndex:NSMaxRange(paragraphRange) effectiveRange:NULL] lastObject];
             
             // if same type we extend the list
-            if (extendingList.type == listStyle.type)
+            if (listAfterSelection.type == listStyle.type)
             {
                 // find extent of this list
-                NSRange listRange = [attributedText rangeOfTextList:extendingList atIndex:NSMaxRange(paragraphRange)];
+                NSRange listRange = [attributedText rangeOfTextList:listAfterSelection atIndex:NSMaxRange(paragraphRange)];
                 
                 // join up all ranges, this is the range we want to modify in the end
                 totalRange = NSUnionRange(listRange, totalRange);
@@ -101,6 +101,34 @@
     
     // modify
     NSRange mutableRange = NSMakeRange(0, mutableText.length);
+    
+    if (!listStyle)
+    {
+        // only modify selected paragraphs
+        mutableRange = paragraphRange;
+        mutableRange.location -= totalRange.location;
+
+        // split lists
+        if (totalRange.location<paragraphRange.location)
+        {
+            listBeforeSelection = [listAroundSelection copy];
+            
+            // from start to the beginning of the selected paragraph
+            NSRange updateRange = NSMakeRange(0, mutableRange.location);
+            [mutableText updateListStyle:listBeforeSelection inRange:updateRange numberFrom:listBeforeSelection.startingItemNumber];
+        }
+        
+        if (NSMaxRange(paragraphRange)<NSMaxRange(totalRange))
+        {
+            listAfterSelection = [listAroundSelection copy];
+            
+            // from character after the selected paragraphs until end of modified region
+            NSInteger indexAfterSelectedParagraphs = NSMaxRange(mutableRange);
+            NSRange updateRange = NSMakeRange(indexAfterSelectedParagraphs, mutableText.length - indexAfterSelectedParagraphs + 1);
+            [mutableText updateListStyle:listAfterSelection inRange:updateRange numberFrom:listAfterSelection.startingItemNumber];
+        }
+    }
+    
     [mutableText updateListStyle:listStyle inRange:mutableRange numberFrom:listStyle.startingItemNumber];
     
     // get modified selection range and remove marking from substitution string
