@@ -648,7 +648,7 @@
 	[self endEditing];
 }
 
-- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber
+- (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber
 {
 	[self beginEditing];
 	
@@ -677,45 +677,13 @@
 		 // get current attributes
 		 NSDictionary *currentAttributes = [self attributesAtIndex:substringRange.location effectiveRange:NULL];
 		 
-		 NSArray *currentLists = [currentAttributes objectForKey:DTTextListsAttribute];
-		 
-		 BOOL setNewLists = NO;
-		 
 		 NSMutableAttributedString *paragraphString = [[self attributedSubstringFromRange:substringRange] mutableCopy];
 		 
-		 DTCSSListStyle *effectiveListStyle = [currentLists lastObject];
-		 
-		 if (effectiveListStyle)
-		 {
-			 // there is a list, if it is different, update
-			 if (effectiveListStyle.type != listStyle.type)
-			 {
-				 setNewLists = YES;
-			 }
-			 else
-			 {
-				 // toggle list off
-				 setNewLists = NO;
-			 }
-		 }
-		 else
-		 {
-			 setNewLists = YES;
-		 }
-		 
-		 if (!listStyle)
-		 {
-			 setNewLists = NO;
-		 }
-		 
 		 // remove previous prefix in either case
-		 if (effectiveListStyle)
-		 {
-             [paragraphString deleteListPrefix];
-		 }
+        [paragraphString deleteListPrefix];
 		 
 		 // insert new prefix
-		 if (setNewLists)
+		 if (listStyle)
 		 {
 			 NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:listStyle listIndent:20 attributes:currentAttributes];
 			 
@@ -758,7 +726,7 @@
 		 
 		 NSRange paragraphRange = NSMakeRange(0, [paragraphString length]);
 		 
-		 if (setNewLists)
+		 if (listStyle)
 		 {
 			 [paragraphString addAttribute:DTTextListsAttribute value:[NSArray arrayWithObject:listStyle] range:paragraphRange];
 		 }

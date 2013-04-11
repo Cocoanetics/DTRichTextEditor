@@ -125,17 +125,18 @@ The color parameter is ignored if the method call toggles a previous URL off.
  */
 
 /**
- Convenience method to toggle list styling on entire paragraphs
+ Convenience method to update list styling on entire paragraphs
  
- If there is already a list style at the begin of the specified range then it is removed.
- @param listStyle The list style to toggle
+ @param listStyle The list style to apply or `nil` to remove list styling
  @param range The range to update
  @param nextItemNumber For numbered lists this is the next number to use
  @note List support is not complete
  */
-- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber;
+- (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber;
 
-// deletes a list prefix from the beginning of the receiver
+/**
+ Deletes a list prefix from the receiver if there is one.
+ */
 - (void)deleteListPrefix;
 
 /**
