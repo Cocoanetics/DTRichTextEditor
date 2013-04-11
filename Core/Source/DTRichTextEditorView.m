@@ -2028,7 +2028,11 @@ typedef enum
 		
 		if ([docStart compare:delEnd] == NSOrderedAscending)
 		{
-			DTTextPosition *delStart = [DTTextPosition textPositionWithLocation:delEnd.location-1];
+            UITextRange *entireDocument = [self textRangeFromPosition:[self beginningOfDocument] toPosition:[self endOfDocument]];
+            UITextPosition *delStart = [self positionFromPosition:delEnd offset:-1];
+			
+            // skips fields
+            delStart = [self positionSkippingFieldsFromPosition:delStart withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
 			DTTextRange *delRange = [DTTextRange textRangeFromStart:delStart toEnd:delEnd];
 			
 			[self replaceRange:delRange  withText:@""];
