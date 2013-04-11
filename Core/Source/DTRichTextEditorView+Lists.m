@@ -179,6 +179,19 @@
     
     NSRange selectionRange = [(DTTextRange *)range NSRangeValue];
     
+    if (selectionRange.location>0)
+    {
+        // check if character before the cursor is the list prefix
+        NSString *field = ([attributedText attribute:DTFieldAttribute atIndex:selectionRange.location-1 effectiveRange:NULL]);
+        
+        if ([field isEqualToString:@"{listprefix}"])
+        {
+            [self toggleListStyle:nil inRange:range];
+            
+            return YES;
+        }
+    }
+    
     NSRange totalRange = NSUnionRange(listRange, selectionRange);
     
     // get a mutable substring for the total range
@@ -205,7 +218,6 @@
     [self.inputDelegate textWillChange:self];
     [self replaceRange:[DTTextRange rangeWithNSRange:totalRange] withText:mutableText];
     [self.inputDelegate textDidChange:self];
-    
     
     // restore selection
     [self.inputDelegate selectionWillChange:self];

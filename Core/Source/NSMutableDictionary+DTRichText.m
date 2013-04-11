@@ -123,7 +123,7 @@
     
     if ([field isEqualToString:@"{listprefix}"])
     {
-        [self removeObjectForKey:field];
+        [self removeObjectForKey:DTFieldAttribute];
     }
 }
 
