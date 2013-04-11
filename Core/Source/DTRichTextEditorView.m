@@ -2918,12 +2918,10 @@ typedef enum
 
 - (void)setAttributedText:(NSAttributedString *)newAttributedText
 {
-	// setting new text should remove all selections
-	[self unmarkText];
+    if (self.attributedString && [self.attributedString isEqualToAttributedString:newAttributedText])
+        return;
     
-    [self.inputDelegate textWillChange:self];
-	
-	if (newAttributedText)
+	if (newAttributedText && newAttributedText.length > 0)
 	{
 		NSMutableAttributedString *tmpString = [newAttributedText mutableCopy];
 		
@@ -2932,17 +2930,26 @@ typedef enum
 			[tmpString appendString:@"\n"];
 		}
 		
-		[super setAttributedString:tmpString];
+		[self _setAttributedText:tmpString];
 	}
 	else
 	{
+        // setDefaultText -> setHTMLString: -> setAttributedText:
 		[self setDefaultText];
 	}
+}
+
+- (void)_setAttributedText:(NSAttributedString *)newAttributedText
+{
+    // setting new text should remove all selections
+	[self unmarkText];
     
+    [self.inputDelegate textWillChange:self];
+    [super setAttributedString:newAttributedText];
     [self.inputDelegate textDidChange:self];
     
     [self setNeedsLayout];
-
+    
 	// always position cursor at the end of the text
     if (self.isEditing)
     {
@@ -2961,7 +2968,7 @@ typedef enum
 
 - (NSAttributedString *)attributedString
 {
-    return self.attributedString;
+    return [super attributedString];
 }
 
 - (void)setMarkedTextRange:(UITextRange *)markedTextRange
