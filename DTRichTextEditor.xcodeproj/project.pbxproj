@@ -59,6 +59,14 @@
 		A75D432717005E15003CAF38 /* DTLoupe.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A75D430717005893003CAF38 /* DTLoupe.bundle */; };
 		A75D434117006087003CAF38 /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A75D430517005893003CAF38 /* libDTLoupe.a */; };
 		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
+		A776DBF21716C9C100E71F36 /* DTRichTextEditorView+Lists.h in Headers */ = {isa = PBXBuildFile; fileRef = A776DBF01716C9C100E71F36 /* DTRichTextEditorView+Lists.h */; };
+		A776DBF31716C9C100E71F36 /* DTRichTextEditorView+Lists.h in Headers */ = {isa = PBXBuildFile; fileRef = A776DBF01716C9C100E71F36 /* DTRichTextEditorView+Lists.h */; };
+		A776DBF41716C9C100E71F36 /* DTRichTextEditorView+Lists.m in Sources */ = {isa = PBXBuildFile; fileRef = A776DBF11716C9C100E71F36 /* DTRichTextEditorView+Lists.m */; };
+		A776DBF51716C9C100E71F36 /* DTRichTextEditorView+Lists.m in Sources */ = {isa = PBXBuildFile; fileRef = A776DBF11716C9C100E71F36 /* DTRichTextEditorView+Lists.m */; };
+		A776DC1F1716CABA00E71F36 /* DTRichTextEditorView+Ranges.h in Headers */ = {isa = PBXBuildFile; fileRef = A776DC1D1716CABA00E71F36 /* DTRichTextEditorView+Ranges.h */; };
+		A776DC201716CABA00E71F36 /* DTRichTextEditorView+Ranges.h in Headers */ = {isa = PBXBuildFile; fileRef = A776DC1D1716CABA00E71F36 /* DTRichTextEditorView+Ranges.h */; };
+		A776DC211716CABA00E71F36 /* DTRichTextEditorView+Ranges.m in Sources */ = {isa = PBXBuildFile; fileRef = A776DC1E1716CABA00E71F36 /* DTRichTextEditorView+Ranges.m */; };
+		A776DC221716CABA00E71F36 /* DTRichTextEditorView+Ranges.m in Sources */ = {isa = PBXBuildFile; fileRef = A776DC1E1716CABA00E71F36 /* DTRichTextEditorView+Ranges.m */; };
 		A777834B16CAADD70048BED1 /* DTHTMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = A777834A16CAADD70048BED1 /* DTHTMLParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A784849F15E28DF400595102 /* DTAttributedTextContentView.h in Headers */ = {isa = PBXBuildFile; fileRef = A784849E15E28DF400595102 /* DTAttributedTextContentView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7851872168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A7851870168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h */; };
@@ -489,6 +497,10 @@
 		A74D940316D4CA4600824C2B /* DTUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTUtils.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/DTUtils.h; sourceTree = "<group>"; };
 		A7556EC31679BCE5000AC6D9 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		A76F898113C73421007B37C0 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
+		A776DBF01716C9C100E71F36 /* DTRichTextEditorView+Lists.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTRichTextEditorView+Lists.h"; sourceTree = "<group>"; };
+		A776DBF11716C9C100E71F36 /* DTRichTextEditorView+Lists.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DTRichTextEditorView+Lists.m"; sourceTree = "<group>"; };
+		A776DC1D1716CABA00E71F36 /* DTRichTextEditorView+Ranges.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTRichTextEditorView+Ranges.h"; sourceTree = "<group>"; };
+		A776DC1E1716CABA00E71F36 /* DTRichTextEditorView+Ranges.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DTRichTextEditorView+Ranges.m"; sourceTree = "<group>"; };
 		A777834A16CAADD70048BED1 /* DTHTMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLParser.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/DTHTMLParser/DTHTMLParser.h; sourceTree = "<group>"; };
 		A784849E15E28DF400595102 /* DTAttributedTextContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextContentView.h; path = DTCoreText/Core/Source/DTAttributedTextContentView.h; sourceTree = "<group>"; };
 		A7851870168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTHTMLWriter+DTWebArchive.h"; sourceTree = "<group>"; };
@@ -677,6 +689,10 @@
 				A7402D54167F66E000BE0AAF /* DTRichTextEditorView+DTCoreText.m */,
 				A7402D4D167F571A00BE0AAF /* DTRichTextEditorView+Manipulation.h */,
 				A7402D4E167F571B00BE0AAF /* DTRichTextEditorView+Manipulation.m */,
+				A776DBF01716C9C100E71F36 /* DTRichTextEditorView+Lists.h */,
+				A776DBF11716C9C100E71F36 /* DTRichTextEditorView+Lists.m */,
+				A776DC1D1716CABA00E71F36 /* DTRichTextEditorView+Ranges.h */,
+				A776DC1E1716CABA00E71F36 /* DTRichTextEditorView+Ranges.m */,
 				A7DA0C5316822CEC007637A2 /* DTUndoManager.h */,
 				A7DA0C5416822CEC007637A2 /* DTUndoManager.m */,
 				A7A02EE61714469A00789F2C /* DTRichTextEditorConstants.h */,
@@ -935,6 +951,8 @@
 				A70E62F416C2534E009B47BF /* DTDictationPlaceholderView.h in Headers */,
 				A70E62F516C2534E009B47BF /* DTDictationPlaceholderTextAttachment.h in Headers */,
 				A7A02EE81714469A00789F2C /* DTRichTextEditorConstants.h in Headers */,
+				A776DBF21716C9C100E71F36 /* DTRichTextEditorView+Lists.h in Headers */,
+				A776DC1F1716CABA00E71F36 /* DTRichTextEditorView+Ranges.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1021,6 +1039,8 @@
 				A70E62F216C25340009B47BF /* DTDictationPlaceholderView.h in Headers */,
 				A70E62F316C25340009B47BF /* DTDictationPlaceholderTextAttachment.h in Headers */,
 				A7A02EE91714469A00789F2C /* DTRichTextEditorConstants.h in Headers */,
+				A776DBF31716C9C100E71F36 /* DTRichTextEditorView+Lists.h in Headers */,
+				A776DC201716CABA00E71F36 /* DTRichTextEditorView+Ranges.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1384,6 +1404,8 @@
 				A7851874168707A800DACF4B /* DTHTMLWriter+DTWebArchive.m in Sources */,
 				A7E8443016C1419D00F3EEDE /* DTRichTextEditorView+Dictation.m in Sources */,
 				A7A02EEA1714469A00789F2C /* DTRichTextEditorConstants.m in Sources */,
+				A776DBF41716C9C100E71F36 /* DTRichTextEditorView+Lists.m in Sources */,
+				A776DC211716CABA00E71F36 /* DTRichTextEditorView+Ranges.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1413,6 +1435,8 @@
 				A7851875168707A800DACF4B /* DTHTMLWriter+DTWebArchive.m in Sources */,
 				A7E8443116C1419D00F3EEDE /* DTRichTextEditorView+Dictation.m in Sources */,
 				A7A02EEB1714469A00789F2C /* DTRichTextEditorConstants.m in Sources */,
+				A776DBF51716C9C100E71F36 /* DTRichTextEditorView+Lists.m in Sources */,
+				A776DC221716CABA00E71F36 /* DTRichTextEditorView+Ranges.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

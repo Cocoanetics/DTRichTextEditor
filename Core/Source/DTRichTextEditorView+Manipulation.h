@@ -41,41 +41,6 @@
  */
 - (void)setHTMLString:(NSString *)string;
 
-
-/**
- @name Working with Ranges
- */
-
-/**
- Gets the text range of an URL at the given text position. Optionally also returns the hyperlink URL.
- @param position The text position
- @param URL An optional URL output param or `NULL` if the URL is not required
- @returns the text range or `NULL` if there is no URL at this position
- */
-- (UITextRange *)textRangeOfURLAtPosition:(UITextPosition *)position URL:(NSURL **)URL;
-
-/**
- Gets the range that encompasses the word at the given text position.
- @param position The text position
- @returns the text range
- */
-- (UITextRange *)textRangeOfWordAtPosition:(UITextPosition *)position;
-
-/**
- The attributes to apply for new text inserted at the given range.
- @param range The text range
- @returns The dictionary of styles
- */
-- (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
-
-/**
- Extends the given range to include all full paragraphs that contain it.
- @param range The text range
- @returns The extended range
- */
-- (UITextRange *)textRangeOfParagraphsContainingRange:(UITextRange *)range;
-
-
 /**
  @name Changing Paragraph Styles
  */
@@ -96,13 +61,6 @@
  @param delta The amont to modify the left indentation by.
  */
 - (void)changeParagraphLeftMarginBy:(CGFloat)delta toParagraphsContainingRange:(UITextRange *)range;
-
-/**
- Toggles a list style on a given range.
- @param listStyle the list style to toggle
- @param range The text range
-*/
-- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range;
 
 /**
  @name Toggling Styles for Ranges
