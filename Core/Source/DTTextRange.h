@@ -12,6 +12,8 @@
 
 /**
  This class represents a range of text in an <DTRichTextEditorView>. It is a concrete subclass of `UITextRange`.
+ 
+ A range is considered empty if start is equal to end because the length generally does not include the ending character, similar to a caret being position on the index of the ending character.
  */
 @interface DTTextRange : UITextRange <NSCopying>
 
