@@ -2210,8 +2210,6 @@ typedef enum
 	[self scrollCursorVisibleAnimated:YES];
     
     self.waitingForDictionationResult = NO;
-    
-    NSLog(@"%@", self.attributedTextContentView.layoutFrame.attributedStringFragment);
 }
 
 #pragma mark Working with Marked and Selected Text
