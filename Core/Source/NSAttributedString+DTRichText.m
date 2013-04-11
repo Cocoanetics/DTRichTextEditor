@@ -51,7 +51,7 @@
     [attributes removeAttachment];
     
     // we don't want to type with the list prefix
-    [attributes removeObjectForKey:DTFieldAttribute];
+    [attributes removeListPrefixField];
 	
 	return attributes;
 }

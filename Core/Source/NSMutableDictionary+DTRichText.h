@@ -45,4 +45,9 @@
  */
 - (void)removeAttachment;
 
+/**
+ Removes list prefix field from the receiver
+ */
+- (void)removeListPrefixField;
+
 @end

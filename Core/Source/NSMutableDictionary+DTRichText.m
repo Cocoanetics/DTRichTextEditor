@@ -117,4 +117,14 @@
 	[self removeObjectForKey:NSAttachmentAttributeName];
 }
 
+- (void)removeListPrefixField
+{
+    NSString *field = [self objectForKey:DTFieldAttribute];
+    
+    if ([field isEqualToString:@"{listprefix}"])
+    {
+        [self removeObjectForKey:field];
+    }
+}
+
 @end
