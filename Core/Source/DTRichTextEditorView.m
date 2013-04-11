@@ -472,6 +472,9 @@ typedef enum
 		[UIView setAnimationBeginsFromCurrentState:YES];
 	}
 	
+    // make sure that the target scroll rect is inside the content view
+    scrollToRect = CGRectIntersection(scrollToRect, self.attributedTextContentView.bounds);
+    
 	[self scrollRectToVisible:scrollToRect animated:NO];
 	
 	if (animated)
@@ -503,11 +506,8 @@ typedef enum
 
 - (void)updateCursorAnimated:(BOOL)animated
 {
-	// re-add cursor
-	DTTextPosition *position = (id)self.selectedTextRange.start;
-	
 	// no selection
-    if ((self.isEditable && !self.isEditing) || !self.isFirstResponder)
+    if ((self.selectedTextRange == nil) || (self.isEditable && !self.isEditing) || !self.isFirstResponder)
 	{
 		// remove cursor
 		[_cursor removeFromSuperview];
@@ -524,7 +524,8 @@ typedef enum
 	{
         // show as a single caret
 		_selectionView.dragHandlesVisible = NO;
-		
+        
+		DTTextPosition *position = (id)self.selectedTextRange.start;
 		CGRect cursorFrame = [self caretRectForPosition:position];
 		cursorFrame.size.width = 3.0;
 		
@@ -674,6 +675,13 @@ typedef enum
 	{
 		CGPoint loupeStartPoint;
 		CGRect rect = [_selectionView beginCaretRect];
+        
+        // avoid presenting if there is no selection
+        if (CGRectIsNull(rect))
+        {
+            return;
+        }
+        
 		loupeStartPoint = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
 		
 		_dragCursorStartMidPoint = CGRectCenter(rect);
@@ -691,6 +699,13 @@ typedef enum
 		CGPoint loupeStartPoint;
 		
 		CGRect rect = [_selectionView endCaretRect];
+        
+        // avoid presenting if there is no selection
+        if (CGRectIsNull(rect))
+        {
+            return;
+        }
+
 		loupeStartPoint = CGRectCenter(rect);
 		_dragCursorStartMidPoint = CGRectCenter(rect);
 		
@@ -706,7 +721,6 @@ typedef enum
 	
 	if (_dragMode == DTDragModeCursorInsideMarking)
 	{
-		
 		loupe.style = DTLoupeStyleRectangleWithArrow;
 		loupe.magnification = 0.5;
 		
@@ -2268,22 +2282,25 @@ typedef enum
 }
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated
-{    
-	// check if the selected range fits with the attributed text
-	DTTextPosition *start = (DTTextPosition *)newTextRange.start;
-	DTTextPosition *end = (DTTextPosition *)newTextRange.end;
-	
-	if ([end compare:(DTTextPosition *)[self endOfDocument]] == NSOrderedDescending)
-	{
-		end = (DTTextPosition *)[self endOfDocument];
-	}
-	
-	if ([start compare:end] == NSOrderedDescending)
-	{
-		start = end;
-	}
-	
-	newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
+{
+    if (newTextRange != nil)
+    {
+        // check if the selected range fits with the attributed text
+        DTTextPosition *start = (DTTextPosition *)newTextRange.start;
+        DTTextPosition *end = (DTTextPosition *)newTextRange.end;
+        
+        if ([end compare:(DTTextPosition *)[self endOfDocument]] == NSOrderedDescending)
+        {
+            end = (DTTextPosition *)[self endOfDocument];
+        }
+        
+        if ([start compare:end] == NSOrderedDescending)
+        {
+            start = end;
+        }
+        
+        newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
+    }
 	
 	[self willChangeValueForKey:@"selectedTextRange"];
 	
@@ -2994,12 +3011,10 @@ typedef enum
 
 - (void)setAttributedText:(NSAttributedString *)newAttributedText
 {
-	// setting new text should remove all selections
-	[self unmarkText];
+    if (self.attributedString && [self.attributedString isEqualToAttributedString:newAttributedText])
+        return;
     
-    [self.inputDelegate textWillChange:self];
-	
-	if (newAttributedText)
+	if (newAttributedText && newAttributedText.length > 0)
 	{
 		NSMutableAttributedString *tmpString = [newAttributedText mutableCopy];
 		
@@ -3008,17 +3023,26 @@ typedef enum
 			[tmpString appendString:@"\n"];
 		}
 		
-		[super setAttributedString:tmpString];
+		[self _setAttributedText:tmpString];
 	}
 	else
 	{
+        // setDefaultText -> setHTMLString: -> setAttributedText:
 		[self setDefaultText];
 	}
+}
+
+- (void)_setAttributedText:(NSAttributedString *)newAttributedText
+{
+    // setting new text should remove all selections
+	[self unmarkText];
     
+    [self.inputDelegate textWillChange:self];
+    [super setAttributedString:newAttributedText];
     [self.inputDelegate textDidChange:self];
     
     [self setNeedsLayout];
-
+    
 	// always position cursor at the end of the text
     if (self.isEditing)
     {
@@ -3037,7 +3061,7 @@ typedef enum
 
 - (NSAttributedString *)attributedString
 {
-    return self.attributedString;
+    return [super attributedString];
 }
 
 - (void)setMarkedTextRange:(UITextRange *)markedTextRange
