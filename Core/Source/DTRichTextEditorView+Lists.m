@@ -188,9 +188,14 @@
         
         if ([field isEqualToString:@"{listprefix}"])
         {
-            [self toggleListStyle:nil inRange:range];
+            BOOL paragraphIsEmpty = (NSMaxRange(selectedParagraphRange)-1 == selectionRange.location);
             
-            return YES;
+            if (paragraphIsEmpty)
+            {
+                [self toggleListStyle:nil inRange:range];
+            
+                return YES;
+            }
         }
     }
     
