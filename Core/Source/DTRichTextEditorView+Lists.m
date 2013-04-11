@@ -50,7 +50,7 @@
     // and the following paragraph is necessary to know if we need paragraph spacing
     DTCSSListStyle *followingList = nil;
     
-    NSMutableAttributedString *entireAttributedString = (NSMutableAttributedString *)self.attributedText;
+    NSAttributedString *attributedText = self.attributedText;
     
     // if there is text before the toggled paragraphs
     if ([self comparePosition:[self beginningOfDocument] toPosition:[fullParagraphsRange start]] == NSOrderedAscending)
@@ -62,7 +62,7 @@
         rangeOfPreviousParagraph = [self textRangeOfParagraphContainingPosition:positionBefore];
         mutablePreviousParagraph = [[self attributedSubstringForRange:rangeOfPreviousParagraph] mutableCopy];
         
-        DTCSSListStyle *effectiveList = [[entireAttributedString attribute:DTTextListsAttribute atIndex:pos effectiveRange:NULL] lastObject];
+        DTCSSListStyle *effectiveList = [[attributedText attribute:DTTextListsAttribute atIndex:pos effectiveRange:NULL] lastObject];
         
         if (effectiveList.type == listStyle.type)
         {
@@ -71,7 +71,7 @@
         
         if (extendingList)
         {
-            nextItemNumber = [entireAttributedString itemNumberInTextList:extendingList atIndex:pos]+1;
+            nextItemNumber = [attributedText itemNumberInTextList:extendingList atIndex:pos]+1;
         }
     }
     
@@ -80,7 +80,7 @@
     {
         NSUInteger index = [(DTTextPosition *)[fullParagraphsRange end] location]+1;
         
-        followingList = [[entireAttributedString attribute:DTTextListsAttribute atIndex:index effectiveRange:NULL] lastObject];
+        followingList = [[attributedText attribute:DTTextListsAttribute atIndex:index effectiveRange:NULL] lastObject];
     }
     
     
