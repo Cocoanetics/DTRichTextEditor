@@ -178,8 +178,10 @@
     NSRange listRange = [attributedText rangeOfTextList:effectiveList atIndex:[(DTTextPosition *)[range start] location]];
     
     NSRange selectionRange = [(DTTextRange *)range NSRangeValue];
+    NSRange selectedParagraphRange = [attributedText.string rangeOfParagraphsContainingRange:selectionRange parBegIndex:NULL parEndIndex:NULL];
     
-    if (selectionRange.location>0)
+    // NL on last paragraph of list removes it from list
+    if (selectionRange.location>0 && NSMaxRange(selectedParagraphRange) == NSMaxRange(listRange))
     {
         // check if character before the cursor is the list prefix
         NSString *field = ([attributedText attribute:DTFieldAttribute atIndex:selectionRange.location-1 effectiveRange:NULL]);
