@@ -154,4 +154,145 @@
     [self hideContextMenu];
 }
 
+- (BOOL)handleNewLineInputInListInRange:(UITextRange *)range
+{
+    NSDictionary *typingAttributes = self.overrideInsertionAttributes;
+	
+	if (!typingAttributes)
+	{
+		typingAttributes = [self typingAttributesForRange:range];
+	}
+    
+    DTCSSListStyle *effectiveList = [[typingAttributes objectForKey:DTTextListsAttribute] lastObject];
+
+    // not a list, nothing to do
+	if (!effectiveList)
+	{
+        return NO;
+    }
+    
+    // need to replace attributes with typing attributes
+    NSAttributedString *newlineText = [[NSAttributedString alloc] initWithString:@"\n" attributes:typingAttributes];
+
+    NSAttributedString *attributedText = self.attributedText;
+    NSRange listRange = [attributedText rangeOfTextList:effectiveList atIndex:[(DTTextPosition *)[range start] location]];
+    
+    NSRange selectionRange = [(DTTextRange *)range NSRangeValue];
+    
+    NSRange totalRange = NSUnionRange(listRange, selectionRange);
+    
+    // get a mutable substring for the total range
+    NSMutableAttributedString *mutableText = [[attributedText attributedSubstringFromRange:totalRange] mutableCopy];
+    
+    // do the replacement
+    NSRange partSelectionRange = selectionRange;
+    partSelectionRange.location -= totalRange.location;
+    
+    // mark the selection on first character after selection
+    [mutableText addMarkersForSelectionRange:NSMakeRange(NSMaxRange(partSelectionRange), 0)];
+    
+    [mutableText replaceCharactersInRange:partSelectionRange withAttributedString:newlineText];
+
+    NSRange mutableRange = NSMakeRange(0, mutableText.length);
+    
+    // now update the entire list
+    [mutableText updateListStyle:effectiveList inRange:mutableRange numberFrom:effectiveList.startingItemNumber];
+
+    NSRange rangeToSelectAfterwards = [mutableText markedRangeRemove:YES];
+    rangeToSelectAfterwards.location += totalRange.location;
+
+    // substitute
+    [self.inputDelegate textWillChange:self];
+    [self replaceRange:[DTTextRange rangeWithNSRange:totalRange] withText:mutableText];
+    [self.inputDelegate textDidChange:self];
+    
+    
+    // restore selection
+    [self.inputDelegate selectionWillChange:self];
+    self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
+    [self.inputDelegate selectionDidChange:self];
+    
+    // attachment positions might have changed
+    [self.attributedTextContentView layoutSubviewsInRect:self.bounds];
+    
+    // cursor positions might have changed
+    [self updateCursorAnimated:NO];
+    
+    [self hideContextMenu];
+    /*
+    
+        
+		if ([range isEmpty])
+		{
+            DTTextRange *paragraphRange = [self textRangeOfParagraphContainingPosition:[range start]];
+            
+            
+			NSMutableAttributedString *mutableParagraph = [[attributedString attributedSubstringFromRange:paragraphRange] mutableCopy];
+            
+            // get range of prefix
+            NSRange fieldRange;
+            NSString *fieldAttribute = [mutableParagraph attribute:DTFieldAttribute atIndex:0 effectiveRange:&fieldRange];
+            
+            BOOL paragraphHasListPrefix = NO;
+            
+            if ([fieldAttribute isEqualToString:@"{listprefix}"])
+            {
+                paragraphHasListPrefix = YES;
+            }
+			
+			if (paragraphHasListPrefix)
+			{
+				// check if it is an empty line, then we'll remove the list
+				if (myRange.location == paragraphRange.location + fieldRange.length)
+				{
+					[mutableParagraph updateListStyle:nil inRange:NSMakeRange(0, paragraphRange.length) numberFrom:0];
+					
+					text = mutableParagraph;
+					myRange = paragraphRange;
+					
+					// adjust cursor position
+					rangeToSelectAfterReplace.location -= fieldRange.length + 1;
+					
+					// paragraph before gets its spacing back
+					if (paragraphRange.location)
+					{
+						[attributedString toggleParagraphSpacing:YES atIndex:paragraphRange.location-1];
+					}
+				}
+				else
+				{
+					NSInteger itemNumber = [attributedString itemNumberInTextList:effectiveList atIndex:myRange.location]+1;
+					NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:effectiveList listIndent:20 attributes:typingAttributes];
+					
+					// extend to include paragraph before in inserted string
+					[mutableParagraph toggleParagraphSpacing:NO atIndex:0];
+					
+					// remove part after the insertion point
+					NSInteger suffixLength = NSMaxRange(paragraphRange)-myRange.location;
+					NSRange suffixRange = NSMakeRange(myRange.location - paragraphRange.location, suffixLength);
+					[mutableParagraph deleteCharactersInRange:suffixRange];
+					
+					// adjust the insertion range to include the paragraph
+					myRange.length += (myRange.location-paragraphRange.location);
+					myRange.location = paragraphRange.location;
+					
+					// add the NL
+					[mutableParagraph appendAttributedString:text];
+					
+					// append the new prefix
+					[mutableParagraph appendAttributedString:prefixAttributedString];
+					
+					text = mutableParagraph;
+					
+					// adjust cursor position
+					rangeToSelectAfterReplace.location += [prefixAttributedString length];
+				}
+			}
+		}
+	}
+     */
+    
+    return YES;
+}
+
 @end

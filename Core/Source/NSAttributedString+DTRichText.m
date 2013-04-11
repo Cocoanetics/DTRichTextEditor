@@ -45,16 +45,13 @@
 		return nil;
 	}
 	
-	NSDictionary *attributes = [self attributesAtIndex:index effectiveRange:NULL];
+	NSMutableDictionary *attributes = [[self attributesAtIndex:index effectiveRange:NULL] mutableCopy];
 	
-	if ([attributes hasAttachment])
-	{
-		// make copy without attachment
-		NSMutableDictionary *tmpDict = [attributes mutableCopy];
-		[tmpDict removeAttachment];
-		
-		return tmpDict;
-	}
+    // remove attachments
+    [attributes removeAttachment];
+    
+    // we don't want to type with the list prefix
+    [attributes removeObjectForKey:DTFieldAttribute];
 	
 	return attributes;
 }
