@@ -36,6 +36,13 @@
 - (NSString *)plainTextForRange:(UITextRange *)range;
 
 /**
+ The attributes to apply for new text inserted at the given range.
+ @param range The text range
+ @returns The dictionary of styles
+ */
+- (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
+
+/**
  Converts the given string to an `NSAttributedString` using the current textDefaults and sets it on the receiver.
  @param string The string containing HTML text to convert to an attributed string and set as content of the receiver
  */

@@ -33,13 +33,6 @@
 - (UITextRange *)textRangeOfWordAtPosition:(UITextPosition *)position;
 
 /**
- The attributes to apply for new text inserted at the given range.
- @param range The text range
- @returns The dictionary of styles
- */
-- (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
-
-/**
  Extends the given range to include all full paragraphs that contain it.
  @param range The text range
  @returns The extended range
