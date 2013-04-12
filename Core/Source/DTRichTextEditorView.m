@@ -1912,10 +1912,10 @@ typedef enum
 // creates an undo manager lazily in response to a shake gesture or first edit action
 - (DTUndoManager *)undoManager
 {
-	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{
-		_undoManager = [[DTUndoManager alloc] init];
-	});
+    if (_undoManager == nil)
+    {
+        _undoManager = [[DTUndoManager alloc] init];
+    }
 	
 	return _undoManager;
 }
