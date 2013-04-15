@@ -2230,43 +2230,64 @@ typedef enum
 	return (id)_selectedTextRange;
 }
 
-- (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated
+- (void)setSelectedTextRange:(DTTextRange *)selectedTextRange animated:(BOOL)animated
 {
-    if (newTextRange != nil)
-    {
-        // check if the selected range fits with the attributed text
-        DTTextPosition *start = (DTTextPosition *)newTextRange.start;
-        DTTextPosition *end = (DTTextPosition *)newTextRange.end;
-        
-        if ([end compare:(DTTextPosition *)[self endOfDocument]] == NSOrderedDescending)
-        {
-            end = (DTTextPosition *)[self endOfDocument];
-        }
-        
-        if ([start compare:end] == NSOrderedDescending)
-        {
-            start = end;
-        }
-        
-        newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
-    }
+	UITextRange *newTextRange = selectedTextRange;
+	
+	if (selectedTextRange != nil)
+	{
+		// check if the selected range fits with the attributed text
+		DTTextPosition *start = (DTTextPosition *)newTextRange.start;
+		DTTextPosition *end = (DTTextPosition *)newTextRange.end;
+		
+		if ([end compare:(DTTextPosition *)[self endOfDocument]] == NSOrderedDescending)
+		{
+			end = (DTTextPosition *)[self endOfDocument];
+		}
+		
+		if ([start compare:end] == NSOrderedDescending)
+		{
+			start = end;
+		}
+		
+		newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
+	}
+	
+	if ([[newTextRange start] isEqual:[_selectedTextRange start]] && [[newTextRange end] isEqual:[_selectedTextRange end]])
+	{
+		// no change
+		return;
+	}
+	
+	BOOL shouldNotifyDelegates = NO;
+	
+	// Notify selection changed as long as the user is not dragging the circle loupe
+	if (_dragMode != DTDragModeCursor && _dragMode != DTDragModeCursorInsideMarking)
+	{
+		shouldNotifyDelegates = YES;
+	}
 	
 	[self willChangeValueForKey:@"selectedTextRange"];
 	
+	if (shouldNotifyDelegates)
+	{
+		[self.inputDelegate selectionWillChange:self];
+	}
+	
 	_selectedTextRange = [newTextRange copy];
+	
+	[self didChangeValueForKey:@"selectedTextRange"];
+	
+	if (shouldNotifyDelegates)
+	{
+		[self.inputDelegate selectionDidChange:self];
+		[self notifyDelegateDidChangeSelection];
+	}
 	
 	[self updateCursorAnimated:animated];
 	[self hideContextMenu];
 	
 	self.overrideInsertionAttributes = nil;
-	
-	[self didChangeValueForKey:@"selectedTextRange"];
-    
-    // Notify selection changed as long as the user is not dragging the circle loupe
-    if (_dragMode != DTDragModeCursor && _dragMode != DTDragModeCursorInsideMarking)
-    {
-        [self notifyDelegateDidChangeSelection];
-    }
 }
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange
@@ -2469,69 +2490,85 @@ typedef enum
 
 - (UITextPosition *)positionFromPosition:(DTTextPosition *)position inDirection:(UITextLayoutDirection)direction offset:(NSInteger)offset
 {
-	DTTextPosition *beginningOfDocument = (id)[self beginningOfDocument];
-	DTTextPosition *endOfDocument = (id)[self endOfDocument];
-    UITextRange *entireDocument = [self textRangeFromPosition:beginningOfDocument toPosition:endOfDocument];
-    UITextPosition *maxPosition = [self positionWithinRange:entireDocument farthestInDirection:direction];
-    
-    if ([self comparePosition:position toPosition:maxPosition] == NSOrderedSame)
-    {
-        // already at limit
-        return position;
-    }
-    
+	UITextPosition *beginningOfDocument = (id)[self beginningOfDocument];
+	UITextPosition *endOfDocument = (id)[self endOfDocument];
+	UITextRange *entireDocument = [self textRangeFromPosition:beginningOfDocument toPosition:endOfDocument];
+	
+	// shift beginning over a list prefix
+	endOfDocument = [self positionSkippingFieldsFromPosition:endOfDocument withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
+	
+	// shift end over a list prefix
+	beginningOfDocument = [self positionSkippingFieldsFromPosition:beginningOfDocument withinRange:entireDocument inDirection:UITextStorageDirectionForward];
+	
+	// update legal range
+	UITextRange *maxRange = [self textRangeFromPosition:beginningOfDocument toPosition:endOfDocument];
+	
+	UITextPosition *maxPosition = [self positionWithinRange:maxRange farthestInDirection:direction];
+	
+	if ([self comparePosition:position toPosition:maxPosition] == NSOrderedSame)
+	{
+		// already at limit
+		return nil;
+	}
+	
+	UITextPosition *retPosition = nil;
+	
 	switch (direction)
 	{
 		case UITextLayoutDirectionRight:
 		{
-            UITextPosition *newPosition = [self positionFromPosition:position offset:1];
-            
-            // TODO: make the skipping direction dependend on the text direction in this paragraph
-            return [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
+			UITextPosition *newPosition = [self positionFromPosition:position offset:1];
+			
+			// TODO: make the skipping direction dependend on the text direction in this paragraph
+			retPosition = [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
+			break;
 		}
-            
+			
 		case UITextLayoutDirectionLeft:
 		{
-            UITextPosition *newPosition = [self positionFromPosition:position offset:-1];
-            
-            // TODO: make the skipping direction dependend on the text direction in this paragraph
-            return [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
+			UITextPosition *newPosition = [self positionFromPosition:position offset:-1];
+         
+			// TODO: make the skipping direction dependend on the text direction in this paragraph
+			retPosition = [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
+			break;
 		}
-            
+			
 		case UITextLayoutDirectionDown:
 		{
 			NSInteger index = [self.attributedTextContentView.layoutFrame indexForPositionDownwardsFromIndex:position.location offset:offset];
 			
-            // document ends
-            if (index == NSNotFound)
-            {
-                return maxPosition;
-            }
-            
-            UITextPosition *newPosition = [DTTextPosition textPositionWithLocation:index];
-
-            // limit the position to be within the range and skip list prefixes
-            return [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
+			// document ends
+			if (index == NSNotFound)
+			{
+				return maxPosition;
+			}
+			
+			UITextPosition *newPosition = [DTTextPosition textPositionWithLocation:index];
+			
+			// limit the position to be within the range and skip list prefixes
+			retPosition = [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
+			break;
 		}
-            
+			
 		case UITextLayoutDirectionUp:
 		{
 			NSInteger index = [self.attributedTextContentView.layoutFrame indexForPositionUpwardsFromIndex:position.location offset:offset];
-            
-            // nothing up there
-            if (index == NSNotFound)
-            {
-                return maxPosition;
-            }
 			
-            UITextPosition *newPosition = [DTTextPosition textPositionWithLocation:index];
-            
-            // limit the position to be within the range and skip list prefixes
-            return [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
+			// nothing up there
+			if (index == NSNotFound)
+			{
+				return maxPosition;
+			}
+			
+			UITextPosition *newPosition = [DTTextPosition textPositionWithLocation:index];
+			
+			// limit the position to be within the range and skip list prefixes
+			retPosition = [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
+			break;
 		}
 	}
 	
-	return nil;
+	return retPosition;
 }
 
 - (UITextPosition *)beginningOfDocument
