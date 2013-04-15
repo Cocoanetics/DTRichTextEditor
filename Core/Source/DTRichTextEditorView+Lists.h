@@ -29,4 +29,11 @@
  */
 - (BOOL)handleNewLineInputInListInRange:(UITextRange *)range;
 
+
+/**
+ Updates lists (prefixes and spacing) intersecting with the given range
+ @param range The text range to update
+ */
+- (void)updateListsInRange:(NSRange)range;
+
 @end

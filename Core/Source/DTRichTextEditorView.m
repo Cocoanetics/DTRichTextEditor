@@ -2092,8 +2092,8 @@ typedef enum
         attributedStringBeingReplaced = attachment.replacedAttributedString;
     }
     
-	NSMutableAttributedString *attributedString = (NSMutableAttributedString *)self.attributedTextContentView.layoutFrame.attributedStringFragment;
-	NSString *string = [attributedString string];
+	NSAttributedString *attributedText = self.attributedText;
+	NSString *string = [attributedText string];
 	
 	// remember selection/cursor before input
 	UITextRange *textRangeBeforeChange = self.selectedTextRange;
@@ -2149,7 +2149,7 @@ typedef enum
 	// this is the string to restore if we undo
     if (!attributedStringBeingReplaced)
     {
-        attributedStringBeingReplaced = [attributedString attributedSubstringFromRange:myRange];
+        attributedStringBeingReplaced = [attributedText attributedSubstringFromRange:myRange];
     }
 	
 	// the range that the replacement will have afterwards
@@ -2161,6 +2161,16 @@ typedef enum
 	// do the actual replacement
 	[(DTRichTextEditorContentView *)self.attributedTextContentView replaceTextInRange:myRange withText:text];
 
+	NSUInteger paragraphsBeforeReplacement = [[attributedStringBeingReplaced string] numberOfParagraphs];
+	NSUInteger paragraphsAfterReplacement = [[text string] numberOfParagraphs];
+	
+	if (paragraphsAfterReplacement != paragraphsBeforeReplacement)
+	{
+		NSLog(@"------------------------- %d %d", paragraphsBeforeReplacement, paragraphsAfterReplacement);
+		[self updateListsInRange:rangeToSelectAfterReplace];
+	}
+	
+	
 	if (![undoManager isUndoing] && ![undoManager isRedoing])
 	{
         if (_waitingForDictationResult)
