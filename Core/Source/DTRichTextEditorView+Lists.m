@@ -299,9 +299,9 @@
 }
 
 
-- (void)updateListsInRange:(NSRange)range
+- (void)updateListsInRange:(UITextRange *)range
 {
-	NSRange selectionRange = range;
+	NSRange selectionRange = [(DTTextRange *)range NSRangeValue];
 	NSRange selectedParagraphRange = [self.attributedText.string rangeOfParagraphsContainingRange:selectionRange parBegIndex:NULL parEndIndex:NULL];
 	
 	NSRange rangeOfAllLists;
