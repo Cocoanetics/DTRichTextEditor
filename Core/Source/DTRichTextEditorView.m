@@ -2277,43 +2277,64 @@ typedef enum
 	return (id)_selectedTextRange;
 }
 
-- (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated
+- (void)setSelectedTextRange:(DTTextRange *)selectedTextRange animated:(BOOL)animated
 {
-    if (newTextRange != nil)
-    {
-        // check if the selected range fits with the attributed text
-        DTTextPosition *start = (DTTextPosition *)newTextRange.start;
-        DTTextPosition *end = (DTTextPosition *)newTextRange.end;
-        
-        if ([end compare:(DTTextPosition *)[self endOfDocument]] == NSOrderedDescending)
-        {
-            end = (DTTextPosition *)[self endOfDocument];
-        }
-        
-        if ([start compare:end] == NSOrderedDescending)
-        {
-            start = end;
-        }
-        
-        newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
-    }
+	UITextRange *newTextRange = selectedTextRange;
+	
+	if (selectedTextRange != nil)
+	{
+		// check if the selected range fits with the attributed text
+		DTTextPosition *start = (DTTextPosition *)newTextRange.start;
+		DTTextPosition *end = (DTTextPosition *)newTextRange.end;
+		
+		if ([end compare:(DTTextPosition *)[self endOfDocument]] == NSOrderedDescending)
+		{
+			end = (DTTextPosition *)[self endOfDocument];
+		}
+		
+		if ([start compare:end] == NSOrderedDescending)
+		{
+			start = end;
+		}
+		
+		newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
+	}
+	
+	if ([[newTextRange start] isEqual:[_selectedTextRange start]] && [[newTextRange end] isEqual:[_selectedTextRange end]])
+	{
+		// no change
+		return;
+	}
+	
+	BOOL shouldNotifyDelegates = NO;
+	
+	// Notify selection changed as long as the user is not dragging the circle loupe
+	if (_dragMode != DTDragModeCursor && _dragMode != DTDragModeCursorInsideMarking)
+	{
+		shouldNotifyDelegates = YES;
+	}
 	
 	[self willChangeValueForKey:@"selectedTextRange"];
 	
+	if (shouldNotifyDelegates)
+	{
+		[self.inputDelegate selectionWillChange:self];
+	}
+	
 	_selectedTextRange = [newTextRange copy];
+	
+	[self didChangeValueForKey:@"selectedTextRange"];
+	
+	if (shouldNotifyDelegates)
+	{
+		[self.inputDelegate selectionDidChange:self];
+		[self notifyDelegateDidChangeSelection];
+	}
 	
 	[self updateCursorAnimated:animated];
 	[self hideContextMenu];
 	
 	self.overrideInsertionAttributes = nil;
-	
-	[self didChangeValueForKey:@"selectedTextRange"];
-    
-    // Notify selection changed as long as the user is not dragging the circle loupe
-    if (_dragMode != DTDragModeCursor && _dragMode != DTDragModeCursorInsideMarking)
-    {
-        [self notifyDelegateDidChangeSelection];
-    }
 }
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange
