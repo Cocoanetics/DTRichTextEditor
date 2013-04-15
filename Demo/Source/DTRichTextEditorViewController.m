@@ -451,8 +451,7 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 
 - (void)presentTestOptions:(id)sender
 {
-    if (self.testOptionsPopover == nil)
-    {
+    if(!self.testStateController){
         DTRichTextEditorTestStateController *controller = [[DTRichTextEditorTestStateController alloc] initWithStyle:UITableViewStylePlain];
         controller.testState = self.testState;
         controller.completion = ^(DTRichTextEditorTestState *modifiedTestState) {
@@ -469,14 +468,30 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
             [richEditor.attributedTextContentView setNeedsDisplay];
         };
         
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-        UIPopoverController *toPopover = [[UIPopoverController alloc] initWithContentViewController:navController];
-        
-        self.testOptionsPopover = toPopover;
+        self.testStateController = controller;
     }
     
-    [self.testOptionsPopover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    self.testOptionsPopover.passthroughViews = nil;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (self.testOptionsPopover == nil)
+        {
+            UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.testStateController];
+            UIPopoverController *toPopover = [[UIPopoverController alloc] initWithContentViewController:navController];
+            
+            self.testOptionsPopover = toPopover;
+        }
+        
+        [self.testOptionsPopover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        self.testOptionsPopover.passthroughViews = nil;
+
+    }else{
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.testStateController];
+        
+        [self presentViewController:navController
+                           animated:YES
+                         completion:nil];
+    }
+    
+    
 }
 
 

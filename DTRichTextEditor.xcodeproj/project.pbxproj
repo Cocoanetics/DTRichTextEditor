@@ -1676,6 +1676,7 @@
 				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "Demo/DTRichTextEditor-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-all_load",
@@ -1695,6 +1696,7 @@
 				GCC_THUMB_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "Demo/DTRichTextEditor-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-all_load",

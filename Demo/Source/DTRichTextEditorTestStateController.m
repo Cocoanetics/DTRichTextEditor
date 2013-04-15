@@ -139,6 +139,24 @@ typedef enum {
     
     self.title = @"Test Options";
     self.contentSizeForViewInPopover = CGSizeMake(480, 320);
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        // on the phone this controller will be presented modally
+        // we need a control to dismiss ourselves
+        
+        // add a bar button item to close
+        UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                   target:self
+                                                                                   action:@selector(dismissSelf)];
+        
+        self.navigationItem.rightBarButtonItem = closeItem;
+    }
+}
+
+- (void)dismissSelf
+{
+    [self dismissViewControllerAnimated:YES
+                             completion:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
