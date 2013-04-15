@@ -2848,20 +2848,10 @@ typedef enum
 // helper method for converting text defaults dictionary into actual text attributes
 - (NSDictionary *)_attributedStringAttributesForTextDefaults
 {
-	// build a font descriptor from the defaults
-	DTCoreTextFontDescriptor *desc = [[DTCoreTextFontDescriptor alloc] init];
-	desc.fontFamily = _defaultFontFamily;
-	desc.pointSize = _defaultFontSize * _textSizeMultiplier;
+	NSData *data = [@"<p />" dataUsingEncoding:NSUTF8StringEncoding];
+	NSAttributedString *attributedString = [[NSAttributedString alloc] initWithHTMLData:data options:[self textDefaults] documentAttributes:NULL];
 	
-    // create a font for this
-	CTFontRef defaultFont = [desc newMatchingFont];
-	
-	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-	[(NSMutableDictionary *)attributes setObject:(__bridge id)defaultFont forKey:(id)kCTFontAttributeName];
-	
-	CFRelease(defaultFont);
-	
-	return attributes;
+	return [attributedString attributesAtIndex:0 effectiveRange:NULL];
 }
 
 // helper method for wrapping a text attachment, optionally in its own paragraph
