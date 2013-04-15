@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "DTRichTextEditorView.h"
 
-@class DTRichTextEditorTestState;
+@class DTRichTextEditorTestState, DTRichTextEditorTestStateController;
 
 @interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate, DTAttributedTextContentViewDelegate, DTRichTextEditorViewDelegate> {
 
