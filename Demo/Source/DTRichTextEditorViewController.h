@@ -59,5 +59,6 @@
 @property (nonatomic, retain) NSArray *menuItems;
 @property (nonatomic, retain) DTRichTextEditorTestState *testState;
 @property (nonatomic, retain) UIPopoverController *testOptionsPopover;
+@property (nonatomic, retain) DTRichTextEditorTestStateController *testStateController;
 @end
 
