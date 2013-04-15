@@ -1067,7 +1067,6 @@ typedef enum
         {
             // did move
             [self hideContextMenu];
-            [self notifyDelegateDidChangeSelection];
         }
         else
         {
@@ -1187,6 +1186,11 @@ typedef enum
 	
 	switch (gesture.state)
 	{
+        case UIGestureRecognizerStatePossible:
+        {
+            break;
+        }
+            
 		case UIGestureRecognizerStateBegan:
 		{
             // wrap long press/drag handles in calls to the input delegate because the intermediate selection changes are not important to editing
@@ -1202,6 +1206,8 @@ typedef enum
 			// begins a new typing undo group
 			DTUndoManager *undoManager = self.undoManager;
 			[undoManager closeAllOpenGroups];
+            
+            break;
 		}
 			
 		case UIGestureRecognizerStateChanged:
@@ -1212,12 +1218,6 @@ typedef enum
             _lastCursorMovementTouchPoint = touchPoint;
             
 			[self moveLoupeWithTouchPoint:touchPoint];
-            
-            // long press can get touches when dragging handle so notify here same as handleDragHandle:
-            if (_dragMode == DTDragModeLeftHandle || _dragMode == DTDragModeRightHandle)
-            {
-                [self notifyDelegateDidChangeSelection];
-            }
 			
 			break;
 		}
@@ -1240,26 +1240,32 @@ typedef enum
                     }
                 }
 			}
-            
-            [self notifyDelegateDidChangeSelection];
 		}
 			
-        case UIGestureRecognizerStateFailed:
 		case UIGestureRecognizerStateCancelled:
 		{
             _shouldShowContextMenuAfterLoupeHide = YES;
             _shouldShowDragHandlesAfterLoupeHide = YES;
             
-			[self dismissLoupeWithTouchPoint:touchPoint];
-		}
-			
-		default:
-		{
-            _dragMode = DTDragModeNone;
+            // If we were dragging around the circle loupe, notify delegate of the final cursor selectedTextRange
+            if (_dragMode == DTDragModeCursor || _dragMode == DTDragModeCursorInsideMarking)
+            {
+                [self notifyDelegateDidChangeSelection];
+            }
             
+            // Dismissing will set _dragMode to DTDragModeNone
+			[self dismissLoupeWithTouchPoint:touchPoint];
+
             // Notify that long press/drag handles has concluded and selection may be changed
             [self.inputDelegate selectionDidChange:self];
+            
+            break;
 		}
+            
+        case UIGestureRecognizerStateFailed:
+        {
+            break;
+        }
 	}
 }
 
@@ -1270,6 +1276,11 @@ typedef enum
 	
 	switch (gesture.state) 
 	{
+        case UIGestureRecognizerStatePossible:
+        {
+            break;
+        }
+            
 		case UIGestureRecognizerStateBegan:
 		{
             // wrap long press/drag handles in calls to the input delegate because the intermediate selection changes are not important to editing
@@ -1290,8 +1301,6 @@ typedef enum
             _lastCursorMovementTouchPoint = touchPoint;
             
             [self moveLoupeWithTouchPoint:touchPoint];
-            
-            [self notifyDelegateDidChangeSelection];
 			
 			break;
 		}
@@ -1313,26 +1322,23 @@ typedef enum
             }
 		}
             
-        case UIGestureRecognizerStateFailed:
 		case UIGestureRecognizerStateCancelled:
 		{
             _shouldShowContextMenuAfterLoupeHide = YES;
             _shouldShowDragHandlesAfterLoupeHide = YES;
             
 			[self dismissLoupeWithTouchPoint:touchPoint];
-            
-			break;
-		}
-			
-		default:
-		{
-			_dragMode = DTDragModeNone;
-            
+
             // Notify that long press/drag handles has concluded and selection may be changed
             [self.inputDelegate selectionDidChange:self];
 			
 			break;
 		}
+            
+        case UIGestureRecognizerStateFailed:
+        {
+            break;
+        }
 	}
 }
 
@@ -1890,8 +1896,6 @@ typedef enum
         [self.inputDelegate selectionWillChange:self];
 		self.selectedTextRange = wordRange;
         [self.inputDelegate selectionDidChange:self];
-        
-        [self notifyDelegateDidChangeSelection];
 	}
 }
 
@@ -1903,17 +1907,15 @@ typedef enum
     [self.inputDelegate selectionWillChange:self];
 	self.selectedTextRange = [DTTextRange textRangeFromStart:self.beginningOfDocument toEnd:self.endOfDocument];
     [self.inputDelegate selectionDidChange:self];
-    
-    [self notifyDelegateDidChangeSelection];
 }
 
 // creates an undo manager lazily in response to a shake gesture or first edit action
 - (DTUndoManager *)undoManager
 {
-	static dispatch_once_t onceToken;
-	dispatch_once(&onceToken, ^{
-		_undoManager = [[DTUndoManager alloc] init];
-	});
+    if (_undoManager == nil)
+    {
+        _undoManager = [[DTUndoManager alloc] init];
+    }
 	
 	return _undoManager;
 }
@@ -2259,6 +2261,12 @@ typedef enum
 	self.overrideInsertionAttributes = nil;
 	
 	[self didChangeValueForKey:@"selectedTextRange"];
+    
+    // Notify selection changed as long as the user is not dragging the circle loupe
+    if (_dragMode != DTDragModeCursor && _dragMode != DTDragModeCursorInsideMarking)
+    {
+        [self notifyDelegateDidChangeSelection];
+    }
 }
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange
