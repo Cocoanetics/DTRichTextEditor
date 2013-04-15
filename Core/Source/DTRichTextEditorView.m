@@ -2161,16 +2161,6 @@ typedef enum
 	// do the actual replacement
 	[(DTRichTextEditorContentView *)self.attributedTextContentView replaceTextInRange:myRange withText:text];
 
-	NSUInteger paragraphsBeforeReplacement = [[attributedStringBeingReplaced string] numberOfParagraphs];
-	NSUInteger paragraphsAfterReplacement = [[text string] numberOfParagraphs];
-	
-	if (paragraphsAfterReplacement != paragraphsBeforeReplacement)
-	{
-		NSLog(@"------------------------- %d %d", paragraphsBeforeReplacement, paragraphsAfterReplacement);
-		[self updateListsInRange:rangeToSelectAfterReplace];
-	}
-	
-	
 	if (![undoManager isUndoing] && ![undoManager isRedoing])
 	{
         if (_waitingForDictationResult)
@@ -2220,6 +2210,16 @@ typedef enum
 	[self scrollCursorVisibleAnimated:YES];
     
     self.waitingForDictionationResult = NO;
+	
+	
+	// if the number of paragraphs change we might have to renumber something
+	NSUInteger paragraphsBeforeReplacement = [[attributedStringBeingReplaced string] numberOfParagraphs];
+	NSUInteger paragraphsAfterReplacement = [[text string] numberOfParagraphs];
+	
+	if (paragraphsAfterReplacement != paragraphsBeforeReplacement)
+	{
+		[self updateListsInRange:_selectedTextRange];
+	}
 }
 
 #pragma mark Working with Marked and Selected Text
