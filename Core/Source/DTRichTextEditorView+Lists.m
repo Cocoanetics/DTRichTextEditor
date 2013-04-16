@@ -25,7 +25,7 @@
 @implementation DTRichTextEditorView (Lists)
 
 
-- (CGFloat)_paragraphSpacingAfterListOfStyle:(DTCSSListStyle *)listStyle
+- (CGFloat)_paragraphSpacingAfterListOfStyle:(DTCSSListStyle *)listStyle relativeToTextSize:(CGFloat)textSize
 {
     NSString *tagName = @"p";
     
@@ -41,7 +41,7 @@
         }
     }
 
-    DTCoreTextParagraphStyle *paragraphStyle = [self paragraphStyleForTagName:tagName tagClass:nil tagIdentifier:nil];
+    DTCoreTextParagraphStyle *paragraphStyle = [self paragraphStyleForTagName:tagName tagClass:nil tagIdentifier:nil relativeToTextSize:textSize];
 
     return paragraphStyle.paragraphSpacing;
 }
@@ -137,10 +137,18 @@
 		{
 			listBeforeSelection = [listAroundSelection copy];
 			
-            CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:listBeforeSelection];
-            
 			// from start to the beginning of the selected paragraph
 			NSRange updateRange = NSMakeRange(0, mutableRange.location);
+
+            // get font size at beginning of last paragraph of list
+            NSRange lastParagraph = [[mutableText string] rangeOfParagraphAtIndex:NSMaxRange(updateRange)-1];
+            CTFontRef font = (__bridge CTFontRef)([mutableText attribute:(id)kCTFontAttributeName atIndex:lastParagraph.location effectiveRange:NULL]);
+            CGFloat fontSize = CTFontGetSize(font) * self.textSizeMultiplier;
+
+            // get the paragraph spacing after the list
+            CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:listBeforeSelection relativeToTextSize:fontSize];
+            
+            // refresh the list before the un-toggled portion
 			[mutableText updateListStyle:listBeforeSelection inRange:updateRange numberFrom:listBeforeSelection.startingItemNumber listIndent:[self listIndentForListStyle:listBeforeSelection] spacingAfterList:paragraphSpacing];
 		}
 		
@@ -148,17 +156,33 @@
 		{
 			listAfterSelection = [listAroundSelection copy];
 			
-             CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:listAfterSelection];
-            
 			// from character after the selected paragraphs until end of modified region
 			NSInteger indexAfterSelectedParagraphs = NSMaxRange(mutableRange);
-			NSRange updateRange = NSMakeRange(indexAfterSelectedParagraphs, mutableText.length - indexAfterSelectedParagraphs + 1);
+			NSRange updateRange = NSMakeRange(indexAfterSelectedParagraphs, mutableText.length - indexAfterSelectedParagraphs);
+            
+            // get font size at beginning of last paragraph of list
+            NSRange lastParagraph = [[mutableText string] rangeOfParagraphAtIndex:NSMaxRange(updateRange)-1];
+            CTFontRef font = (__bridge CTFontRef)([mutableText attribute:(id)kCTFontAttributeName atIndex:lastParagraph.location effectiveRange:NULL]);
+            CGFloat fontSize = CTFontGetSize(font) * self.textSizeMultiplier;
+            
+            // get the paragraph spacing after the list
+            CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:listAfterSelection relativeToTextSize:fontSize];
+
+            // refresh the list before the un-toggled portion
 			[mutableText updateListStyle:listAfterSelection inRange:updateRange numberFrom:listAfterSelection.startingItemNumber listIndent:[self listIndentForListStyle:listAfterSelection] spacingAfterList:paragraphSpacing];
 		}
 	}
+
 	
-    CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:listStyle];
+    // get font size at beginning of last paragraph of list
+    NSRange lastParagraph = [[mutableText string] rangeOfParagraphAtIndex:NSMaxRange(mutableRange)-1];
+    CTFontRef font = (__bridge CTFontRef)([mutableText attribute:(id)kCTFontAttributeName atIndex:lastParagraph.location effectiveRange:NULL]);
+    CGFloat fontSize = CTFontGetSize(font) * self.textSizeMultiplier;
     
+    // get the paragraph spacing after the list
+    CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:listAfterSelection relativeToTextSize:fontSize];
+    
+    // update to list style
 	[mutableText updateListStyle:listStyle inRange:mutableRange numberFrom:listStyle.startingItemNumber listIndent:[self listIndentForListStyle:listStyle] spacingAfterList:paragraphSpacing];
 	
 	// get modified selection range and remove marking from substitution string
@@ -245,7 +269,13 @@
 	
 	NSRange mutableRange = NSMakeRange(0, mutableText.length);
 	
-    CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:effectiveList];
+    // get font size at beginning of last paragraph of list
+    NSRange lastParagraph = [[mutableText string] rangeOfParagraphAtIndex:NSMaxRange(mutableRange)-1];
+    CTFontRef font = (__bridge CTFontRef)([mutableText attribute:(id)kCTFontAttributeName atIndex:lastParagraph.location effectiveRange:NULL]);
+    CGFloat fontSize = CTFontGetSize(font) * self.textSizeMultiplier;
+    
+    // get the paragraph spacing after the list
+    CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:effectiveList relativeToTextSize:fontSize];
     
 	// now update the entire list
 	[mutableText updateListStyle:effectiveList inRange:mutableRange numberFrom:effectiveList.startingItemNumber listIndent:[self listIndentForListStyle:effectiveList] spacingAfterList:paragraphSpacing];
@@ -359,7 +389,13 @@
 		// find the range of this list
 		NSRange listRange = [self _findList:oneList inAttributedString:mutableText];
 		
-        CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:oneList];
+        // get font size at beginning of last paragraph of list
+        NSRange lastParagraph = [[mutableText string] rangeOfParagraphAtIndex:NSMaxRange(listRange)-1];
+        CTFontRef font = (__bridge CTFontRef)([mutableText attribute:(id)kCTFontAttributeName atIndex:lastParagraph.location effectiveRange:NULL]);
+        CGFloat fontSize = CTFontGetSize(font) * self.textSizeMultiplier;
+        
+        // get the paragraph spacing after the list
+        CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:oneList relativeToTextSize:fontSize];
         
 		[mutableText updateListStyle:oneList inRange:listRange numberFrom:oneList.startingItemNumber listIndent:[self listIndentForListStyle:oneList] spacingAfterList:paragraphSpacing];
 	}

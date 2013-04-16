@@ -31,6 +31,8 @@
 - (CGFloat)listIndentForListStyle:(DTCSSListStyle *)listStyle;
 
 
+- (CGFloat)textSizeAtPosition:(UITextPosition *)position;
+
 /**
  Retrieves the paragraph style to apply for a given tag name, considerting textDefaults
  
@@ -39,6 +41,6 @@
  @param tagIdentifier The tag id or `nil`
  @returns The paragraph style to use for this kind of tag
  */
-- (DTCoreTextParagraphStyle *)paragraphStyleForTagName:(NSString *)tagName tagClass:(NSString *)tagClass tagIdentifier:(NSString *)tagIdentifier;
+- (DTCoreTextParagraphStyle *)paragraphStyleForTagName:(NSString *)tagName tagClass:(NSString *)tagClass tagIdentifier:(NSString *)tagIdentifier relativeToTextSize:(CGFloat)textSize;
 
 @end

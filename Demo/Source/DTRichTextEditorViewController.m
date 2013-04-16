@@ -81,9 +81,12 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	[defaults setObject:[NSNumber numberWithBool:YES] forKey:DTDefaultLinkDecoration];
 	[defaults setObject:[UIColor colorWithHTMLName:@"purple"] forKey:DTDefaultLinkColor];
 	
+    DTCSSStylesheet *styleSheet = [[DTCSSStylesheet alloc] initWithStyleBlock:@"p {margin-bottom:2.5em} ol {margin-bottom:2.5em} li {margin-bottom:2.5em}"];
+    [defaults setObject:styleSheet forKey:DTDefaultStyleSheet];
+    
 	richEditor.textDefaults = defaults;
    
-    NSString *html = @"<style>p {font-size:30px; margin-bottom:50px} ol {margin-bottom:50px}</style><p>before</p><ol><li>one</li><li>two</li><li>three</li></ol><p>after</p>";
+    NSString *html = @"<style></style><p>before</p><ol><li>one</li><li>two</li><li>three</li></ol><p>after</p>";
 	[richEditor setHTMLString:html];
     
 	// image as drawn by your custom views which you return in the delegate method

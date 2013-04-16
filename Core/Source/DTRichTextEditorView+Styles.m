@@ -53,11 +53,16 @@
     return paragraphStyle.headIndent;
 }
 
-- (DTCoreTextParagraphStyle *)paragraphStyleForTagName:(NSString *)tagName tagClass:(NSString *)tagClass tagIdentifier:(NSString *)tagIdentifier
+- (CGFloat)textSizeAtPosition:(UITextPosition *)position
+{
+    return 0;
+}
+
+- (DTCoreTextParagraphStyle *)paragraphStyleForTagName:(NSString *)tagName tagClass:(NSString *)tagClass tagIdentifier:(NSString *)tagIdentifier relativeToTextSize:(CGFloat)textSize
 {
     NSParameterAssert(tagName);
     
-    NSMutableString *html = [NSMutableString stringWithFormat:@"<%@", tagName];
+    NSMutableString *html = [NSMutableString stringWithFormat:@"<span style=\"font-size:%.0fpx\"><%@", textSize, tagName];
     
     if (tagClass)
     {
@@ -69,7 +74,7 @@
         [html appendFormat:@" id=\"%@\"", tagIdentifier];
     }
     
-    [html appendFormat:@">A</%@>", tagName];
+    [html appendFormat:@">A</%@></span>", tagName];
     
     NSDictionary *attributes = [self _attributesForHTMLStringUsingTextDefaults:html];
     
