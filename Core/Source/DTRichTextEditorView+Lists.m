@@ -210,14 +210,14 @@
 
 - (BOOL)handleNewLineInputInListInRange:(UITextRange *)range
 {
-	NSDictionary *typingAttributes = self.overrideInsertionAttributes;
+	NSRange selectionRange = [(DTTextRange *)range NSRangeValue];
+	NSAttributedString *attributedText = self.attributedText;
+	NSRange selectedParagraphRange = [attributedText.string rangeOfParagraphsContainingRange:selectionRange parBegIndex:NULL parEndIndex:NULL];
 	
-	if (!typingAttributes)
-	{
-		typingAttributes = [self typingAttributesForRange:range];
-	}
+	NSDictionary *attributes = [attributedText attributesAtIndex:selectedParagraphRange.location effectiveRange:NULL];
+	DTCSSListStyle *effectiveList = [[attributes objectForKey:DTTextListsAttribute] lastObject];
 	
-	DTCSSListStyle *effectiveList = [[typingAttributes objectForKey:DTTextListsAttribute] lastObject];
+	NSRange listRange = [attributedText rangeOfTextList:effectiveList atIndex:selectedParagraphRange.location];
 	
 	// not a list, nothing to do
 	if (!effectiveList)
@@ -226,21 +226,14 @@
 	}
 	
 	// need to replace attributes with typing attributes
-	NSAttributedString *newlineText = [[NSAttributedString alloc] initWithString:@"\n" attributes:typingAttributes];
-	
-	NSAttributedString *attributedText = self.attributedText;
-	NSRange listRange = [attributedText rangeOfTextList:effectiveList atIndex:[(DTTextPosition *)[range start] location]];
-	
-	NSRange selectionRange = [(DTTextRange *)range NSRangeValue];
-	NSRange selectedParagraphRange = [attributedText.string rangeOfParagraphsContainingRange:selectionRange parBegIndex:NULL parEndIndex:NULL];
+	NSAttributedString *newlineText = [[NSAttributedString alloc] initWithString:@"\n" attributes:attributes];
 	
 	// NL on last paragraph of list removes it from list
 	if (selectionRange.location>0 && NSMaxRange(selectedParagraphRange) == NSMaxRange(listRange))
 	{
-		// check if character before the cursor is the list prefix
-		NSString *field = ([attributedText attribute:DTFieldAttribute atIndex:selectionRange.location-1 effectiveRange:NULL]);
+		NSRange listPrefixRange = [attributedText rangeOfListPrefixAtIndex:selectedParagraphRange.location];
 		
-		if ([field isEqualToString:DTListPrefixField])
+		if (NSMaxRange(listPrefixRange) == selectionRange.location)
 		{
 			BOOL paragraphIsEmpty = (NSMaxRange(selectedParagraphRange)-1 == selectionRange.location);
 			
