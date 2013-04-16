@@ -130,9 +130,9 @@ The color parameter is ignored if the method call toggles a previous URL off.
  @param listStyle The list style to apply or `nil` to remove list styling
  @param range The range to update
  @param nextItemNumber For numbered lists this is the next number to use
- @note List support is not complete
+ @param listIndent The indent from leading margin to indent list paragraphs at
  */
-- (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber;
+- (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber listIndent:(CGFloat)listIndent;
 
 /**
  Deletes a list prefix from the receiver if there is one.

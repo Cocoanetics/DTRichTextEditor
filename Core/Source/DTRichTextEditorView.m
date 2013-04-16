@@ -81,8 +81,6 @@ typedef enum
 - (BOOL)selectionIsVisible;
 - (void)relayoutText;
 
-- (NSDictionary *)_attributedStringAttributesForTextDefaults;
-
 @end
 
 @implementation DTRichTextEditorView
@@ -2184,7 +2182,7 @@ typedef enum
     // if it's just one character remaining then set text defaults on this
     if ([[self.attributedTextContentView.layoutFrame.attributedStringFragment string] isEqualToString:@"\n"])
     {
-        NSDictionary *typingDefaults = [self _attributedStringAttributesForTextDefaults];
+        NSDictionary *typingDefaults = [self attributedStringAttributesForTextDefaults];
         
         [(NSMutableAttributedString *)self.attributedTextContentView.layoutFrame.attributedStringFragment setAttributes:typingDefaults range:NSMakeRange(0, 1)];
     }
@@ -2222,8 +2220,6 @@ typedef enum
 	{
 		[self updateListsInRange:_selectedTextRange];
 	}
-	
-	NSLog(@"%@", self.attributedText);
 }
 
 #pragma mark Working with Marked and Selected Text
@@ -2901,15 +2897,6 @@ typedef enum
             _defaultFontSize = [fontSizeNum floatValue];
         }
 	}
-}
-
-// helper method for converting text defaults dictionary into actual text attributes
-- (NSDictionary *)_attributedStringAttributesForTextDefaults
-{
-	NSData *data = [@"<p />" dataUsingEncoding:NSUTF8StringEncoding];
-	NSAttributedString *attributedString = [[NSAttributedString alloc] initWithHTMLData:data options:[self textDefaults] documentAttributes:NULL];
-	
-	return [attributedString attributesAtIndex:0 effectiveRange:NULL];
 }
 
 // helper method for wrapping a text attachment, optionally in its own paragraph

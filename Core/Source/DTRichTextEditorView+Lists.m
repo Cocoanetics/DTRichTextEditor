@@ -116,7 +116,7 @@
 			
 			// from start to the beginning of the selected paragraph
 			NSRange updateRange = NSMakeRange(0, mutableRange.location);
-			[mutableText updateListStyle:listBeforeSelection inRange:updateRange numberFrom:listBeforeSelection.startingItemNumber];
+			[mutableText updateListStyle:listBeforeSelection inRange:updateRange numberFrom:listBeforeSelection.startingItemNumber listIndent:[self listIndentForListStyle:listBeforeSelection]];
 		}
 		
 		if (NSMaxRange(paragraphRange)<NSMaxRange(totalRange))
@@ -126,11 +126,11 @@
 			// from character after the selected paragraphs until end of modified region
 			NSInteger indexAfterSelectedParagraphs = NSMaxRange(mutableRange);
 			NSRange updateRange = NSMakeRange(indexAfterSelectedParagraphs, mutableText.length - indexAfterSelectedParagraphs + 1);
-			[mutableText updateListStyle:listAfterSelection inRange:updateRange numberFrom:listAfterSelection.startingItemNumber];
+			[mutableText updateListStyle:listAfterSelection inRange:updateRange numberFrom:listAfterSelection.startingItemNumber listIndent:[self listIndentForListStyle:listAfterSelection]];
 		}
 	}
 	
-	[mutableText updateListStyle:listStyle inRange:mutableRange numberFrom:listStyle.startingItemNumber];
+	[mutableText updateListStyle:listStyle inRange:mutableRange numberFrom:listStyle.startingItemNumber listIndent:[self listIndentForListStyle:listStyle]];
 	
 	// get modified selection range and remove marking from substitution string
 	NSRange rangeToSelectAfterwards = [mutableText markedRangeRemove:YES];
@@ -217,7 +217,7 @@
 	NSRange mutableRange = NSMakeRange(0, mutableText.length);
 	
 	// now update the entire list
-	[mutableText updateListStyle:effectiveList inRange:mutableRange numberFrom:effectiveList.startingItemNumber];
+	[mutableText updateListStyle:effectiveList inRange:mutableRange numberFrom:effectiveList.startingItemNumber listIndent:[self listIndentForListStyle:effectiveList]];
 	
 	NSRange rangeToSelectAfterwards = [mutableText markedRangeRemove:YES];
 	rangeToSelectAfterwards.location += totalRange.location;
@@ -328,7 +328,7 @@
 		// find the range of this list
 		NSRange listRange = [self _findList:oneList inAttributedString:mutableText];
 		
-		[mutableText updateListStyle:oneList inRange:listRange numberFrom:oneList.startingItemNumber];
+		[mutableText updateListStyle:oneList inRange:listRange numberFrom:oneList.startingItemNumber listIndent:[self listIndentForListStyle:oneList]];
 	}
 
 	NSRange rangeToSelectAfterwards = [mutableText markedRangeRemove:YES];

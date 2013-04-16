@@ -449,118 +449,6 @@
     return didChange;
 }
 
-/*
-- (void)extendPreviousList:(DTCSSListStyle *)listStyle toIncludeRange:(NSRange)range numberingFrom:(NSInteger)nextItemNumber
-{
-	[self beginEditing];
-	
-	// extend range to include all paragraphs in their entirety
-	range = [[self string] rangeOfParagraphsContainingRange:range parBegIndex:NULL parEndIndex:NULL];
-	
-	// check if there is a list on the paragraph before, then we want to extend this
-	DTCSSListStyle *listBefore = nil;
-	
-	if (range.location>0)
-	{
-		NSArray *lists = [self attribute:DTTextListsAttribute atIndex:range.location effectiveRange:NULL];
-		
-		listBefore = [lists lastObject];
-	}
-	
-	
-	NSMutableAttributedString *tmpString = [[NSMutableAttributedString alloc] init];
-	
-	// enumerate the paragraphs in this range
-	NSString *string = [self string];
-	
-	__block NSInteger itemNumber = nextItemNumber;
-	
-	NSUInteger length = [string length];
-	
-	[string enumerateSubstringsInRange:range options:NSStringEnumerationByParagraphs usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop)
-     {
-		 BOOL hasParagraphEnd = NO;
-		 
-		 // extend range to include \n
-		 if (NSMaxRange(substringRange) < length)
-		 {
-			 substringRange.length ++;
-			 hasParagraphEnd = YES;
-		 }
-		 
-		 // get current attributes
-		 NSDictionary *currentAttributes = [self attributesAtIndex:substringRange.location effectiveRange:NULL];
-		 
-		 NSArray *currentLists = [currentAttributes objectForKey:DTTextListsAttribute];
-		 
-		 BOOL setNewLists = NO;
-		 
-		 NSMutableAttributedString *paragraphString = [[self attributedSubstringFromRange:substringRange] mutableCopy];
-		 
-		 
-		 DTCSSListStyle *effectiveListStyle = [currentLists lastObject];
-		 
-		 if (effectiveListStyle)
-		 {
-			 // there is a list, if it is different, update
-			 if (effectiveListStyle.type != listStyle.type)
-			 {
-				 setNewLists = YES;
-			 }
-			 else
-			 {
-				 // toggle list off
-				 setNewLists = NO;
-			 }
-		 }
-		 else
-		 {
-			 setNewLists = YES;
-		 }
-		 
-		 // remove previous prefix in either case
-		 if (effectiveListStyle)
-		 {
-			 NSString *prefix = [effectiveListStyle prefixWithCounter:itemNumber];
-			 
-			 [paragraphString deleteCharactersInRange:NSMakeRange(0, [prefix length])];
-		 }
-		 
-		 // insert new prefix
-		 NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:listStyle listIndent:20.0 attributes:currentAttributes];
-		 
-		 [paragraphString insertAttributedString:prefixAttributedString atIndex:0];
-		 
-		 // we also want the paragraph style to affect the entire paragraph
-		 CTParagraphStyleRef tabPara = (__bridge CTParagraphStyleRef)[prefixAttributedString attribute:(id)kCTParagraphStyleAttributeName atIndex:0 effectiveRange:NULL];
-		 
-		 if (tabPara)
-		 {
-			 [paragraphString addAttribute:(id)kCTParagraphStyleAttributeName  value:(__bridge id)tabPara range:NSMakeRange(0, [paragraphString length])];
-		 }
-		 else
-		 {
-			 NSLog(@"should not get here!!! No paragraph style!!!");
-		 }
-		 
-		 
-		 NSRange paragraphRange = NSMakeRange(0, [paragraphString length]);
-		 
-		 [paragraphString addAttribute:DTTextListsAttribute value:[NSArray arrayWithObject:listStyle] range:paragraphRange];
-		 
-		 [tmpString appendAttributedString:paragraphString];
-		 
-		 itemNumber++;
-     }
-     ];
-	
-	[self replaceCharactersInRange:range withAttributedString:tmpString];
-	
-	[self endEditing];
-}
- */
-
-
 - (void)deleteListPrefix
 {
     // get range of prefix
@@ -648,7 +536,7 @@
 	[self endEditing];
 }
 
-- (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber
+- (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber listIndent:(CGFloat)listIndent
 {
 	[self beginEditing];
 	
@@ -685,7 +573,7 @@
 		 // insert new prefix
 		 if (listStyle)
 		 {
-			 NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:listStyle listIndent:20 attributes:currentAttributes];
+			 NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:listStyle listIndent:listIndent attributes:currentAttributes];
 			 
 			 [paragraphString insertAttributedString:prefixAttributedString atIndex:0];
 			 

@@ -23,6 +23,7 @@
 #import "DTRichTextEditorView+Dictation.h"
 #import "DTRichTextEditorView+Lists.h"
 #import "DTRichTextEditorView+Ranges.h"
+#import "DTRichTextEditorView+Styles.h"
 
 #import "DTTextSelectionView.h"
 #import "DTDictationPlaceholderView.h"
