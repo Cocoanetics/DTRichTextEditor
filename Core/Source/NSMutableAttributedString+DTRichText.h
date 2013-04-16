@@ -110,6 +110,7 @@ The color parameter is ignored if the method call toggles a previous URL off.
 /**
  Sets or removes the space following the paragraph at the given index
  @param spaceOn If yes then the default paragraph space is added
+ @param spacing When toggling spacing on this is the spacing to apply
  @param index The string index in the affected paragraph
  */
 - (void)toggleParagraphSpacing:(BOOL)spaceOn atIndex:(NSUInteger)index spacing:(CGFloat)spacing;
@@ -131,6 +132,7 @@ The color parameter is ignored if the method call toggles a previous URL off.
  @param range The range to update
  @param nextItemNumber For numbered lists this is the next number to use
  @param listIndent The indent from leading margin to indent list paragraphs at
+ @param spacingAfterList The spacing to apply on the last paragraph of the list
  */
 - (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber listIndent:(CGFloat)listIndent spacingAfterList:(CGFloat)spacingAfterList;
 

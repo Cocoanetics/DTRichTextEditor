@@ -26,6 +26,7 @@
  Retrieves the list indent from the leading margin to apply for a given list style
  
  This value is determined by parsing a single character HTML with the appropriate list HTML and takes the textDefaults into consideration.
+ @param listStyle The CSS list style to determine the list indentation for
  @returns The indent or 0 if listStyle is `nil`
  */
 - (CGFloat)listIndentForListStyle:(DTCSSListStyle *)listStyle;
@@ -39,6 +40,7 @@
  @param tagName The tag name to retrieve a style for
  @param tagClass The tag class, or `nil`
  @param tagIdentifier The tag id or `nil`
+ @param textSize The text size to use for relative measurements in paragraph spacing
  @returns The paragraph style to use for this kind of tag
  */
 - (DTCoreTextParagraphStyle *)paragraphStyleForTagName:(NSString *)tagName tagClass:(NSString *)tagClass tagIdentifier:(NSString *)tagIdentifier relativeToTextSize:(CGFloat)textSize;
