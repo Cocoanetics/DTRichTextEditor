@@ -3,11 +3,19 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.5
+
+- ADDED: Support for Ordered and Unordered Lists
+- FIXED: style information would not obey custom CSS stylesheet in textDefaults
+
 Version 1.4
 
 - ADDED: A delegation protocol that gives it feature parity with UITextView.
 - FIXED: override typing attributes (like setting bold with no selection) would be reset on a new line
 - FIXED: Autocorrection was broken due to removal of input delegate notification
+- FIXED: Some problems with Undo
+- FIXED: In some circumstances Editor view would scroll horizontally
+- FIXED: Apps using multiple instances of Editor would have Undo problems
 - UPDATED: DTCoreText to 1.4
 
 Version 1.3
