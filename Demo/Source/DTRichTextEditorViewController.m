@@ -76,17 +76,19 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     richEditor.autocorrectionType = UITextAutocorrectionTypeYes;
     richEditor.editable = self.testState.editable;
     richEditor.editorViewDelegate = self;
+    richEditor.defaultFontSize = 30;
 	
 	NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
 	[defaults setObject:[NSNumber numberWithBool:YES] forKey:DTDefaultLinkDecoration];
 	[defaults setObject:[UIColor colorWithHTMLName:@"purple"] forKey:DTDefaultLinkColor];
 	
-    DTCSSStylesheet *styleSheet = [[DTCSSStylesheet alloc] initWithStyleBlock:@"p {margin-bottom:2.5em} ol {margin-bottom:2.5em} li {margin-bottom:2.5em}"];
+    // demonstrate half em paragraph spacing
+    DTCSSStylesheet *styleSheet = [[DTCSSStylesheet alloc] initWithStyleBlock:@"p {margin-bottom:0.5em} ol {margin-bottom:0.5em} li {margin-bottom:0.5em}"];
     [defaults setObject:styleSheet forKey:DTDefaultStyleSheet];
     
 	richEditor.textDefaults = defaults;
    
-    NSString *html = @"<style></style><p>before</p><ol><li>one</li><li>two</li><li>three</li></ol><p>after</p>";
+    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p><p>Version 1.5 now with list support.</p><ol><li>One</li><li>Two</li><li>Three</li></ol>";
 	[richEditor setHTMLString:html];
     
 	// image as drawn by your custom views which you return in the delegate method
