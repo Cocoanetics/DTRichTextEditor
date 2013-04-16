@@ -24,6 +24,29 @@
  */
 @implementation DTRichTextEditorView (Lists)
 
+
+- (CGFloat)_paragraphSpacingAfterListOfStyle:(DTCSSListStyle *)listStyle
+{
+    NSString *tagName = @"p";
+    
+    if (listStyle)
+    {
+        if ([listStyle isOrdered])
+        {
+            tagName = @"ol";
+        }
+        else
+        {
+            tagName = @"ul";
+        }
+    }
+
+    DTCoreTextParagraphStyle *paragraphStyle = [self paragraphStyleForTagName:tagName tagClass:nil tagIdentifier:nil];
+
+    return paragraphStyle.paragraphSpacing;
+}
+
+
 - (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range
 {
 	// close off typing group, this is a new operations
@@ -114,23 +137,29 @@
 		{
 			listBeforeSelection = [listAroundSelection copy];
 			
+            CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:listBeforeSelection];
+            
 			// from start to the beginning of the selected paragraph
 			NSRange updateRange = NSMakeRange(0, mutableRange.location);
-			[mutableText updateListStyle:listBeforeSelection inRange:updateRange numberFrom:listBeforeSelection.startingItemNumber listIndent:[self listIndentForListStyle:listBeforeSelection]];
+			[mutableText updateListStyle:listBeforeSelection inRange:updateRange numberFrom:listBeforeSelection.startingItemNumber listIndent:[self listIndentForListStyle:listBeforeSelection] spacingAfterList:paragraphSpacing];
 		}
 		
 		if (NSMaxRange(paragraphRange)<NSMaxRange(totalRange))
 		{
 			listAfterSelection = [listAroundSelection copy];
 			
+             CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:listAfterSelection];
+            
 			// from character after the selected paragraphs until end of modified region
 			NSInteger indexAfterSelectedParagraphs = NSMaxRange(mutableRange);
 			NSRange updateRange = NSMakeRange(indexAfterSelectedParagraphs, mutableText.length - indexAfterSelectedParagraphs + 1);
-			[mutableText updateListStyle:listAfterSelection inRange:updateRange numberFrom:listAfterSelection.startingItemNumber listIndent:[self listIndentForListStyle:listAfterSelection]];
+			[mutableText updateListStyle:listAfterSelection inRange:updateRange numberFrom:listAfterSelection.startingItemNumber listIndent:[self listIndentForListStyle:listAfterSelection] spacingAfterList:paragraphSpacing];
 		}
 	}
 	
-	[mutableText updateListStyle:listStyle inRange:mutableRange numberFrom:listStyle.startingItemNumber listIndent:[self listIndentForListStyle:listStyle]];
+    CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:listStyle];
+    
+	[mutableText updateListStyle:listStyle inRange:mutableRange numberFrom:listStyle.startingItemNumber listIndent:[self listIndentForListStyle:listStyle] spacingAfterList:paragraphSpacing];
 	
 	// get modified selection range and remove marking from substitution string
 	NSRange rangeToSelectAfterwards = [mutableText markedRangeRemove:YES];
@@ -216,8 +245,10 @@
 	
 	NSRange mutableRange = NSMakeRange(0, mutableText.length);
 	
+    CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:effectiveList];
+    
 	// now update the entire list
-	[mutableText updateListStyle:effectiveList inRange:mutableRange numberFrom:effectiveList.startingItemNumber listIndent:[self listIndentForListStyle:effectiveList]];
+	[mutableText updateListStyle:effectiveList inRange:mutableRange numberFrom:effectiveList.startingItemNumber listIndent:[self listIndentForListStyle:effectiveList] spacingAfterList:paragraphSpacing];
 	
 	NSRange rangeToSelectAfterwards = [mutableText markedRangeRemove:YES];
 	rangeToSelectAfterwards.location += totalRange.location;
@@ -328,7 +359,9 @@
 		// find the range of this list
 		NSRange listRange = [self _findList:oneList inAttributedString:mutableText];
 		
-		[mutableText updateListStyle:oneList inRange:listRange numberFrom:oneList.startingItemNumber listIndent:[self listIndentForListStyle:oneList]];
+        CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:oneList];
+        
+		[mutableText updateListStyle:oneList inRange:listRange numberFrom:oneList.startingItemNumber listIndent:[self listIndentForListStyle:oneList] spacingAfterList:paragraphSpacing];
 	}
 
 	NSRange rangeToSelectAfterwards = [mutableText markedRangeRemove:YES];

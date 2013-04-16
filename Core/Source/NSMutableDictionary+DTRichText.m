@@ -88,6 +88,25 @@
     [self setObject:CFBridgingRelease(newFont) forKey:(id)kCTFontAttributeName];
 }
 
+
+- (void)updateParagraphSpacing:(CGFloat)paragraphSpacing
+{
+    CTParagraphStyleRef p = (__bridge CTParagraphStyleRef)([self objectForKey:(id)kCTParagraphStyleAttributeName]);
+    
+    DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:p];
+    
+    if (paragraphSpacing == paragraphStyle.paragraphSpacing)
+    {
+        return;
+    }
+    
+    paragraphStyle.paragraphSpacing = paragraphSpacing;
+    
+    CTParagraphStyleRef newStyle = [paragraphStyle createCTParagraphStyle];
+    [self setObject:CFBridgingRelease(newStyle) forKey:(id)kCTParagraphStyleAttributeName];
+}
+
+
 - (void)toggleHighlightWithColor:(UIColor *)color
 {
     CGColorRef backgroundColor = (__bridge CGColorRef)[self objectForKey:DTBackgroundColorAttribute];

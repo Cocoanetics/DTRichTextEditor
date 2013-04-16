@@ -53,4 +53,31 @@
     return paragraphStyle.headIndent;
 }
 
+- (DTCoreTextParagraphStyle *)paragraphStyleForTagName:(NSString *)tagName tagClass:(NSString *)tagClass tagIdentifier:(NSString *)tagIdentifier
+{
+    NSParameterAssert(tagName);
+    
+    NSMutableString *html = [NSMutableString stringWithFormat:@"<%@", tagName];
+    
+    if (tagClass)
+    {
+        [html appendFormat:@" class=\"%@\"", tagClass];
+    }
+    
+    if (tagIdentifier)
+    {
+        [html appendFormat:@" id=\"%@\"", tagIdentifier];
+    }
+    
+    [html appendFormat:@">A</%@>", tagName];
+    
+    NSDictionary *attributes = [self _attributesForHTMLStringUsingTextDefaults:html];
+    
+    // TODO: also support NSParagraphStyle
+    
+    CTParagraphStyleRef p = (__bridge CTParagraphStyleRef)([attributes objectForKey:(id)kCTParagraphStyleAttributeName]);
+    
+    return [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:p];
+}
+
 @end

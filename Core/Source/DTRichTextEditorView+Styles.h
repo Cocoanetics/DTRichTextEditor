@@ -30,4 +30,15 @@
  */
 - (CGFloat)listIndentForListStyle:(DTCSSListStyle *)listStyle;
 
+
+/**
+ Retrieves the paragraph style to apply for a given tag name, considerting textDefaults
+ 
+ @param tagName The tag name to retrieve a style for
+ @param tagClass The tag class, or `nil`
+ @param tagIdentifier The tag id or `nil`
+ @returns The paragraph style to use for this kind of tag
+ */
+- (DTCoreTextParagraphStyle *)paragraphStyleForTagName:(NSString *)tagName tagClass:(NSString *)tagClass tagIdentifier:(NSString *)tagIdentifier;
+
 @end

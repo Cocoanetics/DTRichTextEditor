@@ -473,7 +473,7 @@
     while (fieldRange.location != NSNotFound);
 }
 
-- (void)toggleParagraphSpacing:(BOOL)spaceOn atIndex:(NSUInteger)index
+- (void)toggleParagraphSpacing:(BOOL)spaceOn atIndex:(NSUInteger)index spacing:(CGFloat)spacing
 {
 	[self beginEditing];
 	
@@ -536,7 +536,7 @@
 	[self endEditing];
 }
 
-- (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber listIndent:(CGFloat)listIndent
+- (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber listIndent:(CGFloat)listIndent spacingAfterList:(CGFloat)spacingAfterList
 {
 	[self beginEditing];
 	
@@ -553,6 +553,13 @@
 	
 	[string enumerateSubstringsInRange:range options:NSStringEnumerationByParagraphs usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop)
      {
+         BOOL isLastParagraph = NO;
+         
+         if (NSMaxRange(enclosingRange)>=NSMaxRange(range))
+         {
+             isLastParagraph = YES;
+         }
+         
 		 BOOL hasParagraphEnd = NO;
 		 
 		 // extend range to include \n
@@ -573,6 +580,19 @@
 		 // insert new prefix
 		 if (listStyle)
 		 {
+             if (isLastParagraph)
+             {
+                 NSMutableDictionary *tmpDict = [currentAttributes mutableCopy];
+                 [tmpDict updateParagraphSpacing:spacingAfterList];
+                 currentAttributes = tmpDict;
+             }
+             else
+             {
+                 NSMutableDictionary *tmpDict = [currentAttributes mutableCopy];
+                 [tmpDict updateParagraphSpacing:0];
+                 currentAttributes = tmpDict;
+             }
+             
 			 NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:listStyle listIndent:listIndent attributes:currentAttributes];
 			 
 			 [paragraphString insertAttributedString:prefixAttributedString atIndex:0];
@@ -598,10 +618,7 @@
 			 if (para&&font)
 			 {
 				 DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:para];
-				 
-				 CGFloat fontSize = CTFontGetSize(font);
-				 paragraphStyle.paragraphSpacing = fontSize;
-				 
+				 paragraphStyle.paragraphSpacing = spacingAfterList;
 				 para = [paragraphStyle createCTParagraphStyle];
 				 
 				 [paragraphString addAttribute:(id)kCTParagraphStyleAttributeName  value:(__bridge id)para range:NSMakeRange(0, [paragraphString length])];
@@ -641,7 +658,7 @@
 		
 		if (!followingList)
 		{
-			[self toggleParagraphSpacing:YES atIndex:firstIndexInNextParagraph-1];
+			[self toggleParagraphSpacing:YES atIndex:firstIndexInNextParagraph-1 spacing:spacingAfterList];
 		}
 	}
 	
