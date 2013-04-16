@@ -2300,7 +2300,7 @@ typedef enum
 		newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
 	}
 	
-	if ([[newTextRange start] isEqual:[_selectedTextRange start]] && [[newTextRange end] isEqual:[_selectedTextRange end]])
+	if (_selectedTextRange && [[newTextRange start] isEqual:[_selectedTextRange start]] && [[newTextRange end] isEqual:[_selectedTextRange end]])
 	{
 		// no change
 		return;
