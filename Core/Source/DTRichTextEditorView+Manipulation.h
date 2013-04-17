@@ -8,7 +8,7 @@
 
 #import "DTRichTextEditorView.h"
 
-@class DTTextRange, DTTextPosition, DTCSSListStyle;
+@class DTTextRange, DTTextPosition, DTCSSListStyle, DTCoreTextFontDescriptor;
 
 /**
  The **Manipulation** category enhances DTRichTextEditorView with useful text format manipulation methods.
