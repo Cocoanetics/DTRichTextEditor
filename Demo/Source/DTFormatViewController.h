@@ -9,20 +9,26 @@
 #import <UIKit/UIKit.h>
 
 @class DTCoreTextFontDescriptor;
-@protocol DTRTEFormatDelegate;
+@protocol DTFormatDelegate;
 
-@interface DTRTEFormatViewController : UINavigationController
+@interface DTFormatViewController : UINavigationController
 
-@property (assign) id<DTRTEFormatDelegate> formatDelegate;
-
-- (id)initWithFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor;
-
-- (void)updateFont:(UIFont *)font;
+@property (weak) id<DTFormatDelegate> formatDelegate;
+@property (strong, nonatomic) DTCoreTextFontDescriptor *fontDescriptor;
+@property (strong, readonly) DTCoreTextFontDescriptor *currentFont;
 
 @end
 
-@protocol DTRTEFormatDelegate <NSObject>
+@protocol DTFormatDelegate <NSObject>
 
-- (void)formatDidSelectFont:(UIFont *)font;
+- (void)formatDidSelectFont:(DTCoreTextFontDescriptor *)font;
+
+@end
+
+@protocol DTInternalFormatProtocol <NSObject>
+
+@required
+@property (strong, readonly) DTCoreTextFontDescriptor *currentFont;
+- (void)applyFont:(DTCoreTextFontDescriptor *)font;
 
 @end

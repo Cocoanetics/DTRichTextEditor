@@ -7,13 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-@class DTRichTextEditorViewController;
 
-@interface DTRichTextEditorFontTableViewController : UITableViewController
+@interface DTFormatFontTableViewController : UITableViewController
 
-@property (nonatomic, assign) DTRichTextEditorViewController *richTextViewController;
-
-
-@property (nonatomic, strong) NSString *fontFamilyName;
+@property (strong) NSString *fontFamilyName;
 
 @end

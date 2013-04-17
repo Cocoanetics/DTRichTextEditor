@@ -6,34 +6,40 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
-#import "DTRTEFormatViewController.h"
-#import "DTRichTextEditorFormatViewController.h"
+#import "DTFormatViewController.h"
+#import "DTFormatOverviewViewController.h"
 #import "DTCoreTextFontDescriptor.h"
 
-@interface DTRTEFormatViewController ()
-@property (strong) DTCoreTextFontDescriptor *fontDescriptor;
+@interface DTFormatViewController ()<DTInternalFormatProtocol>
+@property (strong, readwrite) DTCoreTextFontDescriptor *currentFont;
 @end
 
-@implementation DTRTEFormatViewController
+@implementation DTFormatViewController
 
-- (id)initWithFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor
-{
-    self = [super init];
-    if(self)
-    {
-        self.fontDescriptor = fontDescriptor;
-    }
-    return self;
-}
+@synthesize fontDescriptor = _fontDescriptor;
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
-    
-    DTRichTextEditorFormatViewController *homeFormatController = [[DTRichTextEditorFormatViewController alloc] init];
+        
+    DTFormatOverviewViewController *homeFormatController = [[DTFormatOverviewViewController alloc] initWithStyle:UITableViewStyleGrouped];
     
     self.viewControllers = @[homeFormatController];
+}
+
+- (void)applyFont:(DTCoreTextFontDescriptor *)font
+{
+    self.currentFont = font;
+    self.currentFont.pointSize = self.fontDescriptor.pointSize;
+    
+    [self.formatDelegate formatDidSelectFont:self.currentFont];
+}
+
+- (void)setFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor
+{
+    _fontDescriptor = fontDescriptor;
+    self.currentFont = self.fontDescriptor;
 }
 
 @end

@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DTRichTextEditorFormatViewController : UITableViewController
+@interface DTFormatOverviewViewController : UITableViewController
 
 @end

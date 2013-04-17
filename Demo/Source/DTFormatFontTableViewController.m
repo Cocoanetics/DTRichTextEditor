@@ -6,16 +6,19 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
-#import "DTRichTextEditorFontTableViewController.h"
-#import "DTRichTextEditorFontFamilyTableViewController.h"
-#import "DTRichTextEditorViewController.h"
-#import "DTRichTextEditorView+Manipulation.h"
+#import "DTFormatFontTableViewController.h"
+#import "DTCoreTextFontCollection.h"
+#import "DTCoreTextFontDescriptor.h"
 
-@interface DTRichTextEditorFontTableViewController ()
+#import "DTFormatFontFamilyTableViewController.h"
+#import "DTFormatViewController.h"
+
+@interface DTFormatFontTableViewController ()
 @property (nonatomic, assign) NSInteger selectedRow;
+@property (strong) NSArray *fonts;
 @end
 
-@implementation DTRichTextEditorFontTableViewController
+@implementation DTFormatFontTableViewController
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -30,12 +33,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    self.fonts = [[DTCoreTextFontCollection availableFontsCollection] fontDescriptorsForFontFamily:self.fontFamilyName];
 }
 
 - (void)didReceiveMemoryWarning
@@ -49,7 +48,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return [[DTRichTextEditorFontFamilyTableViewController getFontsForFamily:self.fontFamilyName] count];
+    return self.fonts.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -66,9 +65,21 @@
     
     cell.accessoryType = self.selectedRow == indexPath.row ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
     
-    NSString *fontName = [[DTRichTextEditorFontFamilyTableViewController getFontsForFamily:self.fontFamilyName] objectAtIndex:indexPath.row];
+    DTCoreTextFontDescriptor *descriptor = [self.fonts objectAtIndex:indexPath.row];
+    
+    NSArray *traits = @[@"wide", @"thin", @"ultra", @"medium", @"light",  @"demi", @"heavy", @"black", @"condensed", @"roman", @"book", @"oblique", @"bold", @"italic"];
+    NSMutableArray *containedTraits = [NSMutableArray array];
+    for (NSString *trait in traits) {
+        NSRange range = [descriptor.fontName rangeOfString:trait options:NSCaseInsensitiveSearch];
+        
+        if(range.location != NSNotFound)
+           [containedTraits addObject:trait];
+    }
+    
+    NSString *fontName = containedTraits.count > 0 ? [[containedTraits componentsJoinedByString:@" "] capitalizedString] : @"Regular";
     
     cell.textLabel.text = fontName;
+    cell.textLabel.font = [UIFont fontWithName:descriptor.fontName size:18.0f];
     
     return cell;
 }
@@ -90,10 +101,10 @@
     
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    [self.richTextViewController.richEditor updateFontInRange:self.richTextViewController.richEditor.selectedTextRange
-                                           withFontFamilyName:[[DTRichTextEditorFontFamilyTableViewController getFontsForFamily:self.fontFamilyName] objectAtIndex:indexPath.row]
-                                                    pointSize:12.0];
+    id<DTInternalFormatProtocol> formatController = (id<DTInternalFormatProtocol>)self.navigationController;
+    DTCoreTextFontDescriptor *descriptor = [self.fonts objectAtIndex:indexPath.row];
 
+    [formatController applyFont:descriptor];
 }
 
 @end

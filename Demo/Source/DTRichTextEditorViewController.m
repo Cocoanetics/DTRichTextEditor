@@ -15,10 +15,11 @@
 #import "DTRichTextEditorTestStateController.h"
 #import "DTCoreTextLayoutFrame.h"
 
+#import "DTFormatViewController.h"
+
 NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 
 @implementation DTRichTextEditorViewController
-
 
  // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView
@@ -62,8 +63,12 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
         self.testState.editable = YES;
     }
     
+    UIBarButtonItem *formatItem = [[UIBarButtonItem alloc] initWithTitle:@"Format"
+                                                                   style:UIBarButtonItemStyleBordered
+                                                                  target:self
+                                                                  action:@selector(presentFormatOptions:)];
     UIBarButtonItem *testStateItem = [[UIBarButtonItem alloc] initWithTitle:@"Test Options" style:UIBarButtonItemStyleBordered target:self action:@selector(presentTestOptions:)];
-    self.navigationItem.rightBarButtonItem = testStateItem;
+    self.navigationItem.rightBarButtonItems = @[formatItem, testStateItem];
     
 	// defaults
     [DTCoreTextLayoutFrame setShouldDrawDebugFrames:self.testState.shouldDrawDebugFrames];
@@ -478,6 +483,35 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     self.testOptionsPopover.passthroughViews = nil;
 }
 
+#pragma mark - Presenting Format Options
+
+@synthesize formatOptionsPopover = _formatOptionsPopover;
+
+- (void)presentFormatOptions:(id)sender
+{
+    if (self.formatOptionsPopover == nil)
+    {
+
+        DTFormatViewController *formatController = [[DTFormatViewController alloc] init];
+        formatController.formatDelegate = self;
+
+        UIPopoverController *toPopover = [[UIPopoverController alloc] initWithContentViewController:formatController];
+        
+        self.formatOptionsPopover = toPopover;
+    }
+    
+    DTFormatViewController *controller = (DTFormatViewController *)self.formatOptionsPopover.contentViewController;
+    [controller popToRootViewControllerAnimated:NO];
+    
+    controller.fontDescriptor = [richEditor fontDescriptorForRange:richEditor.selectedTextRange];
+    
+    [self.formatOptionsPopover presentPopoverFromBarButtonItem:sender
+                                      permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                      animated:YES];
+    self.formatOptionsPopover.passthroughViews = nil;
+
+}
+
 
 #pragma mark - DTRichTextEditorViewDelegate
 
@@ -604,5 +638,13 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 }
 
 @synthesize imageViewCache = _imageViewCache;
+
+#pragma mark - DTFormatDelegate
+- (void)formatDidSelectFont:(DTCoreTextFontDescriptor *)font
+{
+    [richEditor updateFontInRange:richEditor.selectedTextRange
+               withFontFamilyName:font.fontFamily
+                        pointSize:font.pointSize];
+}
 
 @end

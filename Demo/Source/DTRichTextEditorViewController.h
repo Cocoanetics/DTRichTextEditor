@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "DTRichTextEditorView.h"
+#import "DTFormatViewController.h"
 
 @class DTRichTextEditorTestState;
 
-@interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate, DTAttributedTextContentViewDelegate, DTRichTextEditorViewDelegate> {
+@interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate, DTAttributedTextContentViewDelegate, DTRichTextEditorViewDelegate, DTFormatDelegate> {
 
 	IBOutlet DTRichTextEditorView *richEditor;
 	
@@ -59,5 +60,7 @@
 @property (nonatomic, retain) NSArray *menuItems;
 @property (nonatomic, retain) DTRichTextEditorTestState *testState;
 @property (nonatomic, retain) UIPopoverController *testOptionsPopover;
+@property (nonatomic, retain) UIPopoverController *formatOptionsPopover;
+
 @end
 

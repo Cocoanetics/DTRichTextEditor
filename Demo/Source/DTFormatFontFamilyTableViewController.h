@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DTRichTextEditorFontFamilyTableViewController : UITableViewController
-
-+ (NSArray *)getFontsForFamily:(NSString *)fontFamily __attribute__((const));
+@interface DTFormatFontFamilyTableViewController : UITableViewController
 
 @end
