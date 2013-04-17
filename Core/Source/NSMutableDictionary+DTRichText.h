@@ -8,6 +8,8 @@
 
 #import "NSDictionary+DTRichText.h"
 
+@class DTCoreTextFontDescriptor;
+
 /**
  Convenience methods to execute typical editing actions on a CoreText attribute dictionary.
  */
