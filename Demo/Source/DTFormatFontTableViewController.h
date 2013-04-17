@@ -10,6 +10,6 @@
 
 @interface DTFormatFontTableViewController : UITableViewController
 
-@property (strong) NSString *fontFamilyName;
+@property (strong) NSArray *fontDescriptors;
 
 @end

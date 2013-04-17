@@ -15,7 +15,6 @@
 
 @interface DTFormatFontTableViewController ()
 @property (nonatomic, assign) NSInteger selectedRow;
-@property (strong) NSArray *fonts;
 @end
 
 @implementation DTFormatFontTableViewController
@@ -30,25 +29,12 @@
     return self;
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    
-    self.fonts = [[DTCoreTextFontCollection availableFontsCollection] fontDescriptorsForFontFamily:self.fontFamilyName];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return self.fonts.count;
+    return self.fontDescriptors.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -65,7 +51,7 @@
     
     cell.accessoryType = self.selectedRow == indexPath.row ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
     
-    DTCoreTextFontDescriptor *descriptor = [self.fonts objectAtIndex:indexPath.row];
+    DTCoreTextFontDescriptor *descriptor = self.fontDescriptors[indexPath.row];
     
     NSArray *traits = @[@"wide", @"thin", @"ultra", @"medium", @"light",  @"demi", @"heavy", @"black", @"condensed", @"roman", @"book", @"oblique", @"bold", @"italic"];
     NSMutableArray *containedTraits = [NSMutableArray array];
@@ -102,7 +88,7 @@
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     id<DTInternalFormatProtocol> formatController = (id<DTInternalFormatProtocol>)self.navigationController;
-    DTCoreTextFontDescriptor *descriptor = [self.fonts objectAtIndex:indexPath.row];
+    DTCoreTextFontDescriptor *descriptor = self.fontDescriptors[indexPath.row];
 
     [formatController applyFont:descriptor];
 }
