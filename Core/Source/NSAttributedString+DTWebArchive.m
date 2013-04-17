@@ -8,11 +8,11 @@
 
 #import "NSAttributedString+DTWebArchive.h"
 #import "NSAttributedString+HTML.h"
-#import "NSAttributedString+DTCoreText.h"
 #import "DTWebArchive.h"
 #import "DTWebResource.h"
 #import "DTWebResource+DTRichText.h"
-#import "DTTextAttachment.h"
+
+#import "DTCoreText.h"
 
 @implementation NSAttributedString (DTWebArchive)
 
