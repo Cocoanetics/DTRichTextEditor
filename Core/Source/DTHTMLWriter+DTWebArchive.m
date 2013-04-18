@@ -11,6 +11,8 @@
 #import "DTWebArchive.h"
 #import "DTWebResource.h"
 
+#import "DTCoreText.h"
+
 @class DTWebArchive;
 
 @implementation DTHTMLWriter (DTWebArchive)
