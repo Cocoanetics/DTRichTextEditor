@@ -28,6 +28,16 @@
     self.viewControllers = @[homeFormatController];
 }
 
+- (void)setFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor
+{
+    _fontDescriptor = fontDescriptor;
+    self.currentFont = self.fontDescriptor;
+    
+    DTFormatOverviewViewController *homeFormatController = self.viewControllers[0];
+    [homeFormatController.tableView reloadData];
+}
+
+#pragma mark - DTInternalFormatProtocol methods
 - (void)applyFont:(DTCoreTextFontDescriptor *)font
 {
     self.currentFont = font;
@@ -36,10 +46,10 @@
     [self.formatDelegate formatDidSelectFont:self.currentFont];
 }
 
-- (void)setFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor
+- (void)applyFontSize:(CGFloat)pointSzie
 {
-    _fontDescriptor = fontDescriptor;
-    self.currentFont = self.fontDescriptor;
+    self.currentFont.pointSize = pointSzie;
+    [self.formatDelegate formatDidSelectFont:self.currentFont];
 }
 
 @end

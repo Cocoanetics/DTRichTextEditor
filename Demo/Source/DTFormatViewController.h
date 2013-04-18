@@ -30,5 +30,6 @@
 @required
 @property (strong, readonly) DTCoreTextFontDescriptor *currentFont;
 - (void)applyFont:(DTCoreTextFontDescriptor *)font;
+- (void)applyFontSize:(CGFloat)pointSzie;
 
 @end

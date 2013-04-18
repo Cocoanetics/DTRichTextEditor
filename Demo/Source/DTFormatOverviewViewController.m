@@ -15,6 +15,7 @@
 
 @interface DTFormatOverviewViewController()
 @property (nonatomic, strong) UIStepper *fontSizeStepper;
+@property (nonatomic, weak) UILabel *sizeValueLabel;
 @end
 
 @implementation DTFormatOverviewViewController
@@ -32,31 +33,32 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
     DTFormatViewController *formatPicker = (DTFormatViewController *)self.navigationController;
 
     
     UIStepper *fontStepper = [[UIStepper alloc] init];
     fontStepper.minimumValue = 9;
-    fontStepper.maximumValue =  288;
-    fontStepper.value = formatPicker.currentFont.pointSize;
+    fontStepper.maximumValue = 288;
+    
+    [fontStepper addTarget:self action:@selector(_stepperValueChanged:) forControlEvents:UIControlEventValueChanged];
     
     self.fontSizeStepper = fontStepper;
+}
+
+- (void)_stepperValueChanged:(UIStepper *)stepper;
+{    
+    id<DTInternalFormatProtocol> formatController = (id<DTInternalFormatProtocol>)self.navigationController;
+    
+    [formatController applyFontSize:stepper.value];
+    
+    self.sizeValueLabel.text = [NSString stringWithFormat:@"Size (%.0f pt)", stepper.value];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-//    - (void)updateFontInRange:(UITextRange *)range withFontFamilyName:(NSString *)fontFamilyName pointSize:(CGFloat)pointSize;
-//    - (DTCoreTextFontDescriptor *)fontDescriptorForRange:(UITextRange *)range;
-    
+        
     [self.tableView reloadData];
 }
 
@@ -88,7 +90,9 @@
 
     if(indexPath.section == 0)
     {
-        cell.textLabel.text = @"Size";
+        self.fontSizeStepper.value = formatPicker.currentFont.pointSize;
+        cell.textLabel.text = [NSString stringWithFormat:@"Size (%.0f pt)", formatPicker.currentFont.pointSize ];
+        self.sizeValueLabel = cell.textLabel;
         cell.accessoryView = self.fontSizeStepper;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
 //        cell.detailTextLabel.text = [NSString stringWithFormat:@"%.0f pt", formatPicker.currentFont.pointSize];
@@ -96,7 +100,7 @@
     else if(indexPath.section == 1)
     {
         cell.textLabel.text = @"Font";
-        cell.detailTextLabel.text = formatPicker.currentFont.fontFamily;
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ (%@)", formatPicker.currentFont.fontFamily, formatPicker.currentFont.fontName ];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
     }

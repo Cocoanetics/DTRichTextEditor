@@ -32,7 +32,6 @@
 	UIBarButtonItem *italicButton;
 	UIBarButtonItem *underlineButton;
     UIBarButtonItem *highlightButton;
-    UIBarButtonItem *fontButton;
 	
 	// paragraph alignment buttons
 	UIBarButtonItem *leftAlignButton;

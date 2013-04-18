@@ -507,6 +507,11 @@
 
 #pragma mark - Working with Fonts
 
+- (void)updateFontInRange:(UITextRange *)range withFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor
+{
+   
+}
+
 - (void)updateFontInRange:(UITextRange *)range withFontFamilyName:(NSString *)fontFamilyName pointSize:(CGFloat)pointSize
 {
     // close off typing group, this is a new operations
