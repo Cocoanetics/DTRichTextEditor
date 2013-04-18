@@ -183,7 +183,7 @@
 		A7DB4674171D369F0092FB7D /* DTRichTextEditorView+Styles.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DB4672171D369F0092FB7D /* DTRichTextEditorView+Styles.m */; };
 		A7DB4675171D369F0092FB7D /* DTRichTextEditorView+Styles.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DB4672171D369F0092FB7D /* DTRichTextEditorView+Styles.m */; };
 		A7DB4676171D369F0092FB7D /* DTRichTextEditorView+Styles.h in Headers */ = {isa = PBXBuildFile; fileRef = A7DB4673171D369F0092FB7D /* DTRichTextEditorView+Styles.h */; };
-		A7DB4677171D369F0092FB7D /* DTRichTextEditorView+Styles.h in Headers */ = {isa = PBXBuildFile; fileRef = A7DB4673171D369F0092FB7D /* DTRichTextEditorView+Styles.h */; };
+		A7DB4677171D369F0092FB7D /* DTRichTextEditorView+Styles.h in Headers */ = {isa = PBXBuildFile; fileRef = A7DB4673171D369F0092FB7D /* DTRichTextEditorView+Styles.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7E807D215EB6C5900525855 /* NSAttributedString+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351351486771700F4C766 /* NSAttributedString+DTRichText.m */; };
 		A7E807D315EB6CC600525855 /* NSAttributedString+DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D728641487C2F300A22742 /* NSAttributedString+DTWebArchive.m */; };
 		A7E807D415EB6CE100525855 /* DTWebResource+DTRichText.m in Sources */ = {isa = PBXBuildFile; fileRef = A7D728931487C46600A22742 /* DTWebResource+DTRichText.m */; };
