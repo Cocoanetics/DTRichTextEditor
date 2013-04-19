@@ -22,6 +22,9 @@
 @protocol DTFormatDelegate <NSObject>
 
 - (void)formatDidSelectFont:(DTCoreTextFontDescriptor *)font;
+- (void)formatDidToggleBold;
+- (void)formatDidToggleItalic;
+- (void)formatDidToggleUnderline;
 
 @end
 
@@ -31,5 +34,7 @@
 @property (strong, readonly) DTCoreTextFontDescriptor *currentFont;
 - (void)applyFont:(DTCoreTextFontDescriptor *)font;
 - (void)applyFontSize:(CGFloat)pointSzie;
-
+- (void)applyBold:(BOOL)active;
+- (void)applyItalic:(BOOL)active;
+- (void)applyUnderline:(BOOL)active;
 @end

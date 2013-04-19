@@ -16,6 +16,10 @@
 @interface DTFormatOverviewViewController()
 @property (nonatomic, strong) UIStepper *fontSizeStepper;
 @property (nonatomic, weak) UILabel *sizeValueLabel;
+@property (nonatomic, strong) UIButton *boldTraitButton;
+@property (nonatomic, strong) UIButton *italicTraitButton;
+@property (nonatomic, strong) UIButton *underlineTraitButton;
+@property (nonatomic, strong) UIView *buttonsView;
 @end
 
 @implementation DTFormatOverviewViewController
@@ -33,10 +37,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    DTFormatViewController *formatPicker = (DTFormatViewController *)self.navigationController;
-
-    
+        
     UIStepper *fontStepper = [[UIStepper alloc] init];
     fontStepper.minimumValue = 9;
     fontStepper.maximumValue = 288;
@@ -44,6 +45,48 @@
     [fontStepper addTarget:self action:@selector(_stepperValueChanged:) forControlEvents:UIControlEventValueChanged];
     
     self.fontSizeStepper = fontStepper;
+    
+    CGFloat buttonWidth = 50.0;
+    
+    UIButton *boldButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    boldButton.frame = CGRectMake(0.0, 0.0, buttonWidth, 37.0);
+    boldButton.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
+    [boldButton setTitle:@"B" forState:UIControlStateNormal];
+    [boldButton.titleLabel setFont:[UIFont boldSystemFontOfSize:18.0]];
+    [boldButton addTarget:self action:@selector(_editBoldTrait:) forControlEvents:UIControlEventTouchUpInside];
+    self.boldTraitButton = boldButton;
+
+    UIButton *italicButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    italicButton.frame = CGRectMake(buttonWidth * 1, 0.0, buttonWidth, 37.0);
+    italicButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
+    [italicButton setTitle:@"I" forState:UIControlStateNormal];
+    [italicButton.titleLabel setFont:[UIFont italicSystemFontOfSize:18.0]];
+    [italicButton addTarget:self action:@selector(_editItalicTrait:) forControlEvents:UIControlEventTouchUpInside];
+    self.italicTraitButton = italicButton;
+
+    UIButton *underlineButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    underlineButton.frame = CGRectMake(buttonWidth * 2, 0.0, buttonWidth, 37.0);
+    underlineButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
+    
+    NSString *underLineText = @"U";
+    if (underLineText != nil && ![underLineText isEqualToString:@""]) {
+        NSMutableAttributedString *temString=[[NSMutableAttributedString alloc]initWithString:underLineText];
+        [temString addAttribute:NSUnderlineStyleAttributeName
+                          value:@(YES)
+                          range:(NSRange){0,[temString length]}];
+        [underlineButton setAttributedTitle:temString forState:UIControlStateNormal];
+    }
+    [underlineButton addTarget:self action:@selector(_editUnderlineTrait:) forControlEvents:UIControlEventTouchUpInside];
+
+    self.underlineTraitButton = underlineButton;
+    
+    UIView *buttonsCellView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 150.0, 37.0)];
+    
+    [buttonsCellView addSubview:self.boldTraitButton];
+    [buttonsCellView addSubview:self.italicTraitButton];
+    [buttonsCellView addSubview:self.underlineTraitButton];
+    
+    self.buttonsView = buttonsCellView;
 }
 
 - (void)_stepperValueChanged:(UIStepper *)stepper;
@@ -53,6 +96,33 @@
     [formatController applyFontSize:stepper.value];
     
     self.sizeValueLabel.text = [NSString stringWithFormat:@"Size (%.0f pt)", stepper.value];
+}
+
+- (void)_editBoldTrait:(UIButton *)sender
+{
+    sender.selected = !sender.selected;
+    
+    id<DTInternalFormatProtocol> formatController = (id<DTInternalFormatProtocol>)self.navigationController;
+    
+    [formatController applyBold:sender.selected];
+}
+
+- (void)_editItalicTrait:(UIButton *)sender
+{
+    sender.selected = !sender.selected;
+    
+    id<DTInternalFormatProtocol> formatController = (id<DTInternalFormatProtocol>)self.navigationController;
+    
+    [formatController applyItalic:sender.selected];
+}
+
+- (void)_editUnderlineTrait:(UIButton *)sender
+{
+    sender.selected = !sender.selected;
+    
+    id<DTInternalFormatProtocol> formatController = (id<DTInternalFormatProtocol>)self.navigationController;
+    
+    [formatController applyUnderline:sender.selected];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -73,7 +143,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return 1;
+    return section == 0 ? 1 : 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -95,17 +165,25 @@
         self.sizeValueLabel = cell.textLabel;
         cell.accessoryView = self.fontSizeStepper;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-//        cell.detailTextLabel.text = [NSString stringWithFormat:@"%.0f pt", formatPicker.currentFont.pointSize];
+        //        cell.detailTextLabel.text = [NSString stringWithFormat:@"%.0f pt", formatPicker.currentFont.pointSize];
     }
     else if(indexPath.section == 1)
     {
-        cell.textLabel.text = @"Font";
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ (%@)", formatPicker.currentFont.fontFamily, formatPicker.currentFont.fontName ];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        if(indexPath.row == 0){
+            cell.textLabel.text = @"Font";
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", formatPicker.currentFont.fontFamily];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        }else{
+            if(![cell.contentView.subviews containsObject:self.buttonsView])
+            {
+                [cell.contentView addSubview:self.buttonsView];
+                self.buttonsView.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(cell.contentView.bounds), CGRectGetHeight(cell.contentView.bounds));
+            }
+        }
     }
     
-
+    
     return cell;
 }
 

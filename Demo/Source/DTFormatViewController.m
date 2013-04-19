@@ -52,4 +52,21 @@
     [self.formatDelegate formatDidSelectFont:self.currentFont];
 }
 
+- (void)applyBold:(BOOL)active
+{
+    self.currentFont.boldTrait = active;
+    [self.formatDelegate formatDidToggleBold];
+}
+
+- (void)applyItalic:(BOOL)active
+{
+    self.currentFont.italicTrait = active;
+    [self.formatDelegate formatDidToggleItalic];
+}
+
+- (void)applyUnderline:(BOOL)active
+{
+    [self.formatDelegate formatDidToggleUnderline];
+}
+
 @end

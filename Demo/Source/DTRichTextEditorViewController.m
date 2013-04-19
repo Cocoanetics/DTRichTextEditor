@@ -95,9 +95,6 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	richEditor.attributedTextContentView.shouldDrawImages = NO;
 	
 	photoButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];
-	boldButton = [[UIBarButtonItem alloc] initWithTitle:@"B" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleBold:)];
-	italicButton = [[UIBarButtonItem alloc] initWithTitle:@"I" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleItalic:)];
-	underlineButton = [[UIBarButtonItem alloc] initWithTitle:@"U" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleUnderline:)];
     highlightButton = [[UIBarButtonItem alloc] initWithTitle:@"H" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleHighlight:)];
 
 	UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
@@ -127,7 +124,7 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
 	richEditor.inputAccessoryView = toolbar;
 	
-	[toolbar setItems:[NSArray arrayWithObjects:boldButton, italicButton, underlineButton, highlightButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, increaseIndentButton, decreaseIndentButton, spacer3, orderedListButton, unorderedListButton, spacer4, photoButton, smile, linkButton, nil]];
+	[toolbar setItems:[NSArray arrayWithObjects:highlightButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, increaseIndentButton, decreaseIndentButton, spacer3, orderedListButton, unorderedListButton, spacer4, photoButton, smile, linkButton, nil]];
     
     // notifications
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
@@ -286,24 +283,6 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
 {
     popover = nil;
-}
-
-- (void)toggleBold:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor toggleBoldInRange:range];
-}
-
-- (void)toggleItalic:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor toggleItalicInRange:range];
-}
-
-- (void)toggleUnderline:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor toggleUnderlineInRange:range];
 }
 
 - (void)toggleHighlight:(UIBarButtonItem *)sender
@@ -630,6 +609,23 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     [richEditor updateFontInRange:richEditor.selectedTextRange
                withFontFamilyName:font.fontFamily
                         pointSize:font.pointSize];
+    
+//    [richEditor updateFontInRange:richEditor.selectedTextRange withFontDescriptor:font];
+}
+
+- (void)formatDidToggleBold
+{
+    [richEditor toggleBoldInRange:richEditor.selectedTextRange];
+}
+
+- (void)formatDidToggleItalic
+{
+    [richEditor toggleItalicInRange:richEditor.selectedTextRange];
+}
+
+- (void)formatDidToggleUnderline
+{
+    [richEditor toggleUnderlineInRange:richEditor.selectedTextRange];
 }
 
 @end

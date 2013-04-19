@@ -155,6 +155,12 @@
  */
 
 /**
+ Replaces the font for a given range.
+ @param range The text range
+ @param newFontDescriptor The new font descriptor to apply.
+ */
+- (void)updateFontInRange:(UITextRange *)range withFontDescriptor:(DTCoreTextFontDescriptor *)newFontDescriptor;
+/**
  Replaces the font for a given range preserving bold or italic ranges.
  @param range The text range
  @param fontFamilyName The postscript font family name, or `nil` if the font family should be preserved.
