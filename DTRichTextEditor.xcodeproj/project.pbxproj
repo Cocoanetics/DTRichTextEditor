@@ -465,13 +465,14 @@
 		A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTCoreText.xcodeproj; path = DTCoreText/DTCoreText.xcodeproj; sourceTree = "<group>"; };
 		A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTWebArchive.xcodeproj; path = DTWebArchive/DTWebArchive.xcodeproj; sourceTree = "<group>"; };
 		A7239FC716A6A22F0071E902 /* Known Issues-template.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Known Issues-template.markdown"; sourceTree = "<group>"; };
-		A72D4CBE1726BBC5008245A0 /* DTAnchorHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTAnchorHTMLElement.h; path = DTCoreText/Core/Source/DTAnchorHTMLElement.h; sourceTree = "<group>"; };
-		A72D4CBF1726BBC5008245A0 /* DTBreakHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTBreakHTMLElement.h; path = DTCoreText/Core/Source/DTBreakHTMLElement.h; sourceTree = "<group>"; };
-		A72D4CC01726BBC5008245A0 /* DTHorizontalRuleHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTHorizontalRuleHTMLElement.h; path = DTCoreText/Core/Source/DTHorizontalRuleHTMLElement.h; sourceTree = "<group>"; };
-		A72D4CC11726BBC5008245A0 /* DTListItemHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTListItemHTMLElement.h; path = DTCoreText/Core/Source/DTListItemHTMLElement.h; sourceTree = "<group>"; };
-		A72D4CC21726BBC5008245A0 /* DTStylesheetHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTStylesheetHTMLElement.h; path = DTCoreText/Core/Source/DTStylesheetHTMLElement.h; sourceTree = "<group>"; };
-		A72D4CC31726BBC5008245A0 /* DTTextHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTTextHTMLElement.h; path = DTCoreText/Core/Source/DTTextHTMLElement.h; sourceTree = "<group>"; };
-		A72D4CC41726BBC5008245A0 /* DTTextAttachmentHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTTextAttachmentHTMLElement.h; path = DTCoreText/Core/Source/DTTextAttachmentHTMLElement.h; sourceTree = "<group>"; };
+		A72957A11726C256002A0234 /* Programming Guide-template.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Programming Guide-template.markdown"; sourceTree = "<group>"; };
+		A72D4CBE1726BBC5008245A0 /* DTAnchorHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAnchorHTMLElement.h; path = DTCoreText/Core/Source/DTAnchorHTMLElement.h; sourceTree = "<group>"; };
+		A72D4CBF1726BBC5008245A0 /* DTBreakHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTBreakHTMLElement.h; path = DTCoreText/Core/Source/DTBreakHTMLElement.h; sourceTree = "<group>"; };
+		A72D4CC01726BBC5008245A0 /* DTHorizontalRuleHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHorizontalRuleHTMLElement.h; path = DTCoreText/Core/Source/DTHorizontalRuleHTMLElement.h; sourceTree = "<group>"; };
+		A72D4CC11726BBC5008245A0 /* DTListItemHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTListItemHTMLElement.h; path = DTCoreText/Core/Source/DTListItemHTMLElement.h; sourceTree = "<group>"; };
+		A72D4CC21726BBC5008245A0 /* DTStylesheetHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTStylesheetHTMLElement.h; path = DTCoreText/Core/Source/DTStylesheetHTMLElement.h; sourceTree = "<group>"; };
+		A72D4CC31726BBC5008245A0 /* DTTextHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTTextHTMLElement.h; path = DTCoreText/Core/Source/DTTextHTMLElement.h; sourceTree = "<group>"; };
+		A72D4CC41726BBC5008245A0 /* DTTextAttachmentHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTTextAttachmentHTMLElement.h; path = DTCoreText/Core/Source/DTTextAttachmentHTMLElement.h; sourceTree = "<group>"; };
 		A72D4CD31726BC8F008245A0 /* DTIframeTextAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTIframeTextAttachment.h; path = DTCoreText/Core/Source/DTIframeTextAttachment.h; sourceTree = "<group>"; };
 		A72D4CD41726BC8F008245A0 /* DTImageTextAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTImageTextAttachment.h; path = DTCoreText/Core/Source/DTImageTextAttachment.h; sourceTree = "<group>"; };
 		A72D4CD51726BC8F008245A0 /* DTObjectTextAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTObjectTextAttachment.h; path = DTCoreText/Core/Source/DTObjectTextAttachment.h; sourceTree = "<group>"; };
@@ -888,6 +889,7 @@
 				A730BCCB16D27EE1003B849F /* Readme.markdown */,
 				A7E994DD154E79DA00FEB5DB /* Change Log-template.markdown */,
 				A7239FC716A6A22F0071E902 /* Known Issues-template.markdown */,
+				A72957A11726C256002A0234 /* Programming Guide-template.markdown */,
 				A7556EC31679BCE5000AC6D9 /* LICENSE.txt */,
 			);
 			path = Documentation;
