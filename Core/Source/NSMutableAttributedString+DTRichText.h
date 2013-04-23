@@ -110,31 +110,36 @@ The color parameter is ignored if the method call toggles a previous URL off.
 /**
  Sets or removes the space following the paragraph at the given index
  @param spaceOn If yes then the default paragraph space is added
+ @param spacing When toggling spacing on this is the spacing to apply
  @param index The string index in the affected paragraph
  */
-- (void)toggleParagraphSpacing:(BOOL)spaceOn atIndex:(NSUInteger)index;
+- (void)toggleParagraphSpacing:(BOOL)spaceOn atIndex:(NSUInteger)index spacing:(CGFloat)spacing;
 
 /** 
  Method to correct paragraph styles on paragraphs belonging to list
- @param range The range to update
  @note List support is not complete
  */
-- (void)correctParagraphSpacingForRange:(NSRange)range;
+- (void)correctParagraphSpacing;
 
 /**
  @name Working with Lists
  */
 
 /**
- Convenience method to toggle list styling on entire paragraphs
+ Convenience method to update list styling on entire paragraphs
  
- If there is already a list style at the begin of the specified range then it is removed.
- @param listStyle The list style to toggle
+ @param listStyle The list style to apply or `nil` to remove list styling
  @param range The range to update
  @param nextItemNumber For numbered lists this is the next number to use
- @note List support is not complete
+ @param listIndent The indent from leading margin to indent list paragraphs at
+ @param spacingAfterList The spacing to apply on the last paragraph of the list
  */
-- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber;
+- (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber listIndent:(CGFloat)listIndent spacingAfterList:(CGFloat)spacingAfterList;
+
+/**
+ Deletes a list prefix from the receiver if there is one.
+ */
+- (void)deleteListPrefix;
 
 /**
  @name Marking Ranges

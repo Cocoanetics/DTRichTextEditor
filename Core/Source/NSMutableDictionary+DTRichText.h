@@ -37,6 +37,13 @@
 - (void)setFontFromFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor;
 
 /**
+ Updates the paragraph spacing to a given amount
+ @param paragraphSpacing The new space after paragraphs to apply
+ */
+- (void)updateParagraphSpacing:(CGFloat)paragraphSpacing;
+
+
+/**
  Toggles the background color to the given color. If the attributes are already containing a highlight then it is removed
  @param color The color to highlight with. If there is a previous highlight then this parameter is ignored
  */
@@ -46,5 +53,10 @@
  Removes the attributes related to a DTTextAttachment from the receiver
  */
 - (void)removeAttachment;
+
+/**
+ Removes list prefix field from the receiver
+ */
+- (void)removeListPrefixField;
 
 @end

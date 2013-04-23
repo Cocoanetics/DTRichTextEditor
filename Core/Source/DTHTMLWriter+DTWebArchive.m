@@ -26,23 +26,21 @@
 	
 	NSMutableArray *subresources = nil;
 	
-	NSPredicate *imagePredicate = [NSPredicate predicateWithFormat:@"contentType == %d", DTTextAttachmentTypeImage];
-	
-	NSArray *images = [self.attributedString textAttachmentsWithPredicate:imagePredicate];
+	NSArray *images = [self.attributedString textAttachmentsWithPredicate:nil class:[DTImageTextAttachment class]];
 	
 	if ([images count])
 	{
 		subresources = [NSMutableArray array];
-		for (DTTextAttachment *oneAttachment in images)
+		for (DTImageTextAttachment *oneAttachment in images)
 		{
 			// only add web resources for images that are not data URLs and that have a contentURL
-			if (oneAttachment.contents && !oneAttachment.contentURL)
+			if (oneAttachment.image && !oneAttachment.contentURL)
 			{
 				// this is an image in a data URL, that's already represented in the HTML
 				continue;
 			}
 			
-			NSData *data = UIImagePNGRepresentation(oneAttachment.contents);
+			NSData *data = UIImagePNGRepresentation(oneAttachment.image);
 			
 			if (data)
 			{

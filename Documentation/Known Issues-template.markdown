@@ -3,17 +3,6 @@ Known Issues
 
 These are the known issues with DTRichTextEditor.
 
-Lists
-=====
-
-List support is incomplete. We recommend to not implement it at this time.
-
-- need to prevent deletion of parts of list prefix
-- selection is not properly preserved when toggling a paragraph between list and non-list
-- paragraph space following a list is not preserved
-
-We are looking for somebody to chip in so that we can finish this functionality.
-
 Auto Layout
 ===========
 
@@ -23,3 +12,8 @@ Performance
 ===========
 
 - On retina displays you might see the longer axis to be displayed in two steps. This is caused by `CATiledLayer` which limits the maximum tile size.
+
+Spell Check
+===========
+
+- Not implemented, Sponsor wanted

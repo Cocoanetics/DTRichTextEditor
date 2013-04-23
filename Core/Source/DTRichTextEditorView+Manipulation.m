@@ -15,8 +15,6 @@
 - (void)hideContextMenu;
 - (void)_closeTypingUndoGroupIfNecessary;
 
-@property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
-
 @end
 
 
@@ -57,125 +55,6 @@
 	
 	return tmpString;
 };
-
-#pragma mark - Working with Ranges
-- (UITextRange *)textRangeOfWordAtPosition:(UITextPosition *)position
-{
-	DTTextRange *forRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionForward];
-	DTTextRange *backRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionBackward];
-	
-	if (forRange && backRange)
-	{
-		DTTextRange *newRange = [DTTextRange textRangeFromStart:[backRange start] toEnd:[backRange end]];
-		return newRange;
-	}
-	else if (forRange)
-	{
-		return forRange;
-	}
-	else if (backRange)
-	{
-		return backRange;
-	}
-	
-	// treat image as word, left side of image selects it
-	UITextPosition *plusOnePosition = [self positionFromPosition:position offset:1];
-	UITextRange *imageRange = [self textRangeFromPosition:position toPosition:plusOnePosition];
-	
-	NSAttributedString *characterString = [self attributedSubstringForRange:imageRange];
-	
-    // only check for attachment attribute if the string is not empty
-    if ([characterString length])
-    {
-        if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:NSAttachmentAttributeName])
-        {
-            return imageRange;
-        }
-    }
-	
-	// we did not get a forward or backward range, like Word!|
-	DTTextPosition *previousPosition = (id)([self.tokenizer positionFromPosition:position
-																					 toBoundary:UITextGranularityCharacter
-																					inDirection:UITextStorageDirectionBackward]);
-	
-	// treat image as word, right side of image selects it
-	characterString = [self.attributedTextContentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:NSMakeRange(previousPosition.location, 1)];
-	
-	if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:NSAttachmentAttributeName])
-	{
-		return [DTTextRange textRangeFromStart:previousPosition toEnd:[previousPosition textPositionWithOffset:1]];
-	}
-	
-	forRange = (id)[[self tokenizer] rangeEnclosingPosition:previousPosition withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionForward];
-	backRange = (id)[[self tokenizer] rangeEnclosingPosition:previousPosition withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionBackward];
-	
-	UITextRange *retRange = nil;
-	
-	if (forRange && backRange)
-	{
-		retRange = [DTTextRange textRangeFromStart:[backRange start] toEnd:[backRange end]];
-	}
-	else if (forRange)
-	{
-		retRange = forRange;
-	}
-	else if (backRange)
-	{
-		retRange = backRange;
-	}
-	
-	// need to extend to include the previous position
-	if (retRange)
-	{
-		// extend this range to go up to current position
-		return [DTTextRange textRangeFromStart:[retRange start] toEnd:position];
-	}
-	
-	return nil;
-}
-
-- (UITextRange *)textRangeOfURLAtPosition:(UITextPosition *)position URL:(NSURL **)URL
-{
-	NSUInteger index = [(DTTextPosition *)position location];
-	
-	NSRange effectiveRange;
-	
-	NSURL *effectiveURL = [self.attributedTextContentView.layoutFrame.attributedStringFragment attribute:DTLinkAttribute atIndex:index effectiveRange:&effectiveRange];
-	
-	if (!effectiveURL)
-	{
-		return nil;
-	}
-	
-	DTTextRange *range = [DTTextRange rangeWithNSRange:effectiveRange];
-	
-	if (URL)
-	{
-		*URL = effectiveURL;
-	}
-	
-	return range;
-}
-
-- (UITextRange *)textRangeOfParagraphsContainingRange:(UITextRange *)range
-{
-	NSRange myRange = [(DTTextRange *)range NSRangeValue];
-	
-	// get range containing all selected paragraphs
-	NSAttributedString *attributedString = [self.attributedTextContentView.layoutFrame attributedStringFragment];
-	
-	NSString *string = [attributedString string];
-	
-	NSUInteger begIndex;
-	NSUInteger endIndex;
-	
-	[string rangeOfParagraphsContainingRange:myRange parBegIndex:&begIndex parEndIndex:&endIndex];
-	myRange = NSMakeRange(begIndex, endIndex - begIndex); // now extended to full paragraphs
-	
-	DTTextRange *retRange = [DTTextRange rangeWithNSRange:myRange];
-
-	return retRange;
-}
 
 - (NSDictionary *)typingAttributesForRange:(DTTextRange *)range
 {
@@ -232,6 +111,9 @@
 	
 	return tmpAttributes;
 }
+
+@dynamic overrideInsertionAttributes; // provided by DTRichTextEditorView main implementation
+
 
 #pragma mark - Pasteboard
 
@@ -688,76 +570,6 @@
 		// replace
 		[self _updateSubstringInRange:[paragraphRange NSRangeValue] withAttributedString:fragment actionName:NSLocalizedString(@"Indent", @"Action that changes the indentation of a paragraph")];
 	}
-	
-	[self hideContextMenu];
-}
-
-- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range
-{
-	// close off typing group, this is a new operations
-	[self _closeTypingUndoGroupIfNecessary];
-
-	NSRange styleRange = [(DTTextRange *)range NSRangeValue];
-	
-	NSRange rangeToSelectAfterwards = styleRange;
-	
-	// get range containing all selected paragraphs
-	NSAttributedString *attributedString = [self.attributedTextContentView.layoutFrame attributedStringFragment];
-	
-	NSString *string = [attributedString string];
-	
-	NSUInteger begIndex;
-	NSUInteger endIndex;
-	
-	[string rangeOfParagraphsContainingRange:styleRange parBegIndex:&begIndex parEndIndex:&endIndex];
-	styleRange = NSMakeRange(begIndex, endIndex - begIndex); // now extended to full paragraphs
-	
-	NSMutableAttributedString *entireAttributedString = (NSMutableAttributedString *)[self.attributedTextContentView.layoutFrame attributedStringFragment];
-	
-	// check if we are extending a list
-	DTCSSListStyle *extendingList = nil;
-	NSInteger nextItemNumber;
-	
-	if (styleRange.location>0)
-	{
-		NSArray *lists = [entireAttributedString attribute:DTTextListsAttribute atIndex:styleRange.location-1 effectiveRange:NULL];
-		
-		extendingList = [lists lastObject];
-		
-		if (extendingList.type == listStyle.type)
-		{
-			listStyle = extendingList;
-		}
-	}
-	
-	if (extendingList)
-	{
-		nextItemNumber = [entireAttributedString itemNumberInTextList:extendingList atIndex:styleRange.location-1]+1;
-	}
-	else
-	{
-		nextItemNumber = [listStyle startingItemNumber];
-	}
-	
-	// remember current markers
-	[entireAttributedString addMarkersForSelectionRange:rangeToSelectAfterwards];
-	
-	// toggle the list style
-	[entireAttributedString toggleListStyle:listStyle inRange:styleRange numberFrom:nextItemNumber];
-	
-	// selected range has shifted
-	rangeToSelectAfterwards = [entireAttributedString markedRangeRemove:YES];
-	
-	// relayout range of entire list
-	[self.attributedTextContentView relayoutText];
-	
-	self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
-	
-	// attachment positions might have changed
-	[self.attributedTextContentView layoutSubviewsInRect:self.bounds];
-	
-	// cursor positions might have changed
-	[self updateCursorAnimated:NO];
 	
 	[self hideContextMenu];
 }

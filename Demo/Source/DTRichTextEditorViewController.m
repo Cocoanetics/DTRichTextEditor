@@ -71,21 +71,26 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	richEditor.baseURL = [NSURL URLWithString:@"http://www.drobnik.com"];
     richEditor.textDelegate = self;
 	richEditor.defaultFontFamily = @"Helvetica";
-	richEditor.textSizeMultiplier = 2.0;
+	richEditor.textSizeMultiplier = 1.0;
 	richEditor.maxImageDisplaySize = CGSizeMake(300, 300);
     richEditor.autocorrectionType = UITextAutocorrectionTypeYes;
     richEditor.editable = self.testState.editable;
     richEditor.editorViewDelegate = self;
+    richEditor.defaultFontSize = 30;
 	
 	NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
 	[defaults setObject:[NSNumber numberWithBool:YES] forKey:DTDefaultLinkDecoration];
 	[defaults setObject:[UIColor colorWithHTMLName:@"purple"] forKey:DTDefaultLinkColor];
 	
+    // demonstrate half em paragraph spacing
+    DTCSSStylesheet *styleSheet = [[DTCSSStylesheet alloc] initWithStyleBlock:@"p {margin-bottom:0.5em} ol {margin-bottom:0.5em} li {margin-bottom:0.5em}"];
+    [defaults setObject:styleSheet forKey:DTDefaultStyleSheet];
+    
 	richEditor.textDefaults = defaults;
    
-    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p><p><b style=\"font-size:20px\">bold text for test</b></p><p><b style=\"font-size:7px\">bold text for test</b></p>";
+    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p><p>Version 1.5 now with list support.</p><ol><li>One</li><li>Two</li><li>Three</li></ol>";
 	[richEditor setHTMLString:html];
-
+    
 	// image as drawn by your custom views which you return in the delegate method
 	richEditor.attributedTextContentView.shouldDrawImages = NO;
 	
@@ -173,11 +178,10 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	}
 	
 	// make an attachment
-	DTTextAttachment *attachment = [[DTTextAttachment alloc] init];
-	attachment.contents = (id)image;
+	DTImageTextAttachment *attachment = [[DTImageTextAttachment alloc] initWithElement:nil options:nil];
+	attachment.image = (id)image;
 	attachment.displaySize = image.size;
 	attachment.originalSize = image.size;
-	attachment.contentType = DTTextAttachmentTypeImage;
 	
 	[richEditor replaceRange:lastSelection withAttachment:attachment inParagraph:YES];
 }
@@ -269,11 +273,10 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	UIImage *image = [UIImage imageNamed:@"icon_smile.gif"];
 	
 	// make an attachment
-	DTTextAttachment *attachment = [[DTTextAttachment alloc] init];
-	attachment.contents = (id)image;
+	DTImageTextAttachment *attachment = [[DTImageTextAttachment alloc] initWithElement:nil options:nil];
+	attachment.image = image;
 	attachment.displaySize = image.size;
 	attachment.originalSize = image.size;
-	attachment.contentType = DTTextAttachmentTypeImage;
 	attachment.verticalAlignment = DTTextAttachmentVerticalAlignmentCenter;
 	
 	[richEditor replaceRange:[richEditor selectedTextRange ] withAttachment:attachment inParagraph:NO];
@@ -361,6 +364,7 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	
 	DTCSSListStyle *listStyle = [[DTCSSListStyle alloc] init];
 	listStyle.startingItemNumber = 1;
+    listStyle.position = DTCSSListStylePositionOutside;
 	listStyle.type = DTCSSListStyleTypeDecimal;
 	
 	[richEditor toggleListStyle:listStyle inRange:range];
@@ -404,13 +408,12 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
         return imageView;
     }
     
-    if (attachment.contentType == DTTextAttachmentTypeImage)
+    if ([attachment isKindOfClass:[DTImageTextAttachment class]])
 	{
+        DTImageTextAttachment *imageAttachment = (DTImageTextAttachment *)attachment;
+        
         imageView = [[UIImageView alloc] initWithFrame:frame];
-        if ([attachment.contents isKindOfClass:[UIImage class]])
-        {
-            imageView.image = attachment.contents;
-        }
+        imageView.image = imageAttachment.image;
         
         [self.imageViewCache setObject:imageView forKey:cacheKey];
         

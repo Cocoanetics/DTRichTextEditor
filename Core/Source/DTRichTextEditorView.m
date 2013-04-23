@@ -81,8 +81,6 @@ typedef enum
 - (BOOL)selectionIsVisible;
 - (void)relayoutText;
 
-- (NSDictionary *)_attributedStringAttributesForTextDefaults;
-
 @end
 
 @implementation DTRichTextEditorView
@@ -1803,10 +1801,9 @@ typedef enum
 	
 	if (image)
 	{
-		DTTextAttachment *attachment = [[DTTextAttachment alloc] init];
-		attachment.contentType = DTTextAttachmentTypeImage;
+		DTImageTextAttachment *attachment = [[DTImageTextAttachment alloc] initWithElement:nil options:nil];
 		attachment.contentURL = [pasteboard URL];
-		attachment.contents = image;
+		attachment.image = image;
 		attachment.originalSize = [image size];
 		
 		CGSize displaySize = image.size;
@@ -1980,9 +1977,16 @@ typedef enum
 	}
 	else 
 	{
-		DTTextRange *selectedRange = (id)self.selectedTextRange;
-		
-		[self replaceRange:selectedRange withText:text];
+        if ([text isEqualToString:@"\n"])
+        {
+            // NL entered, returns YES if it was inside a list
+            if ([self handleNewLineInputInListInRange:self.selectedTextRange])
+            {
+                return;
+            }
+        }
+        
+		[self replaceRange:self.selectedTextRange withText:text];
 		// leave marking intact
 	}
 	
@@ -2023,7 +2027,11 @@ typedef enum
 		
 		if ([docStart compare:delEnd] == NSOrderedAscending)
 		{
-			DTTextPosition *delStart = [DTTextPosition textPositionWithLocation:delEnd.location-1];
+            UITextRange *entireDocument = [self textRangeFromPosition:[self beginningOfDocument] toPosition:[self endOfDocument]];
+            UITextPosition *delStart = [self positionFromPosition:delEnd offset:-1];
+			
+            // skips fields
+            delStart = [self positionSkippingFieldsFromPosition:delStart withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
 			DTTextRange *delRange = [DTTextRange textRangeFromStart:delStart toEnd:delEnd];
 			
 			[self replaceRange:delRange  withText:@""];
@@ -2083,8 +2091,8 @@ typedef enum
         attributedStringBeingReplaced = attachment.replacedAttributedString;
     }
     
-	NSMutableAttributedString *attributedString = (NSMutableAttributedString *)self.attributedTextContentView.layoutFrame.attributedStringFragment;
-	NSString *string = [attributedString string];
+	NSAttributedString *attributedText = self.attributedText;
+	NSString *string = [attributedText string];
 	
 	// remember selection/cursor before input
 	UITextRange *textRangeBeforeChange = self.selectedTextRange;
@@ -2114,7 +2122,6 @@ typedef enum
 		typingAttributes = [self typingAttributesForRange:range];
 	}
 	
-	DTCSSListStyle *effectiveList = [[typingAttributes objectForKey:DTTextListsAttribute] lastObject];
 	BOOL newlineEntered = NO;
 	
 	if ([text isKindOfClass:[NSString class]])
@@ -2129,73 +2136,6 @@ typedef enum
 		text = [[NSAttributedString alloc] initWithString:text attributes:typingAttributes];
 	}
 	
-	// if we are in a list and just entered NL then we need appropriate list prefix
-	if (effectiveList && newlineEntered)
-	{
-		if (myRange.length == 0)
-		{
-			NSRange paragraphRange = [string rangeOfParagraphAtIndex:myRange.location];
-			NSString *paragraphString = [string substringWithRange:paragraphRange];
-			
-			NSUInteger itemNumber = [attributedString itemNumberInTextList:effectiveList atIndex:myRange.location];
-			
-			NSString *listPrefix = [effectiveList prefixWithCounter:itemNumber];
-			
-			NSMutableAttributedString *mutableParagraph = [[attributedString attributedSubstringFromRange:paragraphRange] mutableCopy];
-			
-			if ([paragraphString hasPrefix:listPrefix])
-			{
-				
-				// check if it is an empty line, then we'll remove the list
-				if (myRange.location == paragraphRange.location + [listPrefix length])
-				{
-					[mutableParagraph toggleListStyle:nil inRange:NSMakeRange(0, paragraphRange.length) numberFrom:0];
-					
-					text = mutableParagraph;
-					myRange = paragraphRange;
-					
-					// adjust cursor position
-					rangeToSelectAfterReplace.location -= [listPrefix length] + 1;
-					
-					
-					// paragraph before gets its spacing back
-					if (paragraphRange.location)
-					{
-						[attributedString toggleParagraphSpacing:YES atIndex:paragraphRange.location-1];
-					}
-				}
-				else
-				{
-					NSInteger itemNumber = [attributedString itemNumberInTextList:effectiveList atIndex:myRange.location]+1;
-					NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:effectiveList listIndent:20 attributes:typingAttributes];
-					
-					// extend to include paragraph before in inserted string
-					[mutableParagraph toggleParagraphSpacing:NO atIndex:0];
-					
-					// remove part after the insertion point
-					NSInteger suffixLength = NSMaxRange(paragraphRange)-myRange.location;
-					NSRange suffixRange = NSMakeRange(myRange.location - paragraphRange.location, suffixLength);
-					[mutableParagraph deleteCharactersInRange:suffixRange];
-					
-					// adjust the insertion range to include the paragraph
-					myRange.length += (myRange.location-paragraphRange.location);
-					myRange.location = paragraphRange.location;
-					
-					// add the NL
-					[mutableParagraph appendAttributedString:text];
-					
-					// append the new prefix
-					[mutableParagraph appendAttributedString:prefixAttributedString];
-					
-					text = mutableParagraph;
-					
-					// adjust cursor position
-					rangeToSelectAfterReplace.location += [prefixAttributedString length];
-				}
-			}
-		}
-	}
-
 	// ---
 	
 	NSUndoManager *undoManager = self.undoManager;
@@ -2208,7 +2148,7 @@ typedef enum
 	// this is the string to restore if we undo
     if (!attributedStringBeingReplaced)
     {
-        attributedStringBeingReplaced = [attributedString attributedSubstringFromRange:myRange];
+        attributedStringBeingReplaced = [attributedText attributedSubstringFromRange:myRange];
     }
 	
 	// the range that the replacement will have afterwards
@@ -2241,7 +2181,7 @@ typedef enum
     // if it's just one character remaining then set text defaults on this
     if ([[self.attributedTextContentView.layoutFrame.attributedStringFragment string] isEqualToString:@"\n"])
     {
-        NSDictionary *typingDefaults = [self _attributedStringAttributesForTextDefaults];
+        NSDictionary *typingDefaults = [self attributedStringAttributesForTextDefaults];
         
         [(NSMutableAttributedString *)self.attributedTextContentView.layoutFrame.attributedStringFragment setAttributes:typingDefaults range:NSMakeRange(0, 1)];
     }
@@ -2269,6 +2209,16 @@ typedef enum
 	[self scrollCursorVisibleAnimated:YES];
     
     self.waitingForDictionationResult = NO;
+	
+	
+	// if the number of paragraphs change we might have to renumber something
+	NSUInteger paragraphsBeforeReplacement = [[attributedStringBeingReplaced string] numberOfParagraphs];
+	NSUInteger paragraphsAfterReplacement = [[text string] numberOfParagraphs];
+	
+	if (paragraphsAfterReplacement != paragraphsBeforeReplacement)
+	{
+		[self updateListsInRange:_selectedTextRange];
+	}
 }
 
 #pragma mark Working with Marked and Selected Text
@@ -2479,60 +2429,143 @@ typedef enum
 	return position;
 }
 
+
+// limits position to be inside the range
+- (UITextPosition *)positionFromPosition:(UITextPosition *)position withinRange:(UITextRange *)range
+{
+    UITextPosition *beginningOfDocument = [self beginningOfDocument];
+    UITextPosition *endOfDocument = [self endOfDocument];
+    
+    if ([self comparePosition:position toPosition:beginningOfDocument] == NSOrderedAscending)
+    {
+        // position is before begin
+        return beginningOfDocument;
+    }
+
+    if ([self comparePosition:position toPosition:endOfDocument] == NSOrderedDescending)
+    {
+        // position is after end
+        return endOfDocument;
+    }
+    
+    // position is inside range
+    return position;
+}
+
+// limits position to be in range and optionally skips list prefixes in the direction
+- (UITextPosition *)positionSkippingFieldsFromPosition:(UITextPosition *)position withinRange:(UITextRange *)range inDirection:(UITextStorageDirection)direction
+{
+    NSInteger index = [(DTTextPosition *)position location];
+    
+    // skip over list prefix
+    NSAttributedString *attributedString = self.attributedText;
+    NSRange listPrefixRange = [attributedString rangeOfListPrefixAtIndex:index];
+    
+    if (listPrefixRange.location != NSNotFound)
+    {
+        // there is a prefix, skip it according to direction
+        switch (direction)
+        {
+            case UITextStorageDirectionForward:
+            {
+                index = NSMaxRange(listPrefixRange);
+                break;
+            }
+                
+            case UITextStorageDirectionBackward:
+            {
+                index = listPrefixRange.location-1;
+                break;
+            }
+        }
+    }
+    
+    // limit the position to be within the range
+    return [self positionFromPosition:[DTTextPosition textPositionWithLocation:index] withinRange:range];
+}
+
+
 - (UITextPosition *)positionFromPosition:(DTTextPosition *)position inDirection:(UITextLayoutDirection)direction offset:(NSInteger)offset
 {
-	DTTextPosition *begin = (id)[self beginningOfDocument];
-	DTTextPosition *end = (id)[self endOfDocument];
+	UITextPosition *beginningOfDocument = (id)[self beginningOfDocument];
+	UITextPosition *endOfDocument = (id)[self endOfDocument];
+	UITextRange *entireDocument = [self textRangeFromPosition:beginningOfDocument toPosition:endOfDocument];
 	
-	switch (direction) 
+	// shift beginning over a list prefix
+	endOfDocument = [self positionSkippingFieldsFromPosition:endOfDocument withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
+	
+	// shift end over a list prefix
+	beginningOfDocument = [self positionSkippingFieldsFromPosition:beginningOfDocument withinRange:entireDocument inDirection:UITextStorageDirectionForward];
+	
+	// update legal range
+	UITextRange *maxRange = [self textRangeFromPosition:beginningOfDocument toPosition:endOfDocument];
+	
+	UITextPosition *maxPosition = [self positionWithinRange:maxRange farthestInDirection:direction];
+	
+	if ([self comparePosition:position toPosition:maxPosition] == NSOrderedSame)
+	{
+		// already at limit
+		return nil;
+	}
+	
+	UITextPosition *retPosition = nil;
+	
+	switch (direction)
 	{
 		case UITextLayoutDirectionRight:
 		{
-			if ([position location] < end.location)
-			{
-				return [DTTextPosition textPositionWithLocation:position.location+1];
-			}
+			UITextPosition *newPosition = [self positionFromPosition:position offset:1];
 			
+			// TODO: make the skipping direction dependend on the text direction in this paragraph
+			retPosition = [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
 			break;
 		}
+			
 		case UITextLayoutDirectionLeft:
 		{
-			if (position.location > begin.location)
-			{
-				return [DTTextPosition textPositionWithLocation:position.location-1];
-			}
-			
+			UITextPosition *newPosition = [self positionFromPosition:position offset:-1];
+         
+			// TODO: make the skipping direction dependend on the text direction in this paragraph
+			retPosition = [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
 			break;
 		}
+			
 		case UITextLayoutDirectionDown:
 		{
-			NSInteger newIndex = [self.attributedTextContentView.layoutFrame indexForPositionDownwardsFromIndex:position.location offset:offset];
+			NSInteger index = [self.attributedTextContentView.layoutFrame indexForPositionDownwardsFromIndex:position.location offset:offset];
 			
-			if (newIndex>=0)
+			// document ends
+			if (index == NSNotFound)
 			{
-				return [DTTextPosition textPositionWithLocation:newIndex];
+				return maxPosition;
 			}
-			else 
-			{
-				return [self endOfDocument];
-			}
+			
+			UITextPosition *newPosition = [DTTextPosition textPositionWithLocation:index];
+			
+			// limit the position to be within the range and skip list prefixes
+			retPosition = [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
+			break;
 		}
+			
 		case UITextLayoutDirectionUp:
 		{
-			NSInteger newIndex = [self.attributedTextContentView.layoutFrame indexForPositionUpwardsFromIndex:position.location offset:offset];
+			NSInteger index = [self.attributedTextContentView.layoutFrame indexForPositionUpwardsFromIndex:position.location offset:offset];
 			
-			if (newIndex>=0)
+			// nothing up there
+			if (index == NSNotFound)
 			{
-				return [DTTextPosition textPositionWithLocation:newIndex];
+				return maxPosition;
 			}
-			else 
-			{
-				return [self beginningOfDocument];
-			}
+			
+			UITextPosition *newPosition = [DTTextPosition textPositionWithLocation:index];
+			
+			// limit the position to be within the range and skip list prefixes
+			retPosition = [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
+			break;
 		}
 	}
 	
-	return nil;
+	return retPosition;
 }
 
 - (UITextPosition *)beginningOfDocument
@@ -2562,14 +2595,24 @@ typedef enum
 }
 
 #pragma mark Determining Layout and Writing Direction
-// TODO: How is this implemented correctly?
 - (UITextPosition *)positionWithinRange:(UITextRange *)range farthestInDirection:(UITextLayoutDirection)direction
 {
-	return [self endOfDocument];
+    switch (direction)
+    {
+        case UITextLayoutDirectionRight:
+        case UITextLayoutDirectionDown:
+            return [range end];
+
+        case UITextLayoutDirectionLeft:
+        case UITextLayoutDirectionUp:
+            return [range start];
+    }
 }
 
 - (UITextRange *)characterRangeByExtendingPosition:(DTTextPosition *)position inDirection:(UITextLayoutDirection)direction
 {
+    [[NSException exceptionWithName:@"Not Implemented" reason:@"When is this method being used?" userInfo:nil] raise];
+    
 	DTTextPosition *end = (id)[self endOfDocument];
 	
 	return [DTTextRange textRangeFromStart:position toEnd:end];
@@ -2616,6 +2659,16 @@ typedef enum
 - (UITextPosition *)closestPositionToPoint:(CGPoint)point
 {
 	NSInteger newIndex = [self.attributedTextContentView.layoutFrame closestCursorIndexToPoint:point];
+    
+    // move cursor out of a list prefix, we don't want those
+    NSAttributedString *attributedString = self.attributedText;
+    
+    NSRange listPrefixRange = [attributedString rangeOfListPrefixAtIndex:newIndex];
+    
+    if (listPrefixRange.location != NSNotFound)
+    {
+        newIndex = NSMaxRange(listPrefixRange);
+    }
 	
 	return [DTTextPosition textPositionWithLocation:newIndex];
 }
@@ -2843,15 +2896,6 @@ typedef enum
             _defaultFontSize = [fontSizeNum floatValue];
         }
 	}
-}
-
-// helper method for converting text defaults dictionary into actual text attributes
-- (NSDictionary *)_attributedStringAttributesForTextDefaults
-{
-	NSData *data = [@"<p />" dataUsingEncoding:NSUTF8StringEncoding];
-	NSAttributedString *attributedString = [[NSAttributedString alloc] initWithHTMLData:data options:[self textDefaults] documentAttributes:NULL];
-	
-	return [attributedString attributesAtIndex:0 effectiveRange:NULL];
 }
 
 // helper method for wrapping a text attachment, optionally in its own paragraph
