@@ -596,7 +596,7 @@ typedef enum
 }
 
 
-- (BOOL)moveCursorToPositionClosestToLocation:(CGPoint)location notifyInputDelegate:(BOOL)notifyInputDelegate
+- (BOOL)moveCursorToPositionClosestToLocation:(CGPoint)location
 {
 	BOOL didMove = NO;
 	
@@ -617,15 +617,9 @@ typedef enum
     if (![_selectedTextRange isEmpty] || ![(DTTextPosition *)_selectedTextRange.start isEqual:position])
     {
         didMove = YES;
-
-        if (notifyInputDelegate)
-            [self.inputDelegate selectionWillChange:self];
         
         self.selectedTextRange = [self textRangeFromPosition:position toPosition:position];
         
-        if (notifyInputDelegate)
-            [self.inputDelegate selectionDidChange:self];
-
         // begins a new typing undo group
         DTUndoManager *undoManager = self.undoManager;
         [undoManager closeAllOpenGroups];
@@ -736,7 +730,7 @@ typedef enum
 	
 	if (self.editable)
 	{
-		[self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:NO];
+		[self moveCursorToPositionClosestToLocation:touchPoint];
 	}
 	else
 	{
@@ -777,7 +771,7 @@ typedef enum
 		
 		if (self.isEditable && self.isEditing)
 		{
-			[self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:NO];
+			[self moveCursorToPositionClosestToLocation:touchPoint];
 		}
 		else
 		{
@@ -789,7 +783,7 @@ typedef enum
 	
 	if (_dragMode == DTDragModeCursorInsideMarking)
 	{
-		[self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:NO];
+		[self moveCursorToPositionClosestToLocation:touchPoint];
 		
 		loupe.touchPoint = CGRectCenter(_cursor.frame);
 		loupe.seeThroughMode = NO;
@@ -1061,7 +1055,7 @@ typedef enum
     {
         CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
     
-        if ([self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:YES])
+        if ([self moveCursorToPositionClosestToLocation:touchPoint])
         {
             // did move
             [self hideContextMenu];
@@ -1116,9 +1110,7 @@ typedef enum
     
     [self hideContextMenu];
     
-    [self.inputDelegate selectionWillChange:self];
     self.selectedTextRange = wordRange;
-    [self.inputDelegate selectionDidChange:self];
     
     [self showContextMenuFromSelection];
     
@@ -1164,9 +1156,7 @@ typedef enum
     
     [self hideContextMenu];
     
-    [self.inputDelegate selectionWillChange:self];
     self.selectedTextRange = textRange;
-    [self.inputDelegate selectionDidChange:self];
     
     [self showContextMenuFromSelection];
     
@@ -1192,14 +1182,16 @@ typedef enum
 		case UIGestureRecognizerStateBegan:
 		{
             // wrap long press/drag handles in calls to the input delegate because the intermediate selection changes are not important to editing
-            [self.inputDelegate selectionWillChange:self];
+            [self _inputDelegateSelectionDidChange];
             
 			[self presentLoupeWithTouchPoint:touchPoint];
 			_cursor.state = DTCursorStateStatic;
             
             // become first responder to bring up editing and show the cursor
             if (!self.isFirstResponder)
+            {
                 [self becomeFirstResponder];
+            }
 			
 			// begins a new typing undo group
 			DTUndoManager *undoManager = self.undoManager;
@@ -1255,7 +1247,7 @@ typedef enum
 			[self dismissLoupeWithTouchPoint:touchPoint];
 
             // Notify that long press/drag handles has concluded and selection may be changed
-            [self.inputDelegate selectionDidChange:self];
+            [self _inputDelegateSelectionDidChange];
             
             break;
 		}
@@ -1282,7 +1274,8 @@ typedef enum
 		case UIGestureRecognizerStateBegan:
 		{
             // wrap long press/drag handles in calls to the input delegate because the intermediate selection changes are not important to editing
-            [self.inputDelegate selectionWillChange:self];
+            [self _inputDelegateSelectionWillChange];
+
             
 			[self presentLoupeWithTouchPoint:touchPoint];
 			
@@ -1328,7 +1321,7 @@ typedef enum
 			[self dismissLoupeWithTouchPoint:touchPoint];
 
             // Notify that long press/drag handles has concluded and selection may be changed
-            [self.inputDelegate selectionDidChange:self];
+            [self _inputDelegateSelectionDidChange];
 			
 			break;
 		}
@@ -1408,28 +1401,6 @@ typedef enum
     _editorViewDelegateFlags.delegateCanPerformActionsWithSender = [editorViewDelegate respondsToSelector:@selector(editorView:canPerformAction:withSender:)];
 }
 
-- (void)notifyDelegateDidChangeSelection
-{
-    // only notify on user input while editing
-    if (self.isEditing && _editorViewDelegateFlags.delegateDidChangeSelection)
-    {
-        [self.editorViewDelegate editorViewDidChangeSelection:self];
-    }
-}
-
-- (void)notifyDelegateDidChange
-{
-    // Notify delegate
-    if (self.isEditing && _editorViewDelegateFlags.delegateDidChange)
-    {
-        [self.editorViewDelegate editorViewDidChange:self];
-    }
-    
-    // Post DTRichTextEditorTextDidChangeNotification
-    [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidChangeNotification object:self];
-}
-
-
 #pragma mark - Editing State
 
 @synthesize editable = _editable;
@@ -1463,9 +1434,7 @@ typedef enum
             UITextPosition *end = [self endOfDocument];
             DTTextRange *textRange = (DTTextRange *)[self textRangeFromPosition:end toPosition:end];
             
-            [self.inputDelegate selectionWillChange:self];
             [self setSelectedTextRange:textRange animated:NO];
-            [self.inputDelegate selectionDidChange:self];
         }
         else
         {
@@ -1710,9 +1679,9 @@ typedef enum
 		return;
 	}
 	
-    [self.inputDelegate textWillChange:self];
+    [self _inputDelegateTextWillChange];
 	[self replaceRange:_selectedTextRange withText:@""];
-    [self.inputDelegate textDidChange:self];
+    [self _inputDelegateTextDidChange];
     
 	[self.undoManager setActionName:NSLocalizedString(@"Delete", @"Action that deletes text")];
 }
@@ -1872,10 +1841,10 @@ typedef enum
     DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	[undoManager closeAllOpenGroups];
     
-    [self.inputDelegate textWillChange:self];
+    [self _inputDelegateTextWillChange];
     [self replaceRange:textRange withText:attributedStringToPaste];
     [self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
-    [self.inputDelegate textDidChange:self];
+    [self _inputDelegateTextDidChange];
     
     [self notifyDelegateDidChange];
 }
@@ -1890,9 +1859,7 @@ typedef enum
 		_shouldReshowContextMenuAfterHide = YES;
 		self.selectionView.dragHandlesVisible = YES;
 		
-        [self.inputDelegate selectionWillChange:self];
 		self.selectedTextRange = wordRange;
-        [self.inputDelegate selectionDidChange:self];
 	}
 }
 
@@ -1901,9 +1868,7 @@ typedef enum
 	_shouldReshowContextMenuAfterHide = YES;
     self.selectionView.dragHandlesVisible = YES;
 	
-    [self.inputDelegate selectionWillChange:self];
 	self.selectedTextRange = [DTTextRange textRangeFromStart:self.beginningOfDocument toEnd:self.endOfDocument];
-    [self.inputDelegate selectionDidChange:self];
 }
 
 // creates an undo manager lazily in response to a shake gesture or first edit action
@@ -2049,6 +2014,9 @@ typedef enum
     // Notify editor delegate of change
     [self notifyDelegateDidChange];
 }
+
+#pragma mark
+
 
 #pragma mark UITextInput Protocol
 #pragma mark -
@@ -2268,7 +2236,7 @@ typedef enum
 	
 	if (shouldNotifyDelegates)
 	{
-		[self.inputDelegate selectionWillChange:self];
+		[self _inputDelegateSelectionWillChange];
 	}
 	
 	_selectedTextRange = [newTextRange copy];
@@ -2277,7 +2245,7 @@ typedef enum
 	
 	if (shouldNotifyDelegates)
 	{
-		[self.inputDelegate selectionDidChange:self];
+		[self _inputDelegateSelectionDidChange];
 		[self notifyDelegateDidChangeSelection];
 	}
 	
@@ -2366,14 +2334,14 @@ typedef enum
 		return;
 	}
 	
-	[inputDelegate textWillChange:self];
+	[self _inputDelegateTextWillChange];
 	
 	self.markedTextRange = nil;
 	
 	[self updateCursorAnimated:NO];
 	
-	// calling selectionDidChange makes the input candidate go away
-	[inputDelegate textDidChange:self];
+	// calling textDidChange makes the input candidate go away
+	[self _inputDelegateTextDidChange];
 	
 	[self removeMarkedTextCandidateView];
 }
@@ -2977,6 +2945,49 @@ typedef enum
     return wrapperString;
 }
 
+#pragma mark - Delegate Communication
+
+- (void)_inputDelegateSelectionWillChange
+{
+    [self.inputDelegate selectionWillChange:self];
+}
+
+- (void)_inputDelegateSelectionDidChange
+{
+    [self.inputDelegate selectionWillChange:self];
+}
+
+- (void)_inputDelegateTextWillChange
+{
+    [self.inputDelegate textWillChange:self];
+}
+
+- (void)_inputDelegateTextDidChange
+{
+    [self.inputDelegate textWillChange:self];
+}
+
+- (void)notifyDelegateDidChangeSelection
+{
+    // only notify on user input while editing
+    if (self.isEditing && _editorViewDelegateFlags.delegateDidChangeSelection)
+    {
+        [self.editorViewDelegate editorViewDidChangeSelection:self];
+    }
+}
+
+- (void)notifyDelegateDidChange
+{
+    // Notify delegate
+    if (self.isEditing && _editorViewDelegateFlags.delegateDidChange)
+    {
+        [self.editorViewDelegate editorViewDidChange:self];
+    }
+    
+    // Post DTRichTextEditorTextDidChangeNotification
+    [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidChangeNotification object:self];
+}
+
 #pragma mark Properties
 
 - (void)setAttributedText:(NSAttributedString *)newAttributedText
@@ -3007,18 +3018,16 @@ typedef enum
     // setting new text should remove all selections
 	[self unmarkText];
     
-    [self.inputDelegate textWillChange:self];
+    [self _inputDelegateTextWillChange];
     [super setAttributedString:newAttributedText];
-    [self.inputDelegate textDidChange:self];
+    [self _inputDelegateTextDidChange];
     
     [self setNeedsLayout];
     
 	// always position cursor at the end of the text
     if (self.isEditing)
     {
-        [self.inputDelegate selectionWillChange:self];
         self.selectedTextRange = [self textRangeFromPosition:self.endOfDocument toPosition:self.endOfDocument];
-        [self.inputDelegate selectionDidChange:self];
     }
     
 	[self.undoManager removeAllActions];
