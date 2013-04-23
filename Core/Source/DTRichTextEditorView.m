@@ -1801,10 +1801,9 @@ typedef enum
 	
 	if (image)
 	{
-		DTTextAttachment *attachment = [[DTTextAttachment alloc] init];
-		attachment.contentType = DTTextAttachmentTypeImage;
+		DTImageTextAttachment *attachment = [[DTImageTextAttachment alloc] initWithElement:nil options:nil];
 		attachment.contentURL = [pasteboard URL];
-		attachment.contents = image;
+		attachment.image = image;
 		attachment.originalSize = [image size];
 		
 		CGSize displaySize = image.size;

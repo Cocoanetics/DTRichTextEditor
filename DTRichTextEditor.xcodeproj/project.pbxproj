@@ -36,6 +36,24 @@
 		A721D67916925A5500C5A48F /* DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A721D67616925A5500C5A48F /* DTWebArchive.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A721D67A16925A5500C5A48F /* DTWebResource.h in Headers */ = {isa = PBXBuildFile; fileRef = A721D67716925A5500C5A48F /* DTWebResource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A721D67B16925A5500C5A48F /* UIPasteboard+DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A721D67816925A5500C5A48F /* UIPasteboard+DTWebArchive.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A72D4CC51726BBD0008245A0 /* DTAnchorHTMLElement.h in Resources */ = {isa = PBXBuildFile; fileRef = A72D4CBE1726BBC5008245A0 /* DTAnchorHTMLElement.h */; };
+		A72D4CC61726BBD0008245A0 /* DTBreakHTMLElement.h in Resources */ = {isa = PBXBuildFile; fileRef = A72D4CBF1726BBC5008245A0 /* DTBreakHTMLElement.h */; };
+		A72D4CC71726BBD0008245A0 /* DTHorizontalRuleHTMLElement.h in Resources */ = {isa = PBXBuildFile; fileRef = A72D4CC01726BBC5008245A0 /* DTHorizontalRuleHTMLElement.h */; };
+		A72D4CC81726BBD0008245A0 /* DTListItemHTMLElement.h in Resources */ = {isa = PBXBuildFile; fileRef = A72D4CC11726BBC5008245A0 /* DTListItemHTMLElement.h */; };
+		A72D4CC91726BBD0008245A0 /* DTStylesheetHTMLElement.h in Resources */ = {isa = PBXBuildFile; fileRef = A72D4CC21726BBC5008245A0 /* DTStylesheetHTMLElement.h */; };
+		A72D4CCA1726BBD0008245A0 /* DTTextHTMLElement.h in Resources */ = {isa = PBXBuildFile; fileRef = A72D4CC31726BBC5008245A0 /* DTTextHTMLElement.h */; };
+		A72D4CCB1726BBD0008245A0 /* DTTextAttachmentHTMLElement.h in Resources */ = {isa = PBXBuildFile; fileRef = A72D4CC41726BBC5008245A0 /* DTTextAttachmentHTMLElement.h */; };
+		A72D4CCC1726BC16008245A0 /* DTAnchorHTMLElement.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D4CBE1726BBC5008245A0 /* DTAnchorHTMLElement.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A72D4CCD1726BC1B008245A0 /* DTBreakHTMLElement.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D4CBF1726BBC5008245A0 /* DTBreakHTMLElement.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A72D4CCE1726BC1E008245A0 /* DTHorizontalRuleHTMLElement.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D4CC01726BBC5008245A0 /* DTHorizontalRuleHTMLElement.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A72D4CCF1726BC21008245A0 /* DTListItemHTMLElement.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D4CC11726BBC5008245A0 /* DTListItemHTMLElement.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A72D4CD01726BC28008245A0 /* DTStylesheetHTMLElement.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D4CC21726BBC5008245A0 /* DTStylesheetHTMLElement.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A72D4CD11726BC2E008245A0 /* DTTextHTMLElement.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D4CC31726BBC5008245A0 /* DTTextHTMLElement.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A72D4CD21726BC36008245A0 /* DTTextAttachmentHTMLElement.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D4CC41726BBC5008245A0 /* DTTextAttachmentHTMLElement.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A72D4CD71726BC8F008245A0 /* DTIframeTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D4CD31726BC8F008245A0 /* DTIframeTextAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A72D4CD81726BC8F008245A0 /* DTImageTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D4CD41726BC8F008245A0 /* DTImageTextAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A72D4CD91726BC8F008245A0 /* DTObjectTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D4CD51726BC8F008245A0 /* DTObjectTextAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A72D4CDA1726BC8F008245A0 /* DTVideoTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D4CD61726BC8F008245A0 /* DTVideoTextAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A730BCD316D28957003B849F /* DTTiledLayerWithoutFade.h in Headers */ = {isa = PBXBuildFile; fileRef = A730BCD216D28957003B849F /* DTTiledLayerWithoutFade.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7402D4B167F4E5200BE0AAF /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A7402D4A167F4E5200BE0AAF /* Default-568h@2x.png */; };
 		A7402D4F167F571B00BE0AAF /* DTRichTextEditorView+Manipulation.h in Headers */ = {isa = PBXBuildFile; fileRef = A7402D4D167F571A00BE0AAF /* DTRichTextEditorView+Manipulation.h */; };
@@ -201,12 +219,6 @@
 		A7F0C84713C326E900EBD027 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84613C326E900EBD027 /* CoreGraphics.framework */; };
 		A7F16D1C169AC10D00B0E843 /* DTHTMLParserNode.h in Headers */ = {isa = PBXBuildFile; fileRef = A7F16D1A169AC10D00B0E843 /* DTHTMLParserNode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7F16D1D169AC10D00B0E843 /* DTHTMLParserTextNode.h in Headers */ = {isa = PBXBuildFile; fileRef = A7F16D1B169AC10D00B0E843 /* DTHTMLParserTextNode.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A7F16D24169AC1A000B0E843 /* DTHTMLElementBR.h in Headers */ = {isa = PBXBuildFile; fileRef = A7F16D1E169AC1A000B0E843 /* DTHTMLElementBR.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A7F16D25169AC1A000B0E843 /* DTHTMLElementHR.h in Headers */ = {isa = PBXBuildFile; fileRef = A7F16D1F169AC1A000B0E843 /* DTHTMLElementHR.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A7F16D26169AC1A000B0E843 /* DTHTMLElementLI.h in Headers */ = {isa = PBXBuildFile; fileRef = A7F16D20169AC1A000B0E843 /* DTHTMLElementLI.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A7F16D27169AC1A000B0E843 /* DTHTMLElementStylesheet.h in Headers */ = {isa = PBXBuildFile; fileRef = A7F16D21169AC1A000B0E843 /* DTHTMLElementStylesheet.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A7F16D28169AC1A000B0E843 /* DTHTMLElementText.h in Headers */ = {isa = PBXBuildFile; fileRef = A7F16D22169AC1A000B0E843 /* DTHTMLElementText.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A7F16D29169AC1A000B0E843 /* DTHTMLElementAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A7F16D23169AC1A000B0E843 /* DTHTMLElementAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7F34D5B16D0E30E0054A512 /* libDTCoreText_no_DTFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A73129CC15A5E69900971C55 /* libDTCoreText_no_DTFoundation.a */; };
 		A7F34D8D16D0E3790054A512 /* libDTFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F34D6C16D0E32F0054A512 /* libDTFoundation.a */; };
 		A7FE7FC515FF18370003723B /* DTTextSelectionRect.h in Headers */ = {isa = PBXBuildFile; fileRef = A7FE7FC315FF18370003723B /* DTTextSelectionRect.h */; };
@@ -453,6 +465,17 @@
 		A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTCoreText.xcodeproj; path = DTCoreText/DTCoreText.xcodeproj; sourceTree = "<group>"; };
 		A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTWebArchive.xcodeproj; path = DTWebArchive/DTWebArchive.xcodeproj; sourceTree = "<group>"; };
 		A7239FC716A6A22F0071E902 /* Known Issues-template.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Known Issues-template.markdown"; sourceTree = "<group>"; };
+		A72D4CBE1726BBC5008245A0 /* DTAnchorHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTAnchorHTMLElement.h; path = DTCoreText/Core/Source/DTAnchorHTMLElement.h; sourceTree = "<group>"; };
+		A72D4CBF1726BBC5008245A0 /* DTBreakHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTBreakHTMLElement.h; path = DTCoreText/Core/Source/DTBreakHTMLElement.h; sourceTree = "<group>"; };
+		A72D4CC01726BBC5008245A0 /* DTHorizontalRuleHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTHorizontalRuleHTMLElement.h; path = DTCoreText/Core/Source/DTHorizontalRuleHTMLElement.h; sourceTree = "<group>"; };
+		A72D4CC11726BBC5008245A0 /* DTListItemHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTListItemHTMLElement.h; path = DTCoreText/Core/Source/DTListItemHTMLElement.h; sourceTree = "<group>"; };
+		A72D4CC21726BBC5008245A0 /* DTStylesheetHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTStylesheetHTMLElement.h; path = DTCoreText/Core/Source/DTStylesheetHTMLElement.h; sourceTree = "<group>"; };
+		A72D4CC31726BBC5008245A0 /* DTTextHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTTextHTMLElement.h; path = DTCoreText/Core/Source/DTTextHTMLElement.h; sourceTree = "<group>"; };
+		A72D4CC41726BBC5008245A0 /* DTTextAttachmentHTMLElement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTTextAttachmentHTMLElement.h; path = DTCoreText/Core/Source/DTTextAttachmentHTMLElement.h; sourceTree = "<group>"; };
+		A72D4CD31726BC8F008245A0 /* DTIframeTextAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTIframeTextAttachment.h; path = DTCoreText/Core/Source/DTIframeTextAttachment.h; sourceTree = "<group>"; };
+		A72D4CD41726BC8F008245A0 /* DTImageTextAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTImageTextAttachment.h; path = DTCoreText/Core/Source/DTImageTextAttachment.h; sourceTree = "<group>"; };
+		A72D4CD51726BC8F008245A0 /* DTObjectTextAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTObjectTextAttachment.h; path = DTCoreText/Core/Source/DTObjectTextAttachment.h; sourceTree = "<group>"; };
+		A72D4CD61726BC8F008245A0 /* DTVideoTextAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTVideoTextAttachment.h; path = DTCoreText/Core/Source/DTVideoTextAttachment.h; sourceTree = "<group>"; };
 		A730BCCB16D27EE1003B849F /* Readme.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.markdown; sourceTree = "<group>"; };
 		A730BCD216D28957003B849F /* DTTiledLayerWithoutFade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTTiledLayerWithoutFade.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/iOS/DTTiledLayerWithoutFade.h; sourceTree = "<group>"; };
 		A7402D4A167F4E5200BE0AAF /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -574,12 +597,6 @@
 		A7F0C84613C326E900EBD027 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		A7F16D1A169AC10D00B0E843 /* DTHTMLParserNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLParserNode.h; path = DTCoreText/Core/Source/DTHTMLParserNode.h; sourceTree = "<group>"; };
 		A7F16D1B169AC10D00B0E843 /* DTHTMLParserTextNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLParserTextNode.h; path = DTCoreText/Core/Source/DTHTMLParserTextNode.h; sourceTree = "<group>"; };
-		A7F16D1E169AC1A000B0E843 /* DTHTMLElementBR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLElementBR.h; path = DTCoreText/Core/Source/DTHTMLElementBR.h; sourceTree = "<group>"; };
-		A7F16D1F169AC1A000B0E843 /* DTHTMLElementHR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLElementHR.h; path = DTCoreText/Core/Source/DTHTMLElementHR.h; sourceTree = "<group>"; };
-		A7F16D20169AC1A000B0E843 /* DTHTMLElementLI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLElementLI.h; path = DTCoreText/Core/Source/DTHTMLElementLI.h; sourceTree = "<group>"; };
-		A7F16D21169AC1A000B0E843 /* DTHTMLElementStylesheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLElementStylesheet.h; path = DTCoreText/Core/Source/DTHTMLElementStylesheet.h; sourceTree = "<group>"; };
-		A7F16D22169AC1A000B0E843 /* DTHTMLElementText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLElementText.h; path = DTCoreText/Core/Source/DTHTMLElementText.h; sourceTree = "<group>"; };
-		A7F16D23169AC1A000B0E843 /* DTHTMLElementAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLElementAttachment.h; path = DTCoreText/Core/Source/DTHTMLElementAttachment.h; sourceTree = "<group>"; };
 		A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTFoundation.xcodeproj; path = DTCoreText/Core/Externals/DTFoundation/DTFoundation.xcodeproj; sourceTree = "<group>"; };
 		A7FE7FC315FF18370003723B /* DTTextSelectionRect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTTextSelectionRect.h; sourceTree = "<group>"; };
 		A7FE7FC415FF18370003723B /* DTTextSelectionRect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTTextSelectionRect.m; sourceTree = "<group>"; };
@@ -761,6 +778,10 @@
 		A7D545E115D5673000711CA1 /* Repackaged Headers (Framework) */ = {
 			isa = PBXGroup;
 			children = (
+				A72D4CD31726BC8F008245A0 /* DTIframeTextAttachment.h */,
+				A72D4CD41726BC8F008245A0 /* DTImageTextAttachment.h */,
+				A72D4CD51726BC8F008245A0 /* DTObjectTextAttachment.h */,
+				A72D4CD61726BC8F008245A0 /* DTVideoTextAttachment.h */,
 				A7439C1016D77CED0004363C /* DTAttributedLabel.h */,
 				A7D545E215D567BC00711CA1 /* DTAttributedTextCell.h */,
 				A784849E15E28DF400595102 /* DTAttributedTextContentView.h */,
@@ -780,12 +801,13 @@
 				A7D5465A15D56A9B00711CA1 /* DTCSSStylesheet.h */,
 				A7D5465715D56A9B00711CA1 /* DTHTMLAttributedStringBuilder.h */,
 				A7D5465815D56A9B00711CA1 /* DTHTMLElement.h */,
-				A7F16D1E169AC1A000B0E843 /* DTHTMLElementBR.h */,
-				A7F16D1F169AC1A000B0E843 /* DTHTMLElementHR.h */,
-				A7F16D20169AC1A000B0E843 /* DTHTMLElementLI.h */,
-				A7F16D21169AC1A000B0E843 /* DTHTMLElementStylesheet.h */,
-				A7F16D22169AC1A000B0E843 /* DTHTMLElementText.h */,
-				A7F16D23169AC1A000B0E843 /* DTHTMLElementAttachment.h */,
+				A72D4CBE1726BBC5008245A0 /* DTAnchorHTMLElement.h */,
+				A72D4CBF1726BBC5008245A0 /* DTBreakHTMLElement.h */,
+				A72D4CC01726BBC5008245A0 /* DTHorizontalRuleHTMLElement.h */,
+				A72D4CC11726BBC5008245A0 /* DTListItemHTMLElement.h */,
+				A72D4CC21726BBC5008245A0 /* DTStylesheetHTMLElement.h */,
+				A72D4CC31726BBC5008245A0 /* DTTextHTMLElement.h */,
+				A72D4CC41726BBC5008245A0 /* DTTextAttachmentHTMLElement.h */,
 				A777834A16CAADD70048BED1 /* DTHTMLParser.h */,
 				A7F16D1A169AC10D00B0E843 /* DTHTMLParserNode.h */,
 				A7F16D1B169AC10D00B0E843 /* DTHTMLParserTextNode.h */,
@@ -992,12 +1014,13 @@
 				A7D729251487D97C00A22742 /* DTCursorView.h in Headers */,
 				A7D5467515D56AB300711CA1 /* DTHTMLAttributedStringBuilder.h in Headers */,
 				A7D5467615D56AB400711CA1 /* DTHTMLElement.h in Headers */,
-				A7F16D24169AC1A000B0E843 /* DTHTMLElementBR.h in Headers */,
-				A7F16D25169AC1A000B0E843 /* DTHTMLElementHR.h in Headers */,
-				A7F16D26169AC1A000B0E843 /* DTHTMLElementLI.h in Headers */,
-				A7F16D27169AC1A000B0E843 /* DTHTMLElementStylesheet.h in Headers */,
-				A7F16D28169AC1A000B0E843 /* DTHTMLElementText.h in Headers */,
-				A7F16D29169AC1A000B0E843 /* DTHTMLElementAttachment.h in Headers */,
+				A72D4CCC1726BC16008245A0 /* DTAnchorHTMLElement.h in Headers */,
+				A72D4CCD1726BC1B008245A0 /* DTBreakHTMLElement.h in Headers */,
+				A72D4CCE1726BC1E008245A0 /* DTHorizontalRuleHTMLElement.h in Headers */,
+				A72D4CCF1726BC21008245A0 /* DTListItemHTMLElement.h in Headers */,
+				A72D4CD01726BC28008245A0 /* DTStylesheetHTMLElement.h in Headers */,
+				A72D4CD21726BC36008245A0 /* DTTextAttachmentHTMLElement.h in Headers */,
+				A72D4CD11726BC2E008245A0 /* DTTextHTMLElement.h in Headers */,
 				A777834B16CAADD70048BED1 /* DTHTMLParser.h in Headers */,
 				A7D5467215D56AAE00711CA1 /* DTImage+HTML.h in Headers */,
 				A7D545F215D5681100711CA1 /* DTLazyImageView.h in Headers */,
@@ -1050,6 +1073,10 @@
 				A7A02EE91714469A00789F2C /* DTRichTextEditorConstants.h in Headers */,
 				A776DBF31716C9C100E71F36 /* DTRichTextEditorView+Lists.h in Headers */,
 				A776DC201716CABA00E71F36 /* DTRichTextEditorView+Ranges.h in Headers */,
+				A72D4CD71726BC8F008245A0 /* DTIframeTextAttachment.h in Headers */,
+				A72D4CD81726BC8F008245A0 /* DTImageTextAttachment.h in Headers */,
+				A72D4CD91726BC8F008245A0 /* DTObjectTextAttachment.h in Headers */,
+				A72D4CDA1726BC8F008245A0 /* DTVideoTextAttachment.h in Headers */,
 				A7DB4677171D369F0092FB7D /* DTRichTextEditorView+Styles.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1324,6 +1351,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				A75D432617005E09003CAF38 /* DTLoupe.bundle in Resources */,
+				A72D4CC51726BBD0008245A0 /* DTAnchorHTMLElement.h in Resources */,
+				A72D4CC61726BBD0008245A0 /* DTBreakHTMLElement.h in Resources */,
+				A72D4CC71726BBD0008245A0 /* DTHorizontalRuleHTMLElement.h in Resources */,
+				A72D4CC81726BBD0008245A0 /* DTListItemHTMLElement.h in Resources */,
+				A72D4CC91726BBD0008245A0 /* DTStylesheetHTMLElement.h in Resources */,
+				A72D4CCA1726BBD0008245A0 /* DTTextHTMLElement.h in Resources */,
+				A72D4CCB1726BBD0008245A0 /* DTTextAttachmentHTMLElement.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

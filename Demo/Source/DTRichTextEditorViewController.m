@@ -178,11 +178,10 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	}
 	
 	// make an attachment
-	DTTextAttachment *attachment = [[DTTextAttachment alloc] init];
-	attachment.contents = (id)image;
+	DTImageTextAttachment *attachment = [[DTImageTextAttachment alloc] initWithElement:nil options:nil];
+	attachment.image = (id)image;
 	attachment.displaySize = image.size;
 	attachment.originalSize = image.size;
-	attachment.contentType = DTTextAttachmentTypeImage;
 	
 	[richEditor replaceRange:lastSelection withAttachment:attachment inParagraph:YES];
 }
@@ -274,11 +273,10 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	UIImage *image = [UIImage imageNamed:@"icon_smile.gif"];
 	
 	// make an attachment
-	DTTextAttachment *attachment = [[DTTextAttachment alloc] init];
-	attachment.contents = (id)image;
+	DTImageTextAttachment *attachment = [[DTImageTextAttachment alloc] initWithElement:nil options:nil];
+	attachment.image = image;
 	attachment.displaySize = image.size;
 	attachment.originalSize = image.size;
-	attachment.contentType = DTTextAttachmentTypeImage;
 	attachment.verticalAlignment = DTTextAttachmentVerticalAlignmentCenter;
 	
 	[richEditor replaceRange:[richEditor selectedTextRange ] withAttachment:attachment inParagraph:NO];
@@ -410,13 +408,12 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
         return imageView;
     }
     
-    if (attachment.contentType == DTTextAttachmentTypeImage)
+    if ([attachment isKindOfClass:[DTImageTextAttachment class]])
 	{
+        DTImageTextAttachment *imageAttachment = (DTImageTextAttachment *)attachment;
+        
         imageView = [[UIImageView alloc] initWithFrame:frame];
-        if ([attachment.contents isKindOfClass:[UIImage class]])
-        {
-            imageView.image = attachment.contents;
-        }
+        imageView.image = imageAttachment.image;
         
         [self.imageViewCache setObject:imageView forKey:cacheKey];
         

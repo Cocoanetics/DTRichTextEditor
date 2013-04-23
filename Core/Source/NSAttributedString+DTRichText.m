@@ -10,7 +10,7 @@
 
 #import "NSMutableDictionary+DTRichText.h"
 #import "DTHTMLElement.h"
-#import "DTHTMLElementText.h"
+#import "DTTextHTMLElement.h"
 #import "DTTextAttachment.h"
 #import "DTCoreTextParagraphStyle.h"
 #import "DTUtils.h"
@@ -58,10 +58,9 @@
 
 + (NSAttributedString *)attributedStringWithImage:(UIImage *)image maxDisplaySize:(CGSize)maxDisplaySize
 {
-	DTTextAttachment *attachment = [[DTTextAttachment alloc] init];
-	attachment.contents = (id)image;
+	DTImageTextAttachment *attachment = [[DTImageTextAttachment alloc] initWithElement:nil options:nil];
+	attachment.image = image;
 	attachment.originalSize = image.size;
-	attachment.contentType = DTTextAttachmentTypeImage;
 
 	CGSize displaySize = image.size;
 	if (!CGSizeEqualToSize(maxDisplaySize, CGSizeZero))
@@ -81,7 +80,7 @@
 
 + (NSAttributedString *)attributedStringWithURL:(NSURL *)URL
 {
-	DTHTMLElementText *element = [[DTHTMLElementText alloc] init];
+	DTTextHTMLElement *element = [[DTTextHTMLElement alloc] init];
 	element.link = URL;
 	element.underlineStyle = kCTUnderlineStyleSingle;
 	element.textColor = [UIColor blueColor];
