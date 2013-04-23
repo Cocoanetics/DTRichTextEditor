@@ -15,8 +15,6 @@
 - (void)hideContextMenu;
 - (void)_closeTypingUndoGroupIfNecessary;
 
-@property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
-
 @end
 
 
@@ -113,6 +111,9 @@
 	
 	return tmpAttributes;
 }
+
+@dynamic overrideInsertionAttributes; // provided by DTRichTextEditorView main implementation
+
 
 #pragma mark - Pasteboard
 

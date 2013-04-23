@@ -43,6 +43,11 @@
 - (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
 
 /**
+ Temporary storage for typing attributes if there is no range to apply them to, e.g. for a zero-length selection. To retrieve the current typing attributes you should first inspect this property and if it is `nil` retrieve the typingAttributesForRange: for the current selected text range.
+ */
+@property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
+
+/**
  Converts the given string to an `NSAttributedString` using the current textDefaults and sets it on the receiver.
  @param string The string containing HTML text to convert to an attributed string and set as content of the receiver
  */
