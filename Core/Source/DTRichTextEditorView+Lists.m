@@ -382,15 +382,17 @@
 		// find the range of this list
 		NSRange listRange = [self _findList:oneList inAttributedString:mutableText];
 		
-        // get font size at beginning of last paragraph of list
-        NSRange lastParagraph = [[mutableText string] rangeOfParagraphAtIndex:NSMaxRange(listRange)-1];
-        CTFontRef font = (__bridge CTFontRef)([mutableText attribute:(id)kCTFontAttributeName atIndex:lastParagraph.location effectiveRange:NULL]);
-        CGFloat fontSize = CTFontGetSize(font) * self.textSizeMultiplier;
-        
-        // get the paragraph spacing after the list
-        CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:oneList relativeToTextSize:fontSize];
-        
-		[mutableText updateListStyle:oneList inRange:listRange numberFrom:oneList.startingItemNumber listIndent:[self listIndentForListStyle:oneList] spacingAfterList:paragraphSpacing];
+        if (listRange.location != NSNotFound) {
+            // get font size at beginning of last paragraph of list
+            NSRange lastParagraph = [[mutableText string] rangeOfParagraphAtIndex:NSMaxRange(listRange)-1];
+            CTFontRef font = (__bridge CTFontRef)([mutableText attribute:(id)kCTFontAttributeName atIndex:lastParagraph.location effectiveRange:NULL]);
+            CGFloat fontSize = CTFontGetSize(font) * self.textSizeMultiplier;
+            
+            // get the paragraph spacing after the list
+            CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:oneList relativeToTextSize:fontSize];
+            
+            [mutableText updateListStyle:oneList inRange:listRange numberFrom:oneList.startingItemNumber listIndent:[self listIndentForListStyle:oneList] spacingAfterList:paragraphSpacing];
+        }
 	}
 
 	NSRange rangeToSelectAfterwards = [mutableText markedRangeRemove:YES];
