@@ -89,21 +89,4 @@
 	return [element attributedString];
 }
 
-- (NSRange)rangeOfListPrefixAtIndex:(NSUInteger)index
-{
-    if (index<[self length])
-    {
-        // get range of prefix
-        NSRange fieldRange;
-        NSString *fieldAttribute = [self attribute:DTFieldAttribute atIndex:index effectiveRange:&fieldRange];
-        
-        if (fieldAttribute)
-        {
-            return fieldRange;
-        }
-    }
-    
-    return NSMakeRange(NSNotFound, 0);
-}
-
 @end

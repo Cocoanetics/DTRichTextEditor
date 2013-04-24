@@ -2427,7 +2427,7 @@ typedef enum
     
     // skip over list prefix
     NSAttributedString *attributedString = self.attributedText;
-    NSRange listPrefixRange = [attributedString rangeOfListPrefixAtIndex:index];
+    NSRange listPrefixRange = [attributedString rangeOfFieldAtIndex:index];
     
     if (listPrefixRange.location != NSNotFound)
     {
@@ -2631,7 +2631,7 @@ typedef enum
     // move cursor out of a list prefix, we don't want those
     NSAttributedString *attributedString = self.attributedText;
     
-    NSRange listPrefixRange = [attributedString rangeOfListPrefixAtIndex:newIndex];
+    NSRange listPrefixRange = [attributedString rangeOfFieldAtIndex:newIndex];
     
     if (listPrefixRange.location != NSNotFound)
     {

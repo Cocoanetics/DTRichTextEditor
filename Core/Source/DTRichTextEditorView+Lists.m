@@ -231,7 +231,7 @@
 	// NL on last paragraph of list removes it from list
 	if (selectionRange.location>0 && NSMaxRange(selectedParagraphRange) == NSMaxRange(listRange))
 	{
-		NSRange listPrefixRange = [attributedText rangeOfListPrefixAtIndex:selectedParagraphRange.location];
+		NSRange listPrefixRange = [attributedText rangeOfFieldAtIndex:selectedParagraphRange.location];
 		
 		if (NSMaxRange(listPrefixRange) == selectionRange.location)
 		{

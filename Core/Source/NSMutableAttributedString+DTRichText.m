@@ -452,7 +452,7 @@
 - (void)deleteListPrefix
 {
     // get range of prefix
-    NSRange fieldRange = [self rangeOfListPrefixAtIndex:0];
+    NSRange fieldRange = [self rangeOfFieldAtIndex:0];
     
     if (fieldRange.location == NSNotFound)
     {
@@ -468,7 +468,7 @@
             [self deleteCharactersInRange:fieldRange];
         }
         
-        fieldRange = [self rangeOfListPrefixAtIndex:0];
+        fieldRange = [self rangeOfFieldAtIndex:0];
     }
     while (fieldRange.location != NSNotFound);
 }
@@ -713,7 +713,7 @@
     NSUInteger startOffset = 0;
     NSUInteger endOffset = 0;
     
-    NSRange listPrefixRange = [self rangeOfListPrefixAtIndex:startPos];
+    NSRange listPrefixRange = [self rangeOfFieldAtIndex:startPos];
     
     if (listPrefixRange.location != NSNotFound)
     {
@@ -721,7 +721,7 @@
         startPos = NSMaxRange(listPrefixRange);
     }
     
-    listPrefixRange = [self rangeOfListPrefixAtIndex:endPos];
+    listPrefixRange = [self rangeOfFieldAtIndex:endPos];
     
     if (listPrefixRange.location != NSNotFound)
     {
