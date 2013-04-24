@@ -1240,7 +1240,7 @@ typedef enum
             // If we were dragging around the circle loupe, notify delegate of the final cursor selectedTextRange
             if (_dragMode == DTDragModeCursor || _dragMode == DTDragModeCursorInsideMarking)
             {
-                [self notifyDelegateDidChangeSelection];
+                [self _editorViewDelegateDidChangeSelection];
             }
             
             // Dismissing will set _dragMode to DTDragModeNone
@@ -1712,7 +1712,7 @@ typedef enum
 	[self.undoManager setActionName:NSLocalizedString(@"Cut", @"Undo Action that cuts text")];
     
     // Notify editor delegate of change
-    [self notifyDelegateDidChange];
+    [self _editorViewDelegateDidChange];
 }
 
 - (void)copy:(id)sender
@@ -1846,7 +1846,7 @@ typedef enum
     [self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
     [self _inputDelegateTextDidChange];
     
-    [self notifyDelegateDidChange];
+    [self _editorViewDelegateDidChange];
 }
 
 - (void)select:(id)sender
@@ -1959,7 +1959,7 @@ typedef enum
 	[self hideContextMenu];
     
     // Notify editor delegate of change
-    [self notifyDelegateDidChange];
+    [self _editorViewDelegateDidChange];
 }
 
 - (void)deleteBackward
@@ -2012,7 +2012,7 @@ typedef enum
 	[self hideContextMenu];
     
     // Notify editor delegate of change
-    [self notifyDelegateDidChange];
+    [self _editorViewDelegateDidChange];
 }
 
 #pragma mark
@@ -2246,7 +2246,7 @@ typedef enum
 	if (shouldNotifyDelegates)
 	{
 		[self _inputDelegateSelectionDidChange];
-		[self notifyDelegateDidChangeSelection];
+		[self _editorViewDelegateDidChangeSelection];
 	}
 	
 	[self updateCursorAnimated:animated];
@@ -2967,7 +2967,7 @@ typedef enum
     [self.inputDelegate textWillChange:self];
 }
 
-- (void)notifyDelegateDidChangeSelection
+- (void)_editorViewDelegateDidChangeSelection
 {
     // only notify on user input while editing
     if (self.isEditing && _editorViewDelegateFlags.delegateDidChangeSelection)
@@ -2976,7 +2976,7 @@ typedef enum
     }
 }
 
-- (void)notifyDelegateDidChange
+- (void)_editorViewDelegateDidChange
 {
     // Notify delegate
     if (self.isEditing && _editorViewDelegateFlags.delegateDidChange)
@@ -2988,7 +2988,7 @@ typedef enum
     [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidChangeNotification object:self];
 }
 
-#pragma mark Properties
+#pragma mark - Properties
 
 - (void)setAttributedText:(NSAttributedString *)newAttributedText
 {
