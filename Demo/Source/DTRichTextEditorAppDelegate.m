@@ -8,6 +8,7 @@
 
 #import "DTRichTextEditorAppDelegate.h"
 #import "DTRichTextEditorViewController.h"
+#import "DTCoreText.h"
 
 @implementation DTRichTextEditorAppDelegate
 
