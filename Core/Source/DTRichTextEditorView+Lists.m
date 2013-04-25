@@ -382,7 +382,8 @@
 		// find the range of this list
 		NSRange listRange = [self _findList:oneList inAttributedString:mutableText];
 		
-        if (listRange.location != NSNotFound) {
+        if (listRange.location != NSNotFound)
+        {
             // get font size at beginning of last paragraph of list
             NSRange lastParagraph = [[mutableText string] rangeOfParagraphAtIndex:NSMaxRange(listRange)-1];
             CTFontRef font = (__bridge CTFontRef)([mutableText attribute:(id)kCTFontAttributeName atIndex:lastParagraph.location effectiveRange:NULL]);
