@@ -226,7 +226,10 @@
 	}
 	
 	// need to replace attributes with typing attributes
-	NSAttributedString *newlineText = [[NSAttributedString alloc] initWithString:@"\n" attributes:attributes];
+	NSMutableAttributedString *newlineText = [[NSMutableAttributedString alloc] initWithString:@"\n" attributes:attributes];
+    
+    // newline must not have a list prefix
+    [newlineText removeAttribute:DTFieldAttribute range:NSMakeRange(0, 1)];
 	
 	// NL on last paragraph of list removes it from list
 	if (selectionRange.location>0 && NSMaxRange(selectedParagraphRange) == NSMaxRange(listRange))

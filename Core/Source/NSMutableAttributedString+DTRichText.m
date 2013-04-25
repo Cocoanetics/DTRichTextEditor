@@ -549,7 +549,6 @@
 	NSString *string = [self string];
 	
 	__block NSInteger itemNumber = nextItemNumber;
-	NSUInteger length = [string length];
 	
 	[string enumerateSubstringsInRange:range options:NSStringEnumerationByParagraphs usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop)
      {
@@ -560,19 +559,10 @@
              isLastParagraph = YES;
          }
          
-		 BOOL hasParagraphEnd = NO;
-		 
-		 // extend range to include \n
-		 if (NSMaxRange(substringRange) < length)
-		 {
-			 substringRange.length ++;
-			 hasParagraphEnd = YES;
-		 }
-		 
 		 // get current attributes
-		 NSDictionary *currentAttributes = [self attributesAtIndex:substringRange.location effectiveRange:NULL];
+		 NSDictionary *currentAttributes = [self attributesAtIndex:enclosingRange.location effectiveRange:NULL];
 		 
-		 NSMutableAttributedString *paragraphString = [[self attributedSubstringFromRange:substringRange] mutableCopy];
+		 NSMutableAttributedString *paragraphString = [[self attributedSubstringFromRange:enclosingRange] mutableCopy];
 		 
 		 // remove previous prefix in either case
         [paragraphString deleteListPrefix];
