@@ -29,6 +29,24 @@
 	return [self.attributedTextContentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:[textRange NSRangeValue]];
 }
 
+- (DTCoreTextGlyphRun *)glyphRunAtPosition:(UITextPosition *)position
+{
+    NSParameterAssert(position);
+    
+    DTCoreTextLayoutLine *lineWithPosition = [self layoutLineContainingTextPosition:position];
+//    NSString *string = [[self.attributedText string] substringWithRange:[lineWithPosition stringRange]];
+    
+     if (!lineWithPosition)
+    {
+        return nil;
+    }
+    
+    NSUInteger location = [(DTTextPosition *)position location];
+    NSArray *glyphRuns = [lineWithPosition glyphRunsWithRange:NSMakeRange(location, 1)];
+    
+    return [glyphRuns lastObject];
+}
+
 - (void)setHTMLString:(NSString *)string
 {
 	NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];

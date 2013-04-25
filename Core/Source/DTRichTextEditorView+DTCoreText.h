@@ -30,7 +30,7 @@
  @param textPosition The text position
  @returns the layout line
  */
-- (DTCoreTextLayoutLine *)layoutLineContainingTextPosition:(DTTextPosition *)textPosition;
+- (DTCoreTextLayoutLine *)layoutLineContainingTextPosition:(UITextPosition *)textPosition;
 
 /**
  @returns An array of layout lines that is currently visible in the receiver.
