@@ -88,7 +88,7 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     
 	richEditor.textDefaults = defaults;
    
-    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p><p>Version 1.5 now with list support.</p><ol><li>One</li><li>Two</li><li>Three</li></ol><p dir=\"rtl\">&#1500;&#1499;&#1500; &#1494;&#1502;&#1503; &#1493;&#1506;&#1514; &#1500;&#1499;&#1500;&#1470;&#1495;&#1508;&#1509; &#1514;&#1495;&#1514; &#1492;&#1513;&#1473;&#1502;&#1497;&#1501;&#1475;</p>";
+    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p><p>Version 1.5 now with list support.</p><ol><li>One</li><li>Two</li><li>Three</li></ol>";
 	[richEditor setHTMLString:html];
     
 	// image as drawn by your custom views which you return in the delegate method
