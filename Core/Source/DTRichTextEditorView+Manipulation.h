@@ -21,10 +21,18 @@
 
 /**
  Retrieves that attributed substring for the given range.
- @param range The text range.
+ @param range The text range
  @returns The `NSAttributedString` substring
  */
 - (NSAttributedString *)attributedSubstringForRange:(UITextRange *)range;
+
+
+/**
+ Retrieves the glyph run around the given text location. This is useful to inspect the actually used attributes. For example you can get the actual writing direction or the actually used font used.
+ @param position The text position
+ @returns The DTCoreTextGlyphRun object with all glyphs having the same attributes
+ */
+- (DTCoreTextGlyphRun *)glyphRunAtPosition:(UITextPosition *)position;
 
 /**
  Prepares a plain-text representation of the substring for the given range.

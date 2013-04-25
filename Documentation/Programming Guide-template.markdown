@@ -18,3 +18,14 @@ The common pattern is to first check the overrideInsertionAttributes property an
     {
        typingAttributes = [editor typingAttributesForRange:range];
     }
+
+
+Right to Left
+-------------
+
+Glyphs in glyph runs can be ordered left-to-right or right-to-left. You can determine which via the writingDirectionIsRightToLeft property of DTCoreTextGlyphRun.
+
+    UITextRange *range = editor.selectedTextRange;
+    DTCoreTextGlyphRun *run = [editor glyphRunAtPosition:[range start]];
+    
+    BOOL rtl = run.writingDirectionIsRightToLeft;
