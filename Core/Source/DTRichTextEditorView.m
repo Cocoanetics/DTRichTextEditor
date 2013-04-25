@@ -2429,6 +2429,8 @@ typedef enum
     NSAttributedString *attributedString = self.attributedText;
     NSRange listPrefixRange = [attributedString rangeOfFieldAtIndex:index];
     
+    UITextPosition *newPosition = position;
+    
     if (listPrefixRange.location != NSNotFound)
     {
         // there is a prefix, skip it according to direction
@@ -2436,20 +2438,23 @@ typedef enum
         {
             case UITextStorageDirectionForward:
             {
-                index = NSMaxRange(listPrefixRange);
+                // position after prefix
+                newPosition = [DTTextPosition textPositionWithLocation:NSMaxRange(listPrefixRange)];
                 break;
             }
                 
             case UITextStorageDirectionBackward:
             {
-                index = listPrefixRange.location-1;
+                // position before prefix
+                UITextPosition *positionOfPrefix = [DTTextPosition textPositionWithLocation:listPrefixRange.location];
+                newPosition = [self positionFromPosition:positionOfPrefix offset:-1];
                 break;
             }
         }
     }
     
     // limit the position to be within the range
-    return [self positionFromPosition:[DTTextPosition textPositionWithLocation:index] withinRange:range];
+    return [self positionFromPosition:newPosition withinRange:range];
 }
 
 
