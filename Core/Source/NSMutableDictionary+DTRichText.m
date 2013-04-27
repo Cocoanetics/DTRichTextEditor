@@ -128,6 +128,18 @@
     }
 }
 
+- (void)setForegroundColor:(UIColor *)color
+{
+	if (color)
+	{
+        [self setObject:(id)[color CGColor] forKey:(id)kCTForegroundColorAttributeName];
+	}
+	else
+	{
+		[self removeObjectForKey:(id)kCTForegroundColorAttributeName];
+	}
+}
+
 
 - (void)removeAttachment
 {

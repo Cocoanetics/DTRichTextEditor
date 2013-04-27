@@ -336,6 +336,20 @@
 	[self endEditing];
 }
 
+- (void)setForegroundColor:(UIColor *)color inRange:(NSRange)range
+{
+	[self beginEditing];
+
+	[self removeAttribute:(id)kCTForegroundColorAttributeName range:range];
+	
+	if (color)
+	{
+		[self addAttribute:(id)kCTForegroundColorAttributeName value:(id)[color CGColor] range:range];
+	}
+	
+	[self endEditing];
+}
+
 - (void)toggleHyperlinkInRange:(NSRange)range URL:(NSURL *)URL
 {
 	[self beginEditing];

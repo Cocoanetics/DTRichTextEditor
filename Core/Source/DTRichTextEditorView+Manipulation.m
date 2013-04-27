@@ -335,6 +335,41 @@
 	[self hideContextMenu];
 }
 
+- (void)setForegroundColor:(UIColor *)color inRange:(UITextRange *)range
+{
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
+	
+	if ([range isEmpty])
+	{
+		// if we only have a cursor then we save the attributes for the next insertion
+		NSMutableDictionary *tmpDict = [self.overrideInsertionAttributes mutableCopy];
+		
+		if (!tmpDict)
+		{
+			tmpDict = [[self typingAttributesForRange:range] mutableCopy];
+		}
+		
+		[tmpDict setForegroundColor:color];
+		self.overrideInsertionAttributes = tmpDict;
+	}
+	else
+	{
+		NSRange styleRange = [(DTTextRange *)range NSRangeValue];
+		
+		// get fragment that is to be made bold
+		NSMutableAttributedString *fragment = [[self attributedSubstringForRange:range] mutableCopy];
+		
+		// set the color
+		[fragment setForegroundColor:color inRange:NSMakeRange(0, [fragment length])];
+		
+		// replace
+		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Text Color", @"Action that sets the text color")];
+	}
+	
+	[self hideContextMenu];
+}
+
 - (void)toggleHyperlinkInRange:(UITextRange *)range URL:(NSURL *)URL
 {
 	// close off typing group, this is a new operations

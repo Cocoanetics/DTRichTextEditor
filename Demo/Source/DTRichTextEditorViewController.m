@@ -531,12 +531,6 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 - (void)editorViewDidChangeSelection:(DTRichTextEditorView *)editorView
 {
     NSLog(@"editorViewDidChangeSelection:");
-    
-    UITextRange *range = editorView.selectedTextRange;
-    
-    DTCoreTextGlyphRun *run = [editorView glyphRunAtPosition:[range start]];
-    
-    NSLog(@"%d", run.writingDirectionIsRightToLeft);
 }
 
 - (void)editorViewDidChange:(DTRichTextEditorView *)editorView

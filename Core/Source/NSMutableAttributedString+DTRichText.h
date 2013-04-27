@@ -66,6 +66,13 @@ The color parameter is ignored if the method call toggles a previous URL off.
 - (void)toggleHighlightInRange:(NSRange)range color:(UIColor *)color;
 
 /**
+ Sets the text foreground color.
+ @param range The affected string range
+ @param color The color to apply for the foreground color, or `nil` to restore the default black color
+ */
+- (void)setForegroundColor:(UIColor *)color inRange:(NSRange)range;
+
+/**
  Toggles the given string range between having a hyperlink and not
  
  The URL parameter is ignored if the method call toggles a previous URL off.
