@@ -12,7 +12,7 @@
 
 /**
  Toggles a list style on a given range.
- @param listStyle the list style to toggle
+ @param listStyle the list style to toggle, or `nil` to remove the list style.
  @param range The text range
  */
 - (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range;
