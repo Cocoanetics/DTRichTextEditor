@@ -120,6 +120,13 @@
 - (void)toggleHighlightInRange:(UITextRange *)range color:(UIColor *)color;
 
 /**
+ Sets the text foreground color for a given range.
+ @param color The foreground color to set. Passing `nil` removes the color attribute and thus restores the black default color.
+ @param range The text range
+ */
+- (void)setForegroundColor:(UIColor *)color inRange:(UITextRange *)range;
+
+/**
  Toggles a hyperlink on the given range.
  
  The first character of the range determines if the range is to be treated as already hyperlinked or not.

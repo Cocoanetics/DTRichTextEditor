@@ -50,6 +50,12 @@
 - (void)toggleHighlightWithColor:(UIColor *)color;
 
 /**
+ Sets the text foreground color to the given color. 
+ @param color The color to set or `nil` to restore the default black text color
+ */
+- (void)setForegroundColor:(UIColor *)color;
+
+/**
  Removes the attributes related to a DTTextAttachment from the receiver
  */
 - (void)removeAttachment;
