@@ -554,6 +554,12 @@
 {
 	[self beginEditing];
 	
+	// cannot set list style "None", instead remove it
+	if (listStyle.type == DTCSSListStyleTypeNone)
+	{
+		listStyle = nil;
+	}
+	
 	// extend range to include all paragraphs in their entirety
 	range = [[self string] rangeOfParagraphsContainingRange:range parBegIndex:NULL parEndIndex:NULL];
 	
