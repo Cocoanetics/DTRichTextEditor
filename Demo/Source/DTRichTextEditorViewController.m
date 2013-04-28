@@ -419,8 +419,7 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 
 - (void)presentTestOptions:(id)sender
 {
-    if (self.testOptionsPopover == nil)
-    {
+    if(!self.testStateController){
         DTRichTextEditorTestStateController *controller = [[DTRichTextEditorTestStateController alloc] initWithStyle:UITableViewStylePlain];
         controller.testState = self.testState;
         controller.completion = ^(DTRichTextEditorTestState *modifiedTestState) {
@@ -437,15 +436,32 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
             [richEditor.attributedTextContentView setNeedsDisplay];
         };
         
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
-        UIPopoverController *toPopover = [[UIPopoverController alloc] initWithContentViewController:navController];
-        
-        self.testOptionsPopover = toPopover;
+        self.testStateController = controller;
     }
     
-    [self.testOptionsPopover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-    self.testOptionsPopover.passthroughViews = nil;
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (self.testOptionsPopover == nil)
+        {
+            UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.testStateController];
+            UIPopoverController *toPopover = [[UIPopoverController alloc] initWithContentViewController:navController];
+            
+            self.testOptionsPopover = toPopover;
+        }
+        
+        [self.testOptionsPopover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        self.testOptionsPopover.passthroughViews = nil;
+        
+    }else{
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.testStateController];
+        
+        [self presentViewController:navController
+                           animated:YES
+                         completion:nil];
+    }
+    
+    
 }
+
 
 #pragma mark - Presenting Format Options
 
@@ -453,27 +469,49 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 
 - (void)presentFormatOptions:(id)sender
 {
-    if (self.formatOptionsPopover == nil)
-    {
-
-        DTFormatViewController *formatController = [[DTFormatViewController alloc] init];
-        formatController.formatDelegate = self;
-
-        UIPopoverController *toPopover = [[UIPopoverController alloc] initWithContentViewController:formatController];
-        
-        self.formatOptionsPopover = toPopover;
+    if(!self.formatViewController){
+        DTFormatViewController *controller = [[DTFormatViewController alloc] init];
+        controller.formatDelegate = self;
+        self.formatViewController = controller;
     }
     
-    DTFormatViewController *controller = (DTFormatViewController *)self.formatOptionsPopover.contentViewController;
-    [controller popToRootViewControllerAnimated:NO];
+    self.formatViewController.fontDescriptor = [richEditor fontDescriptorForRange:richEditor.selectedTextRange];
     
-    controller.fontDescriptor = [richEditor fontDescriptorForRange:richEditor.selectedTextRange];
+    NSDictionary *attributesDictionary = [richEditor typingAttributesForRange:richEditor.selectedTextRange];
     
-    [self.formatOptionsPopover presentPopoverFromBarButtonItem:sender
-                                      permittedArrowDirections:UIPopoverArrowDirectionAny
-                                                      animated:YES];
-    self.formatOptionsPopover.passthroughViews = nil;
-
+    self.formatViewController.underline = attributesDictionary[@"NSUnderline"] != nil;
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+        if (self.formatOptionsPopover == nil)
+        {
+            UIPopoverController *toPopover = [[UIPopoverController alloc] initWithContentViewController:self.formatViewController];
+            
+            self.formatOptionsPopover = toPopover;
+        }
+        
+        [self.formatOptionsPopover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+        self.formatOptionsPopover.passthroughViews = nil;
+        
+    }else{
+        
+        [richEditor resignFirstResponder];
+        
+        [self addChildViewController:self.formatViewController];
+        
+        CGRect startFrame = CGRectMake(0.0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds), 216);
+        CGRect endFrame = CGRectMake(0.0, CGRectGetHeight(self.view.bounds) - 216, CGRectGetWidth(self.view.bounds), 216);
+        
+        self.formatViewController.view.frame = startFrame;
+        
+        [self.view addSubview:self.formatViewController.view];
+        
+        [self.formatViewController didMoveToParentViewController:self];
+        
+        [UIView animateWithDuration:0.4
+                         animations:^{
+                             self.formatViewController.view.frame = endFrame;
+                         }];
+    }
 }
 
 
@@ -609,8 +647,6 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     [richEditor updateFontInRange:richEditor.selectedTextRange
                withFontFamilyName:font.fontFamily
                         pointSize:font.pointSize];
-    
-//    [richEditor updateFontInRange:richEditor.selectedTextRange withFontDescriptor:font];
 }
 
 - (void)formatDidToggleBold

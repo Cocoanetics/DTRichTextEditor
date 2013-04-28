@@ -16,10 +16,8 @@
 @interface DTFormatOverviewViewController()
 @property (nonatomic, strong) UIStepper *fontSizeStepper;
 @property (nonatomic, weak) UILabel *sizeValueLabel;
-@property (nonatomic, strong) UIButton *boldTraitButton;
-@property (nonatomic, strong) UIButton *italicTraitButton;
-@property (nonatomic, strong) UIButton *underlineTraitButton;
-@property (nonatomic, strong) UIView *buttonsView;
+
+@property (nonatomic, weak) DTFormatViewController<DTInternalFormatProtocol> *formatPicker;
 @end
 
 @implementation DTFormatOverviewViewController
@@ -37,7 +35,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-        
+    
+    NSAssert([self.navigationController isKindOfClass:[DTFormatViewController class]], @"Must use inside a DTFormatViewController");
+    
+    self.formatPicker = (DTFormatViewController<DTInternalFormatProtocol> *)self.navigationController;
+    
     UIStepper *fontStepper = [[UIStepper alloc] init];
     fontStepper.minimumValue = 9;
     fontStepper.maximumValue = 288;
@@ -46,51 +48,28 @@
     
     self.fontSizeStepper = fontStepper;
     
-    CGFloat buttonWidth = 50.0;
-    
-    UIButton *boldButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    boldButton.frame = CGRectMake(0.0, 0.0, buttonWidth, 37.0);
-    boldButton.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
-    [boldButton setTitle:@"B" forState:UIControlStateNormal];
-    [boldButton.titleLabel setFont:[UIFont boldSystemFontOfSize:18.0]];
-    [boldButton addTarget:self action:@selector(_editBoldTrait:) forControlEvents:UIControlEventTouchUpInside];
-    self.boldTraitButton = boldButton;
-
-    UIButton *italicButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    italicButton.frame = CGRectMake(buttonWidth * 1, 0.0, buttonWidth, 37.0);
-    italicButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;
-    [italicButton setTitle:@"I" forState:UIControlStateNormal];
-    [italicButton.titleLabel setFont:[UIFont italicSystemFontOfSize:18.0]];
-    [italicButton addTarget:self action:@selector(_editItalicTrait:) forControlEvents:UIControlEventTouchUpInside];
-    self.italicTraitButton = italicButton;
-
-    UIButton *underlineButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    underlineButton.frame = CGRectMake(buttonWidth * 2, 0.0, buttonWidth, 37.0);
-    underlineButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin;
-    
-    NSString *underLineText = @"U";
-    if (underLineText != nil && ![underLineText isEqualToString:@""]) {
-        NSMutableAttributedString *temString=[[NSMutableAttributedString alloc]initWithString:underLineText];
-        [temString addAttribute:NSUnderlineStyleAttributeName
-                          value:@(YES)
-                          range:(NSRange){0,[temString length]}];
-        [underlineButton setAttributedTitle:temString forState:UIControlStateNormal];
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        // on the phone this controller will be presented modally
+        // we need a control to dismiss ourselves
+        
+        // add a bar button item to close
+        UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                   target:self
+                                                                                   action:@selector(dismissSelf)];
+        
+        self.navigationItem.rightBarButtonItem = closeItem;
     }
-    [underlineButton addTarget:self action:@selector(_editUnderlineTrait:) forControlEvents:UIControlEventTouchUpInside];
-
-    self.underlineTraitButton = underlineButton;
-    
-    UIView *buttonsCellView = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, 150.0, 37.0)];
-    
-    [buttonsCellView addSubview:self.boldTraitButton];
-    [buttonsCellView addSubview:self.italicTraitButton];
-    [buttonsCellView addSubview:self.underlineTraitButton];
-    
-    self.buttonsView = buttonsCellView;
 }
 
+- (void)dismissSelf
+{
+    [self dismissViewControllerAnimated:YES
+                             completion:nil];
+}
+
+
 - (void)_stepperValueChanged:(UIStepper *)stepper;
-{    
+{
     id<DTInternalFormatProtocol> formatController = (id<DTInternalFormatProtocol>)self.navigationController;
     
     [formatController applyFontSize:stepper.value];
@@ -98,37 +77,29 @@
     self.sizeValueLabel.text = [NSString stringWithFormat:@"Size (%.0f pt)", stepper.value];
 }
 
-- (void)_editBoldTrait:(UIButton *)sender
-{
-    sender.selected = !sender.selected;
+- (void)_editBoldTrait
+{    
+    self.formatPicker.currentFont.boldTrait = !self.formatPicker.currentFont.boldTrait;
     
-    id<DTInternalFormatProtocol> formatController = (id<DTInternalFormatProtocol>)self.navigationController;
-    
-    [formatController applyBold:sender.selected];
+    [self.formatPicker applyBold:self.formatPicker.currentFont.boldTrait];
 }
 
-- (void)_editItalicTrait:(UIButton *)sender
-{
-    sender.selected = !sender.selected;
+- (void)_editItalicTrait
+{    
+    self.formatPicker.currentFont.italicTrait = !self.formatPicker.currentFont.italicTrait;
     
-    id<DTInternalFormatProtocol> formatController = (id<DTInternalFormatProtocol>)self.navigationController;
-    
-    [formatController applyItalic:sender.selected];
+    [self.formatPicker applyItalic:self.formatPicker.currentFont.italicTrait];
 }
 
-- (void)_editUnderlineTrait:(UIButton *)sender
-{
-    sender.selected = !sender.selected;
-    
-    id<DTInternalFormatProtocol> formatController = (id<DTInternalFormatProtocol>)self.navigationController;
-    
-    [formatController applyUnderline:sender.selected];
+- (void)_editUnderlineTrait
+{    
+    [self.formatPicker applyUnderline:YES];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-        
+    
     [self.tableView reloadData];
 }
 
@@ -143,7 +114,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return section == 0 ? 1 : 2;
+    return section == 0 ? 1 : 4;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -156,29 +127,54 @@
     }
     
     // Configure the cell...
-    DTFormatViewController *formatPicker = (DTFormatViewController *)self.navigationController;
-
+    
     if(indexPath.section == 0)
     {
-        self.fontSizeStepper.value = formatPicker.currentFont.pointSize;
-        cell.textLabel.text = [NSString stringWithFormat:@"Size (%.0f pt)", formatPicker.currentFont.pointSize ];
+        self.fontSizeStepper.value = self.formatPicker.currentFont.pointSize;
+        cell.textLabel.text = [NSString stringWithFormat:@"Size (%.0f pt)", self.formatPicker.currentFont.pointSize ];
         self.sizeValueLabel = cell.textLabel;
         cell.accessoryView = self.fontSizeStepper;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
-        //        cell.detailTextLabel.text = [NSString stringWithFormat:@"%.0f pt", formatPicker.currentFont.pointSize];
     }
     else if(indexPath.section == 1)
     {
+        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        
         if(indexPath.row == 0){
             cell.textLabel.text = @"Font";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", formatPicker.currentFont.fontFamily];
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", self.formatPicker.currentFont.fontFamily];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         }else{
-            if(![cell.contentView.subviews containsObject:self.buttonsView])
-            {
-                [cell.contentView addSubview:self.buttonsView];
-                self.buttonsView.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(cell.contentView.bounds), CGRectGetHeight(cell.contentView.bounds));
+            // bold, italic, underline
+            
+            switch (indexPath.row) {
+                case 1:
+                    //bold
+                    cell.textLabel.text = @"Bold";
+                    cell.textLabel.font = [UIFont boldSystemFontOfSize:18.0];
+                    cell.accessoryType = self.formatPicker.currentFont.boldTrait ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+                    break;
+                case 2:
+                    //italic
+                    cell.textLabel.text = @"Italic";
+                    cell.textLabel.font = [UIFont italicSystemFontOfSize:18.0];
+                    cell.accessoryType = self.formatPicker.currentFont.italicTrait ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+                    break;
+                case 3:
+                    //underline
+                {
+                    NSMutableAttributedString *underlineString = [[NSMutableAttributedString alloc] initWithString:@"Underline"];
+                    [underlineString addAttribute:NSUnderlineStyleAttributeName
+                                            value:@(YES)
+                                            range:(NSRange){0,[underlineString length]}];
+                    cell.textLabel.attributedText = underlineString;
+                    cell.textLabel.font = [UIFont boldSystemFontOfSize:18.0];
+                    cell.accessoryType = self.formatPicker.isUnderlined ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+                }
+                    break;
+                    
+                default:
+                    break;
             }
         }
     }
@@ -194,8 +190,40 @@
     if(indexPath.section == 0)
         return;
     
-    DTFormatFontFamilyTableViewController *fontFamilyChooserController = [[DTFormatFontFamilyTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    [self.navigationController pushViewController:fontFamilyChooserController animated:YES];
+    switch (indexPath.row) {
+        case 0:
+        {
+            DTFormatFontFamilyTableViewController *fontFamilyChooserController = [[DTFormatFontFamilyTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            [self.navigationController pushViewController:fontFamilyChooserController animated:YES];
+        }
+            break;
+        case 1:
+        {
+            [self _editBoldTrait];
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
+        }
+            break;
+        case 2:
+        {
+            [self _editItalicTrait];
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
+        }
+            break;
+        case 3:
+        {
+            [self _editUnderlineTrait];
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
+        }
+            break;
+        default:
+            break;
+    }
+    
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
 }
 
 @end

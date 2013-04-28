@@ -10,7 +10,6 @@
 #import "DTCoreTextFontCollection.h"
 #import "DTCoreTextFontDescriptor.h"
 
-#import "DTFormatFontTableViewController.h"
 #import "DTFormatViewController.h"
 
 @interface DTFormatFontFamilyTableViewController ()
@@ -67,8 +66,6 @@
     // Configure the cell...
 
     DTCoreTextFontDescriptor *fontDescriptor = self.fontFamilies[indexPath.row];
-//    NSArray *siblings = [fontDescriptor siblingFontDescriptors];
-//    cell.accessoryType = siblings.count > 1 ? UITableViewCellAccessoryDetailDisclosureButton : UITableViewCellAccessoryNone;
     
     cell.textLabel.text = fontDescriptor.fontFamily;
     cell.textLabel.font = [UIFont fontWithName:fontDescriptor.fontFamily size:18.0f];
@@ -84,19 +81,6 @@
     
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
-
-//- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
-//{
-//    DTFormatFontTableViewController *fontController = [[DTFormatFontTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
-//        
-//    DTCoreTextFontDescriptor *fontDescriptor = self.fontFamilies[indexPath.row];
-//    
-//    fontController.fontDescriptors = [fontDescriptor siblingFontDescriptors];
-//    
-//    [self.navigationController pushViewController:fontController animated:YES];
-//    
-//    [self selectFontForIndexPath:indexPath];
-//}
 
 - (void)selectFontForIndexPath:(NSIndexPath *)indexPath
 {

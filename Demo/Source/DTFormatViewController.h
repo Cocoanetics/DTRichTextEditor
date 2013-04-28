@@ -13,9 +13,10 @@
 
 @interface DTFormatViewController : UINavigationController
 
-@property (weak) id<DTFormatDelegate> formatDelegate;
+@property (weak, nonatomic) id<DTFormatDelegate> formatDelegate;
 @property (strong, nonatomic) DTCoreTextFontDescriptor *fontDescriptor;
-@property (strong, readonly) DTCoreTextFontDescriptor *currentFont;
+@property (assign, nonatomic, getter = isUnderlined) BOOL underline;
+@property (strong, readonly, nonatomic) DTCoreTextFontDescriptor *currentFont;
 
 @end
 
@@ -32,6 +33,7 @@
 
 @required
 @property (strong, readonly) DTCoreTextFontDescriptor *currentFont;
+@property (assign, nonatomic, getter = isUnderlined) BOOL underline;
 - (void)applyFont:(DTCoreTextFontDescriptor *)font;
 - (void)applyFontSize:(CGFloat)pointSzie;
 - (void)applyBold:(BOOL)active;

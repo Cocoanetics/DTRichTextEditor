@@ -10,7 +10,7 @@
 #import "DTRichTextEditorView.h"
 #import "DTFormatViewController.h"
 
-@class DTRichTextEditorTestState;
+@class DTRichTextEditorTestState, DTRichTextEditorTestStateController, DTFormatViewController;
 
 @interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate, DTAttributedTextContentViewDelegate, DTRichTextEditorViewDelegate, DTFormatDelegate> {
 
@@ -59,7 +59,9 @@
 @property (nonatomic, retain) NSArray *menuItems;
 @property (nonatomic, retain) DTRichTextEditorTestState *testState;
 @property (nonatomic, retain) UIPopoverController *testOptionsPopover;
+@property (nonatomic, retain) DTRichTextEditorTestStateController *testStateController;
 @property (nonatomic, retain) UIPopoverController *formatOptionsPopover;
+@property (nonatomic, retain) DTFormatViewController *formatViewController;
 
 @end
 
