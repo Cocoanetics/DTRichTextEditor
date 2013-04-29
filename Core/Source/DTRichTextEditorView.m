@@ -73,6 +73,8 @@ typedef enum
 @property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing; // default is NO, starts up and shuts down editing state
 @property (nonatomic, assign) BOOL overrideEditorViewDelegate; // default is NO, used when forcing change in editing state
 
+@property (nonatomic, assign) BOOL userIsTyping;  // while user is typing there are no selection range updates to input delegate
+
 - (void)setDefaultText;
 - (void)showContextMenuFromSelection;
 - (void)hideContextMenu;
@@ -125,6 +127,7 @@ typedef enum
 	BOOL _shouldShowContextMenuAfterLoupeHide;
     BOOL _shouldShowDragHandlesAfterLoupeHide;
 	BOOL _shouldShowContextMenuAfterMovementEnded;
+    BOOL _userIsTyping;
     BOOL _waitingForDictationResult;
     DTDictationPlaceholderView *_dictationPlaceholderView;
 	
@@ -1909,6 +1912,7 @@ typedef enum
 
 - (void)insertText:(NSString *)text
 {
+    
     // Check with editor delegate to allow change
     if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
     {
@@ -1918,7 +1922,7 @@ typedef enum
         if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:range replacementText:replacementText])
             return;
     }
-    
+
 	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	if (!undoManager.numberOfOpenGroups)
 	{
@@ -1937,7 +1941,10 @@ typedef enum
 	
 	if (self.markedTextRange)
 	{
+        self.userIsTyping = YES;
 		[self replaceRange:self.markedTextRange withText:text];
+        self.userIsTyping = NO;
+        
 		[self unmarkText];
 	}
 	else 
@@ -1951,7 +1958,10 @@ typedef enum
             }
         }
         
+        self.userIsTyping = YES;
 		[self replaceRange:self.selectedTextRange withText:text];
+        self.userIsTyping = NO;
+        
 		// leave marking intact
 	}
 	
@@ -2954,11 +2964,23 @@ typedef enum
 
 - (void)_inputDelegateSelectionWillChange
 {
+    // do not send this if we're entering text, this prevents the autocorrection prompt from appearing
+    if (_userIsTyping)
+    {
+        return;
+    }
+    
     [self.inputDelegate selectionWillChange:self];
 }
 
 - (void)_inputDelegateSelectionDidChange
 {
+    // do not send this if we're entering text, this prevents the autocorrection prompt from appearing
+    if (_userIsTyping)
+    {
+        return;
+    }
+
     [self.inputDelegate selectionWillChange:self];
 }
 
@@ -3215,6 +3237,8 @@ typedef enum
 @synthesize selectionView = _selectionView;
 @synthesize waitingForDictionationResult = _waitingForDictionationResult;
 @synthesize dictationPlaceholderView = _dictationPlaceholderView;
+
+@synthesize userIsTyping = _userIsTyping;
 
 @end
 

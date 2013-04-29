@@ -16,7 +16,13 @@
 - (void)hideContextMenu;
 - (void)_closeTypingUndoGroupIfNecessary;
 
+- (void)_inputDelegateSelectionWillChange;
+- (void)_inputDelegateSelectionDidChange;
+- (void)_inputDelegateTextWillChange;
+- (void)_inputDelegateTextDidChange;
+
 @property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
+@property (nonatomic, assign) BOOL userIsTyping;  // while user is typing there are no selection range updates to input delegate
 
 @end
 
@@ -191,14 +197,12 @@
 	rangeToSelectAfterwards.location += totalRange.location;
 	
 	// substitute
-	[self.inputDelegate textWillChange:self];
+    [self _inputDelegateTextWillChange];
 	[self replaceRange:[DTTextRange rangeWithNSRange:totalRange] withText:mutableText];
-	[self.inputDelegate textDidChange:self];
+    [self _inputDelegateTextDidChange];
 	
 	// restore selection
-	[self.inputDelegate selectionWillChange:self];
 	self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
-	[self.inputDelegate selectionDidChange:self];
 	
 	// attachment positions might have changed
 	[self.attributedTextContentView layoutSubviewsInRect:self.bounds];
@@ -281,23 +285,24 @@
 	rangeToSelectAfterwards.location += totalRange.location;
 	
 	// substitute
-	[self.inputDelegate textWillChange:self];
+    self.userIsTyping = YES;
+    
+	[self _inputDelegateTextWillChange];
 	[self replaceRange:[DTTextRange rangeWithNSRange:totalRange] withText:mutableText];
-	[self.inputDelegate textDidChange:self];
-	
+	[self _inputDelegateTextDidChange];
+	  
 	// restore selection
-	[self.inputDelegate selectionWillChange:self];
 	self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
-	[self.inputDelegate selectionDidChange:self];
-	
+	  
+	self.userIsTyping = NO;
+	  
 	// attachment positions might have changed
 	[self.attributedTextContentView layoutSubviewsInRect:self.bounds];
 	
 	// cursor positions might have changed
 	[self updateCursorAnimated:NO];
-	
+
 	[self hideContextMenu];
-	
 	return YES;
 }
 
@@ -409,14 +414,12 @@
 	rangeToSelectAfterwards.location += totalRange.location;
 	
 	// substitute
-	[self.inputDelegate textWillChange:self];
+	[self _inputDelegateTextWillChange];
 	[self replaceRange:[DTTextRange rangeWithNSRange:totalRange] withText:mutableText];
-	[self.inputDelegate textDidChange:self];
+	[self _inputDelegateTextDidChange];
 	
 	// restore selection
-	[self.inputDelegate selectionWillChange:self];
 	self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
-	[self.inputDelegate selectionDidChange:self];
 	
 	// attachment positions might have changed
 	[self.attributedTextContentView layoutSubviewsInRect:self.bounds];
