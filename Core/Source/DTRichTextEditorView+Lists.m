@@ -8,6 +8,7 @@
 
 #import "DTRichTextEditor.h"
 #import "NSAttributedString+DTRichText.h"
+#import "NSAttributedString+DTDebug.h"
 
 @interface DTRichTextEditorView (private)
 
@@ -149,7 +150,7 @@
             CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:listBeforeSelection relativeToTextSize:fontSize];
             
             // refresh the list before the un-toggled portion
-			[mutableText updateListStyle:listBeforeSelection inRange:updateRange numberFrom:listBeforeSelection.startingItemNumber listIndent:[self listIndentForListStyle:listBeforeSelection] spacingAfterList:paragraphSpacing];
+			[mutableText updateListStyle:listBeforeSelection inRange:updateRange numberFrom:listBeforeSelection.startingItemNumber listIndent:[self listIndentForListStyle:listBeforeSelection] spacingAfterList:paragraphSpacing removeNonPrefixedParagraphsFromList:NO];
 		}
 		
 		if (NSMaxRange(paragraphRange)<NSMaxRange(totalRange))
@@ -169,7 +170,7 @@
             CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:listAfterSelection relativeToTextSize:fontSize];
 
             // refresh the list before the un-toggled portion
-			[mutableText updateListStyle:listAfterSelection inRange:updateRange numberFrom:listAfterSelection.startingItemNumber listIndent:[self listIndentForListStyle:listAfterSelection] spacingAfterList:paragraphSpacing];
+			[mutableText updateListStyle:listAfterSelection inRange:updateRange numberFrom:listAfterSelection.startingItemNumber listIndent:[self listIndentForListStyle:listAfterSelection ] spacingAfterList:paragraphSpacing  removeNonPrefixedParagraphsFromList:NO];
 		}
 	}
 
@@ -183,7 +184,7 @@
     CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:listAfterSelection relativeToTextSize:fontSize];
     
     // update to list style
-	[mutableText updateListStyle:listStyle inRange:mutableRange numberFrom:listStyle.startingItemNumber listIndent:[self listIndentForListStyle:listStyle] spacingAfterList:paragraphSpacing];
+	[mutableText updateListStyle:listStyle inRange:mutableRange numberFrom:listStyle.startingItemNumber listIndent:[self listIndentForListStyle:listStyle] spacingAfterList:paragraphSpacing  removeNonPrefixedParagraphsFromList:NO];
 	
 	// get modified selection range and remove marking from substitution string
 	NSRange rangeToSelectAfterwards = [mutableText markedRangeRemove:YES];
@@ -216,14 +217,14 @@
 	
 	NSDictionary *attributes = [attributedText attributesAtIndex:selectedParagraphRange.location effectiveRange:NULL];
 	DTCSSListStyle *effectiveList = [[attributes objectForKey:DTTextListsAttribute] lastObject];
-	
-	NSRange listRange = [attributedText rangeOfTextList:effectiveList atIndex:selectedParagraphRange.location];
-	
-	// not a list, nothing to do
+
+    // not a list, nothing to do
 	if (!effectiveList)
 	{
 		return NO;
 	}
+    
+	NSRange listRange = [attributedText rangeOfTextList:effectiveList atIndex:selectedParagraphRange.location];
 	
 	// need to replace attributes with typing attributes
 	NSMutableAttributedString *newlineText = [[NSMutableAttributedString alloc] initWithString:@"\n" attributes:attributes];
@@ -274,7 +275,7 @@
     CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:effectiveList relativeToTextSize:fontSize];
     
 	// now update the entire list
-	[mutableText updateListStyle:effectiveList inRange:mutableRange numberFrom:effectiveList.startingItemNumber listIndent:[self listIndentForListStyle:effectiveList] spacingAfterList:paragraphSpacing];
+	[mutableText updateListStyle:effectiveList inRange:mutableRange numberFrom:effectiveList.startingItemNumber listIndent:[self listIndentForListStyle:effectiveList] spacingAfterList:paragraphSpacing  removeNonPrefixedParagraphsFromList:NO];
 	
 	NSRange rangeToSelectAfterwards = [mutableText markedRangeRemove:YES];
 	rangeToSelectAfterwards.location += totalRange.location;
@@ -356,7 +357,7 @@
 }
 
 
-- (void)updateListsInRange:(UITextRange *)range
+- (void)updateListsInRange:(UITextRange *)range removeNonPrefixedLinesFromLists:(BOOL)removeNonPrefixed
 {
 	NSRange selectionRange = [(DTTextRange *)range NSRangeValue];
 	NSRange selectedParagraphRange = [self.attributedText.string rangeOfParagraphsContainingRange:selectionRange parBegIndex:NULL parEndIndex:NULL];
@@ -401,7 +402,7 @@
         // get the paragraph spacing after the list
         CGFloat paragraphSpacing = [self _paragraphSpacingAfterListOfStyle:oneList relativeToTextSize:fontSize];
         
-        [mutableText updateListStyle:oneList inRange:listRange numberFrom:oneList.startingItemNumber listIndent:[self listIndentForListStyle:oneList] spacingAfterList:paragraphSpacing];
+        [mutableText updateListStyle:oneList inRange:listRange numberFrom:oneList.startingItemNumber listIndent:[self listIndentForListStyle:oneList] spacingAfterList:paragraphSpacing removeNonPrefixedParagraphsFromList:removeNonPrefixed];
 	}
 
 	NSRange rangeToSelectAfterwards = [mutableText markedRangeRemove:YES];

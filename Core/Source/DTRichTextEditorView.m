@@ -2185,7 +2185,7 @@ typedef enum
 	
 	if (paragraphsAfterReplacement != paragraphsBeforeReplacement)
 	{
-		[self updateListsInRange:_selectedTextRange];
+		[self updateListsInRange:_selectedTextRange removeNonPrefixedLinesFromLists:YES];
 	}
 }
 

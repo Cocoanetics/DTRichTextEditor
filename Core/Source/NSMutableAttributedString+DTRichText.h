@@ -141,12 +141,13 @@ The color parameter is ignored if the method call toggles a previous URL off.
  @param listIndent The indent from leading margin to indent list paragraphs at
  @param spacingAfterList The spacing to apply on the last paragraph of the list
  */
-- (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber listIndent:(CGFloat)listIndent spacingAfterList:(CGFloat)spacingAfterList;
+- (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber listIndent:(CGFloat)listIndent spacingAfterList:(CGFloat)spacingAfterList removeNonPrefixedParagraphsFromList:(BOOL)removeNonPrefixed;
 
 /**
  Deletes a list prefix from the receiver if there is one.
+ @returns `YES` if a list prefix field was deleted, `NO` if there was no prefix
  */
-- (void)deleteListPrefix;
+- (BOOL)deleteListPrefix;
 
 /**
  @name Marking Ranges

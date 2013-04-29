@@ -34,6 +34,6 @@
  Updates lists (prefixes and spacing) intersecting with the given range
  @param range The text range to update
  */
-- (void)updateListsInRange:(UITextRange *)range;
+- (void)updateListsInRange:(UITextRange *)range removeNonPrefixedLinesFromLists:(BOOL)removeNonPrefixed;
 
 @end

@@ -463,14 +463,16 @@
     return didChange;
 }
 
-- (void)deleteListPrefix
+- (BOOL)deleteListPrefix
 {
+    __block BOOL didDeletePrefix = NO;
+    
     // get range of prefix
     NSRange fieldRange = [self rangeOfFieldAtIndex:0];
     
     if (fieldRange.location == NSNotFound)
     {
-        return ;
+        return NO;
     }
     
     do
@@ -480,11 +482,14 @@
         if ([fieldAttribute isEqualToString:DTListPrefixField])
         {
             [self deleteCharactersInRange:fieldRange];
+            didDeletePrefix = YES;
         }
         
         fieldRange = [self rangeOfFieldAtIndex:0];
     }
     while (fieldRange.location != NSNotFound);
+    
+    return didDeletePrefix;
 }
 
 - (void)toggleParagraphSpacing:(BOOL)spaceOn atIndex:(NSUInteger)index spacing:(CGFloat)spacing
@@ -550,7 +555,7 @@
 	[self endEditing];
 }
 
-- (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber listIndent:(CGFloat)listIndent spacingAfterList:(CGFloat)spacingAfterList
+- (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber listIndent:(CGFloat)listIndent spacingAfterList:(CGFloat)spacingAfterList removeNonPrefixedParagraphsFromList:(BOOL)removeNonPrefixed
 {
 	[self beginEditing];
 	
@@ -573,6 +578,7 @@
 	[string enumerateSubstringsInRange:range options:NSStringEnumerationByParagraphs usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop)
      {
          BOOL isLastParagraph = NO;
+         BOOL shouldAddList = (listStyle!=nil);
          
          if (NSMaxRange(enclosingRange)>=NSMaxRange(range))
          {
@@ -585,10 +591,16 @@
 		 NSMutableAttributedString *paragraphString = [[self attributedSubstringFromRange:enclosingRange] mutableCopy];
 		 
 		 // remove previous prefix in either case
-        [paragraphString deleteListPrefix];
+         BOOL didDeletePrefix = [paragraphString deleteListPrefix];
+         
+         // if we want to remove non prefixed paragraphs and there was no prefix deleted
+         if (removeNonPrefixed && !didDeletePrefix)
+         {
+             shouldAddList = NO;
+         }
 		 
 		 // insert new prefix
-		 if (listStyle)
+		 if (shouldAddList)
 		 {
              if (isLastParagraph)
              {
@@ -641,7 +653,7 @@
 		 
 		 NSRange paragraphRange = NSMakeRange(0, [paragraphString length]);
 		 
-		 if (listStyle)
+		 if (shouldAddList)
 		 {
 			 [paragraphString addAttribute:DTTextListsAttribute value:[NSArray arrayWithObject:listStyle] range:paragraphRange];
 		 }
