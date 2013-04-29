@@ -18,10 +18,23 @@ The common pattern is to first check the overrideInsertionAttributes property an
     {
        typingAttributes = [editor typingAttributesForRange:range];
     }
+	
+	
+Setting Paragraph Spacing
+-------------------------
+
+Due to the various kinds of paragraph styles there can be in rich text it is not possible to set a single paragraph spacing. Instead you specify the paragraph spacing for each paragraph style with a modifier stylesheet which you set as part of the textDefaults. Those defaults are used when parsing HTML.
+
+    NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
+	DTCSSStylesheet *styleSheet = [[DTCSSStylesheet alloc] initWithStyleBlock:@"p {margin-bottom:2.5em} ol {margin-bottom:2.5em} li {margin-bottom:2.5em}"];
+    [defaults setObject:styleSheet forKey:DTDefaultStyleSheet];
+	[editor setTextDefaults:defaults];
+	
+Typically you would set the bottom margin for the paragraph styles: P, OL, UL, H1-H6. These styles are combined with the default.css stylesheet found in DTCoreText.
 
 
-Right to Left
--------------
+Right to Left Text
+------------------
 
 Glyphs in glyph runs can be ordered left-to-right or right-to-left. You can determine which via the writingDirectionIsRightToLeft property of DTCoreTextGlyphRun.
 
