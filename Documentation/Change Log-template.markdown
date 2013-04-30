@@ -3,6 +3,10 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.4.1
+
+- FIXED: Editor delegate set an out of bounds range when deleting backwards with a selection which starts from position 0. 
+
 Version 1.4
 
 - ADDED: A delegation protocol that gives it feature parity with UITextView.
