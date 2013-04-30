@@ -1974,49 +1974,48 @@ typedef enum
 
 - (void)deleteBackward
 {
+	DTTextRange *replacementTextRange = (id)[self selectedTextRange];
+	
+	if ([replacementTextRange isEmpty])
+	{
+		// delete character left of carret
+		DTTextPosition *beginningOfDocument = (DTTextPosition *)[self beginningOfDocument];
+		
+		// nothing to delete past beginning of document
+		if ([replacementTextRange.start isEqual:beginningOfDocument])
+		{
+			return;
+		}
+
+		UITextRange *entireDocument = [self textRangeFromPosition:beginningOfDocument toPosition:[self endOfDocument]];
+
+		UITextPosition *delStart = [self positionFromPosition:[replacementTextRange start] offset:-1];
+		
+		// skips fields
+		delStart = [self positionSkippingFieldsFromPosition:delStart withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
+		replacementTextRange = [DTTextRange textRangeFromStart:delStart toEnd:[replacementTextRange start]];
+	}
+
+	NSAttributedString *replacementText = [[NSAttributedString alloc] init];
+	
     // Check with editor delegate to allow change
     if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
     {
-        NSRange selectedTextRange = [(DTTextRange *)self.selectedTextRange NSRangeValue];
-        NSRange range = NSMakeRange(selectedTextRange.location - 1, 1);
-        NSAttributedString *replacementText = [[NSAttributedString alloc] init];
-        
-        if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:range replacementText:replacementText])
+        if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:[replacementTextRange NSRangeValue] replacementText:replacementText])
+		{
             return;
+		}
     }
     
+    // Prepare undo
 	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	if (!undoManager.numberOfOpenGroups)
 	{
 		[self.undoManager beginUndoGrouping];
 	}
-
-	DTTextRange *currentRange = (id)[self selectedTextRange];
 	
-	if ([currentRange isEmpty])
-	{
-		// delete character left of carret
-		
-		DTTextPosition *delEnd = (DTTextPosition *)currentRange.start;
-		DTTextPosition *docStart = (DTTextPosition *)[self beginningOfDocument];
-		
-		if ([docStart compare:delEnd] == NSOrderedAscending)
-		{
-            UITextRange *entireDocument = [self textRangeFromPosition:[self beginningOfDocument] toPosition:[self endOfDocument]];
-            UITextPosition *delStart = [self positionFromPosition:delEnd offset:-1];
-			
-            // skips fields
-            delStart = [self positionSkippingFieldsFromPosition:delStart withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
-			DTTextRange *delRange = [DTTextRange textRangeFromStart:delStart toEnd:delEnd];
-			
-			[self replaceRange:delRange  withText:@""];
-		}
-	}
-	else 
-	{
-		// delete selection
-		[self replaceRange:currentRange withText:nil];
-	}
+	// Delete
+    [self replaceRange:replacementTextRange withText:replacementText];
 	
 	// hide context menu on deleting text
 	[self hideContextMenu];
