@@ -6,6 +6,8 @@ This is the history of version updates.
 Version 1.4.1
 
 - FIXED: Editor delegate set an out of bounds range when deleting backwards with a selection which starts from position 0. 
+- UPDATED: DTCoreText to 1.4.3
+- FIXED: Synthesizing italics for fonts that don't have italic face. e.g. American Typewriter
 
 Version 1.4
 
