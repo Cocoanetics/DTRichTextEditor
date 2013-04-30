@@ -179,7 +179,7 @@ extern NSString * const DTRichTextEditorTextDidEndEditingNotification;
  
  @warning This causes all text to end up in a single paragraph and all paragraph-level styles are going to affect all of the text. It therefore severely affects the display performance. We recommend you don't activate this if you don't want spaces between paragraphs but rather set the paragraph spacing to zero via a custom style set via textDefaults.
  */
-@property(nonatomic, assign) BOOL replaceParagraphsWithLineFeeds;
+@property(nonatomic, assign) BOOL replaceParagraphsWithLineFeeds __attribute__((deprecated("This causes severe performance degradation. Please set the paragaph spacing instead.")));
 
 /**
  The current attributedText displayed in the receiver
