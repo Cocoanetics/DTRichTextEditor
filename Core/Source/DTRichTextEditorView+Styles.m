@@ -19,6 +19,27 @@
 	return [attributedString attributesAtIndex:0 effectiveRange:NULL];
 }
 
+- (NSDictionary *)attributesForTagName:(NSString *)tagName tagClass:(NSString *)tagClass tagIdentifier:(NSString *)tagIdentifier relativeToTextSize:(CGFloat)textSize
+{
+	NSParameterAssert(tagName);
+    
+    NSMutableString *html = [NSMutableString stringWithFormat:@"<span style=\"font-size:%.0fpx\"><%@", textSize, tagName];
+    
+    if (tagClass)
+    {
+        [html appendFormat:@" class=\"%@\"", tagClass];
+    }
+    
+    if (tagIdentifier)
+    {
+        [html appendFormat:@" id=\"%@\"", tagIdentifier];
+    }
+    
+    [html appendFormat:@">A</%@></span>", tagName];
+    
+    return [self _attributesForHTMLStringUsingTextDefaults:html];
+}
+
 - (NSDictionary *)attributedStringAttributesForTextDefaults
 {
     return [self _attributesForHTMLStringUsingTextDefaults:@"<p />"];
@@ -53,36 +74,27 @@
     return paragraphStyle.headIndent;
 }
 
-- (CGFloat)textSizeAtPosition:(UITextPosition *)position
-{
-    return 0;
-}
-
 - (DTCoreTextParagraphStyle *)paragraphStyleForTagName:(NSString *)tagName tagClass:(NSString *)tagClass tagIdentifier:(NSString *)tagIdentifier relativeToTextSize:(CGFloat)textSize
 {
-    NSParameterAssert(tagName);
+    NSDictionary *attributes = [self attributesForTagName:tagName tagClass:tagClass tagIdentifier:tagIdentifier relativeToTextSize:textSize];
     
-    NSMutableString *html = [NSMutableString stringWithFormat:@"<span style=\"font-size:%.0fpx\"><%@", textSize, tagName];
-    
-    if (tagClass)
-    {
-        [html appendFormat:@" class=\"%@\"", tagClass];
-    }
-    
-    if (tagIdentifier)
-    {
-        [html appendFormat:@" id=\"%@\"", tagIdentifier];
-    }
-    
-    [html appendFormat:@">A</%@></span>", tagName];
-    
-    NSDictionary *attributes = [self _attributesForHTMLStringUsingTextDefaults:html];
-    
-    // TODO: also support NSParagraphStyle
-    
-    CTParagraphStyleRef p = (__bridge CTParagraphStyleRef)([attributes objectForKey:(id)kCTParagraphStyleAttributeName]);
-    
-    return [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:p];
+    CTParagraphStyleRef ctParagraphStyle = (__bridge CTParagraphStyleRef)([attributes objectForKey:(id)kCTParagraphStyleAttributeName]);
+	
+	if (ctParagraphStyle)
+	{
+		return [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:ctParagraphStyle];
+	}
+	
+	// try NSParagraphStyle
+	
+	if (![NSParagraphStyle class])
+	{
+		// unknown class
+		return nil;
+	}
+	
+	NSParagraphStyle *nsParagraphStyle = [attributes objectForKey:NSParagraphStyleAttributeName];
+	return [DTCoreTextParagraphStyle paragraphStyleWithNSParagraphStyle:nsParagraphStyle];
 }
 
 @end

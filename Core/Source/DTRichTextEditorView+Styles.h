@@ -13,7 +13,6 @@
  */
 @interface DTRichTextEditorView (Styles)
 
-
 /**
  Determines the Core Text attributes for the text defaults currently set on the receiver.
  
@@ -21,6 +20,16 @@
  */
 - (NSDictionary *)attributedStringAttributesForTextDefaults;
 
+/**
+ Retrieves the `NSAttributedString` attributes for a given tag name, considering overrides specified via textDefaults
+ 
+ @param tagName The tag name to retrieve a attributes for
+ @param tagClass The tag class, or `nil`
+ @param tagIdentifier The tag id or `nil`
+ @param textSize The text size to use for relative measurements
+ @returns The attributes dictionary
+ */
+- (NSDictionary *)attributesForTagName:(NSString *)tagName tagClass:(NSString *)tagClass tagIdentifier:(NSString *)tagIdentifier relativeToTextSize:(CGFloat)textSize;
 
 /**
  Retrieves the list indent from the leading margin to apply for a given list style
@@ -31,11 +40,8 @@
  */
 - (CGFloat)listIndentForListStyle:(DTCSSListStyle *)listStyle;
 
-
-- (CGFloat)textSizeAtPosition:(UITextPosition *)position;
-
 /**
- Retrieves the paragraph style to apply for a given tag name, considerting textDefaults
+ Retrieves the paragraph style to apply for a given tag name, considering overrides specified via textDefaults
  
  @param tagName The tag name to retrieve a style for
  @param tagClass The tag class, or `nil`
