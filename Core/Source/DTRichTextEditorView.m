@@ -1995,45 +1995,36 @@ typedef enum
 
 - (void)deleteBackward
 {
+    // Analyze the cursor/selection
+    NSRange replacementRange = [(DTTextRange *)[self selectedTextRange] NSRangeValue];
+    
+    if (replacementRange.location == 0 && replacementRange.length == 0)
+        return;
+    
+    if (replacementRange.length == 0)
+    {
+        replacementRange = NSMakeRange(replacementRange.location - 1, 1);
+    }
+    
     // Check with editor delegate to allow change
     if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
     {
-        NSRange selectedTextRange = [(DTTextRange *)self.selectedTextRange NSRangeValue];
-        NSRange range = NSMakeRange(selectedTextRange.location - 1, 1);
         NSAttributedString *replacementText = [[NSAttributedString alloc] init];
         
-        if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:range replacementText:replacementText])
+        if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:replacementRange replacementText:replacementText])
             return;
     }
     
+    // Prepare undo
 	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	if (!undoManager.numberOfOpenGroups)
 	{
 		[self.undoManager beginUndoGrouping];
 	}
 
-	DTTextRange *currentRange = (id)[self selectedTextRange];
-	
-	if ([currentRange isEmpty])
-	{
-		// delete character left of carret
-		
-		DTTextPosition *delEnd = (DTTextPosition *)currentRange.start;
-		DTTextPosition *docStart = (DTTextPosition *)[self beginningOfDocument];
-		
-		if ([docStart compare:delEnd] == NSOrderedAscending)
-		{
-			DTTextPosition *delStart = [DTTextPosition textPositionWithLocation:delEnd.location-1];
-			DTTextRange *delRange = [DTTextRange textRangeFromStart:delStart toEnd:delEnd];
-			
-			[self replaceRange:delRange  withText:@""];
-		}
-	}
-	else 
-	{
-		// delete selection
-		[self replaceRange:currentRange withText:nil];
-	}
+	// Delete
+    DTTextRange *replacementTextRange = [DTTextRange rangeWithNSRange:replacementRange];
+    [self replaceRange:replacementTextRange withText:@""];
 	
 	// hide context menu on deleting text
 	[self hideContextMenu];
