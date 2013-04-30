@@ -36,4 +36,10 @@
  */
 - (BOOL)hasAttachment;
 
+/**
+ Retrieves the DTCoreTextParagraphStyle from the receiver's attributes. This supports both `CTParagraphStyle` as well as `NSParagraphStyle`
+ @returns The paragraph style
+ */
+- (DTCoreTextParagraphStyle *)paragraphStyle;
+
 @end

@@ -52,4 +52,25 @@
 	return [self objectForKey:NSAttachmentAttributeName]!=nil;
 }
 
+- (DTCoreTextParagraphStyle *)paragraphStyle
+{
+    CTParagraphStyleRef ctParagraphStyle = (__bridge CTParagraphStyleRef)([self objectForKey:(id)kCTParagraphStyleAttributeName]);
+	
+	if (ctParagraphStyle)
+	{
+		return [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:ctParagraphStyle];
+	}
+	
+	// try NSParagraphStyle
+	
+	if (![NSParagraphStyle class])
+	{
+		// unknown class
+		return nil;
+	}
+	
+	NSParagraphStyle *nsParagraphStyle = [self objectForKey:NSParagraphStyleAttributeName];
+	return [DTCoreTextParagraphStyle paragraphStyleWithNSParagraphStyle:nsParagraphStyle];
+}
+
 @end

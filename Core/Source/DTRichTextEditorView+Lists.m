@@ -48,7 +48,8 @@
         }
     }
 
-    DTCoreTextParagraphStyle *paragraphStyle = [self paragraphStyleForTagName:tagName tagClass:nil tagIdentifier:nil relativeToTextSize:textSize];
+	NSDictionary *attributes = [self attributesForTagName:tagName tagClass:nil tagIdentifier:nil relativeToTextSize:textSize];
+    DTCoreTextParagraphStyle *paragraphStyle = [attributes paragraphStyle];
 
     return paragraphStyle.paragraphSpacing;
 }

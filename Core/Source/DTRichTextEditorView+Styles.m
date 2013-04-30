@@ -64,37 +64,9 @@
     }
     
     NSDictionary *attributes = [self _attributesForHTMLStringUsingTextDefaults:html];
-    
-    // TODO: also support NSParagraphStyle
-    
-    CTParagraphStyleRef p = (__bridge CTParagraphStyleRef)([attributes objectForKey:(id)kCTParagraphStyleAttributeName]);
-    
-    DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:p];
+    DTCoreTextParagraphStyle *paragraphStyle = [attributes paragraphStyle];
     
     return paragraphStyle.headIndent;
-}
-
-- (DTCoreTextParagraphStyle *)paragraphStyleForTagName:(NSString *)tagName tagClass:(NSString *)tagClass tagIdentifier:(NSString *)tagIdentifier relativeToTextSize:(CGFloat)textSize
-{
-    NSDictionary *attributes = [self attributesForTagName:tagName tagClass:tagClass tagIdentifier:tagIdentifier relativeToTextSize:textSize];
-    
-    CTParagraphStyleRef ctParagraphStyle = (__bridge CTParagraphStyleRef)([attributes objectForKey:(id)kCTParagraphStyleAttributeName]);
-	
-	if (ctParagraphStyle)
-	{
-		return [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:ctParagraphStyle];
-	}
-	
-	// try NSParagraphStyle
-	
-	if (![NSParagraphStyle class])
-	{
-		// unknown class
-		return nil;
-	}
-	
-	NSParagraphStyle *nsParagraphStyle = [attributes objectForKey:NSParagraphStyleAttributeName];
-	return [DTCoreTextParagraphStyle paragraphStyleWithNSParagraphStyle:nsParagraphStyle];
 }
 
 @end
