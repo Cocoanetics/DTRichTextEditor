@@ -14,6 +14,10 @@
 @interface DTRichTextEditorView (Styles)
 
 /**
+ @name Getting Style Information
+ */
+
+/**
  Determines the Core Text attributes for the text defaults currently set on the receiver.
  
  @returns An attribute dictionary suitable for constructing default text
@@ -41,5 +45,11 @@
  @returns The indent or 0 if listStyle is `nil`
  */
 - (CGFloat)listIndentForListStyle:(DTCSSListStyle *)listStyle;
+
+/**
+ Retrieves a font descriptor for the default font, considering overrides specified via textDefaults
+ @returns A font descriptor
+ */
+- (DTCoreTextFontDescriptor *)defaultFontDescriptor;
 
 @end

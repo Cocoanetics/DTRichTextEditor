@@ -15,6 +15,11 @@
 - (void)hideContextMenu;
 - (void)_closeTypingUndoGroupIfNecessary;
 
+- (void)_inputDelegateSelectionWillChange;
+- (void)_inputDelegateSelectionDidChange;
+- (void)_inputDelegateTextWillChange;
+- (void)_inputDelegateTextDidChange;
+
 @end
 
 
@@ -557,6 +562,9 @@
 
 - (BOOL)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range
 {
+	// this is necessary to apply auto-correction text before changing the styles
+	[self _inputDelegateSelectionWillChange]; // before getting the current text
+	
 	// close off typing group, this is a new operations
 	[self _closeTypingUndoGroupIfNecessary];
 	
@@ -580,7 +588,10 @@
 		// replace
 		[self _updateSubstringInRange:[paragraphRange NSRangeValue] withAttributedString:fragment actionName:NSLocalizedString(@"Alignment", @"Action that adjusts paragraph alignment")];
 	}
-	
+
+	// we notified of the will, so we also notify of the did
+	[self _inputDelegateSelectionDidChange];
+
 	[self hideContextMenu];
 
 	return didUpdate;
@@ -588,6 +599,9 @@
 
 - (void)changeParagraphLeftMarginBy:(CGFloat)delta toParagraphsContainingRange:(UITextRange *)range
 {
+	// this is necessary to apply auto-correction text before changing the styles
+	[self _inputDelegateSelectionWillChange]; // before getting the current text
+	
 	// close off typing group, this is a new operations
 	[self _closeTypingUndoGroupIfNecessary];
 
@@ -623,6 +637,48 @@
 		// replace
 		[self _updateSubstringInRange:[paragraphRange NSRangeValue] withAttributedString:fragment actionName:NSLocalizedString(@"Indent", @"Action that changes the indentation of a paragraph")];
 	}
+
+	// we notified of the will, so we also notify of the did
+	[self _inputDelegateSelectionDidChange];
+	
+	[self hideContextMenu];
+}
+
+- (void)updateHeaderLevel:(NSUInteger)headerLevel inRange:(UITextRange *)range
+{
+	NSAssert(headerLevel<=6, @"Only header levels 0-6 are allowed");
+	
+	// this is necessary to apply auto-correction text before changing the styles
+	[self _inputDelegateSelectionWillChange];
+	
+	// close off typing group, this is a new operation
+	[self _closeTypingUndoGroupIfNecessary];
+
+	// we cannot have this be part of a list
+	[self toggleListStyle:nil inRange:self.selectedTextRange];
+	
+	// extend selected range to include full paragraphs
+	range = [self textRangeOfParagraphsContainingRange:self.selectedTextRange];
+	
+	// get default text size
+	DTCoreTextFontDescriptor *defaultFontDescriptor = [self defaultFontDescriptor];
+	
+	// determine tag name that represents this header level
+	NSArray *tagNameForLevel = [NSArray arrayWithObjects:@"p", @"h1", @"h2", @"h3", @"h4", @"h5", @"h6", nil];
+	NSString *usedTagName = [tagNameForLevel objectAtIndex:headerLevel];
+	
+	// get the attributes for the supposed HTML element
+	NSDictionary *attributes = [self attributesForTagName:usedTagName tagClass:nil tagIdentifier:nil relativeToTextSize:defaultFontDescriptor.pointSize];
+	
+	// mutate attributed substring
+	NSMutableAttributedString *mutableText = [[self attributedSubstringForRange:range] mutableCopy];
+	[mutableText setAttributes:attributes range:NSMakeRange(0, [mutableText length])];
+
+	// apply the changed text
+	[self _updateSubstringInRange:[(DTTextRange *)range NSRangeValue] withAttributedString:mutableText actionName:NSLocalizedString(@"Set Header Level", @"Undoable Action of setting a header level")];
+	
+	// we notified of the will, so we also notify of the did
+	[self _inputDelegateSelectionDidChange];
 	
 	[self hideContextMenu];
 }
@@ -712,8 +768,6 @@
 	// change undo action name from typing to inserting image
 	[self.undoManager setActionName:NSLocalizedString(@"Insert Image", @"Undoable Action")];
 }
-
-
 
 - (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate
 {

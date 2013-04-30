@@ -83,6 +83,16 @@
 - (void)changeParagraphLeftMarginBy:(CGFloat)delta toParagraphsContainingRange:(UITextRange *)range;
 
 /**
+ Apples a given header level to the given range. The range is extended to include full paragraphs. 
+ 
+ If the range belongs to a list then it is removed from the list. All existing attributes are replaced.
+ 
+ @param headerLevel The header level (1-6) to set or 0 to restore normal paragraph style
+ @param range The text range
+ */
+- (void)updateHeaderLevel:(NSUInteger)headerLevel inRange:(UITextRange *)range;
+
+/**
  @name Toggling Styles for Ranges
  */
 
@@ -134,6 +144,7 @@
  @param URL The hyperlink URL to set on the range with. If the range already has a hyperlink then this parameter is ignored.
  */
 - (void)toggleHyperlinkInRange:(UITextRange *)range URL:(NSURL *)URL;
+
 
 /**
  @name Working with Fonts

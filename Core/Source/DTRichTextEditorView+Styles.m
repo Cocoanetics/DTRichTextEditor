@@ -69,4 +69,10 @@
     return paragraphStyle.headIndent;
 }
 
+- (DTCoreTextFontDescriptor *)defaultFontDescriptor
+{
+	NSDictionary *attributes = [self attributedStringAttributesForTextDefaults];
+	return [attributes fontDescriptor];
+}
+
 @end
