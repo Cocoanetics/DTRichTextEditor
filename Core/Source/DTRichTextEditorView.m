@@ -410,7 +410,14 @@ typedef enum
     // Display the context menu
     _contextMenuVisible = YES;
     CGRect targetRect = [self boundsOfCurrentSelection];
-
+    
+    // Adjust the target rect to be just above the viewport of the scrollview
+    CGRect visibleRect;
+    visibleRect.origin = self.contentOffset;
+    visibleRect.size = self.bounds.size;
+    targetRect = CGRectIntersection(targetRect, visibleRect);
+    
+    // Present the menu
 	UIMenuController *menuController = [UIMenuController sharedMenuController];
 	
 	[menuController setTargetRect:targetRect inView:self];
