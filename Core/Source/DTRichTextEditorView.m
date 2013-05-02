@@ -17,7 +17,6 @@
 #import "NSMutableAttributedString+HTML.h"
 #import "NSMutableAttributedString+DTRichText.h"
 #import "DTMutableCoreTextLayoutFrame.h"
-#import "NSDictionary+DTRichText.h"
 #import "NSMutableDictionary+DTRichText.h"
 #import "DTRichTextEditorView.h"
 #import "DTRichTextEditorView+Manipulation.h"
