@@ -19,6 +19,27 @@
 	return [attributedString attributesAtIndex:0 effectiveRange:NULL];
 }
 
+- (NSDictionary *)attributesForTagName:(NSString *)tagName tagClass:(NSString *)tagClass tagIdentifier:(NSString *)tagIdentifier relativeToTextSize:(CGFloat)textSize
+{
+	NSParameterAssert(tagName);
+    
+    NSMutableString *html = [NSMutableString stringWithFormat:@"<span style=\"font-size:%.0fpx\"><%@", textSize, tagName];
+    
+    if (tagClass)
+    {
+        [html appendFormat:@" class=\"%@\"", tagClass];
+    }
+    
+    if (tagIdentifier)
+    {
+        [html appendFormat:@" id=\"%@\"", tagIdentifier];
+    }
+    
+    [html appendFormat:@">A</%@></span>", tagName];
+    
+    return [self _attributesForHTMLStringUsingTextDefaults:html];
+}
+
 - (NSDictionary *)attributedStringAttributesForTextDefaults
 {
     return [self _attributesForHTMLStringUsingTextDefaults:@"<p />"];
@@ -43,46 +64,15 @@
     }
     
     NSDictionary *attributes = [self _attributesForHTMLStringUsingTextDefaults:html];
-    
-    // TODO: also support NSParagraphStyle
-    
-    CTParagraphStyleRef p = (__bridge CTParagraphStyleRef)([attributes objectForKey:(id)kCTParagraphStyleAttributeName]);
-    
-    DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:p];
+    DTCoreTextParagraphStyle *paragraphStyle = [attributes paragraphStyle];
     
     return paragraphStyle.headIndent;
 }
 
-- (CGFloat)textSizeAtPosition:(UITextPosition *)position
+- (DTCoreTextFontDescriptor *)defaultFontDescriptor
 {
-    return 0;
-}
-
-- (DTCoreTextParagraphStyle *)paragraphStyleForTagName:(NSString *)tagName tagClass:(NSString *)tagClass tagIdentifier:(NSString *)tagIdentifier relativeToTextSize:(CGFloat)textSize
-{
-    NSParameterAssert(tagName);
-    
-    NSMutableString *html = [NSMutableString stringWithFormat:@"<span style=\"font-size:%.0fpx\"><%@", textSize, tagName];
-    
-    if (tagClass)
-    {
-        [html appendFormat:@" class=\"%@\"", tagClass];
-    }
-    
-    if (tagIdentifier)
-    {
-        [html appendFormat:@" id=\"%@\"", tagIdentifier];
-    }
-    
-    [html appendFormat:@">A</%@></span>", tagName];
-    
-    NSDictionary *attributes = [self _attributesForHTMLStringUsingTextDefaults:html];
-    
-    // TODO: also support NSParagraphStyle
-    
-    CTParagraphStyleRef p = (__bridge CTParagraphStyleRef)([attributes objectForKey:(id)kCTParagraphStyleAttributeName]);
-    
-    return [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:p];
+	NSDictionary *attributes = [self attributedStringAttributesForTextDefaults];
+	return [attributes fontDescriptor];
 }
 
 @end

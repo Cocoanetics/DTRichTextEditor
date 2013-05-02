@@ -36,4 +36,16 @@
  */
 - (BOOL)hasAttachment;
 
+/**
+ Retrieves the DTCoreTextParagraphStyle from the receiver's attributes. This supports both `CTParagraphStyle` as well as `NSParagraphStyle` as a possible representation of the text's paragraph style.
+ @returns The paragraph style
+ */
+- (DTCoreTextParagraphStyle *)paragraphStyle;
+
+/**
+ Retrieves the DTCoreTextFontDescriptor from the receiver's attributes. This supports both `CTFont` as well as `UIFont` as a possible representation of the text's font.
+ @returns The font descriptor
+ */
+- (DTCoreTextFontDescriptor *)fontDescriptor;
+
 @end

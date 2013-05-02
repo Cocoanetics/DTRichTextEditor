@@ -48,7 +48,8 @@
         }
     }
 
-    DTCoreTextParagraphStyle *paragraphStyle = [self paragraphStyleForTagName:tagName tagClass:nil tagIdentifier:nil relativeToTextSize:textSize];
+	NSDictionary *attributes = [self attributesForTagName:tagName tagClass:nil tagIdentifier:nil relativeToTextSize:textSize];
+    DTCoreTextParagraphStyle *paragraphStyle = [attributes paragraphStyle];
 
     return paragraphStyle.paragraphSpacing;
 }
@@ -95,7 +96,7 @@
 			listBeforeSelection = [[attributedText attribute:DTTextListsAttribute atIndex:paragraphRange.location-1 effectiveRange:NULL] lastObject];
 			
 			// if same type we extend the list
-			if (listBeforeSelection.type == listStyle.type)
+			if (listBeforeSelection && listBeforeSelection.type == listStyle.type)
 			{
 				// find extent of this list
 				NSRange listRange = [attributedText rangeOfTextList:listBeforeSelection atIndex:paragraphRange.location-1];
@@ -111,7 +112,7 @@
 			listAfterSelection = [[attributedText attribute:DTTextListsAttribute atIndex:NSMaxRange(paragraphRange) effectiveRange:NULL] lastObject];
 			
 			// if same type we extend the list
-			if (listAfterSelection.type == listStyle.type)
+			if (listAfterSelection && listAfterSelection.type == listStyle.type)
 			{
 				// find extent of this list
 				NSRange listRange = [attributedText rangeOfTextList:listAfterSelection atIndex:NSMaxRange(paragraphRange)];
