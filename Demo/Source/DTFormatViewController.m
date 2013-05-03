@@ -82,4 +82,11 @@
     [self.formatDelegate formatDidToggleUnderline];
 }
 
+#pragma mark - Event bubbling
+
+- (void)userPressedDone:(id)sender
+{
+    [self.formatDelegate formatViewControllerUserDidFinish:self];
+}
+
 @end

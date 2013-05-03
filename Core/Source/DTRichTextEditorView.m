@@ -1585,6 +1585,11 @@ typedef enum
     return !self.isFirstResponder;
 }
 
+- (void)hideKeyboard
+{
+    [super resignFirstResponder];
+}
+
 - (UIResponder *)nextResponder
 {
     if (_stopResponderChain)

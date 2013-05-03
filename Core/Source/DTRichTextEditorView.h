@@ -186,6 +186,8 @@ extern NSString * const DTRichTextEditorTextDidEndEditingNotification;
  */
 @property (nonatomic, copy) NSAttributedString *attributedText;
 
+- (void)hideKeyboard;
+
 @end
 
 

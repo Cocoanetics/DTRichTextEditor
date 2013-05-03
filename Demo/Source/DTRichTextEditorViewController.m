@@ -494,12 +494,15 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
         
     }else{
         
-        [richEditor resignFirstResponder];
+        if([self.childViewControllers containsObject:self.formatViewController])
+            return;
+        
+        [richEditor hideKeyboard];
         
         [self addChildViewController:self.formatViewController];
         
-        CGRect startFrame = CGRectMake(0.0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds), 216);
-        CGRect endFrame = CGRectMake(0.0, CGRectGetHeight(self.view.bounds) - 216, CGRectGetWidth(self.view.bounds), 216);
+        CGRect startFrame = CGRectMake(0.0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds), 260);
+        CGRect endFrame = CGRectMake(0.0, CGRectGetHeight(self.view.bounds) - 260, CGRectGetWidth(self.view.bounds), 260);
         
         self.formatViewController.view.frame = startFrame;
         
@@ -662,6 +665,37 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 - (void)formatDidToggleUnderline
 {
     [richEditor toggleUnderlineInRange:richEditor.selectedTextRange];
+}
+
+- (void)formatViewControllerUserDidFinish:(DTFormatViewController *)formatController
+{
+    // called only by tapping `done` in iPhone UI
+    
+    if(formatController != self.formatViewController)
+        return;
+    
+    [self.formatViewController willMoveToParentViewController:nil];
+    
+    CGRect endFrame = CGRectMake(0.0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds), 260);
+    CGRect startFrame = CGRectMake(0.0, CGRectGetHeight(self.view.bounds) - 260, CGRectGetWidth(self.view.bounds), 260);
+    
+    self.formatViewController.view.frame = startFrame;
+    
+    [UIView animateWithDuration:0.4
+                     animations:^{
+                         self.formatViewController.view.frame = endFrame;
+                     } completion:^(BOOL finished) {
+                         [self.formatViewController.view removeFromSuperview];
+                         
+                         [self.formatViewController removeFromParentViewController];
+                         
+                         DTTextRange *textRange = [DTTextRange textRangeFromStart:richEditor.selectedTextRange.start toEnd:richEditor.selectedTextRange.end];
+                         
+                         [richEditor setSelectedTextRange:textRange
+                                                 animated:NO];
+                         
+                         [richEditor becomeFirstResponder];
+                     }];
 }
 
 @end

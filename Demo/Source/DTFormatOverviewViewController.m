@@ -54,19 +54,12 @@
         
         // add a bar button item to close
         UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                   target:self
-                                                                                   action:@selector(dismissSelf)];
+                                                                                   target:nil
+                                                                                   action:@selector(userPressedDone:)];
         
         self.navigationItem.rightBarButtonItem = closeItem;
     }
 }
-
-- (void)dismissSelf
-{
-    [self dismissViewControllerAnimated:YES
-                             completion:nil];
-}
-
 
 - (void)_stepperValueChanged:(UIStepper *)stepper;
 {

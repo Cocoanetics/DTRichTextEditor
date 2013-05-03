@@ -26,6 +26,7 @@
 - (void)formatDidToggleBold;
 - (void)formatDidToggleItalic;
 - (void)formatDidToggleUnderline;
+- (void)formatViewControllerUserDidFinish:(DTFormatViewController *)formatController;
 
 @end
 
