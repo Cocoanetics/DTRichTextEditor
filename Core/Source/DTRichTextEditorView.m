@@ -410,7 +410,14 @@ typedef enum
     // Display the context menu
     _contextMenuVisible = YES;
     CGRect targetRect = [self boundsOfCurrentSelection];
-
+    
+    // Adjust the target rect to be just above the viewport of the scrollview
+    CGRect visibleRect;
+    visibleRect.origin = self.contentOffset;
+    visibleRect.size = self.bounds.size;
+    targetRect = CGRectIntersection(targetRect, visibleRect);
+    
+    // Present the menu
 	UIMenuController *menuController = [UIMenuController sharedMenuController];
 	
 	[menuController setTargetRect:targetRect inView:self];
@@ -1585,7 +1592,7 @@ typedef enum
     return !self.isFirstResponder;
 }
 
-- (void)hideKeyboard
+- (void)perserveSelectionOnResignFirstResponder
 {
     [super resignFirstResponder];
 }
@@ -2000,45 +2007,36 @@ typedef enum
 
 - (void)deleteBackward
 {
+    // Analyze the cursor/selection
+    NSRange replacementRange = [(DTTextRange *)[self selectedTextRange] NSRangeValue];
+    
+    if (replacementRange.location == 0 && replacementRange.length == 0)
+        return;
+    
+    if (replacementRange.length == 0)
+    {
+        replacementRange = NSMakeRange(replacementRange.location - 1, 1);
+    }
+    
     // Check with editor delegate to allow change
     if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
     {
-        NSRange selectedTextRange = [(DTTextRange *)self.selectedTextRange NSRangeValue];
-        NSRange range = NSMakeRange(selectedTextRange.location - 1, 1);
         NSAttributedString *replacementText = [[NSAttributedString alloc] init];
         
-        if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:range replacementText:replacementText])
+        if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:replacementRange replacementText:replacementText])
             return;
     }
     
+    // Prepare undo
 	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	if (!undoManager.numberOfOpenGroups)
 	{
 		[self.undoManager beginUndoGrouping];
 	}
 
-	DTTextRange *currentRange = (id)[self selectedTextRange];
-	
-	if ([currentRange isEmpty])
-	{
-		// delete character left of carret
-		
-		DTTextPosition *delEnd = (DTTextPosition *)currentRange.start;
-		DTTextPosition *docStart = (DTTextPosition *)[self beginningOfDocument];
-		
-		if ([docStart compare:delEnd] == NSOrderedAscending)
-		{
-			DTTextPosition *delStart = [DTTextPosition textPositionWithLocation:delEnd.location-1];
-			DTTextRange *delRange = [DTTextRange textRangeFromStart:delStart toEnd:delEnd];
-			
-			[self replaceRange:delRange  withText:@""];
-		}
-	}
-	else 
-	{
-		// delete selection
-		[self replaceRange:currentRange withText:nil];
-	}
+	// Delete
+    DTTextRange *replacementTextRange = [DTTextRange rangeWithNSRange:replacementRange];
+    [self replaceRange:replacementTextRange withText:@""];
 	
 	// hide context menu on deleting text
 	[self hideContextMenu];
@@ -2282,43 +2280,64 @@ typedef enum
 	return (id)_selectedTextRange;
 }
 
-- (void)setSelectedTextRange:(DTTextRange *)newTextRange animated:(BOOL)animated
+- (void)setSelectedTextRange:(DTTextRange *)selectedTextRange animated:(BOOL)animated
 {
-    if (newTextRange != nil)
-    {
-        // check if the selected range fits with the attributed text
-        DTTextPosition *start = (DTTextPosition *)newTextRange.start;
-        DTTextPosition *end = (DTTextPosition *)newTextRange.end;
-        
-        if ([end compare:(DTTextPosition *)[self endOfDocument]] == NSOrderedDescending)
-        {
-            end = (DTTextPosition *)[self endOfDocument];
-        }
-        
-        if ([start compare:end] == NSOrderedDescending)
-        {
-            start = end;
-        }
-        
-        newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
-    }
+	UITextRange *newTextRange = selectedTextRange;
+	
+	if (selectedTextRange != nil)
+	{
+		// check if the selected range fits with the attributed text
+		DTTextPosition *start = (DTTextPosition *)newTextRange.start;
+		DTTextPosition *end = (DTTextPosition *)newTextRange.end;
+		
+		if ([end compare:(DTTextPosition *)[self endOfDocument]] == NSOrderedDescending)
+		{
+			end = (DTTextPosition *)[self endOfDocument];
+		}
+		
+		if ([start compare:end] == NSOrderedDescending)
+		{
+			start = end;
+		}
+		
+		newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
+	}
+	
+	if (_selectedTextRange && [[newTextRange start] isEqual:[_selectedTextRange start]] && [[newTextRange end] isEqual:[_selectedTextRange end]])
+	{
+		// no change
+		return;
+	}
+	
+	BOOL shouldNotifyDelegates = NO;
+	
+	// Notify selection changed as long as the user is not dragging the circle loupe
+	if (_dragMode != DTDragModeCursor && _dragMode != DTDragModeCursorInsideMarking)
+	{
+		shouldNotifyDelegates = YES;
+	}
 	
 	[self willChangeValueForKey:@"selectedTextRange"];
 	
+	if (shouldNotifyDelegates)
+	{
+		[self.inputDelegate selectionWillChange:self];
+	}
+	
 	_selectedTextRange = [newTextRange copy];
+	
+	[self didChangeValueForKey:@"selectedTextRange"];
+	
+	if (shouldNotifyDelegates)
+	{
+		[self.inputDelegate selectionDidChange:self];
+		[self notifyDelegateDidChangeSelection];
+	}
 	
 	[self updateCursorAnimated:animated];
 	[self hideContextMenu];
 	
 	self.overrideInsertionAttributes = nil;
-	
-	[self didChangeValueForKey:@"selectedTextRange"];
-    
-    // Notify selection changed as long as the user is not dragging the circle loupe
-    if (_dragMode != DTDragModeCursor && _dragMode != DTDragModeCursorInsideMarking)
-    {
-        [self notifyDelegateDidChangeSelection];
-    }
 }
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange
@@ -2832,20 +2851,10 @@ typedef enum
 // helper method for converting text defaults dictionary into actual text attributes
 - (NSDictionary *)_attributedStringAttributesForTextDefaults
 {
-	// build a font descriptor from the defaults
-	DTCoreTextFontDescriptor *desc = [[DTCoreTextFontDescriptor alloc] init];
-	desc.fontFamily = _defaultFontFamily;
-	desc.pointSize = _defaultFontSize * _textSizeMultiplier;
+	NSData *data = [@"<p />" dataUsingEncoding:NSUTF8StringEncoding];
+	NSAttributedString *attributedString = [[NSAttributedString alloc] initWithHTMLData:data options:[self textDefaults] documentAttributes:NULL];
 	
-    // create a font for this
-	CTFontRef defaultFont = [desc newMatchingFont];
-	
-	NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-	[(NSMutableDictionary *)attributes setObject:(__bridge id)defaultFont forKey:(id)kCTFontAttributeName];
-	
-	CFRelease(defaultFont);
-	
-	return attributes;
+	return [attributedString attributesAtIndex:0 effectiveRange:NULL];
 }
 
 // helper method for wrapping a text attachment, optionally in its own paragraph

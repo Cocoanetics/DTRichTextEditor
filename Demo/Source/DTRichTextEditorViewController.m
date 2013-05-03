@@ -497,7 +497,7 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
         if([self.childViewControllers containsObject:self.formatViewController])
             return;
         
-        [richEditor hideKeyboard];
+        [richEditor perserveSelectionOnResignFirstResponder];
         
         [self addChildViewController:self.formatViewController];
         

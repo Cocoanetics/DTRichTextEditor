@@ -186,7 +186,10 @@ extern NSString * const DTRichTextEditorTextDidEndEditingNotification;
  */
 @property (nonatomic, copy) NSAttributedString *attributedText;
 
-- (void)hideKeyboard;
+/**
+ Resign first responder but remain in editting mode
+ */
+- (void)perserveSelectionOnResignFirstResponder;
 
 @end
 

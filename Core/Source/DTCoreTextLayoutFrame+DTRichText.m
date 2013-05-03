@@ -149,6 +149,12 @@
 	DTCoreTextLayoutLine *line = [self.lines objectAtIndex:newLineIndex];
 	NSInteger closestIndex = [line stringIndexForPosition:CGPointMake(currentRect.origin.x, line.frame.origin.y)];
 	
+	// make sure that the index is inside the line
+	if (!NSLocationInRange(closestIndex, line.stringRange))
+	{
+		closestIndex = MAX(0,NSMaxRange(line.stringRange)-1);
+	}
+	
 	return closestIndex;
 }
 
@@ -166,6 +172,12 @@
 	
 	DTCoreTextLayoutLine *line = [self.lines objectAtIndex:newLineIndex];
 	NSInteger closestIndex = [line stringIndexForPosition:CGPointMake(currentRect.origin.x, line.frame.origin.y)];
+	
+	// make sure that the index is inside the line
+	if (!NSLocationInRange(closestIndex, line.stringRange))
+	{
+		closestIndex = MAX(0,NSMaxRange(line.stringRange)-1);
+	}
 	
 	return closestIndex;
 }
