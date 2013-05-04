@@ -438,26 +438,33 @@
     
     [self enumerateAttribute:(id)kCTFontAttributeName inRange:range options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired usingBlock:^(id value, NSRange range, BOOL *stop) {
         
-        DTCoreTextFontDescriptor *descriptor = [DTCoreTextFontDescriptor fontDescriptorForCTFont:(__bridge CTFontRef)value];
-        
-        BOOL shouldStop = NO;
-        
-        BOOL didChangeRange = block(descriptor, &shouldStop);
-        
-        if (didChangeRange)
-        {
-            CTFontRef newFont = [descriptor newMatchingFont];
-            
-            // remove the old font
-            [self removeAttribute:(id)kCTFontAttributeName range:range];
-            
-            // add the new
-            [self addAttribute:(id)kCTFontAttributeName value:CFBridgingRelease(newFont) range:range];
-            
-            didChange = YES;
-        }
-        
-        *stop = shouldStop;
+		 if (value)
+		 {
+			 DTCoreTextFontDescriptor *descriptor = [DTCoreTextFontDescriptor fontDescriptorForCTFont:(__bridge CTFontRef)value];
+			 
+			 BOOL shouldStop = NO;
+			 
+			 BOOL didChangeRange = block(descriptor, &shouldStop);
+			 
+			 if (didChangeRange)
+			 {
+				 CTFontRef newFont = [descriptor newMatchingFont];
+				 
+				 // remove the old font
+				 [self removeAttribute:(id)kCTFontAttributeName range:range];
+				 
+				 // add the new
+				 [self addAttribute:(id)kCTFontAttributeName value:CFBridgingRelease(newFont) range:range];
+				 
+				 didChange = YES;
+			 }
+			 
+			 *stop = shouldStop;
+		 }
+		 else
+		 {
+			 NSLog(@"Warning: In %s, no font attribute for range %@", __PRETTY_FUNCTION__, NSStringFromRange(range));
+		 }
     }];
     
     return didChange;
