@@ -61,6 +61,22 @@
     }
 }
 
+- (CGSize)contentSizeForViewInPopover {
+    // Currently no way to obtain the width dynamically before viewWillAppear.
+    CGFloat width = 320.0;
+    
+    CGFloat totalHeight = 0.0;
+    
+    //Need to total each section
+    for (int i = 0; i < [self.tableView numberOfSections]; i++)
+    {
+        CGRect sectionRect = [self.tableView rectForSection:i];
+        totalHeight += sectionRect.size.height;
+    }
+
+    return (CGSize){width, totalHeight + 44.0};
+}
+
 - (void)_stepperValueChanged:(UIStepper *)stepper;
 {
     id<DTInternalFormatProtocol> formatController = (id<DTInternalFormatProtocol>)self.navigationController;

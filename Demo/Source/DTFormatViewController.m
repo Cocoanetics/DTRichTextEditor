@@ -28,6 +28,11 @@
     self.viewControllers = @[homeFormatController];
 }
 
+- (CGSize)contentSizeForViewInPopover
+{
+    return self.topViewController.contentSizeForViewInPopover;
+}
+
 - (void)setFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor
 {
     _fontDescriptor = fontDescriptor;
