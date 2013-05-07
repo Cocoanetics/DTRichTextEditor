@@ -52,32 +52,6 @@ typedef enum
 - (NSString *)plainTextForRange:(UITextRange *)range;
 
 /**
- Converts the given string to an `NSAttributedString` using the current textDefaults and sets it on the receiver.
- @param string The string containing HTML text to convert to an attributed string and set as content of the receiver
- */
-- (void)setHTMLString:(NSString *)string;
-
-
-/**
- @name Working with Ranges
- */
-
-/**
- Gets the text range of an URL at the given text position. Optionally also returns the hyperlink URL.
- @param position The text position
- @param URL An optional URL output param or `NULL` if the URL is not required
- @returns the text range or `NULL` if there is no URL at this position
- */
-- (UITextRange *)textRangeOfURLAtPosition:(UITextPosition *)position URL:(NSURL **)URL;
-
-/**
- Gets the range that encompasses the word at the given text position.
- @param position The text position
- @returns the text range
- */
-- (UITextRange *)textRangeOfWordAtPosition:(UITextPosition *)position;
-
-/**
  The attributes to apply for new text inserted at the given range.
  @param range The text range
  @returns The dictionary of styles
@@ -194,16 +168,11 @@ typedef enum
  */
 - (void)toggleHyperlinkInRange:(UITextRange *)range URL:(NSURL *)URL;
 
+
 /**
  @name Working with Fonts
  */
 
-/**
- Replaces the font for a given range.
- @param range The text range
- @param newFontDescriptor The new font descriptor to apply.
- */
-- (void)updateFontInRange:(UITextRange *)range withFontDescriptor:(DTCoreTextFontDescriptor *)newFontDescriptor;
 /**
  Replaces the font for a given range preserving bold or italic ranges.
  @param range The text range
