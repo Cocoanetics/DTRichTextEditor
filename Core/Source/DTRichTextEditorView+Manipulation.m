@@ -7,6 +7,7 @@
 //
 
 #import "DTRichTextEditor.h"
+#import "DTHTMLWriter.h"
 #import "DTUndoManager.h"
 
 @interface DTRichTextEditorView (private)
@@ -61,6 +62,19 @@
 	[self setAttributedText:attributedString];
 	
 	[self.undoManager removeAllActions];
+}
+
+- (NSString *)HTMLStringWithOptions:(DTHTMLWriterOption)options
+{
+	DTHTMLWriter *writer = [[DTHTMLWriter alloc] initWithAttributedString:self.attributedText];
+	writer.textScale = self.textSizeMultiplier;  // the writer will divide font sizes by this value
+	
+	if (options & DTHTMLWriterOptionFragment)
+	{
+		return [writer HTMLFragment];
+	}
+
+	return [writer HTMLString];
 }
 
 - (NSString *)plainTextForRange:(UITextRange *)range

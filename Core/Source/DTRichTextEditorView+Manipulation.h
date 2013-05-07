@@ -8,6 +8,14 @@
 
 #import "DTRichTextEditorView.h"
 
+// options for generating HTML output
+typedef enum
+{
+	DTHTMLWriterOptionDocument = 0,  // default
+	DTHTMLWriterOptionFragment = 1 << 0
+} DTHTMLWriterOption;
+
+
 @class DTTextRange, DTTextPosition, DTCSSListStyle;
 
 /**
@@ -60,6 +68,21 @@
  @param string The string containing HTML text to convert to an attributed string and set as content of the receiver
  */
 - (void)setHTMLString:(NSString *)string;
+
+/**
+ Converts the current attributed string contents of the receiver to an HTML string.
+ 
+ This uses DTHTMLWriter and uses the currently set textScale to reverse font scale changes. This allows for HTML with a small font size to be displayed at a larger font size, but the generated HTML will still have the original font size.
+ 
+ Valid options are:
+ 
+ - 	DTHTMLWriterOptionDocument: Styles are compressed into a stylesheet and a header is output (default)
+ -  DTHTMLWriterOptionFragment: All styles are inline and no header is output
+ 
+ @param options The options to apply for the conversion.
+ @returns An `NSString` with a generated HTML representation of the text
+ */
+- (NSString *)HTMLStringWithOptions:(DTHTMLWriterOption)options;
 
 /**
  @name Changing Paragraph Styles
