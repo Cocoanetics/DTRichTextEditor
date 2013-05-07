@@ -109,9 +109,9 @@ extern NSString * const DTRichTextEditorTextDidEndEditingNotification;
  */
 
 /**
- Overrides the `UIResponder` input view to be settable. The inputView is show instead of the system keyboard when input is possible.
+ Sets the input view which will be shown instead of the keyboard. If the receiver already has first responder then this replaces the previous input view or standard keyboard. If the receiver is not first responder, then the animated parameter will be ignored
  */
-@property (retain, readwrite) UIView *inputView;
+- (void)setInputView:(UIView *)inputView animated:(BOOL)animated;
 
 /**
  Overrides the `UIResponder` input accessory view to be settable. The accessory gets shown riding on top of the inputView when input is possible.
@@ -185,11 +185,6 @@ extern NSString * const DTRichTextEditorTextDidEndEditingNotification;
  The current attributedText displayed in the receiver
  */
 @property (nonatomic, copy) NSAttributedString *attributedText;
-
-/**
- Resign first responder but remain in editting mode
- */
-- (void)perserveSelectionOnResignFirstResponder;
 
 @end
 
