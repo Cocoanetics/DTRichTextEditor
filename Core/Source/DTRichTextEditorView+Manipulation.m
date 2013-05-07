@@ -461,6 +461,40 @@
 
 #pragma mark - Working with Fonts
 
+//- (void)updateFontInRange:(UITextRange *)range withFontDescriptor:(DTCoreTextFontDescriptor *)newFontDescriptor
+//{
+//    // close off typing group, this is a new operations
+//	[self _closeTypingUndoGroupIfNecessary];
+//    
+//    NSMutableAttributedString *fragment = [[self attributedSubstringForRange:range] mutableCopy];
+//    
+//    BOOL didUpdate = [fragment enumerateAndUpdateFontInRange:NSMakeRange(0, [fragment length])
+//                                                       block:^BOOL(DTCoreTextFontDescriptor *fontDescriptor, BOOL *stop) {
+//                                                           BOOL shouldUpdate = NO;
+//                                                           
+//                                                           BOOL bold = ((NSRange)[newFontDescriptor.fontName rangeOfString:@"bold" options:NSCaseInsensitiveSearch]).location != NSNotFound;
+//                                                           BOOL italic = ((NSRange)[newFontDescriptor.fontName rangeOfString:@"italic" options:NSCaseInsensitiveSearch]).location != NSNotFound;
+//                                                           
+//                                                           fontDescriptor.fontFamily = newFontDescriptor.fontFamily;
+//                                                           fontDescriptor.boldTrait = bold;
+//                                                           fontDescriptor.italicTrait = italic;
+//                                                           fontDescriptor.fontName = newFontDescriptor.fontName;
+//                                                           fontDescriptor.pointSize = newFontDescriptor.pointSize;
+//                                                           
+//                                                           return YES;
+//                                                       }];
+//    
+//    if (didUpdate)
+//    {
+//        // replace
+//        [self _updateSubstringInRange:[(DTTextRange *)range NSRangeValue]
+//                 withAttributedString:fragment
+//                           actionName:NSLocalizedString(@"Set Font", @"Undo Action that replaces the font for a range")];
+//    }
+//    
+//    [self hideContextMenu];
+//}
+
 - (void)updateFontInRange:(UITextRange *)range withFontFamilyName:(NSString *)fontFamilyName pointSize:(CGFloat)pointSize
 {
     // close off typing group, this is a new operations
@@ -489,7 +523,8 @@
     
     NSMutableAttributedString *fragment = [[self attributedSubstringForRange:range] mutableCopy];
     
-    BOOL didUpdate = [fragment enumerateAndUpdateFontInRange:NSMakeRange(0, [fragment length]) block:^BOOL(DTCoreTextFontDescriptor *fontDescriptor, BOOL *stop) {
+    BOOL didUpdate = [fragment enumerateAndUpdateFontInRange:NSMakeRange(0, [fragment length])
+                                                       block:^BOOL(DTCoreTextFontDescriptor *fontDescriptor, BOOL *stop) {
         BOOL shouldUpdate = NO;
         
         if (fontFamilyName && ![fontFamilyName isEqualToString:fontDescriptor.fontFamily])

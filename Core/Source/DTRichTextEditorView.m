@@ -1561,6 +1561,11 @@ typedef enum
     return !self.isFirstResponder;
 }
 
+- (void)perserveSelectionOnResignFirstResponder
+{
+    [super resignFirstResponder];
+}
+
 - (UIResponder *)nextResponder
 {
     if (_stopResponderChain)
