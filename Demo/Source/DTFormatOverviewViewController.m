@@ -53,9 +53,14 @@
         // we need a control to dismiss ourselves
         
         // add a bar button item to close
-        UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                   target:nil
-                                                                                   action:@selector(userPressedDone:)];
+//        UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+//                                                                                   target:nil
+//                                                                                   action:@selector(userPressedDone:)];
+
+        UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:@"\u25BC"
+                                                                      style:UIBarButtonItemStyleBordered
+                                                                     target:nil
+                                                                     action:@selector(userPressedDone:)];
         
         self.navigationItem.rightBarButtonItem = closeItem;
     }
