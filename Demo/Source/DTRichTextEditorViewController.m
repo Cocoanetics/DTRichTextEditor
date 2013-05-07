@@ -495,28 +495,11 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
         [self.formatOptionsPopover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
         self.formatOptionsPopover.passthroughViews = nil;
         
-    }else{
-        
-        if([self.childViewControllers containsObject:self.formatViewController])
-            return;
-        
-        [richEditor perserveSelectionOnResignFirstResponder];
-        
-        [self addChildViewController:self.formatViewController];
-        
-        CGRect startFrame = CGRectMake(0.0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds), 260);
-        CGRect endFrame = CGRectMake(0.0, CGRectGetHeight(self.view.bounds) - 260, CGRectGetWidth(self.view.bounds), 260);
-        
-        self.formatViewController.view.frame = startFrame;
-        
-        [self.view addSubview:self.formatViewController.view];
-        
-        [self.formatViewController didMoveToParentViewController:self];
-        
-        [UIView animateWithDuration:0.4
-                         animations:^{
-                             self.formatViewController.view.frame = endFrame;
-                         }];
+    }
+	else
+	{
+		richEditor.inputAccessoryView = nil; // no accessory on next inputView change
+		[richEditor setInputView:self.formatViewController.view animated:YES];
     }
 }
 
@@ -674,31 +657,8 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 {
     // called only by tapping `done` in iPhone UI
     
-    if(formatController != self.formatViewController)
-        return;
-    
-    [self.formatViewController willMoveToParentViewController:nil];
-    
-    CGRect endFrame = CGRectMake(0.0, CGRectGetHeight(self.view.bounds), CGRectGetWidth(self.view.bounds), 260);
-    CGRect startFrame = CGRectMake(0.0, CGRectGetHeight(self.view.bounds) - 260, CGRectGetWidth(self.view.bounds), 260);
-    
-    self.formatViewController.view.frame = startFrame;
-    
-    [UIView animateWithDuration:0.4
-                     animations:^{
-                         self.formatViewController.view.frame = endFrame;
-                     } completion:^(BOOL finished) {
-                         [self.formatViewController.view removeFromSuperview];
-                         
-                         [self.formatViewController removeFromParentViewController];
-                         
-                         DTTextRange *textRange = [DTTextRange textRangeFromStart:richEditor.selectedTextRange.start toEnd:richEditor.selectedTextRange.end];
-                         
-                         [richEditor setSelectedTextRange:textRange
-                                                 animated:NO];
-                         
-                         [richEditor becomeFirstResponder];
-                     }];
+	richEditor.inputAccessoryView = toolbar; // restore accessory on next inputView change
+	[richEditor setInputView:nil animated:YES];
 }
 
 @end
