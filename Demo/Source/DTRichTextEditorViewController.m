@@ -538,6 +538,10 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 - (void)editorViewDidChangeSelection:(DTRichTextEditorView *)editorView
 {
     NSLog(@"editorViewDidChangeSelection:");
+    
+    if( self.formatViewController && [richEditor inputView] == self.formatViewController.view ){
+        self.formatViewController.fontDescriptor = [richEditor fontDescriptorForRange:richEditor.selectedTextRange];
+    }
 }
 
 - (void)editorViewDidChange:(DTRichTextEditorView *)editorView
