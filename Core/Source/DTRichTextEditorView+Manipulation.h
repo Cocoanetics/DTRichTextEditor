@@ -144,6 +144,15 @@ typedef enum
 - (void)toggleUnderlineInRange:(UITextRange *)range;
 
 /**
+ Toggles strikethrough font style on the given range.
+ 
+ The first character of the range determines if the range is to be treated as strikethrough or not.
+ @param range The text range
+ */
+- (void)toggleStrikethroughInRange:(UITextRange *)range;
+
+
+/**
  Highlights a given range.
  
  The first character of the range determines if the range is to be treated as already highlighted or not.

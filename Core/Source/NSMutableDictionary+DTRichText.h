@@ -31,6 +31,11 @@
 - (void)toggleUnderline;
 
 /**
+ Toggle the attributes in the receiver strikethrough. If text is already marked as strikethrough then the strikethrough is removed.
+ */
+- (void)toggleStrikethrough;
+
+/**
  Updates the font attribute via a font descriptor
  @param fontDescriptor The font descriptor which describes the font to set
  */

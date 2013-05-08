@@ -75,6 +75,18 @@
 	}
 }
 
+- (void)toggleStrikethrough
+{
+	if ([self isStrikethrough])
+	{
+		[self removeObjectForKey:DTStrikeOutAttribute];
+	}
+	else
+	{
+		[self setObject:[NSNumber numberWithBool:YES] forKey:DTStrikeOutAttribute];
+	}
+}
+
 - (void)setFontFromFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor
 {
     CTFontRef currentFont = (__bridge CTFontRef)[self objectForKey:(id)kCTFontAttributeName];

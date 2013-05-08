@@ -285,6 +285,54 @@
 	[self endEditing];
 }
 
+- (void)toggleStrikethroughInRange:(NSRange)range
+{
+	[self beginEditing];
+	
+	// first character determines current italic status
+	NSDictionary *currentAttributes = [self typingAttributesForRange:range];
+    
+    if (!currentAttributes)
+    {
+        return;
+    }
+	
+	BOOL isStrikethrough = [currentAttributes isStrikethrough];
+	
+    NSRange attrRange;
+    NSUInteger index=range.location;
+    
+    while (index < NSMaxRange(range))
+    {
+        NSMutableDictionary *attrs = [[self attributesAtIndex:index effectiveRange:&attrRange] mutableCopy];
+		
+		if (isStrikethrough)
+		{
+			[attrs removeObjectForKey:DTStrikeOutAttribute];
+		}
+		else
+		{
+			[attrs setObject:[NSNumber numberWithBool:YES] forKey:DTStrikeOutAttribute];
+		}
+		if (attrRange.location < range.location)
+		{
+			attrRange.length -= (range.location - attrRange.location);
+			attrRange.location = range.location;
+		}
+		
+		if (NSMaxRange(attrRange)>NSMaxRange(range))
+		{
+			attrRange.length = NSMaxRange(range) - attrRange.location;
+		}
+		
+		[self setAttributes:attrs range:attrRange];
+		
+        index += attrRange.length;
+    }
+	
+	[self endEditing];
+}
+
 - (void)toggleHighlightInRange:(NSRange)range color:(UIColor *)color
 {
 	[self beginEditing];
