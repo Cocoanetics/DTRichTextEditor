@@ -40,9 +40,8 @@
     NSParameterAssert(position);
     
     DTCoreTextLayoutLine *lineWithPosition = [self layoutLineContainingTextPosition:position];
-//    NSString *string = [[self.attributedText string] substringWithRange:[lineWithPosition stringRange]];
     
-     if (!lineWithPosition)
+	if (!lineWithPosition)
     {
         return nil;
     }
