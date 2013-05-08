@@ -3177,23 +3177,25 @@ typedef enum
 	}
 	
 	BOOL wasFirstResponder = self.isFirstResponder;
-
+    
+    [self willChangeValueForKey:@"inputView"];
 	_inputView = inputView;
+    [self didChangeValueForKey:@"inputView"];
 	
-	// only animate if we are first responder and animation is requested
-	if (!wasFirstResponder || !animated)
+	// only animate if we are first responder
+	if (!wasFirstResponder)
 	{
 		return;
 	}
-
+    
 	_isChangingInputView = YES;
 	
 	[self resignFirstResponder];
 	
-	// give the previous inputView time to animate out
-	double delayInSeconds = 0.35;
+	// give the previous inputView time to animate out if we are animating
+	double delayInSeconds = (animated && wasFirstResponder)?0.35:0;
+	
 	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
-    
 	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 		[self becomeFirstResponder]; // this activates new input view
 		
