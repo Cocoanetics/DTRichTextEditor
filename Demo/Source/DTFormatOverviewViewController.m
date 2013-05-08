@@ -120,6 +120,11 @@
     [self.formatPicker applyUnderline:YES];
 }
 
+- (void)_editStrikethroughTrait
+{
+    [self.formatPicker applyStrikethrough:YES];
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
@@ -143,7 +148,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return section == 0 ? 1 : 4;
+    return section == 0 ? 1 : 5;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -204,6 +209,13 @@
 					[attributedCell setHTMLString:@"<u style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Underlined</u>"];
                     break;
                 }
+					
+				case 4: //strikethrough
+                {
+                    cell.accessoryType = self.formatPicker.isUnderlined ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+					[attributedCell setHTMLString:@"<del style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Strikethrough</del>"];
+                    break;
+                }
             }
         }
     }
@@ -217,43 +229,57 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(indexPath.section == 0)
+    if(!indexPath.section)
+	{
         return;
+	}
     
-    switch (indexPath.row) {
+    switch (indexPath.row)
+	{
         case 0:
         {
             DTFormatFontFamilyTableViewController *fontFamilyChooserController = [[DTFormatFontFamilyTableViewController alloc] initWithStyle:UITableViewStyleGrouped selectedFontFamily:self.formatPicker.fontDescriptor.fontFamily];
             [self.navigationController pushViewController:fontFamilyChooserController animated:YES];
-        }
             break;
+        }
+			
         case 1:
         {
             [self _editBoldTrait];
             UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
             [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
-        }
             break;
+        }
+			
         case 2:
         {
             [self _editItalicTrait];
             UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
             [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
-        }
-            break;
+			break;
+		}
+
         case 3:
         {
             [self _editUnderlineTrait];
             UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
             [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
-        }
             break;
+        }
+			
+		case 4:
+        {
+            [self _editStrikethroughTrait];
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+            [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
+            break;
+        }
+			
         default:
             break;
     }
     
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
 }
 
 @end

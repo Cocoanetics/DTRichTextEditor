@@ -40,9 +40,8 @@
     NSParameterAssert(position);
     
     DTCoreTextLayoutLine *lineWithPosition = [self layoutLineContainingTextPosition:position];
-//    NSString *string = [[self.attributedText string] substringWithRange:[lineWithPosition stringRange]];
     
-     if (!lineWithPosition)
+	if (!lineWithPosition)
     {
         return nil;
     }
@@ -320,6 +319,40 @@
 		
 		// replace
 		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Underline", @"Action that makes text underlined")];
+	}
+	
+	[self hideContextMenu];
+}
+
+- (void)toggleStrikethroughInRange:(UITextRange *)range
+{
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
+	
+	if ([range isEmpty])
+	{
+		// if we only have a cursor then we save the attributes for the next insertion
+		NSMutableDictionary *tmpDict = [self.overrideInsertionAttributes mutableCopy];
+		
+		if (!tmpDict)
+		{
+			tmpDict = [[self typingAttributesForRange:range] mutableCopy];
+		}
+		[tmpDict toggleStrikethrough];
+		self.overrideInsertionAttributes = tmpDict;
+	}
+	else
+	{
+		NSRange styleRange = [(DTTextRange *)range NSRangeValue];
+		
+		// get fragment that is to be made underlined
+		NSMutableAttributedString *fragment = [[[self.attributedTextContentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
+		
+		// make entire frament underlined
+		[fragment toggleStrikethroughInRange:NSMakeRange(0, [fragment length])];
+		
+		// replace
+		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Strikethrough", @"Action that makes text strikethrough")];
 	}
 	
 	[self hideContextMenu];

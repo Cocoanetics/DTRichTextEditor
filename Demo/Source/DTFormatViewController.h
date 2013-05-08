@@ -16,6 +16,7 @@
 @property (weak, nonatomic) id<DTFormatDelegate> formatDelegate;
 @property (strong, nonatomic) DTCoreTextFontDescriptor *fontDescriptor;
 @property (assign, nonatomic, getter = isUnderlined) BOOL underline;
+@property (assign, nonatomic, getter = isStrikethrough) BOOL strikethrough;
 
 @end
 
@@ -25,6 +26,7 @@
 - (void)formatDidToggleBold;
 - (void)formatDidToggleItalic;
 - (void)formatDidToggleUnderline;
+- (void)formatDidToggleStrikethrough;
 - (void)formatViewControllerUserDidFinish:(DTFormatViewController *)formatController;
 
 @end
@@ -39,4 +41,5 @@
 - (void)applyBold:(BOOL)active;
 - (void)applyItalic:(BOOL)active;
 - (void)applyUnderline:(BOOL)active;
+- (void)applyStrikethrough:(BOOL)active;
 @end

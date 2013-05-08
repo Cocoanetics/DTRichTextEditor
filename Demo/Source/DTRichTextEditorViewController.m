@@ -662,6 +662,11 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     [richEditor toggleUnderlineInRange:richEditor.selectedTextRange];
 }
 
+- (void)formatDidToggleStrikethrough
+{
+    [richEditor toggleStrikethroughInRange:richEditor.selectedTextRange];
+}
+
 - (void)formatViewControllerUserDidFinish:(DTFormatViewController *)formatController
 {
     // called only by tapping `done` in iPhone UI

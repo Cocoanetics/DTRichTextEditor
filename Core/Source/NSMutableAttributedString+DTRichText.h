@@ -57,6 +57,12 @@ typedef BOOL (^NSMutableAttributedStringFontStyleEnumerationBlock)(DTCoreTextFon
 - (void)toggleUnderlineInRange:(NSRange)range;
 
 /**
+ Toggles the given string range between strikethrough and non-strikethrough.
+ @param range The affected string range
+ */
+- (void)toggleStrikethroughInRange:(NSRange)range;
+
+/**
  Toggles the given string range between highlighted and non-highlighted.
  
 The color parameter is ignored if the method call toggles a previous URL off.
