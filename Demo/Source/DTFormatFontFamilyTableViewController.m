@@ -19,7 +19,9 @@
 
 @implementation DTFormatFontFamilyTableViewController
 
-- (id)initWithStyle:(UITableViewStyle)style
+#pragma mark - Init
+
+- (id)initWithStyle:(UITableViewStyle)style selectedFontFamily:(NSString *)selectedFontFamily
 {
     self = [super initWithStyle:style];
     if (self) {
@@ -41,8 +43,22 @@
         NSSortDescriptor *alphabeticalFontFamilyDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"fontFamily" ascending:YES];
         
         self.fontFamilies = [familyDescriptors sortedArrayUsingDescriptors:@[alphabeticalFontFamilyDescriptor]];
+        self.selectedRow = [self.fontFamilies indexOfObjectPassingTest:^BOOL(DTCoreTextFontDescriptor *obj, NSUInteger idx, BOOL *stop) {
+            return [obj.fontFamily isEqualToString:selectedFontFamily];
+        }];
     }
     return self;
+}
+
+#pragma mark - View Lifecycle
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    // Scroll to initial selected font
+    NSIndexPath *selectedIndexPath = [NSIndexPath indexPathForItem:self.selectedRow inSection:0];
+    [self.tableView scrollToRowAtIndexPath:selectedIndexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
 }
 
 #pragma mark - Table view data source
@@ -63,12 +79,12 @@
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         cell.accessoryType = UITableViewCellAccessoryNone;
     }
-    // Configure the cell...
 
     DTCoreTextFontDescriptor *fontDescriptor = self.fontFamilies[indexPath.row];
     
     cell.textLabel.text = fontDescriptor.fontFamily;
     cell.textLabel.font = [UIFont fontWithName:fontDescriptor.fontFamily size:18.0f];
+    cell.accessoryType = (self.selectedRow == indexPath.row) ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
     
     return cell;
 }
@@ -84,27 +100,16 @@
 
 - (void)selectFontForIndexPath:(NSIndexPath *)indexPath
 {
-    NSIndexPath *selectedIndexPath = [NSIndexPath indexPathForItem:self.selectedRow inSection:0];
-    
-    NSArray *visibleIndexPaths = [self.tableView indexPathsForVisibleRows];
-        
-    DTCoreTextFontDescriptor *fontDescriptor = self.fontFamilies[indexPath.row];
-    
-    if([visibleIndexPaths containsObject:selectedIndexPath])
-    {
-        DTCoreTextFontDescriptor *fontDescriptor_selected = self.fontFamilies[selectedIndexPath.row];
-        
-        UITableViewCell *selectedCell = [self.tableView cellForRowAtIndexPath:selectedIndexPath];
-        selectedCell.textLabel.text = fontDescriptor_selected.fontFamily;
-    }
-    
-    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-    cell.textLabel.text = [@"\u2713 " stringByAppendingString:fontDescriptor.fontFamily];
-    
+    // Update the cells
+    NSIndexPath *oldSelectedIndexPath = [NSIndexPath indexPathForItem:self.selectedRow inSection:0];
+    NSIndexPath *newSelectedIndexPath = indexPath;
     self.selectedRow = indexPath.row;
-    
+    [self.tableView reloadRowsAtIndexPaths:@[oldSelectedIndexPath, newSelectedIndexPath]
+                          withRowAnimation:UITableViewRowAnimationNone];
+
+    // Apply the font
     id<DTInternalFormatProtocol> formatController = (id<DTInternalFormatProtocol>)self.navigationController;
-    
+    DTCoreTextFontDescriptor *fontDescriptor = self.fontFamilies[indexPath.row];
     [formatController applyFont:fontDescriptor];
 }
 

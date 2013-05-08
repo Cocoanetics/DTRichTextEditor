@@ -202,7 +202,7 @@
     switch (indexPath.row) {
         case 0:
         {
-            DTFormatFontFamilyTableViewController *fontFamilyChooserController = [[DTFormatFontFamilyTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            DTFormatFontFamilyTableViewController *fontFamilyChooserController = [[DTFormatFontFamilyTableViewController alloc] initWithStyle:UITableViewStyleGrouped selectedFontFamily:self.formatPicker.currentFont.fontFamily];
             [self.navigationController pushViewController:fontFamilyChooserController animated:YES];
         }
             break;

@@ -10,4 +10,6 @@
 
 @interface DTFormatFontFamilyTableViewController : UITableViewController
 
+- (id)initWithStyle:(UITableViewStyle)style selectedFontFamily:(NSString *)selectedFontFamily;
+
 @end
