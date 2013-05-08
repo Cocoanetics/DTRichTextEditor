@@ -93,7 +93,8 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [self selectFontForIndexPath:indexPath];
+    if (indexPath.row != self.selectedRow)
+        [self selectFontForIndexPath:indexPath];
     
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
