@@ -71,6 +71,7 @@ typedef enum
 
 @property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing; // default is NO, starts up and shuts down editing state
 @property (nonatomic, assign) BOOL overrideEditorViewDelegate; // default is NO, used when forcing change in editing state
+@property (retain, readwrite) UIView *inputView;
 
 @property (nonatomic, assign) BOOL userIsTyping;  // while user is typing there are no selection range updates to input delegate
 
@@ -90,6 +91,7 @@ typedef enum
 	BOOL _editable;
 	BOOL _replaceParagraphsWithLineFeeds;
 	BOOL _canInteractWithPasteboard;
+	BOOL _preservesSelectionOnResignFirstReponder;
 	
 	UIView *_inputView;
 	UIView *_inputAccessoryView;
@@ -128,6 +130,8 @@ typedef enum
 	BOOL _shouldShowContextMenuAfterMovementEnded;
     BOOL _userIsTyping;
     BOOL _waitingForDictationResult;
+	BOOL _isChangingInputView;
+	
     DTDictationPlaceholderView *_dictationPlaceholderView;
 	
 	CGPoint _dragCursorStartMidPoint;
@@ -498,17 +502,7 @@ typedef enum
 	CGRect cursorFrame = [self caretRectForPosition:self.selectedTextRange.start];
     cursorFrame.size.width = 3.0;
 	
-	if (!_cursor.superview)
-	{
-		[self addSubview:_cursor];
-	}
-    
     [self _scrollRectInContentViewToVisible:cursorFrame animated:animated];
-}
-
-- (void)_scrollCursorVisible
-{
-	[self scrollCursorVisibleAnimated:YES];
 }
 
 - (void)updateCursorAnimated:(BOOL)animated
@@ -549,7 +543,7 @@ typedef enum
 			[self addSubview:_cursor];
 		}
 		
-		[self _scrollCursorVisible];
+		[self scrollCursorVisibleAnimated:YES];
 	}
 	else
 	{
@@ -1010,20 +1004,37 @@ typedef enum
 	coveredFrame = [self.window convertRect:coveredFrame toView:self.superview];
     
     _heightCoveredByKeyboard = coveredFrame.size.height;
+	UIEdgeInsets contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, coveredFrame.size.height + _userSetContentInsets.bottom, _userSetContentInsets.right);
 	
-	// set inset to make up for covered array at bottom
-    _shouldNotRecordChangedContentInsets = YES;
-	self.contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, coveredFrame.size.height + _userSetContentInsets.bottom, _userSetContentInsets.right);
-    _shouldNotRecordChangedContentInsets = YES;
-	self.scrollIndicatorInsets = self.contentInset;
-	
-	SEL selector = @selector(_scrollCursorVisible);
-	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
-	[self performSelector:selector withObject:nil afterDelay:0.3];
+	if (!UIEdgeInsetsEqualToEdgeInsets(contentInset, self.contentInset))
+	{
+		[UIView animateWithDuration:0.3 animations:^{
+			UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, coveredFrame.size.height + _userSetContentInsets.bottom, _userSetContentInsets.right);
+			
+			// set inset to make up for covered array at bottom
+			_shouldNotRecordChangedContentInsets = YES;
+			self.contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, coveredFrame.size.height + _userSetContentInsets.bottom, _userSetContentInsets.right);
+			_shouldNotRecordChangedContentInsets = NO;
+			self.scrollIndicatorInsets = self.contentInset;
+		}
+						 completion:^(BOOL finished) {
+							 // only scroll the cursor visible if there was a change in content insets
+							 [self scrollCursorVisibleAnimated:YES];
+						 }
+		 ];
+	}
+
+	// if we were changing then this is done now
+	_isChangingInputView = NO;
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
+	if (_isChangingInputView)
+	{
+		return;
+	}
+	
 	self.contentInset = _userSetContentInsets;
 	self.scrollIndicatorInsets = self.contentInset;
 
@@ -1481,7 +1492,7 @@ typedef enum
 
 - (BOOL)canBecomeFirstResponder
 {
-    if (self.isEditable && _editorViewDelegateFlags.delegateShouldBeginEditing && !self.overrideEditorViewDelegate)
+    if (self.isEditable && _editorViewDelegateFlags.delegateShouldBeginEditing && !self.overrideEditorViewDelegate && !_isChangingInputView)
     {
         return [self.editorViewDelegate editorViewShouldBeginEditing:self];
     }
@@ -1529,7 +1540,7 @@ typedef enum
 
 - (BOOL)canResignFirstResponder
 {
-    if (self.isEditing && !self.overrideEditorViewDelegate && _editorViewDelegateFlags.delegateShouldEndEditing)
+    if (self.isEditing && !self.overrideEditorViewDelegate && _editorViewDelegateFlags.delegateShouldEndEditing && !_isChangingInputView)
     {
         return [self.editorViewDelegate editorViewShouldEndEditing:self];
     }
@@ -1541,7 +1552,7 @@ typedef enum
 {
     [super resignFirstResponder];
     
-    if (!self.isFirstResponder)
+    if (!self.isFirstResponder && !_isChangingInputView)
     {
         if (self.isEditing)
         {
@@ -3158,12 +3169,43 @@ typedef enum
 	return nil;
 }
 
+- (void)setInputView:(UIView *)inputView animated:(BOOL)animated
+{
+	if (_inputView == inputView)
+	{
+		return;
+	}
+	
+	BOOL wasFirstResponder = self.isFirstResponder;
+    
+    [self willChangeValueForKey:@"inputView"];
+	_inputView = inputView;
+    [self didChangeValueForKey:@"inputView"];
+	
+	// only animate if we are first responder
+	if (!wasFirstResponder)
+	{
+		return;
+	}
+    
+	_isChangingInputView = YES;
+	
+	[self resignFirstResponder];
+	
+	// give the previous inputView time to animate out if we are animating
+	double delayInSeconds = (animated && wasFirstResponder)?0.35:0;
+	
+	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+		[self becomeFirstResponder]; // this activates new input view
+		
+		_isChangingInputView = NO;
+	});
+}
+
 - (void)setInputView:(UIView *)inputView
 {
-	if (_inputView != inputView)
-	{
-		_inputView = inputView;
-	}
+	[self setInputView:inputView animated:NO];
 }
 
 - (UIView *)inputAccessoryView

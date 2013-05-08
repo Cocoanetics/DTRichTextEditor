@@ -489,7 +489,8 @@
     
     NSMutableAttributedString *fragment = [[self attributedSubstringForRange:range] mutableCopy];
     
-    BOOL didUpdate = [fragment enumerateAndUpdateFontInRange:NSMakeRange(0, [fragment length]) block:^BOOL(DTCoreTextFontDescriptor *fontDescriptor, BOOL *stop) {
+    BOOL didUpdate = [fragment enumerateAndUpdateFontInRange:NSMakeRange(0, [fragment length])
+                                                       block:^BOOL(DTCoreTextFontDescriptor *fontDescriptor, BOOL *stop) {
         BOOL shouldUpdate = NO;
         
         if (fontFamilyName && ![fontFamilyName isEqualToString:fontDescriptor.fontFamily])
