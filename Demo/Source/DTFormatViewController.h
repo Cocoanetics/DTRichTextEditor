@@ -16,7 +16,6 @@
 @property (weak, nonatomic) id<DTFormatDelegate> formatDelegate;
 @property (strong, nonatomic) DTCoreTextFontDescriptor *fontDescriptor;
 @property (assign, nonatomic, getter = isUnderlined) BOOL underline;
-@property (strong, readonly, nonatomic) DTCoreTextFontDescriptor *currentFont;
 
 @end
 
@@ -33,7 +32,7 @@
 @protocol DTInternalFormatProtocol <NSObject>
 
 @required
-@property (strong, readonly) DTCoreTextFontDescriptor *currentFont;
+@property (strong, nonatomic) DTCoreTextFontDescriptor *fontDescriptor;
 @property (assign, nonatomic, getter = isUnderlined) BOOL underline;
 - (void)applyFont:(DTCoreTextFontDescriptor *)font;
 - (void)applyFontSize:(CGFloat)pointSzie;

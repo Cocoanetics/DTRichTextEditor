@@ -12,7 +12,7 @@
 #import "DTCoreTextFontDescriptor.h"
 
 @interface DTFormatViewController ()<DTInternalFormatProtocol>
-@property (strong, readwrite, nonatomic) DTCoreTextFontDescriptor *currentFont;
+
 @end
 
 @implementation DTFormatViewController
@@ -36,8 +36,10 @@
 
 - (void)setFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor
 {
+    if(fontDescriptor == _fontDescriptor)
+        return;
+
     _fontDescriptor = fontDescriptor;
-    self.currentFont = self.fontDescriptor;
     
     if(self.viewControllers.count > 0){
         DTFormatOverviewViewController *homeFormatController = self.viewControllers[0];
@@ -64,27 +66,29 @@
 #pragma mark - DTInternalFormatProtocol methods
 - (void)applyFont:(DTCoreTextFontDescriptor *)font
 {
-    self.currentFont = font;
-    self.currentFont.pointSize = self.fontDescriptor.pointSize;
+    CGFloat pointSize = self.fontDescriptor.pointSize;
     
-    [self.formatDelegate formatDidSelectFont:self.currentFont];
+    self.fontDescriptor = font;
+    self.fontDescriptor.pointSize = pointSize;
+    
+    [self.formatDelegate formatDidSelectFont:self.fontDescriptor];
 }
 
 - (void)applyFontSize:(CGFloat)pointSzie
 {
-    self.currentFont.pointSize = pointSzie;
-    [self.formatDelegate formatDidSelectFont:self.currentFont];
+    self.fontDescriptor.pointSize = pointSzie;
+    [self.formatDelegate formatDidSelectFont:self.fontDescriptor];
 }
 
 - (void)applyBold:(BOOL)active
 {
-    self.currentFont.boldTrait = active;
+    self.fontDescriptor.boldTrait = active;
     [self.formatDelegate formatDidToggleBold];
 }
 
 - (void)applyItalic:(BOOL)active
 {
-    self.currentFont.italicTrait = active;
+    self.fontDescriptor.italicTrait = active;
     [self.formatDelegate formatDidToggleItalic];
 }
 
