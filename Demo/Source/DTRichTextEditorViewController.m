@@ -442,7 +442,8 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
         self.testStateController = controller;
     }
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+    {
         if (self.testOptionsPopover == nil)
         {
             UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.testStateController];
@@ -453,16 +454,15 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
         
         [self.testOptionsPopover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
         self.testOptionsPopover.passthroughViews = nil;
-        
-    }else{
+    }
+    else
+    {
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:self.testStateController];
         
         [self presentViewController:navController
                            animated:YES
                          completion:nil];
     }
-    
-    
 }
 
 
@@ -472,19 +472,22 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 
 - (void)presentFormatOptions:(id)sender
 {
-    if(!self.formatViewController){
+    if (!self.formatViewController)
+    {
         DTFormatViewController *controller = [[DTFormatViewController alloc] init];
         controller.formatDelegate = self;
         self.formatViewController = controller;
     }
     
+    [self.formatViewController popToRootViewControllerAnimated:NO];
     self.formatViewController.fontDescriptor = [richEditor fontDescriptorForRange:richEditor.selectedTextRange];
     
     NSDictionary *attributesDictionary = [richEditor typingAttributesForRange:richEditor.selectedTextRange];
     
-    self.formatViewController.underline = attributesDictionary[@"NSUnderline"] != nil;
+    self.formatViewController.underline = (attributesDictionary[@"NSUnderline"] != nil);
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
+    {
         if (self.formatOptionsPopover == nil)
         {
             UIPopoverController *toPopover = [[UIPopoverController alloc] initWithContentViewController:self.formatViewController];
