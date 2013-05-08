@@ -109,16 +109,16 @@
 
 - (void)_editBoldTrait
 {    
-    self.formatPicker.currentFont.boldTrait = !self.formatPicker.currentFont.boldTrait;
+    self.formatPicker.fontDescriptor.boldTrait = !self.formatPicker.fontDescriptor.boldTrait;
     
-    [self.formatPicker applyBold:self.formatPicker.currentFont.boldTrait];
+    [self.formatPicker applyBold:self.formatPicker.fontDescriptor.boldTrait];
 }
 
 - (void)_editItalicTrait
 {    
-    self.formatPicker.currentFont.italicTrait = !self.formatPicker.currentFont.italicTrait;
+    self.formatPicker.fontDescriptor.italicTrait = !self.formatPicker.fontDescriptor.italicTrait;
     
-    [self.formatPicker applyItalic:self.formatPicker.currentFont.italicTrait];
+    [self.formatPicker applyItalic:self.formatPicker.fontDescriptor.italicTrait];
 }
 
 - (void)_editUnderlineTrait
@@ -168,8 +168,8 @@
 	
     if (indexPath.section == 0)
     {
-        self.fontSizeStepper.value = self.formatPicker.currentFont.pointSize;
-        cell.textLabel.text = [NSString stringWithFormat:@"Size (%.0f pt)", self.formatPicker.currentFont.pointSize ];
+        self.fontSizeStepper.value = self.formatPicker.fontDescriptor.pointSize;
+        cell.textLabel.text = [NSString stringWithFormat:@"Size (%.0f pt)", self.formatPicker.fontDescriptor.pointSize ];
         self.sizeValueLabel = cell.textLabel;
         cell.accessoryView = self.fontSizeStepper;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -181,7 +181,7 @@
         if(indexPath.row == 0)
 		{
             cell.textLabel.text = @"Font Family";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", self.formatPicker.currentFont.fontFamily];
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", self.formatPicker.fontDescriptor.fontFamily];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
 		else
@@ -192,14 +192,14 @@
 			{
                 case 1: //bold
 				{
-                    cell.accessoryType = self.formatPicker.currentFont.boldTrait ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+                    cell.accessoryType = self.formatPicker.fontDescriptor.boldTrait ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
 					[attributedCell setHTMLString:@"<b style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Bold</b>"];
                     break;
 				}
 					
                 case 2: //italic
 				{
-                    cell.accessoryType = self.formatPicker.currentFont.italicTrait ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+                    cell.accessoryType = self.formatPicker.fontDescriptor.italicTrait ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
 					[attributedCell setHTMLString:@"<em style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Italic</em>"];
                     break;
 				}
@@ -229,7 +229,7 @@
     switch (indexPath.row) {
         case 0:
         {
-            DTFormatFontFamilyTableViewController *fontFamilyChooserController = [[DTFormatFontFamilyTableViewController alloc] initWithStyle:UITableViewStyleGrouped selectedFontFamily:self.formatPicker.currentFont.fontFamily];
+            DTFormatFontFamilyTableViewController *fontFamilyChooserController = [[DTFormatFontFamilyTableViewController alloc] initWithStyle:UITableViewStyleGrouped selectedFontFamily:self.formatPicker.fontDescriptor.fontFamily];
             [self.navigationController pushViewController:fontFamilyChooserController animated:YES];
         }
             break;
