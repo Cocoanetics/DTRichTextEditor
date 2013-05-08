@@ -10,6 +10,7 @@
 #import "NSMutableDictionary+DTRichText.h"
 #import "DTCoreTextFontDescriptor.h"
 #import "DTCoreTextConstants.h"
+#import "DTCoreTextParagraphStyle.h"
 
 @implementation NSMutableDictionary (DTRichText)
 

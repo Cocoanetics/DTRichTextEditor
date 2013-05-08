@@ -14,6 +14,7 @@
 #import "DTTextAttachment.h"
 #import "DTCoreTextParagraphStyle.h"
 #import "DTUtils.h"
+#import "DTImageTextAttachment.h"
 
 @implementation NSAttributedString (DTRichText)
 
