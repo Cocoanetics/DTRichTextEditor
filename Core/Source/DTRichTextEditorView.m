@@ -1492,7 +1492,7 @@ typedef enum
 
 - (BOOL)canBecomeFirstResponder
 {
-    if (self.isEditable && _editorViewDelegateFlags.delegateShouldBeginEditing && !self.overrideEditorViewDelegate && !_isChagingInputView)
+    if (self.isEditable && _editorViewDelegateFlags.delegateShouldBeginEditing && !self.overrideEditorViewDelegate && !_isChangingInputView)
     {
         return [self.editorViewDelegate editorViewShouldBeginEditing:self];
     }
@@ -1540,7 +1540,7 @@ typedef enum
 
 - (BOOL)canResignFirstResponder
 {
-    if (self.isEditing && !self.overrideEditorViewDelegate && _editorViewDelegateFlags.delegateShouldEndEditing && !_isChagingInputView)
+    if (self.isEditing && !self.overrideEditorViewDelegate && _editorViewDelegateFlags.delegateShouldEndEditing && !_isChangingInputView)
     {
         return [self.editorViewDelegate editorViewShouldEndEditing:self];
     }
