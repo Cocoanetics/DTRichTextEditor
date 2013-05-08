@@ -57,9 +57,6 @@
 
 - (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range
 {
-	// close off typing group, this is a new operations
-	[self _closeTypingUndoGroupIfNecessary];
-	
 	NSAttributedString *attributedText = self.attributedText;
 	
 	// get the full paragraph range of our selection
@@ -73,6 +70,15 @@
 	DTCSSListStyle *listAfterSelection = nil;
 	
 	NSRange totalRange = paragraphRange; // range of the entire attributed string to modify
+
+	if (!listStyle && !listAroundSelection)
+	{
+		// nothing to do
+		return;
+	}
+	
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
 	
 	if (listAroundSelection)
 	{
@@ -201,6 +207,9 @@
     [self _inputDelegateTextWillChange];
 	[self replaceRange:[DTTextRange rangeWithNSRange:totalRange] withText:mutableText];
     [self _inputDelegateTextDidChange];
+	
+	// correct name
+	[self.undoManager setActionName:NSLocalizedString(@"Toggle List", @"Action that toggles on or off a list")];
 	
 	// restore selection
 	self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
