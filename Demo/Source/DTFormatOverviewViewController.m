@@ -14,7 +14,6 @@
 #import "DTFormatViewController.h"
 
 #import "DTAttributedTextCell.h"
-#import <QuartzCore/QuartzCore.h>
 #import "DTFormatTableView.h"
 
 @interface DTFormatOverviewViewController()
