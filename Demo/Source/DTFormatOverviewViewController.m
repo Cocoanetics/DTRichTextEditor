@@ -76,18 +76,10 @@
         self.navigationItem.rightBarButtonItem = closeItem;
     }
 	
-	[self.view addObserver:self forKeyPath:@"contentInset" options:NSKeyValueObservingOptionNew context:NULL];
-	
-	
 	self.view.layer.borderColor = [UIColor redColor].CGColor;
 	self.view.layer.borderWidth = 3;
 	
 	self.tableView.showsVerticalScrollIndicator = YES;
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	NSLog(@"%@", change);
 }
 
 - (CGSize)contentSizeForViewInPopover {
