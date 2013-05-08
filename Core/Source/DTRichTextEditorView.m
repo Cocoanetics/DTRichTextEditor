@@ -130,7 +130,7 @@ typedef enum
 	BOOL _shouldShowContextMenuAfterMovementEnded;
     BOOL _userIsTyping;
     BOOL _waitingForDictationResult;
-	BOOL _isChagingInputView;
+	BOOL _isChangingInputView;
 	
     DTDictationPlaceholderView *_dictationPlaceholderView;
 	
@@ -1025,12 +1025,12 @@ typedef enum
 	}
 
 	// if we were changing then this is done now
-	_isChagingInputView = NO;
+	_isChangingInputView = NO;
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
-	if (_isChagingInputView)
+	if (_isChangingInputView)
 	{
 		return;
 	}
@@ -1552,7 +1552,7 @@ typedef enum
 {
     [super resignFirstResponder];
     
-    if (!self.isFirstResponder && !_isChagingInputView)
+    if (!self.isFirstResponder && !_isChangingInputView)
     {
         if (self.isEditing)
         {
@@ -3186,7 +3186,7 @@ typedef enum
 		return;
 	}
 
-	_isChagingInputView = YES;
+	_isChangingInputView = YES;
 	
 	[self resignFirstResponder];
 	
@@ -3197,7 +3197,7 @@ typedef enum
 	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
 		[self becomeFirstResponder]; // this activates new input view
 		
-		_isChagingInputView = NO;
+		_isChangingInputView = NO;
 	});
 }
 
