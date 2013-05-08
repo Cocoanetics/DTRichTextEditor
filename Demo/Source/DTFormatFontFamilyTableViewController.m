@@ -43,11 +43,27 @@
         NSSortDescriptor *alphabeticalFontFamilyDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"fontFamily" ascending:YES];
         
         self.fontFamilies = [familyDescriptors sortedArrayUsingDescriptors:@[alphabeticalFontFamilyDescriptor]];
-        self.selectedRow = [self.fontFamilies indexOfObjectPassingTest:^BOOL(DTCoreTextFontDescriptor *obj, NSUInteger idx, BOOL *stop) {
-            return [obj.fontFamily isEqualToString:selectedFontFamily];
-        }];
+        [self setSelectedFontFamily:selectedFontFamily];
     }
     return self;
+}
+
+#pragma mark - Changing the selected font family
+
+- (void)setSelectedFontFamily:(NSString *)selectedFontFamily
+{
+    self.selectedRow = [self.fontFamilies indexOfObjectPassingTest:^BOOL(DTCoreTextFontDescriptor *obj, NSUInteger idx, BOOL *stop) {
+            return [obj.fontFamily isEqualToString:selectedFontFamily];
+    }];
+    
+    if (self.tableView)
+    {
+        NSArray *visibleIndexPaths = [self.tableView indexPathsForVisibleRows];
+        [self.tableView reloadRowsAtIndexPaths:visibleIndexPaths withRowAnimation:UITableViewRowAnimationNone];
+        
+        NSIndexPath *selectedIndexPath = [NSIndexPath indexPathForRow:self.selectedRow inSection:0];
+        [self.tableView scrollToRowAtIndexPath:selectedIndexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+    }
 }
 
 #pragma mark - View Lifecycle

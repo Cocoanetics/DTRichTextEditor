@@ -8,6 +8,7 @@
 
 #import "DTFormatViewController.h"
 #import "DTFormatOverviewViewController.h"
+#import "DTFormatFontFamilyTableViewController.h"
 #import "DTCoreTextFontDescriptor.h"
 
 @interface DTFormatViewController ()<DTInternalFormatProtocol>
@@ -41,6 +42,12 @@
     if(self.viewControllers.count > 0){
         DTFormatOverviewViewController *homeFormatController = self.viewControllers[0];
         [homeFormatController.tableView reloadData];
+        
+        if ([self.topViewController isKindOfClass:[DTFormatFontFamilyTableViewController class]])
+        {
+            DTFormatFontFamilyTableViewController *fontFamilyController = (DTFormatFontFamilyTableViewController *)self.topViewController;
+            [fontFamilyController setSelectedFontFamily:fontDescriptor.fontFamily];
+        }
     }
 }
 
