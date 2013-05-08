@@ -75,11 +75,6 @@
                                                                      action:@selector(userPressedDone:)];
         self.navigationItem.rightBarButtonItem = closeItem;
     }
-	
-	self.view.layer.borderColor = [UIColor redColor].CGColor;
-	self.view.layer.borderWidth = 3;
-	
-	self.tableView.showsVerticalScrollIndicator = YES;
 }
 
 - (CGSize)contentSizeForViewInPopover {
