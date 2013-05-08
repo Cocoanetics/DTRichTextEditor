@@ -14,6 +14,8 @@
 #import "DTFormatViewController.h"
 
 #import "DTAttributedTextCell.h"
+#import <QuartzCore/QuartzCore.h>
+#import "DTFormatTableView.h"
 
 @interface DTFormatOverviewViewController()
 @property (nonatomic, strong) UIStepper *fontSizeStepper;
@@ -32,6 +34,18 @@
         self.title = @"Format";
     }
     return self;
+}
+
+
+- (void)loadView
+{
+	CGRect frame = [UIScreen mainScreen].applicationFrame;
+	
+	DTFormatTableView *tableView = [[DTFormatTableView alloc] initWithFrame:frame style:UITableViewStyleGrouped];
+	tableView.delegate = self;
+	tableView.dataSource = self;
+	
+	self.view = tableView;
 }
 
 - (void)viewDidLoad
@@ -61,6 +75,19 @@
                                                                      action:@selector(userPressedDone:)];
         self.navigationItem.rightBarButtonItem = closeItem;
     }
+	
+	[self.view addObserver:self forKeyPath:@"contentInset" options:NSKeyValueObservingOptionNew context:NULL];
+	
+	
+	self.view.layer.borderColor = [UIColor redColor].CGColor;
+	self.view.layer.borderWidth = 3;
+	
+	self.tableView.showsVerticalScrollIndicator = YES;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	NSLog(@"%@", change);
 }
 
 - (CGSize)contentSizeForViewInPopover {
@@ -110,8 +137,13 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    [self.tableView reloadData];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+	[super viewDidAppear:animated];
+	
+	[self.tableView reloadData];
 }
 
 #pragma mark - Table view data source
