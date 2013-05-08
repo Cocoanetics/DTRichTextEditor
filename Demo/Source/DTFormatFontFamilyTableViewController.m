@@ -121,11 +121,22 @@
 - (void)selectFontForIndexPath:(NSIndexPath *)indexPath
 {
     // Update the cells
+    NSArray *visibleIndexPaths = [self.tableView indexPathsForVisibleRows];
+    
     NSIndexPath *oldSelectedIndexPath = [NSIndexPath indexPathForItem:self.selectedRow inSection:0];
-    NSIndexPath *newSelectedIndexPath = indexPath;
+    if ([visibleIndexPaths containsObject:oldSelectedIndexPath])
+    {
+        UITableViewCell *oldSelectedCell = [self.tableView cellForRowAtIndexPath:oldSelectedIndexPath];
+        oldSelectedCell.accessoryType = UITableViewCellAccessoryNone;
+    }
+
+    if ([visibleIndexPaths containsObject:indexPath])
+    {
+        UITableViewCell *newSelectedCell = [self.tableView cellForRowAtIndexPath:indexPath];
+        newSelectedCell.accessoryType = UITableViewCellAccessoryCheckmark;
+    }
+    
     self.selectedRow = indexPath.row;
-    [self.tableView reloadRowsAtIndexPaths:@[oldSelectedIndexPath, newSelectedIndexPath]
-                          withRowAnimation:UITableViewRowAnimationNone];
 
     // Apply the font
     id<DTInternalFormatProtocol> formatController = (id<DTInternalFormatProtocol>)self.navigationController;
