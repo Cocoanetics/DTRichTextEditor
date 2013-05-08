@@ -98,6 +98,12 @@
     [self.formatDelegate formatDidToggleUnderline];
 }
 
+- (void)applyStrikethrough:(BOOL)active
+{
+    _strikethrough = active;
+    [self.formatDelegate formatDidToggleStrikethrough];
+}
+
 #pragma mark - Event bubbling
 
 - (void)userPressedDone:(id)sender
