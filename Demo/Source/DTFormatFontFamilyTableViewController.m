@@ -52,6 +52,13 @@
 
 #pragma mark - View Lifecycle
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    self.title = @"Font Family";
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];

@@ -150,7 +150,7 @@
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
         
         if(indexPath.row == 0){
-            cell.textLabel.text = @"Font";
+            cell.textLabel.text = @"Font Family";
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", self.formatPicker.currentFont.fontFamily];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }else{
