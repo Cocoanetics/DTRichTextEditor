@@ -42,10 +42,7 @@
 	<array>
 		<string>./Documentation/Known Issues-template.markdown</string>
 		<string>./Documentation/Change Log-template.markdown</string>
-<<<<<<< HEAD
 		<string>./Documentation/Programming Guide-template.markdown</string>
-=======
->>>>>>> master
 	</array>
 	<key>--warn-invalid-crossref</key>
 	<false/>
