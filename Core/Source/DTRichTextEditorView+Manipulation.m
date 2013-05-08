@@ -188,9 +188,14 @@
 {
 	NSAssert([attributedString length] == range.length, @"lenght of updated string and update attributed string must match");
 
-	NSUndoManager *undoManager = self.undoManager;
+	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	
 	NSAttributedString *replacedString = [self.attributedTextContentView.attributedString attributedSubstringFromRange:range];
+	
+	if (!undoManager.numberOfOpenGroups)
+	{
+		[undoManager beginUndoGrouping];
+	}
 	
 	[[undoManager prepareWithInvocationTarget:self] _updateSubstringInRange:range withAttributedString:replacedString actionName:actionName];
 	
@@ -540,6 +545,9 @@
 - (void)setFont:(UIFont *)font
 {
     NSParameterAssert(font);
+	
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
     
     CTFontRef ctFont = DTCTFontCreateWithUIFont(font);
     DTCoreTextFontDescriptor *fontDescriptor = [DTCoreTextFontDescriptor fontDescriptorForCTFont:ctFont];
@@ -577,11 +585,11 @@
 
 - (BOOL)applyTextAlignment:(CTTextAlignment)alignment toParagraphsContainingRange:(UITextRange *)range
 {
-	// this is necessary to apply auto-correction text before changing the styles
-	[self _inputDelegateSelectionWillChange]; // before getting the current text
-	
 	// close off typing group, this is a new operations
 	[self _closeTypingUndoGroupIfNecessary];
+	
+	// this is necessary to apply auto-correction text before changing the styles
+	[self _inputDelegateSelectionWillChange]; // before getting the current text
 	
 	DTTextRange *paragraphRange = (DTTextRange *)[self textRangeOfParagraphsContainingRange:range];
 	NSMutableAttributedString *fragment = [[self attributedSubstringForRange:paragraphRange] mutableCopy];
@@ -614,12 +622,12 @@
 
 - (void)changeParagraphLeftMarginBy:(CGFloat)delta toParagraphsContainingRange:(UITextRange *)range
 {
-	// this is necessary to apply auto-correction text before changing the styles
-	[self _inputDelegateSelectionWillChange]; // before getting the current text
-	
 	// close off typing group, this is a new operations
 	[self _closeTypingUndoGroupIfNecessary];
 
+	// this is necessary to apply auto-correction text before changing the styles
+	[self _inputDelegateSelectionWillChange]; // before getting the current text
+	
 	DTTextRange *paragraphRange = (DTTextRange *)[self textRangeOfParagraphsContainingRange:range];
 	NSMutableAttributedString *fragment = [[self attributedSubstringForRange:paragraphRange] mutableCopy];
 	
@@ -662,13 +670,13 @@
 - (void)updateHeaderLevel:(NSUInteger)headerLevel inRange:(UITextRange *)range
 {
 	NSAssert(headerLevel<=6, @"Only header levels 0-6 are allowed");
-	
-	// this is necessary to apply auto-correction text before changing the styles
-	[self _inputDelegateSelectionWillChange];
-	
+
 	// close off typing group, this is a new operation
 	[self _closeTypingUndoGroupIfNecessary];
 
+	// this is necessary to apply auto-correction text before changing the styles
+	[self _inputDelegateSelectionWillChange];
+	
 	// we cannot have this be part of a list
 	[self toggleListStyle:nil inRange:self.selectedTextRange];
 	
