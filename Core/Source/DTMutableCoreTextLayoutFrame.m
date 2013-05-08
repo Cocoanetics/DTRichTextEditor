@@ -385,6 +385,8 @@
 		{
 			// rest of document shifted up or down
 			redrawArea.size.height = MAX(_frame.size.height - redrawArea.origin.y, redrawArea.size.height);
+			redrawArea.size.width = _frame.size.width;
+			redrawArea.origin.x = _frame.origin.x;
 		}
 		
 		*dirtyRect = redrawArea;
