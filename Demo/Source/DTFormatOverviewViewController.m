@@ -136,7 +136,7 @@
     }
     
     // Configure the cell...
-    
+
     if(indexPath.section == 0)
     {
         self.fontSizeStepper.value = self.formatPicker.currentFont.pointSize;
@@ -148,6 +148,7 @@
     else if(indexPath.section == 1)
     {
         cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        cell.accessoryView = nil;
         
         if(indexPath.row == 0){
             cell.textLabel.text = @"Font Family";
