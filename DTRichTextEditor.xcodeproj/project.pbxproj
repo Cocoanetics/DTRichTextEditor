@@ -32,6 +32,7 @@
 		A70E62F316C25340009B47BF /* DTDictationPlaceholderTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A70E62F116C25340009B47BF /* DTDictationPlaceholderTextAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A70E62F416C2534E009B47BF /* DTDictationPlaceholderView.h in Headers */ = {isa = PBXBuildFile; fileRef = A70E62F016C25340009B47BF /* DTDictationPlaceholderView.h */; };
 		A70E62F516C2534E009B47BF /* DTDictationPlaceholderTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A70E62F116C25340009B47BF /* DTDictationPlaceholderTextAttachment.h */; };
+		A7212177173A26C0003C6F0A /* test.html in Resources */ = {isa = PBXBuildFile; fileRef = A7212176173A26C0003C6F0A /* test.html */; };
 		A721D66016924DDB00C5A48F /* UIFont+DTCoreText.h in Headers */ = {isa = PBXBuildFile; fileRef = A721D65F16924DDB00C5A48F /* UIFont+DTCoreText.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A721D67916925A5500C5A48F /* DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A721D67616925A5500C5A48F /* DTWebArchive.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A721D67A16925A5500C5A48F /* DTWebResource.h in Headers */ = {isa = PBXBuildFile; fileRef = A721D67716925A5500C5A48F /* DTWebResource.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -455,6 +456,7 @@
 		A704273913C37F0B00EE0776 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		A70E62F016C25340009B47BF /* DTDictationPlaceholderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTDictationPlaceholderView.h; path = DTCoreText/Core/Source/DTDictationPlaceholderView.h; sourceTree = "<group>"; };
 		A70E62F116C25340009B47BF /* DTDictationPlaceholderTextAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTDictationPlaceholderTextAttachment.h; path = DTCoreText/Core/Source/DTDictationPlaceholderTextAttachment.h; sourceTree = "<group>"; };
+		A7212176173A26C0003C6F0A /* test.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = test.html; sourceTree = "<group>"; };
 		A721D65F16924DDB00C5A48F /* UIFont+DTCoreText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIFont+DTCoreText.h"; path = "DTCoreText/Core/Source/UIFont+DTCoreText.h"; sourceTree = "<group>"; };
 		A721D67616925A5500C5A48F /* DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTWebArchive.h; path = DTWebArchive/Core/Source/DTWebArchive.h; sourceTree = "<group>"; };
 		A721D67716925A5500C5A48F /* DTWebResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTWebResource.h; path = DTWebArchive/Core/Source/DTWebResource.h; sourceTree = "<group>"; };
@@ -742,6 +744,7 @@
 				A74351501486772100F4C766 /* 43-film-roll@2x.png */,
 				A74351521486772100F4C766 /* Icon.png */,
 				A74351531486772100F4C766 /* Icon@2x.png */,
+				A7212176173A26C0003C6F0A /* test.html */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1368,6 +1371,7 @@
 				A74351601486772100F4C766 /* Icon@2x.png in Resources */,
 				A7914A78153EF6BB00F6CC86 /* icon_smile.gif in Resources */,
 				A7402D4B167F4E5200BE0AAF /* Default-568h@2x.png in Resources */,
+				A7212177173A26C0003C6F0A /* test.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

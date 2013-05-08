@@ -87,10 +87,12 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     [defaults setObject:styleSheet forKey:DTDefaultStyleSheet];
     
 	richEditor.textDefaults = defaults;
-   
-    NSString *html = @"<p><span style=\"color:red;\">Hello</span> <b>bold</b> <i>italic</i> <span style=\"color: green;font-family:Courier;\">World!</span></p><p>Version 1.5 now with list support.</p><ol><li>One</li><li>Two</li><li>Three</li></ol>";
+
+   // load initial string from file
+	NSString *path = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"html"];
+	NSString *html = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:NULL];
 	[richEditor setHTMLString:html];
-    
+   
 	// image as drawn by your custom views which you return in the delegate method
 	richEditor.attributedTextContentView.shouldDrawImages = NO;
 	

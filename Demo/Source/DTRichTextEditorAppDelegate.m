@@ -9,6 +9,7 @@
 #import "DTRichTextEditorAppDelegate.h"
 #import "DTRichTextEditorViewController.h"
 #import "DTCoreText.h"
+#import "UIView+DTDebug.h"
 
 @implementation DTRichTextEditorAppDelegate
 
@@ -21,6 +22,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+	// look for non-mainthread access to UIViews
+	[UIView toggleViewMainThreadChecking];
+	
 	// create a window
 	self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	
