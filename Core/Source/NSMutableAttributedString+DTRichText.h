@@ -57,6 +57,12 @@ typedef BOOL (^NSMutableAttributedStringFontStyleEnumerationBlock)(DTCoreTextFon
 - (void)toggleUnderlineInRange:(NSRange)range;
 
 /**
+ Toggles the given string range between strikethrough and non-strikethrough.
+ @param range The affected string range
+ */
+- (void)toggleStrikethroughInRange:(NSRange)range;
+
+/**
  Toggles the given string range between highlighted and non-highlighted.
  
 The color parameter is ignored if the method call toggles a previous URL off.
@@ -64,6 +70,13 @@ The color parameter is ignored if the method call toggles a previous URL off.
  @param color The color to apply for the highlight
  */
 - (void)toggleHighlightInRange:(NSRange)range color:(UIColor *)color;
+
+/**
+ Sets the text foreground color.
+ @param range The affected string range
+ @param color The color to apply for the foreground color, or `nil` to restore the default black color
+ */
+- (void)setForegroundColor:(UIColor *)color inRange:(NSRange)range;
 
 /**
  Toggles the given string range between having a hyperlink and not
@@ -110,31 +123,37 @@ The color parameter is ignored if the method call toggles a previous URL off.
 /**
  Sets or removes the space following the paragraph at the given index
  @param spaceOn If yes then the default paragraph space is added
+ @param spacing When toggling spacing on this is the spacing to apply
  @param index The string index in the affected paragraph
  */
-- (void)toggleParagraphSpacing:(BOOL)spaceOn atIndex:(NSUInteger)index;
+- (void)toggleParagraphSpacing:(BOOL)spaceOn atIndex:(NSUInteger)index spacing:(CGFloat)spacing;
 
 /** 
  Method to correct paragraph styles on paragraphs belonging to list
- @param range The range to update
  @note List support is not complete
  */
-- (void)correctParagraphSpacingForRange:(NSRange)range;
+- (void)correctParagraphSpacing;
 
 /**
  @name Working with Lists
  */
 
 /**
- Convenience method to toggle list styling on entire paragraphs
+ Convenience method to update list styling on entire paragraphs
  
- If there is already a list style at the begin of the specified range then it is removed.
- @param listStyle The list style to toggle
+ @param listStyle The list style to apply or `nil` to remove list styling
  @param range The range to update
  @param nextItemNumber For numbered lists this is the next number to use
- @note List support is not complete
+ @param listIndent The indent from leading margin to indent list paragraphs at
+ @param spacingAfterList The spacing to apply on the last paragraph of the list
  */
-- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber;
+- (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber listIndent:(CGFloat)listIndent spacingAfterList:(CGFloat)spacingAfterList removeNonPrefixedParagraphsFromList:(BOOL)removeNonPrefixed;
+
+/**
+ Deletes a list prefix from the receiver if there is one.
+ @returns `YES` if a list prefix field was deleted, `NO` if there was no prefix
+ */
+- (BOOL)deleteListPrefix;
 
 /**
  @name Marking Ranges

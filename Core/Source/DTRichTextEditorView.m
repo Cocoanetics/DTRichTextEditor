@@ -17,7 +17,6 @@
 #import "NSMutableAttributedString+HTML.h"
 #import "NSMutableAttributedString+DTRichText.h"
 #import "DTMutableCoreTextLayoutFrame.h"
-#import "NSDictionary+DTRichText.h"
 #import "NSMutableDictionary+DTRichText.h"
 #import "DTRichTextEditorView.h"
 #import "DTRichTextEditorView+Manipulation.h"
@@ -72,6 +71,9 @@ typedef enum
 
 @property (nonatomic, assign, readwrite, getter = isEditing) BOOL editing; // default is NO, starts up and shuts down editing state
 @property (nonatomic, assign) BOOL overrideEditorViewDelegate; // default is NO, used when forcing change in editing state
+@property (retain, readwrite) UIView *inputView;
+
+@property (nonatomic, assign) BOOL userIsTyping;  // while user is typing there are no selection range updates to input delegate
 
 - (void)setDefaultText;
 - (void)showContextMenuFromSelection;
@@ -81,8 +83,6 @@ typedef enum
 - (BOOL)selectionIsVisible;
 - (void)relayoutText;
 
-- (NSDictionary *)_attributedStringAttributesForTextDefaults;
-
 @end
 
 @implementation DTRichTextEditorView
@@ -91,6 +91,7 @@ typedef enum
 	BOOL _editable;
 	BOOL _replaceParagraphsWithLineFeeds;
 	BOOL _canInteractWithPasteboard;
+	BOOL _preservesSelectionOnResignFirstReponder;
 	
 	UIView *_inputView;
 	UIView *_inputAccessoryView;
@@ -127,7 +128,10 @@ typedef enum
 	BOOL _shouldShowContextMenuAfterLoupeHide;
     BOOL _shouldShowDragHandlesAfterLoupeHide;
 	BOOL _shouldShowContextMenuAfterMovementEnded;
+    BOOL _userIsTyping;
     BOOL _waitingForDictationResult;
+	BOOL _isChangingInputView;
+	
     DTDictationPlaceholderView *_dictationPlaceholderView;
 	
 	CGPoint _dragCursorStartMidPoint;
@@ -498,17 +502,7 @@ typedef enum
 	CGRect cursorFrame = [self caretRectForPosition:self.selectedTextRange.start];
     cursorFrame.size.width = 3.0;
 	
-	if (!_cursor.superview)
-	{
-		[self addSubview:_cursor];
-	}
-    
     [self _scrollRectInContentViewToVisible:cursorFrame animated:animated];
-}
-
-- (void)_scrollCursorVisible
-{
-	[self scrollCursorVisibleAnimated:YES];
 }
 
 - (void)updateCursorAnimated:(BOOL)animated
@@ -549,7 +543,7 @@ typedef enum
 			[self addSubview:_cursor];
 		}
 		
-		[self _scrollCursorVisible];
+		[self scrollCursorVisibleAnimated:YES];
 	}
 	else
 	{
@@ -605,7 +599,7 @@ typedef enum
 }
 
 
-- (BOOL)moveCursorToPositionClosestToLocation:(CGPoint)location notifyInputDelegate:(BOOL)notifyInputDelegate
+- (BOOL)moveCursorToPositionClosestToLocation:(CGPoint)location
 {
 	BOOL didMove = NO;
 	
@@ -626,15 +620,9 @@ typedef enum
     if (![_selectedTextRange isEmpty] || ![(DTTextPosition *)_selectedTextRange.start isEqual:position])
     {
         didMove = YES;
-
-        if (notifyInputDelegate)
-            [self.inputDelegate selectionWillChange:self];
         
         self.selectedTextRange = [self textRangeFromPosition:position toPosition:position];
         
-        if (notifyInputDelegate)
-            [self.inputDelegate selectionDidChange:self];
-
         // begins a new typing undo group
         DTUndoManager *undoManager = self.undoManager;
         [undoManager closeAllOpenGroups];
@@ -745,7 +733,7 @@ typedef enum
 	
 	if (self.editable)
 	{
-		[self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:NO];
+		[self moveCursorToPositionClosestToLocation:touchPoint];
 	}
 	else
 	{
@@ -786,7 +774,7 @@ typedef enum
 		
 		if (self.isEditable && self.isEditing)
 		{
-			[self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:NO];
+			[self moveCursorToPositionClosestToLocation:touchPoint];
 		}
 		else
 		{
@@ -798,7 +786,7 @@ typedef enum
 	
 	if (_dragMode == DTDragModeCursorInsideMarking)
 	{
-		[self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:NO];
+		[self moveCursorToPositionClosestToLocation:touchPoint];
 		
 		loupe.touchPoint = CGRectCenter(_cursor.frame);
 		loupe.seeThroughMode = NO;
@@ -1016,20 +1004,37 @@ typedef enum
 	coveredFrame = [self.window convertRect:coveredFrame toView:self.superview];
     
     _heightCoveredByKeyboard = coveredFrame.size.height;
+	UIEdgeInsets contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, coveredFrame.size.height + _userSetContentInsets.bottom, _userSetContentInsets.right);
 	
-	// set inset to make up for covered array at bottom
-    _shouldNotRecordChangedContentInsets = YES;
-	self.contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, coveredFrame.size.height + _userSetContentInsets.bottom, _userSetContentInsets.right);
-    _shouldNotRecordChangedContentInsets = YES;
-	self.scrollIndicatorInsets = self.contentInset;
-	
-	SEL selector = @selector(_scrollCursorVisible);
-	[NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
-	[self performSelector:selector withObject:nil afterDelay:0.3];
+	if (!UIEdgeInsetsEqualToEdgeInsets(contentInset, self.contentInset))
+	{
+		[UIView animateWithDuration:0.3 animations:^{
+			UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, coveredFrame.size.height + _userSetContentInsets.bottom, _userSetContentInsets.right);
+			
+			// set inset to make up for covered array at bottom
+			_shouldNotRecordChangedContentInsets = YES;
+			self.contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, coveredFrame.size.height + _userSetContentInsets.bottom, _userSetContentInsets.right);
+			_shouldNotRecordChangedContentInsets = NO;
+			self.scrollIndicatorInsets = self.contentInset;
+		}
+						 completion:^(BOOL finished) {
+							 // only scroll the cursor visible if there was a change in content insets
+							 [self scrollCursorVisibleAnimated:YES];
+						 }
+		 ];
+	}
+
+	// if we were changing then this is done now
+	_isChangingInputView = NO;
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
 {
+	if (_isChangingInputView)
+	{
+		return;
+	}
+	
 	self.contentInset = _userSetContentInsets;
 	self.scrollIndicatorInsets = self.contentInset;
 
@@ -1070,7 +1075,7 @@ typedef enum
     {
         CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
     
-        if ([self moveCursorToPositionClosestToLocation:touchPoint notifyInputDelegate:YES])
+        if ([self moveCursorToPositionClosestToLocation:touchPoint])
         {
             // did move
             [self hideContextMenu];
@@ -1125,9 +1130,7 @@ typedef enum
     
     [self hideContextMenu];
     
-    [self.inputDelegate selectionWillChange:self];
     self.selectedTextRange = wordRange;
-    [self.inputDelegate selectionDidChange:self];
     
     [self showContextMenuFromSelection];
     
@@ -1173,9 +1176,7 @@ typedef enum
     
     [self hideContextMenu];
     
-    [self.inputDelegate selectionWillChange:self];
     self.selectedTextRange = textRange;
-    [self.inputDelegate selectionDidChange:self];
     
     [self showContextMenuFromSelection];
     
@@ -1201,14 +1202,16 @@ typedef enum
 		case UIGestureRecognizerStateBegan:
 		{
             // wrap long press/drag handles in calls to the input delegate because the intermediate selection changes are not important to editing
-            [self.inputDelegate selectionWillChange:self];
+            [self _inputDelegateSelectionDidChange];
             
 			[self presentLoupeWithTouchPoint:touchPoint];
 			_cursor.state = DTCursorStateStatic;
             
             // become first responder to bring up editing and show the cursor
             if (!self.isFirstResponder)
+            {
                 [self becomeFirstResponder];
+            }
 			
 			// begins a new typing undo group
 			DTUndoManager *undoManager = self.undoManager;
@@ -1257,14 +1260,14 @@ typedef enum
             // If we were dragging around the circle loupe, notify delegate of the final cursor selectedTextRange
             if (_dragMode == DTDragModeCursor || _dragMode == DTDragModeCursorInsideMarking)
             {
-                [self notifyDelegateDidChangeSelection];
+                [self _editorViewDelegateDidChangeSelection];
             }
             
             // Dismissing will set _dragMode to DTDragModeNone
 			[self dismissLoupeWithTouchPoint:touchPoint];
 
             // Notify that long press/drag handles has concluded and selection may be changed
-            [self.inputDelegate selectionDidChange:self];
+            [self _inputDelegateSelectionDidChange];
             
             break;
 		}
@@ -1291,7 +1294,8 @@ typedef enum
 		case UIGestureRecognizerStateBegan:
 		{
             // wrap long press/drag handles in calls to the input delegate because the intermediate selection changes are not important to editing
-            [self.inputDelegate selectionWillChange:self];
+            [self _inputDelegateSelectionWillChange];
+
             
 			[self presentLoupeWithTouchPoint:touchPoint];
 			
@@ -1337,7 +1341,7 @@ typedef enum
 			[self dismissLoupeWithTouchPoint:touchPoint];
 
             // Notify that long press/drag handles has concluded and selection may be changed
-            [self.inputDelegate selectionDidChange:self];
+            [self _inputDelegateSelectionDidChange];
 			
 			break;
 		}
@@ -1417,28 +1421,6 @@ typedef enum
     _editorViewDelegateFlags.delegateCanPerformActionsWithSender = [editorViewDelegate respondsToSelector:@selector(editorView:canPerformAction:withSender:)];
 }
 
-- (void)notifyDelegateDidChangeSelection
-{
-    // only notify on user input while editing
-    if (self.isEditing && _editorViewDelegateFlags.delegateDidChangeSelection)
-    {
-        [self.editorViewDelegate editorViewDidChangeSelection:self];
-    }
-}
-
-- (void)notifyDelegateDidChange
-{
-    // Notify delegate
-    if (self.isEditing && _editorViewDelegateFlags.delegateDidChange)
-    {
-        [self.editorViewDelegate editorViewDidChange:self];
-    }
-    
-    // Post DTRichTextEditorTextDidChangeNotification
-    [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidChangeNotification object:self];
-}
-
-
 #pragma mark - Editing State
 
 @synthesize editable = _editable;
@@ -1472,9 +1454,7 @@ typedef enum
             UITextPosition *end = [self endOfDocument];
             DTTextRange *textRange = (DTTextRange *)[self textRangeFromPosition:end toPosition:end];
             
-            [self.inputDelegate selectionWillChange:self];
             [self setSelectedTextRange:textRange animated:NO];
-            [self.inputDelegate selectionDidChange:self];
         }
         else
         {
@@ -1512,7 +1492,7 @@ typedef enum
 
 - (BOOL)canBecomeFirstResponder
 {
-    if (self.isEditable && _editorViewDelegateFlags.delegateShouldBeginEditing && !self.overrideEditorViewDelegate)
+    if (self.isEditable && _editorViewDelegateFlags.delegateShouldBeginEditing && !self.overrideEditorViewDelegate && !_isChangingInputView)
     {
         return [self.editorViewDelegate editorViewShouldBeginEditing:self];
     }
@@ -1560,7 +1540,7 @@ typedef enum
 
 - (BOOL)canResignFirstResponder
 {
-    if (self.isEditing && !self.overrideEditorViewDelegate && _editorViewDelegateFlags.delegateShouldEndEditing)
+    if (self.isEditing && !self.overrideEditorViewDelegate && _editorViewDelegateFlags.delegateShouldEndEditing && !_isChangingInputView)
     {
         return [self.editorViewDelegate editorViewShouldEndEditing:self];
     }
@@ -1572,7 +1552,7 @@ typedef enum
 {
     [super resignFirstResponder];
     
-    if (!self.isFirstResponder)
+    if (!self.isFirstResponder && !_isChangingInputView)
     {
         if (self.isEditing)
         {
@@ -1719,9 +1699,9 @@ typedef enum
 		return;
 	}
 	
-    [self.inputDelegate textWillChange:self];
+    [self _inputDelegateTextWillChange];
 	[self replaceRange:_selectedTextRange withText:@""];
-    [self.inputDelegate textDidChange:self];
+    [self _inputDelegateTextDidChange];
     
 	[self.undoManager setActionName:NSLocalizedString(@"Delete", @"Action that deletes text")];
 }
@@ -1752,7 +1732,7 @@ typedef enum
 	[self.undoManager setActionName:NSLocalizedString(@"Cut", @"Undo Action that cuts text")];
     
     // Notify editor delegate of change
-    [self notifyDelegateDidChange];
+    [self _editorViewDelegateDidChange];
 }
 
 - (void)copy:(id)sender
@@ -1810,10 +1790,9 @@ typedef enum
 	
 	if (image)
 	{
-		DTTextAttachment *attachment = [[DTTextAttachment alloc] init];
-		attachment.contentType = DTTextAttachmentTypeImage;
+		DTImageTextAttachment *attachment = [[DTImageTextAttachment alloc] initWithElement:nil options:nil];
 		attachment.contentURL = [pasteboard URL];
-		attachment.contents = image;
+		attachment.image = image;
 		attachment.originalSize = [image size];
 		
 		CGSize displaySize = image.size;
@@ -1882,12 +1861,12 @@ typedef enum
     DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	[undoManager closeAllOpenGroups];
     
-    [self.inputDelegate textWillChange:self];
+    [self _inputDelegateTextWillChange];
     [self replaceRange:textRange withText:attributedStringToPaste];
     [self.undoManager setActionName:NSLocalizedString(@"Paste", @"Undo Action that pastes text")];
-    [self.inputDelegate textDidChange:self];
+    [self _inputDelegateTextDidChange];
     
-    [self notifyDelegateDidChange];
+    [self _editorViewDelegateDidChange];
 }
 
 - (void)select:(id)sender
@@ -1900,9 +1879,7 @@ typedef enum
 		_shouldReshowContextMenuAfterHide = YES;
 		self.selectionView.dragHandlesVisible = YES;
 		
-        [self.inputDelegate selectionWillChange:self];
 		self.selectedTextRange = wordRange;
-        [self.inputDelegate selectionDidChange:self];
 	}
 }
 
@@ -1911,9 +1888,7 @@ typedef enum
 	_shouldReshowContextMenuAfterHide = YES;
     self.selectionView.dragHandlesVisible = YES;
 	
-    [self.inputDelegate selectionWillChange:self];
 	self.selectedTextRange = [DTTextRange textRangeFromStart:self.beginningOfDocument toEnd:self.endOfDocument];
-    [self.inputDelegate selectionDidChange:self];
 }
 
 // creates an undo manager lazily in response to a shake gesture or first edit action
@@ -1954,6 +1929,7 @@ typedef enum
 
 - (void)insertText:(NSString *)text
 {
+    
     // Check with editor delegate to allow change
     if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
     {
@@ -1963,7 +1939,7 @@ typedef enum
         if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:range replacementText:replacementText])
             return;
     }
-    
+
 	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	if (!undoManager.numberOfOpenGroups)
 	{
@@ -1982,14 +1958,27 @@ typedef enum
 	
 	if (self.markedTextRange)
 	{
+        self.userIsTyping = YES;
 		[self replaceRange:self.markedTextRange withText:text];
+        self.userIsTyping = NO;
+        
 		[self unmarkText];
 	}
 	else 
 	{
-		DTTextRange *selectedRange = (id)self.selectedTextRange;
-		
-		[self replaceRange:selectedRange withText:text];
+        if ([text isEqualToString:@"\n"])
+        {
+            // NL entered, returns YES if it was inside a list
+            if ([self handleNewLineInputInListInRange:self.selectedTextRange])
+            {
+                return;
+            }
+        }
+        
+        self.userIsTyping = YES;
+		[self replaceRange:self.selectedTextRange withText:text];
+        self.userIsTyping = NO;
+        
 		// leave marking intact
 	}
 	
@@ -1997,29 +1986,42 @@ typedef enum
 	[self hideContextMenu];
     
     // Notify editor delegate of change
-    [self notifyDelegateDidChange];
+    [self _editorViewDelegateDidChange];
 }
 
 - (void)deleteBackward
 {
-    // Analyze the cursor/selection
-    NSRange replacementRange = [(DTTextRange *)[self selectedTextRange] NSRangeValue];
-    
-    if (replacementRange.location == 0 && replacementRange.length == 0)
-        return;
-    
-    if (replacementRange.length == 0)
-    {
-        replacementRange = NSMakeRange(replacementRange.location - 1, 1);
-    }
-    
+	DTTextRange *replacementTextRange = (id)[self selectedTextRange];
+	
+	if ([replacementTextRange isEmpty])
+	{
+		// delete character left of carret
+		DTTextPosition *beginningOfDocument = (DTTextPosition *)[self beginningOfDocument];
+		
+		// nothing to delete past beginning of document
+		if ([replacementTextRange.start isEqual:beginningOfDocument])
+		{
+			return;
+		}
+
+		UITextRange *entireDocument = [self textRangeFromPosition:beginningOfDocument toPosition:[self endOfDocument]];
+
+		UITextPosition *delStart = [self positionFromPosition:[replacementTextRange start] offset:-1];
+		
+		// skips fields
+		delStart = [self positionSkippingFieldsFromPosition:delStart withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
+		replacementTextRange = [DTTextRange textRangeFromStart:delStart toEnd:[replacementTextRange start]];
+	}
+
+	NSAttributedString *replacementText = [[NSAttributedString alloc] init];
+	
     // Check with editor delegate to allow change
     if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
     {
-        NSAttributedString *replacementText = [[NSAttributedString alloc] init];
-        
-        if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:replacementRange replacementText:replacementText])
+        if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:[replacementTextRange NSRangeValue] replacementText:replacementText])
+		{
             return;
+		}
     }
     
     // Prepare undo
@@ -2028,17 +2030,19 @@ typedef enum
 	{
 		[self.undoManager beginUndoGrouping];
 	}
-
+	
 	// Delete
-    DTTextRange *replacementTextRange = [DTTextRange rangeWithNSRange:replacementRange];
-    [self replaceRange:replacementTextRange withText:@""];
+    [self replaceRange:replacementTextRange withText:replacementText];
 	
 	// hide context menu on deleting text
 	[self hideContextMenu];
     
     // Notify editor delegate of change
-    [self notifyDelegateDidChange];
+    [self _editorViewDelegateDidChange];
 }
+
+#pragma mark
+
 
 #pragma mark UITextInput Protocol
 #pragma mark -
@@ -2081,8 +2085,8 @@ typedef enum
         attributedStringBeingReplaced = attachment.replacedAttributedString;
     }
     
-	NSMutableAttributedString *attributedString = (NSMutableAttributedString *)self.attributedTextContentView.layoutFrame.attributedStringFragment;
-	NSString *string = [attributedString string];
+	NSAttributedString *attributedText = self.attributedText;
+	NSString *string = [attributedText string];
 	
 	// remember selection/cursor before input
 	UITextRange *textRangeBeforeChange = self.selectedTextRange;
@@ -2112,7 +2116,6 @@ typedef enum
 		typingAttributes = [self typingAttributesForRange:range];
 	}
 	
-	DTCSSListStyle *effectiveList = [[typingAttributes objectForKey:DTTextListsAttribute] lastObject];
 	BOOL newlineEntered = NO;
 	
 	if ([text isKindOfClass:[NSString class]])
@@ -2127,73 +2130,6 @@ typedef enum
 		text = [[NSAttributedString alloc] initWithString:text attributes:typingAttributes];
 	}
 	
-	// if we are in a list and just entered NL then we need appropriate list prefix
-	if (effectiveList && newlineEntered)
-	{
-		if (myRange.length == 0)
-		{
-			NSRange paragraphRange = [string rangeOfParagraphAtIndex:myRange.location];
-			NSString *paragraphString = [string substringWithRange:paragraphRange];
-			
-			NSUInteger itemNumber = [attributedString itemNumberInTextList:effectiveList atIndex:myRange.location];
-			
-			NSString *listPrefix = [effectiveList prefixWithCounter:itemNumber];
-			
-			NSMutableAttributedString *mutableParagraph = [[attributedString attributedSubstringFromRange:paragraphRange] mutableCopy];
-			
-			if ([paragraphString hasPrefix:listPrefix])
-			{
-				
-				// check if it is an empty line, then we'll remove the list
-				if (myRange.location == paragraphRange.location + [listPrefix length])
-				{
-					[mutableParagraph toggleListStyle:nil inRange:NSMakeRange(0, paragraphRange.length) numberFrom:0];
-					
-					text = mutableParagraph;
-					myRange = paragraphRange;
-					
-					// adjust cursor position
-					rangeToSelectAfterReplace.location -= [listPrefix length] + 1;
-					
-					
-					// paragraph before gets its spacing back
-					if (paragraphRange.location)
-					{
-						[attributedString toggleParagraphSpacing:YES atIndex:paragraphRange.location-1];
-					}
-				}
-				else
-				{
-					NSInteger itemNumber = [attributedString itemNumberInTextList:effectiveList atIndex:myRange.location]+1;
-					NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:effectiveList listIndent:20 attributes:typingAttributes];
-					
-					// extend to include paragraph before in inserted string
-					[mutableParagraph toggleParagraphSpacing:NO atIndex:0];
-					
-					// remove part after the insertion point
-					NSInteger suffixLength = NSMaxRange(paragraphRange)-myRange.location;
-					NSRange suffixRange = NSMakeRange(myRange.location - paragraphRange.location, suffixLength);
-					[mutableParagraph deleteCharactersInRange:suffixRange];
-					
-					// adjust the insertion range to include the paragraph
-					myRange.length += (myRange.location-paragraphRange.location);
-					myRange.location = paragraphRange.location;
-					
-					// add the NL
-					[mutableParagraph appendAttributedString:text];
-					
-					// append the new prefix
-					[mutableParagraph appendAttributedString:prefixAttributedString];
-					
-					text = mutableParagraph;
-					
-					// adjust cursor position
-					rangeToSelectAfterReplace.location += [prefixAttributedString length];
-				}
-			}
-		}
-	}
-
 	// ---
 	
 	NSUndoManager *undoManager = self.undoManager;
@@ -2206,7 +2142,7 @@ typedef enum
 	// this is the string to restore if we undo
     if (!attributedStringBeingReplaced)
     {
-        attributedStringBeingReplaced = [attributedString attributedSubstringFromRange:myRange];
+        attributedStringBeingReplaced = [attributedText attributedSubstringFromRange:myRange];
     }
 	
 	// the range that the replacement will have afterwards
@@ -2239,7 +2175,7 @@ typedef enum
     // if it's just one character remaining then set text defaults on this
     if ([[self.attributedTextContentView.layoutFrame.attributedStringFragment string] isEqualToString:@"\n"])
     {
-        NSDictionary *typingDefaults = [self _attributedStringAttributesForTextDefaults];
+        NSDictionary *typingDefaults = [self attributedStringAttributesForTextDefaults];
         
         [(NSMutableAttributedString *)self.attributedTextContentView.layoutFrame.attributedStringFragment setAttributes:typingDefaults range:NSMakeRange(0, 1)];
     }
@@ -2267,6 +2203,16 @@ typedef enum
 	[self scrollCursorVisibleAnimated:YES];
     
     self.waitingForDictionationResult = NO;
+	
+	
+	// if the number of paragraphs change we might have to renumber something
+	NSUInteger paragraphsBeforeReplacement = [[attributedStringBeingReplaced string] numberOfParagraphs];
+	NSUInteger paragraphsAfterReplacement = [[text string] numberOfParagraphs];
+	
+	if (paragraphsAfterReplacement != paragraphsBeforeReplacement)
+	{
+		[self updateListsInRange:_selectedTextRange removeNonPrefixedLinesFromLists:YES];
+	}
 }
 
 #pragma mark Working with Marked and Selected Text
@@ -2316,7 +2262,7 @@ typedef enum
 	
 	if (shouldNotifyDelegates)
 	{
-		[self.inputDelegate selectionWillChange:self];
+		[self _inputDelegateSelectionWillChange];
 	}
 	
 	_selectedTextRange = [newTextRange copy];
@@ -2325,8 +2271,8 @@ typedef enum
 	
 	if (shouldNotifyDelegates)
 	{
-		[self.inputDelegate selectionDidChange:self];
-		[self notifyDelegateDidChangeSelection];
+		[self _inputDelegateSelectionDidChange];
+		[self _editorViewDelegateDidChangeSelection];
 	}
 	
 	[self updateCursorAnimated:animated];
@@ -2414,14 +2360,14 @@ typedef enum
 		return;
 	}
 	
-	[inputDelegate textWillChange:self];
+	[self _inputDelegateTextWillChange];
 	
 	self.markedTextRange = nil;
 	
 	[self updateCursorAnimated:NO];
 	
-	// calling selectionDidChange makes the input candidate go away
-	[inputDelegate textDidChange:self];
+	// calling textDidChange makes the input candidate go away
+	[self _inputDelegateTextDidChange];
 	
 	[self removeMarkedTextCandidateView];
 }
@@ -2477,60 +2423,148 @@ typedef enum
 	return position;
 }
 
+
+// limits position to be inside the range
+- (UITextPosition *)positionFromPosition:(UITextPosition *)position withinRange:(UITextRange *)range
+{
+    UITextPosition *beginningOfDocument = [self beginningOfDocument];
+    UITextPosition *endOfDocument = [self endOfDocument];
+    
+    if ([self comparePosition:position toPosition:beginningOfDocument] == NSOrderedAscending)
+    {
+        // position is before begin
+        return beginningOfDocument;
+    }
+
+    if ([self comparePosition:position toPosition:endOfDocument] == NSOrderedDescending)
+    {
+        // position is after end
+        return endOfDocument;
+    }
+    
+    // position is inside range
+    return position;
+}
+
+// limits position to be in range and optionally skips list prefixes in the direction
+- (UITextPosition *)positionSkippingFieldsFromPosition:(UITextPosition *)position withinRange:(UITextRange *)range inDirection:(UITextStorageDirection)direction
+{
+    NSInteger index = [(DTTextPosition *)position location];
+    
+    // skip over list prefix
+    NSAttributedString *attributedString = self.attributedText;
+    NSRange listPrefixRange = [attributedString rangeOfFieldAtIndex:index];
+    
+    UITextPosition *newPosition = position;
+    
+    if (listPrefixRange.location != NSNotFound)
+    {
+        // there is a prefix, skip it according to direction
+        switch (direction)
+        {
+            case UITextStorageDirectionForward:
+            {
+                // position after prefix
+                newPosition = [DTTextPosition textPositionWithLocation:NSMaxRange(listPrefixRange)];
+                break;
+            }
+                
+            case UITextStorageDirectionBackward:
+            {
+                // position before prefix
+                UITextPosition *positionOfPrefix = [DTTextPosition textPositionWithLocation:listPrefixRange.location];
+                newPosition = [self positionFromPosition:positionOfPrefix offset:-1];
+                break;
+            }
+        }
+    }
+    
+    // limit the position to be within the range
+    return [self positionFromPosition:newPosition withinRange:range];
+}
+
+
 - (UITextPosition *)positionFromPosition:(DTTextPosition *)position inDirection:(UITextLayoutDirection)direction offset:(NSInteger)offset
 {
-	DTTextPosition *begin = (id)[self beginningOfDocument];
-	DTTextPosition *end = (id)[self endOfDocument];
+	UITextPosition *beginningOfDocument = (id)[self beginningOfDocument];
+	UITextPosition *endOfDocument = (id)[self endOfDocument];
+	UITextRange *entireDocument = [self textRangeFromPosition:beginningOfDocument toPosition:endOfDocument];
 	
-	switch (direction) 
+	// shift beginning over a list prefix
+	endOfDocument = [self positionSkippingFieldsFromPosition:endOfDocument withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
+	
+	// shift end over a list prefix
+	beginningOfDocument = [self positionSkippingFieldsFromPosition:beginningOfDocument withinRange:entireDocument inDirection:UITextStorageDirectionForward];
+	
+	// update legal range
+	UITextRange *maxRange = [self textRangeFromPosition:beginningOfDocument toPosition:endOfDocument];
+	
+	UITextPosition *maxPosition = [self positionWithinRange:maxRange farthestInDirection:direction];
+	
+	if ([self comparePosition:position toPosition:maxPosition] == NSOrderedSame)
+	{
+		// already at limit
+		return nil;
+	}
+	
+	UITextPosition *retPosition = nil;
+	
+	switch (direction)
 	{
 		case UITextLayoutDirectionRight:
 		{
-			if ([position location] < end.location)
-			{
-				return [DTTextPosition textPositionWithLocation:position.location+1];
-			}
+			UITextPosition *newPosition = [self positionFromPosition:position offset:1];
 			
+			// TODO: make the skipping direction dependend on the text direction in this paragraph
+			retPosition = [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
 			break;
 		}
+			
 		case UITextLayoutDirectionLeft:
 		{
-			if (position.location > begin.location)
-			{
-				return [DTTextPosition textPositionWithLocation:position.location-1];
-			}
-			
+			UITextPosition *newPosition = [self positionFromPosition:position offset:-1];
+         
+			// TODO: make the skipping direction dependend on the text direction in this paragraph
+			retPosition = [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
 			break;
 		}
+			
 		case UITextLayoutDirectionDown:
 		{
-			NSInteger newIndex = [self.attributedTextContentView.layoutFrame indexForPositionDownwardsFromIndex:position.location offset:offset];
+			NSInteger index = [self.attributedTextContentView.layoutFrame indexForPositionDownwardsFromIndex:position.location offset:offset];
 			
-			if (newIndex>=0)
+			// document ends
+			if (index == NSNotFound)
 			{
-				return [DTTextPosition textPositionWithLocation:newIndex];
+				return maxPosition;
 			}
-			else 
-			{
-				return [self endOfDocument];
-			}
+			
+			UITextPosition *newPosition = [DTTextPosition textPositionWithLocation:index];
+			
+			// limit the position to be within the range and skip list prefixes
+			retPosition = [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
+			break;
 		}
+			
 		case UITextLayoutDirectionUp:
 		{
-			NSInteger newIndex = [self.attributedTextContentView.layoutFrame indexForPositionUpwardsFromIndex:position.location offset:offset];
+			NSInteger index = [self.attributedTextContentView.layoutFrame indexForPositionUpwardsFromIndex:position.location offset:offset];
 			
-			if (newIndex>=0)
+			// nothing up there
+			if (index == NSNotFound)
 			{
-				return [DTTextPosition textPositionWithLocation:newIndex];
+				return maxPosition;
 			}
-			else 
-			{
-				return [self beginningOfDocument];
-			}
+			
+			UITextPosition *newPosition = [DTTextPosition textPositionWithLocation:index];
+			
+			// limit the position to be within the range and skip list prefixes
+			retPosition = [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionForward];
+			break;
 		}
 	}
 	
-	return nil;
+	return retPosition;
 }
 
 - (UITextPosition *)beginningOfDocument
@@ -2560,14 +2594,24 @@ typedef enum
 }
 
 #pragma mark Determining Layout and Writing Direction
-// TODO: How is this implemented correctly?
 - (UITextPosition *)positionWithinRange:(UITextRange *)range farthestInDirection:(UITextLayoutDirection)direction
 {
-	return [self endOfDocument];
+    switch (direction)
+    {
+        case UITextLayoutDirectionRight:
+        case UITextLayoutDirectionDown:
+            return [range end];
+
+        case UITextLayoutDirectionLeft:
+        case UITextLayoutDirectionUp:
+            return [range start];
+    }
 }
 
 - (UITextRange *)characterRangeByExtendingPosition:(DTTextPosition *)position inDirection:(UITextLayoutDirection)direction
 {
+    [[NSException exceptionWithName:@"Not Implemented" reason:@"When is this method being used?" userInfo:nil] raise];
+    
 	DTTextPosition *end = (id)[self endOfDocument];
 	
 	return [DTTextRange textRangeFromStart:position toEnd:end];
@@ -2614,6 +2658,16 @@ typedef enum
 - (UITextPosition *)closestPositionToPoint:(CGPoint)point
 {
 	NSInteger newIndex = [self.attributedTextContentView.layoutFrame closestCursorIndexToPoint:point];
+    
+    // move cursor out of a list prefix, we don't want those
+    NSAttributedString *attributedString = self.attributedText;
+    
+    NSRange listPrefixRange = [attributedString rangeOfFieldAtIndex:newIndex];
+    
+    if (listPrefixRange.location != NSNotFound)
+    {
+        newIndex = NSMaxRange(listPrefixRange);
+    }
 	
 	return [DTTextPosition textPositionWithLocation:newIndex];
 }
@@ -2843,15 +2897,6 @@ typedef enum
 	}
 }
 
-// helper method for converting text defaults dictionary into actual text attributes
-- (NSDictionary *)_attributedStringAttributesForTextDefaults
-{
-	NSData *data = [@"<p />" dataUsingEncoding:NSUTF8StringEncoding];
-	NSAttributedString *attributedString = [[NSAttributedString alloc] initWithHTMLData:data options:[self textDefaults] documentAttributes:NULL];
-	
-	return [attributedString attributesAtIndex:0 effectiveRange:NULL];
-}
-
 // helper method for wrapping a text attachment, optionally in its own paragraph
 - (NSAttributedString *)attributedStringForTextRange:(DTTextRange *)textRange wrappingAttachment:(DTTextAttachment *)attachment inParagraph:(BOOL)inParagraph
 {
@@ -2931,7 +2976,62 @@ typedef enum
     return wrapperString;
 }
 
-#pragma mark Properties
+#pragma mark - Delegate Communication
+
+- (void)_inputDelegateSelectionWillChange
+{
+    // do not send this if we're entering text, this prevents the autocorrection prompt from appearing
+    if (_userIsTyping)
+    {
+        return;
+    }
+    
+    [self.inputDelegate selectionWillChange:self];
+}
+
+- (void)_inputDelegateSelectionDidChange
+{
+    // do not send this if we're entering text, this prevents the autocorrection prompt from appearing
+    if (_userIsTyping)
+    {
+        return;
+    }
+
+    [self.inputDelegate selectionWillChange:self];
+}
+
+- (void)_inputDelegateTextWillChange
+{
+    [self.inputDelegate textWillChange:self];
+}
+
+- (void)_inputDelegateTextDidChange
+{
+    [self.inputDelegate textWillChange:self];
+}
+
+- (void)_editorViewDelegateDidChangeSelection
+{
+    // only notify on user input while editing
+    if (self.isEditing && _editorViewDelegateFlags.delegateDidChangeSelection)
+    {
+        [self.editorViewDelegate editorViewDidChangeSelection:self];
+    }
+}
+
+- (void)_editorViewDelegateDidChange
+{
+    // Notify delegate
+    if (self.isEditing && _editorViewDelegateFlags.delegateDidChange)
+    {
+        [self.editorViewDelegate editorViewDidChange:self];
+    }
+    
+    // Post DTRichTextEditorTextDidChangeNotification
+    [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidChangeNotification object:self];
+}
+
+#pragma mark - Properties
 
 - (void)setAttributedText:(NSAttributedString *)newAttributedText
 {
@@ -2961,18 +3061,16 @@ typedef enum
     // setting new text should remove all selections
 	[self unmarkText];
     
-    [self.inputDelegate textWillChange:self];
+    [self _inputDelegateTextWillChange];
     [super setAttributedString:newAttributedText];
-    [self.inputDelegate textDidChange:self];
+    [self _inputDelegateTextDidChange];
     
     [self setNeedsLayout];
     
 	// always position cursor at the end of the text
     if (self.isEditing)
     {
-        [self.inputDelegate selectionWillChange:self];
         self.selectedTextRange = [self textRangeFromPosition:self.endOfDocument toPosition:self.endOfDocument];
-        [self.inputDelegate selectionDidChange:self];
     }
     
 	[self.undoManager removeAllActions];
@@ -3071,12 +3169,43 @@ typedef enum
 	return nil;
 }
 
+- (void)setInputView:(UIView *)inputView animated:(BOOL)animated
+{
+	if (_inputView == inputView)
+	{
+		return;
+	}
+	
+	BOOL wasFirstResponder = self.isFirstResponder;
+    
+    [self willChangeValueForKey:@"inputView"];
+	_inputView = inputView;
+    [self didChangeValueForKey:@"inputView"];
+	
+	// only animate if we are first responder
+	if (!wasFirstResponder)
+	{
+		return;
+	}
+    
+	_isChangingInputView = YES;
+	
+	[self resignFirstResponder];
+	
+	// give the previous inputView time to animate out if we are animating
+	double delayInSeconds = (animated && wasFirstResponder)?0.35:0;
+	
+	dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC));
+	dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+		[self becomeFirstResponder]; // this activates new input view
+		
+		_isChangingInputView = NO;
+	});
+}
+
 - (void)setInputView:(UIView *)inputView
 {
-	if (_inputView != inputView)
-	{
-		_inputView = inputView;
-	}
+	[self setInputView:inputView animated:NO];
 }
 
 - (UIView *)inputAccessoryView
@@ -3155,6 +3284,8 @@ typedef enum
 @synthesize selectionView = _selectionView;
 @synthesize waitingForDictionationResult = _waitingForDictionationResult;
 @synthesize dictationPlaceholderView = _dictationPlaceholderView;
+
+@synthesize userIsTyping = _userIsTyping;
 
 @end
 

@@ -3,6 +3,18 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.5
+
+- ADDED: Implemented Support for Ordered and Unordered Lists, editable 1 level
+- CHANGED: Improved handling of nested lists
+- ADDED: Method to set text color for range
+- ADDED: Method to set strikethrough style for range
+- ADDED: HTMLStringWithOptions methods
+- ADDED: Ability to animate between input views (custom keyboards)
+- FIXED: style information would not obey custom CSS stylesheet in textDefaults
+- CHANGED: editing delegate now uses editorView:shouldChangeTextInRange:replacementText: for image pasting
+- ADDED: [DEMO] Formatting View Controller, shown as popover on iPad and input view on iPhone
+
 Version 1.4.1
 
 - FIXED: Editor delegate set an out of bounds range when deleting backwards with a selection which starts from position 0. 
@@ -14,6 +26,9 @@ Version 1.4
 - ADDED: A delegation protocol that gives it feature parity with UITextView.
 - FIXED: override typing attributes (like setting bold with no selection) would be reset on a new line
 - FIXED: Autocorrection was broken due to removal of input delegate notification
+- FIXED: Some problems with Undo
+- FIXED: In some circumstances Editor view would scroll horizontally
+- FIXED: Apps using multiple instances of Editor would have Undo problems
 - UPDATED: DTCoreText to 1.4
 
 Version 1.3

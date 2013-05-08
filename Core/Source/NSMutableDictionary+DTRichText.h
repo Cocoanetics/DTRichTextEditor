@@ -6,7 +6,7 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
-#import "NSDictionary+DTRichText.h"
+#import "NSDictionary+DTCoreText.h"
 
 @class DTCoreTextFontDescriptor;
 
@@ -31,10 +31,22 @@
 - (void)toggleUnderline;
 
 /**
+ Toggle the attributes in the receiver strikethrough. If text is already marked as strikethrough then the strikethrough is removed.
+ */
+- (void)toggleStrikethrough;
+
+/**
  Updates the font attribute via a font descriptor
  @param fontDescriptor The font descriptor which describes the font to set
  */
 - (void)setFontFromFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor;
+
+/**
+ Updates the paragraph spacing to a given amount
+ @param paragraphSpacing The new space after paragraphs to apply
+ */
+- (void)updateParagraphSpacing:(CGFloat)paragraphSpacing;
+
 
 /**
  Toggles the background color to the given color. If the attributes are already containing a highlight then it is removed
@@ -43,8 +55,19 @@
 - (void)toggleHighlightWithColor:(UIColor *)color;
 
 /**
+ Sets the text foreground color to the given color. 
+ @param color The color to set or `nil` to restore the default black text color
+ */
+- (void)setForegroundColor:(UIColor *)color;
+
+/**
  Removes the attributes related to a DTTextAttachment from the receiver
  */
 - (void)removeAttachment;
+
+/**
+ Removes list prefix field from the receiver
+ */
+- (void)removeListPrefixField;
 
 @end

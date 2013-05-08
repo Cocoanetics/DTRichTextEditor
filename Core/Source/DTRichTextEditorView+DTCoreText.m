@@ -20,10 +20,10 @@
 	return [self.attributedTextContentView.layoutFrame.lines objectAtIndex:lineIndex];
 }
 
-- (DTCoreTextLayoutLine *)layoutLineContainingTextPosition:(DTTextPosition *)textPosition
+- (DTCoreTextLayoutLine *)layoutLineContainingTextPosition:(UITextPosition *)textPosition
 {
 	// get index
-	NSUInteger index = textPosition.location;
+	NSUInteger index = [(DTTextPosition *)textPosition location];
 	
 	// get line from layout frame
 	return [self.attributedTextContentView.layoutFrame lineContainingIndex:index];

@@ -7,6 +7,7 @@
 //
 
 #import "DTRichTextEditor.h"
+#import "DTHTMLWriter.h"
 #import "DTUndoManager.h"
 
 @interface DTRichTextEditorView (private)
@@ -15,7 +16,10 @@
 - (void)hideContextMenu;
 - (void)_closeTypingUndoGroupIfNecessary;
 
-@property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
+- (void)_inputDelegateSelectionWillChange;
+- (void)_inputDelegateSelectionDidChange;
+- (void)_inputDelegateTextWillChange;
+- (void)_inputDelegateTextDidChange;
 
 @end
 
@@ -31,6 +35,23 @@
 	return [self.attributedTextContentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:[textRange NSRangeValue]];
 }
 
+- (DTCoreTextGlyphRun *)glyphRunAtPosition:(UITextPosition *)position
+{
+    NSParameterAssert(position);
+    
+    DTCoreTextLayoutLine *lineWithPosition = [self layoutLineContainingTextPosition:position];
+    
+	if (!lineWithPosition)
+    {
+        return nil;
+    }
+    
+    NSUInteger location = [(DTTextPosition *)position location];
+    NSArray *glyphRuns = [lineWithPosition glyphRunsWithRange:NSMakeRange(location, 1)];
+    
+    return [glyphRuns lastObject];
+}
+
 - (void)setHTMLString:(NSString *)string
 {
 	NSData *data = [string dataUsingEncoding:NSUTF8StringEncoding];
@@ -40,6 +61,19 @@
 	[self setAttributedText:attributedString];
 	
 	[self.undoManager removeAllActions];
+}
+
+- (NSString *)HTMLStringWithOptions:(DTHTMLWriterOption)options
+{
+	DTHTMLWriter *writer = [[DTHTMLWriter alloc] initWithAttributedString:self.attributedText];
+	writer.textScale = self.textSizeMultiplier;  // the writer will divide font sizes by this value
+	
+	if (options & DTHTMLWriterOptionFragment)
+	{
+		return [writer HTMLFragment];
+	}
+
+	return [writer HTMLString];
 }
 
 - (NSString *)plainTextForRange:(UITextRange *)range
@@ -57,125 +91,6 @@
 	
 	return tmpString;
 };
-
-#pragma mark - Working with Ranges
-- (UITextRange *)textRangeOfWordAtPosition:(UITextPosition *)position
-{
-	DTTextRange *forRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionForward];
-	DTTextRange *backRange = (id)[[self tokenizer] rangeEnclosingPosition:position withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionBackward];
-	
-	if (forRange && backRange)
-	{
-		DTTextRange *newRange = [DTTextRange textRangeFromStart:[backRange start] toEnd:[backRange end]];
-		return newRange;
-	}
-	else if (forRange)
-	{
-		return forRange;
-	}
-	else if (backRange)
-	{
-		return backRange;
-	}
-	
-	// treat image as word, left side of image selects it
-	UITextPosition *plusOnePosition = [self positionFromPosition:position offset:1];
-	UITextRange *imageRange = [self textRangeFromPosition:position toPosition:plusOnePosition];
-	
-	NSAttributedString *characterString = [self attributedSubstringForRange:imageRange];
-	
-    // only check for attachment attribute if the string is not empty
-    if ([characterString length])
-    {
-        if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:NSAttachmentAttributeName])
-        {
-            return imageRange;
-        }
-    }
-	
-	// we did not get a forward or backward range, like Word!|
-	DTTextPosition *previousPosition = (id)([self.tokenizer positionFromPosition:position
-																					 toBoundary:UITextGranularityCharacter
-																					inDirection:UITextStorageDirectionBackward]);
-	
-	// treat image as word, right side of image selects it
-	characterString = [self.attributedTextContentView.layoutFrame.attributedStringFragment attributedSubstringFromRange:NSMakeRange(previousPosition.location, 1)];
-	
-	if ([[characterString attributesAtIndex:0 effectiveRange:NULL] objectForKey:NSAttachmentAttributeName])
-	{
-		return [DTTextRange textRangeFromStart:previousPosition toEnd:[previousPosition textPositionWithOffset:1]];
-	}
-	
-	forRange = (id)[[self tokenizer] rangeEnclosingPosition:previousPosition withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionForward];
-	backRange = (id)[[self tokenizer] rangeEnclosingPosition:previousPosition withGranularity:UITextGranularityWord inDirection:UITextStorageDirectionBackward];
-	
-	UITextRange *retRange = nil;
-	
-	if (forRange && backRange)
-	{
-		retRange = [DTTextRange textRangeFromStart:[backRange start] toEnd:[backRange end]];
-	}
-	else if (forRange)
-	{
-		retRange = forRange;
-	}
-	else if (backRange)
-	{
-		retRange = backRange;
-	}
-	
-	// need to extend to include the previous position
-	if (retRange)
-	{
-		// extend this range to go up to current position
-		return [DTTextRange textRangeFromStart:[retRange start] toEnd:position];
-	}
-	
-	return nil;
-}
-
-- (UITextRange *)textRangeOfURLAtPosition:(UITextPosition *)position URL:(NSURL **)URL
-{
-	NSUInteger index = [(DTTextPosition *)position location];
-	
-	NSRange effectiveRange;
-	
-	NSURL *effectiveURL = [self.attributedTextContentView.layoutFrame.attributedStringFragment attribute:DTLinkAttribute atIndex:index effectiveRange:&effectiveRange];
-	
-	if (!effectiveURL)
-	{
-		return nil;
-	}
-	
-	DTTextRange *range = [DTTextRange rangeWithNSRange:effectiveRange];
-	
-	if (URL)
-	{
-		*URL = effectiveURL;
-	}
-	
-	return range;
-}
-
-- (UITextRange *)textRangeOfParagraphsContainingRange:(UITextRange *)range
-{
-	NSRange myRange = [(DTTextRange *)range NSRangeValue];
-	
-	// get range containing all selected paragraphs
-	NSAttributedString *attributedString = [self.attributedTextContentView.layoutFrame attributedStringFragment];
-	
-	NSString *string = [attributedString string];
-	
-	NSUInteger begIndex;
-	NSUInteger endIndex;
-	
-	[string rangeOfParagraphsContainingRange:myRange parBegIndex:&begIndex parEndIndex:&endIndex];
-	myRange = NSMakeRange(begIndex, endIndex - begIndex); // now extended to full paragraphs
-	
-	DTTextRange *retRange = [DTTextRange rangeWithNSRange:myRange];
-
-	return retRange;
-}
 
 - (NSDictionary *)typingAttributesForRange:(DTTextRange *)range
 {
@@ -233,6 +148,9 @@
 	return tmpAttributes;
 }
 
+@dynamic overrideInsertionAttributes; // provided by DTRichTextEditorView main implementation
+
+
 #pragma mark - Pasteboard
 
 - (BOOL)pasteboardHasSuitableContentForPaste
@@ -269,9 +187,14 @@
 {
 	NSAssert([attributedString length] == range.length, @"lenght of updated string and update attributed string must match");
 
-	NSUndoManager *undoManager = self.undoManager;
+	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	
 	NSAttributedString *replacedString = [self.attributedTextContentView.attributedString attributedSubstringFromRange:range];
+	
+	if (!undoManager.numberOfOpenGroups)
+	{
+		[undoManager beginUndoGrouping];
+	}
 	
 	[[undoManager prepareWithInvocationTarget:self] _updateSubstringInRange:range withAttributedString:replacedString actionName:actionName];
 	
@@ -401,6 +324,40 @@
 	[self hideContextMenu];
 }
 
+- (void)toggleStrikethroughInRange:(UITextRange *)range
+{
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
+	
+	if ([range isEmpty])
+	{
+		// if we only have a cursor then we save the attributes for the next insertion
+		NSMutableDictionary *tmpDict = [self.overrideInsertionAttributes mutableCopy];
+		
+		if (!tmpDict)
+		{
+			tmpDict = [[self typingAttributesForRange:range] mutableCopy];
+		}
+		[tmpDict toggleStrikethrough];
+		self.overrideInsertionAttributes = tmpDict;
+	}
+	else
+	{
+		NSRange styleRange = [(DTTextRange *)range NSRangeValue];
+		
+		// get fragment that is to be made underlined
+		NSMutableAttributedString *fragment = [[[self.attributedTextContentView.layoutFrame attributedStringFragment] attributedSubstringFromRange:styleRange] mutableCopy];
+		
+		// make entire frament underlined
+		[fragment toggleStrikethroughInRange:NSMakeRange(0, [fragment length])];
+		
+		// replace
+		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Strikethrough", @"Action that makes text strikethrough")];
+	}
+	
+	[self hideContextMenu];
+}
+
 - (void)toggleHighlightInRange:(DTTextRange *)range color:(UIColor *)color
 {
 	// close off typing group, this is a new operations
@@ -430,6 +387,41 @@
 		
 		// replace
 		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Highlight", @"Action that adds a colored background behind text to highlight it")];
+	}
+	
+	[self hideContextMenu];
+}
+
+- (void)setForegroundColor:(UIColor *)color inRange:(UITextRange *)range
+{
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
+	
+	if ([range isEmpty])
+	{
+		// if we only have a cursor then we save the attributes for the next insertion
+		NSMutableDictionary *tmpDict = [self.overrideInsertionAttributes mutableCopy];
+		
+		if (!tmpDict)
+		{
+			tmpDict = [[self typingAttributesForRange:range] mutableCopy];
+		}
+		
+		[tmpDict setForegroundColor:color];
+		self.overrideInsertionAttributes = tmpDict;
+	}
+	else
+	{
+		NSRange styleRange = [(DTTextRange *)range NSRangeValue];
+		
+		// get fragment that is to be made bold
+		NSMutableAttributedString *fragment = [[self attributedSubstringForRange:range] mutableCopy];
+		
+		// set the color
+		[fragment setForegroundColor:color inRange:NSMakeRange(0, [fragment length])];
+		
+		// replace
+		[self _updateSubstringInRange:styleRange withAttributedString:fragment actionName:NSLocalizedString(@"Text Color", @"Action that sets the text color")];
 	}
 	
 	[self hideContextMenu];
@@ -535,7 +527,8 @@
     
     NSMutableAttributedString *fragment = [[self attributedSubstringForRange:range] mutableCopy];
     
-    BOOL didUpdate = [fragment enumerateAndUpdateFontInRange:NSMakeRange(0, [fragment length]) block:^BOOL(DTCoreTextFontDescriptor *fontDescriptor, BOOL *stop) {
+    BOOL didUpdate = [fragment enumerateAndUpdateFontInRange:NSMakeRange(0, [fragment length])
+                                                       block:^BOOL(DTCoreTextFontDescriptor *fontDescriptor, BOOL *stop) {
         BOOL shouldUpdate = NO;
         
         if (fontFamilyName && ![fontFamilyName isEqualToString:fontDescriptor.fontFamily])
@@ -585,6 +578,9 @@
 - (void)setFont:(UIFont *)font
 {
     NSParameterAssert(font);
+	
+	// close off typing group, this is a new operations
+	[self _closeTypingUndoGroupIfNecessary];
     
     CTFontRef ctFont = DTCTFontCreateWithUIFont(font);
     DTCoreTextFontDescriptor *fontDescriptor = [DTCoreTextFontDescriptor fontDescriptorForCTFont:ctFont];
@@ -625,6 +621,9 @@
 	// close off typing group, this is a new operations
 	[self _closeTypingUndoGroupIfNecessary];
 	
+	// this is necessary to apply auto-correction text before changing the styles
+	[self _inputDelegateSelectionWillChange]; // before getting the current text
+	
 	DTTextRange *paragraphRange = (DTTextRange *)[self textRangeOfParagraphsContainingRange:range];
 	NSMutableAttributedString *fragment = [[self attributedSubstringForRange:paragraphRange] mutableCopy];
 	
@@ -645,7 +644,10 @@
 		// replace
 		[self _updateSubstringInRange:[paragraphRange NSRangeValue] withAttributedString:fragment actionName:NSLocalizedString(@"Alignment", @"Action that adjusts paragraph alignment")];
 	}
-	
+
+	// we notified of the will, so we also notify of the did
+	[self _inputDelegateSelectionDidChange];
+
 	[self hideContextMenu];
 
 	return didUpdate;
@@ -656,6 +658,9 @@
 	// close off typing group, this is a new operations
 	[self _closeTypingUndoGroupIfNecessary];
 
+	// this is necessary to apply auto-correction text before changing the styles
+	[self _inputDelegateSelectionWillChange]; // before getting the current text
+	
 	DTTextRange *paragraphRange = (DTTextRange *)[self textRangeOfParagraphsContainingRange:range];
 	NSMutableAttributedString *fragment = [[self attributedSubstringForRange:paragraphRange] mutableCopy];
 	
@@ -688,76 +693,48 @@
 		// replace
 		[self _updateSubstringInRange:[paragraphRange NSRangeValue] withAttributedString:fragment actionName:NSLocalizedString(@"Indent", @"Action that changes the indentation of a paragraph")];
 	}
+
+	// we notified of the will, so we also notify of the did
+	[self _inputDelegateSelectionDidChange];
 	
 	[self hideContextMenu];
 }
 
-- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range
+- (void)updateHeaderLevel:(NSUInteger)headerLevel inRange:(UITextRange *)range
 {
-	// close off typing group, this is a new operations
+	NSAssert(headerLevel<=6, @"Only header levels 0-6 are allowed");
+
+	// close off typing group, this is a new operation
 	[self _closeTypingUndoGroupIfNecessary];
 
-	NSRange styleRange = [(DTTextRange *)range NSRangeValue];
+	// this is necessary to apply auto-correction text before changing the styles
+	[self _inputDelegateSelectionWillChange];
 	
-	NSRange rangeToSelectAfterwards = styleRange;
+	// we cannot have this be part of a list
+	[self toggleListStyle:nil inRange:self.selectedTextRange];
 	
-	// get range containing all selected paragraphs
-	NSAttributedString *attributedString = [self.attributedTextContentView.layoutFrame attributedStringFragment];
+	// extend selected range to include full paragraphs
+	range = [self textRangeOfParagraphsContainingRange:self.selectedTextRange];
 	
-	NSString *string = [attributedString string];
+	// get default text size
+	DTCoreTextFontDescriptor *defaultFontDescriptor = [self defaultFontDescriptor];
 	
-	NSUInteger begIndex;
-	NSUInteger endIndex;
+	// determine tag name that represents this header level
+	NSArray *tagNameForLevel = [NSArray arrayWithObjects:@"p", @"h1", @"h2", @"h3", @"h4", @"h5", @"h6", nil];
+	NSString *usedTagName = [tagNameForLevel objectAtIndex:headerLevel];
 	
-	[string rangeOfParagraphsContainingRange:styleRange parBegIndex:&begIndex parEndIndex:&endIndex];
-	styleRange = NSMakeRange(begIndex, endIndex - begIndex); // now extended to full paragraphs
+	// get the attributes for the supposed HTML element
+	NSDictionary *attributes = [self attributesForTagName:usedTagName tagClass:nil tagIdentifier:nil relativeToTextSize:defaultFontDescriptor.pointSize];
 	
-	NSMutableAttributedString *entireAttributedString = (NSMutableAttributedString *)[self.attributedTextContentView.layoutFrame attributedStringFragment];
+	// mutate attributed substring
+	NSMutableAttributedString *mutableText = [[self attributedSubstringForRange:range] mutableCopy];
+	[mutableText setAttributes:attributes range:NSMakeRange(0, [mutableText length])];
+
+	// apply the changed text
+	[self _updateSubstringInRange:[(DTTextRange *)range NSRangeValue] withAttributedString:mutableText actionName:NSLocalizedString(@"Set Header Level", @"Undoable Action of setting a header level")];
 	
-	// check if we are extending a list
-	DTCSSListStyle *extendingList = nil;
-	NSInteger nextItemNumber;
-	
-	if (styleRange.location>0)
-	{
-		NSArray *lists = [entireAttributedString attribute:DTTextListsAttribute atIndex:styleRange.location-1 effectiveRange:NULL];
-		
-		extendingList = [lists lastObject];
-		
-		if (extendingList.type == listStyle.type)
-		{
-			listStyle = extendingList;
-		}
-	}
-	
-	if (extendingList)
-	{
-		nextItemNumber = [entireAttributedString itemNumberInTextList:extendingList atIndex:styleRange.location-1]+1;
-	}
-	else
-	{
-		nextItemNumber = [listStyle startingItemNumber];
-	}
-	
-	// remember current markers
-	[entireAttributedString addMarkersForSelectionRange:rangeToSelectAfterwards];
-	
-	// toggle the list style
-	[entireAttributedString toggleListStyle:listStyle inRange:styleRange numberFrom:nextItemNumber];
-	
-	// selected range has shifted
-	rangeToSelectAfterwards = [entireAttributedString markedRangeRemove:YES];
-	
-	// relayout range of entire list
-	[self.attributedTextContentView relayoutText];
-	
-	self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
-	
-	// attachment positions might have changed
-	[self.attributedTextContentView layoutSubviewsInRect:self.bounds];
-	
-	// cursor positions might have changed
-	[self updateCursorAnimated:NO];
+	// we notified of the will, so we also notify of the did
+	[self _inputDelegateSelectionDidChange];
 	
 	[self hideContextMenu];
 }
@@ -847,8 +824,6 @@
 	// change undo action name from typing to inserting image
 	[self.undoManager setActionName:NSLocalizedString(@"Insert Image", @"Undoable Action")];
 }
-
-
 
 - (NSArray *)textAttachmentsWithPredicate:(NSPredicate *)predicate
 {

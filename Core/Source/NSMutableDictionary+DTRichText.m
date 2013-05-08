@@ -75,6 +75,18 @@
 	}
 }
 
+- (void)toggleStrikethrough
+{
+	if ([self isStrikethrough])
+	{
+		[self removeObjectForKey:DTStrikeOutAttribute];
+	}
+	else
+	{
+		[self setObject:[NSNumber numberWithBool:YES] forKey:DTStrikeOutAttribute];
+	}
+}
+
 - (void)setFontFromFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor
 {
     CTFontRef currentFont = (__bridge CTFontRef)[self objectForKey:(id)kCTFontAttributeName];
@@ -87,6 +99,25 @@
     CTFontRef newFont = [fontDescriptor newMatchingFont];
     [self setObject:CFBridgingRelease(newFont) forKey:(id)kCTFontAttributeName];
 }
+
+
+- (void)updateParagraphSpacing:(CGFloat)paragraphSpacing
+{
+    CTParagraphStyleRef p = (__bridge CTParagraphStyleRef)([self objectForKey:(id)kCTParagraphStyleAttributeName]);
+    
+    DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:p];
+    
+    if (paragraphSpacing == paragraphStyle.paragraphSpacing)
+    {
+        return;
+    }
+    
+    paragraphStyle.paragraphSpacing = paragraphSpacing;
+    
+    CTParagraphStyleRef newStyle = [paragraphStyle createCTParagraphStyle];
+    [self setObject:CFBridgingRelease(newStyle) forKey:(id)kCTParagraphStyleAttributeName];
+}
+
 
 - (void)toggleHighlightWithColor:(UIColor *)color
 {
@@ -109,12 +140,34 @@
     }
 }
 
+- (void)setForegroundColor:(UIColor *)color
+{
+	if (color)
+	{
+        [self setObject:(id)[color CGColor] forKey:(id)kCTForegroundColorAttributeName];
+	}
+	else
+	{
+		[self removeObjectForKey:(id)kCTForegroundColorAttributeName];
+	}
+}
+
 
 - (void)removeAttachment
 {
 	[self removeObjectForKey:(id)kCTRunDelegateAttributeName];
 	[self removeObjectForKey:@"DTAttachmentParagraphSpacing"];
 	[self removeObjectForKey:NSAttachmentAttributeName];
+}
+
+- (void)removeListPrefixField
+{
+    NSString *field = [self objectForKey:DTFieldAttribute];
+    
+    if ([field isEqualToString:DTListPrefixField])
+    {
+        [self removeObjectForKey:DTFieldAttribute];
+    }
 }
 
 @end

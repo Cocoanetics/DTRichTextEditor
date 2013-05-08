@@ -8,7 +8,15 @@
 
 #import "DTRichTextEditorView.h"
 
-@class DTTextRange, DTTextPosition, DTCSSListStyle;
+// options for generating HTML output
+typedef enum
+{
+	DTHTMLWriterOptionDocument = 0,  // default
+	DTHTMLWriterOptionFragment = 1 << 0
+} DTHTMLWriterOption;
+
+
+@class DTTextRange, DTTextPosition, DTCSSListStyle, DTCoreTextFontDescriptor;
 
 /**
  The **Manipulation** category enhances DTRichTextEditorView with useful text format manipulation methods.
@@ -21,10 +29,18 @@
 
 /**
  Retrieves that attributed substring for the given range.
- @param range The text range.
+ @param range The text range
  @returns The `NSAttributedString` substring
  */
 - (NSAttributedString *)attributedSubstringForRange:(UITextRange *)range;
+
+
+/**
+ Retrieves the glyph run around the given text location. This is useful to inspect the actually used attributes. For example you can get the actual writing direction or the actually used font used.
+ @param position The text position
+ @returns The DTCoreTextGlyphRun object with all glyphs having the same attributes
+ */
+- (DTCoreTextGlyphRun *)glyphRunAtPosition:(UITextPosition *)position;
 
 /**
  Prepares a plain-text representation of the substring for the given range.
@@ -36,32 +52,6 @@
 - (NSString *)plainTextForRange:(UITextRange *)range;
 
 /**
- Converts the given string to an `NSAttributedString` using the current textDefaults and sets it on the receiver.
- @param string The string containing HTML text to convert to an attributed string and set as content of the receiver
- */
-- (void)setHTMLString:(NSString *)string;
-
-
-/**
- @name Working with Ranges
- */
-
-/**
- Gets the text range of an URL at the given text position. Optionally also returns the hyperlink URL.
- @param position The text position
- @param URL An optional URL output param or `NULL` if the URL is not required
- @returns the text range or `NULL` if there is no URL at this position
- */
-- (UITextRange *)textRangeOfURLAtPosition:(UITextPosition *)position URL:(NSURL **)URL;
-
-/**
- Gets the range that encompasses the word at the given text position.
- @param position The text position
- @returns the text range
- */
-- (UITextRange *)textRangeOfWordAtPosition:(UITextPosition *)position;
-
-/**
  The attributes to apply for new text inserted at the given range.
  @param range The text range
  @returns The dictionary of styles
@@ -69,12 +59,30 @@
 - (NSDictionary *)typingAttributesForRange:(UITextRange *)range;
 
 /**
- Extends the given range to include all full paragraphs that contain it.
- @param range The text range
- @returns The extended range
+ Temporary storage for typing attributes if there is no range to apply them to, e.g. for a zero-length selection. To retrieve the current typing attributes you should first inspect this property and if it is `nil` retrieve the typingAttributesForRange: for the current selected text range.
  */
-- (UITextRange *)textRangeOfParagraphsContainingRange:(UITextRange *)range;
+@property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
 
+/**
+ Converts the given string to an `NSAttributedString` using the current textDefaults and sets it on the receiver.
+ @param string The string containing HTML text to convert to an attributed string and set as content of the receiver
+ */
+- (void)setHTMLString:(NSString *)string;
+
+/**
+ Converts the current attributed string contents of the receiver to an HTML string.
+ 
+ This uses DTHTMLWriter and uses the currently set textScale to reverse font scale changes. This allows for HTML with a small font size to be displayed at a larger font size, but the generated HTML will still have the original font size.
+ 
+ Valid options are:
+ 
+ - 	DTHTMLWriterOptionDocument: Styles are compressed into a stylesheet and a header is output (default)
+ -  DTHTMLWriterOptionFragment: All styles are inline and no header is output
+ 
+ @param options The options to apply for the conversion.
+ @returns An `NSString` with a generated HTML representation of the text
+ */
+- (NSString *)HTMLStringWithOptions:(DTHTMLWriterOption)options;
 
 /**
  @name Changing Paragraph Styles
@@ -98,11 +106,14 @@
 - (void)changeParagraphLeftMarginBy:(CGFloat)delta toParagraphsContainingRange:(UITextRange *)range;
 
 /**
- Toggles a list style on a given range.
- @param listStyle the list style to toggle
+ Apples a given header level to the given range. The range is extended to include full paragraphs. 
+ 
+ If the range belongs to a list then it is removed from the list. All existing attributes are replaced.
+ 
+ @param headerLevel The header level (1-6) to set or 0 to restore normal paragraph style
  @param range The text range
-*/
-- (void)toggleListStyle:(DTCSSListStyle *)listStyle inRange:(UITextRange *)range;
+ */
+- (void)updateHeaderLevel:(NSUInteger)headerLevel inRange:(UITextRange *)range;
 
 /**
  @name Toggling Styles for Ranges
@@ -133,6 +144,15 @@
 - (void)toggleUnderlineInRange:(UITextRange *)range;
 
 /**
+ Toggles strikethrough font style on the given range.
+ 
+ The first character of the range determines if the range is to be treated as strikethrough or not.
+ @param range The text range
+ */
+- (void)toggleStrikethroughInRange:(UITextRange *)range;
+
+
+/**
  Highlights a given range.
  
  The first character of the range determines if the range is to be treated as already highlighted or not.
@@ -142,6 +162,13 @@
 - (void)toggleHighlightInRange:(UITextRange *)range color:(UIColor *)color;
 
 /**
+ Sets the text foreground color for a given range.
+ @param color The foreground color to set. Passing `nil` removes the color attribute and thus restores the black default color.
+ @param range The text range
+ */
+- (void)setForegroundColor:(UIColor *)color inRange:(UITextRange *)range;
+
+/**
  Toggles a hyperlink on the given range.
  
  The first character of the range determines if the range is to be treated as already hyperlinked or not.
@@ -149,6 +176,7 @@
  @param URL The hyperlink URL to set on the range with. If the range already has a hyperlink then this parameter is ignored.
  */
 - (void)toggleHyperlinkInRange:(UITextRange *)range URL:(NSURL *)URL;
+
 
 /**
  @name Working with Fonts

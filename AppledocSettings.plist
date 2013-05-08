@@ -7,7 +7,7 @@
 	<key>--project-company</key>
 	<string>Cocoanetics</string>
 	<key>--project-version</key>
-	<string>1.4</string>
+	<string>1.5</string>
 	<key>--company-id</key>
 	<string>com.cocoanetics</string>
 	<key>--docset-atom-filename</key>
@@ -42,6 +42,7 @@
 	<array>
 		<string>./Documentation/Known Issues-template.markdown</string>
 		<string>./Documentation/Change Log-template.markdown</string>
+		<string>./Documentation/Programming Guide-template.markdown</string>
 	</array>
 	<key>--warn-invalid-crossref</key>
 	<false/>

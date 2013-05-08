@@ -8,10 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "DTRichTextEditorView.h"
+#import "DTFormatViewController.h"
 
-@class DTRichTextEditorTestState, DTRichTextEditorTestStateController;
+@class DTRichTextEditorTestState, DTRichTextEditorTestStateController, DTFormatViewController;
 
-@interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate, DTAttributedTextContentViewDelegate, DTRichTextEditorViewDelegate> {
+@interface DTRichTextEditorViewController : UIViewController <UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate, DTAttributedTextContentViewDelegate, DTRichTextEditorViewDelegate, DTFormatDelegate> {
 
 	IBOutlet DTRichTextEditorView *richEditor;
 	
@@ -31,7 +32,6 @@
 	UIBarButtonItem *italicButton;
 	UIBarButtonItem *underlineButton;
     UIBarButtonItem *highlightButton;
-    UIBarButtonItem *fontButton;
 	
 	// paragraph alignment buttons
 	UIBarButtonItem *leftAlignButton;
@@ -60,5 +60,8 @@
 @property (nonatomic, retain) DTRichTextEditorTestState *testState;
 @property (nonatomic, retain) UIPopoverController *testOptionsPopover;
 @property (nonatomic, retain) DTRichTextEditorTestStateController *testStateController;
+@property (nonatomic, retain) UIPopoverController *formatOptionsPopover;
+@property (nonatomic, retain) DTFormatViewController *formatViewController;
+
 @end
 
