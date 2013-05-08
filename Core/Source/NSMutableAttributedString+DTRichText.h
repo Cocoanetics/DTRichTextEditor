@@ -146,6 +146,7 @@ The color parameter is ignored if the method call toggles a previous URL off.
  @param nextItemNumber For numbered lists this is the next number to use
  @param listIndent The indent from leading margin to indent list paragraphs at
  @param spacingAfterList The spacing to apply on the last paragraph of the list
+ @param removeNonPrefixed Whether paragraphs that have no list prefix should be removed from lists
  */
 - (void)updateListStyle:(DTCSSListStyle *)listStyle inRange:(NSRange)range numberFrom:(NSInteger)nextItemNumber listIndent:(CGFloat)listIndent spacingAfterList:(CGFloat)spacingAfterList removeNonPrefixedParagraphsFromList:(BOOL)removeNonPrefixed;
 

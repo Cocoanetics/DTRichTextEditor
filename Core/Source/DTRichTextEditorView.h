@@ -110,6 +110,8 @@ extern NSString * const DTRichTextEditorTextDidEndEditingNotification;
 
 /**
  Sets the input view which will be shown instead of the keyboard. If the receiver already has first responder then this replaces the previous input view or standard keyboard. If the receiver is not first responder, then the animated parameter will be ignored
+ @param inputView The new input view to set on the receiver, or 'nil' to restore the keyboard
+ @param animated Whether the replacement should be animated
  */
 - (void)setInputView:(UIView *)inputView animated:(BOOL)animated;
 

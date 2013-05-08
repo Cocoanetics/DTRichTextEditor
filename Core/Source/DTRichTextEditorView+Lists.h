@@ -33,6 +33,7 @@
 /**
  Updates lists (prefixes and spacing) intersecting with the given range
  @param range The text range to update
+ @param removeNonPrefixed Whether lines that don't posess a prefix should be removed from lists
  */
 - (void)updateListsInRange:(UITextRange *)range removeNonPrefixedLinesFromLists:(BOOL)removeNonPrefixed;
 
