@@ -696,6 +696,8 @@
 			 {
 				 DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:para];
 				 paragraphStyle.paragraphSpacing = spacingAfterList;
+				 paragraphStyle.headIndent = paragraphStyle.firstLineHeadIndent;
+				 
 				 para = [paragraphStyle createCTParagraphStyle];
 				 
 				 [paragraphString addAttribute:(id)kCTParagraphStyleAttributeName  value:(__bridge id)para range:NSMakeRange(0, [paragraphString length])];
