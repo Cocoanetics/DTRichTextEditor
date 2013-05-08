@@ -13,6 +13,8 @@
 #import "DTFormatFontFamilyTableViewController.h"
 #import "DTFormatViewController.h"
 
+#import "DTAttributedTextCell.h"
+
 @interface DTFormatOverviewViewController()
 @property (nonatomic, strong) UIStepper *fontSizeStepper;
 @property (nonatomic, weak) UILabel *sizeValueLabel;
@@ -128,16 +130,19 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    
-    if( !cell ){
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier];
-    }
-    
-    // Configure the cell...
-
-    if(indexPath.section == 0)
+	UITableViewCell *cell;
+	
+	if (indexPath.section == 0 || (indexPath.section == 1 && indexPath.row == 0))
+	{
+		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
+	}
+	else
+	{
+		cell = [[DTAttributedTextCell alloc] initWithReuseIdentifier:nil];
+		[[(DTAttributedTextCell *)cell attributedTextContextView] setEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
+	}
+	
+    if (indexPath.section == 0)
     {
         self.fontSizeStepper.value = self.formatPicker.currentFont.pointSize;
         cell.textLabel.text = [NSString stringWithFormat:@"Size (%.0f pt)", self.formatPicker.currentFont.pointSize ];
@@ -145,51 +150,48 @@
         cell.accessoryView = self.fontSizeStepper;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
-    else if(indexPath.section == 1)
+    else if (indexPath.section == 1)
     {
-        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-        cell.accessoryView = nil;
-        
-        if(indexPath.row == 0){
+		DTAttributedTextCell *attributedCell = (DTAttributedTextCell *)cell;
+
+        if(indexPath.row == 0)
+		{
             cell.textLabel.text = @"Font Family";
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", self.formatPicker.currentFont.fontFamily];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        }else{
+        }
+		else
+		{
             // bold, italic, underline
             
-            switch (indexPath.row) {
-                case 1:
-                    //bold
-                    cell.textLabel.text = @"Bold";
-                    cell.textLabel.font = [UIFont boldSystemFontOfSize:18.0];
+            switch (indexPath.row)
+			{
+                case 1: //bold
+				{
                     cell.accessoryType = self.formatPicker.currentFont.boldTrait ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+					[attributedCell setHTMLString:@"<b style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Bold</b>"];
                     break;
-                case 2:
-                    //italic
-                    cell.textLabel.text = @"Italic";
-                    cell.textLabel.font = [UIFont italicSystemFontOfSize:18.0];
+				}
+					
+                case 2: //italic
+				{
                     cell.accessoryType = self.formatPicker.currentFont.italicTrait ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+					[attributedCell setHTMLString:@"<em style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Italic</em>"];
                     break;
-                case 3:
-                    //underline
+				}
+					
+                case 3: //underline
                 {
-                    NSMutableAttributedString *underlineString = [[NSMutableAttributedString alloc] initWithString:@"Underline"];
-                    [underlineString addAttribute:NSUnderlineStyleAttributeName
-                                            value:@(YES)
-                                            range:(NSRange){0,[underlineString length]}];
-                    cell.textLabel.attributedText = underlineString;
-                    cell.textLabel.font = [UIFont boldSystemFontOfSize:18.0];
                     cell.accessoryType = self.formatPicker.isUnderlined ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
+					[attributedCell setHTMLString:@"<u style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Underlined</u>"];
+                    break;
                 }
-                    break;
-                    
-                default:
-                    break;
             }
         }
     }
     
-    
+	NSAssert(cell, @"TableView Cell should never be nil");
+	
     return cell;
 }
 

@@ -56,7 +56,7 @@
             return [obj.fontFamily isEqualToString:selectedFontFamily];
     }];
     
-    if (self.tableView)
+    if ([self isViewLoaded])
     {
         NSArray *visibleIndexPaths = [self.tableView indexPathsForVisibleRows];
         [self.tableView reloadRowsAtIndexPaths:visibleIndexPaths withRowAnimation:UITableViewRowAnimationNone];
@@ -91,8 +91,10 @@
 {
     [super viewWillAppear:animated];
     
+	[self.tableView reloadData];
+	
     // Scroll to initial selected font
-    NSIndexPath *selectedIndexPath = [NSIndexPath indexPathForItem:self.selectedRow inSection:0];
+    NSIndexPath *selectedIndexPath = [NSIndexPath indexPathForRow:self.selectedRow inSection:0];
     [self.tableView scrollToRowAtIndexPath:selectedIndexPath atScrollPosition:UITableViewScrollPositionMiddle animated:NO];
 }
 
@@ -139,7 +141,7 @@
     // Update the cells
     NSArray *visibleIndexPaths = [self.tableView indexPathsForVisibleRows];
     
-    NSIndexPath *oldSelectedIndexPath = [NSIndexPath indexPathForItem:self.selectedRow inSection:0];
+    NSIndexPath *oldSelectedIndexPath = [NSIndexPath indexPathForRow:self.selectedRow inSection:0];
     if ([visibleIndexPaths containsObject:oldSelectedIndexPath])
     {
         UITableViewCell *oldSelectedCell = [self.tableView cellForRowAtIndexPath:oldSelectedIndexPath];
