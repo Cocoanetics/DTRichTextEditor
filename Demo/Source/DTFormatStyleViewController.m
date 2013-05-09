@@ -39,18 +39,6 @@
     [fontStepper addTarget:self action:@selector(_stepperValueChanged:) forControlEvents:UIControlEventValueChanged];
     
     self.fontSizeStepper = fontStepper;
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
-        // on the phone this controller will be presented modally
-        // we need a control to dismiss ourselves
-        
-        // add a bar button item to close
-        UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:@"\u25BC"
-                                                                      style:UIBarButtonItemStyleBordered
-                                                                     target:nil
-                                                                     action:@selector(userPressedDone:)];
-        self.navigationItem.rightBarButtonItem = closeItem;
-    }
 }
 
 - (CGSize)contentSizeForViewInPopover {
