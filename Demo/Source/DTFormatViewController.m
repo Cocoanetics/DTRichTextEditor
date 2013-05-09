@@ -24,7 +24,7 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
         
-    DTFormatOverviewViewController *homeFormatController = [[DTFormatOverviewViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    DTFormatOverviewViewController *homeFormatController = [[DTFormatOverviewViewController alloc] init];
     
     self.viewControllers = @[homeFormatController];
 }
@@ -43,7 +43,7 @@
     
     if(self.viewControllers.count > 0){
         DTFormatOverviewViewController *homeFormatController = self.viewControllers[0];
-        [homeFormatController.tableView reloadData];
+        [homeFormatController.visibleTableViewController.tableView reloadData];
         
         if ([self.topViewController isKindOfClass:[DTFormatFontFamilyTableViewController class]])
         {
@@ -59,7 +59,7 @@
     
     if(self.viewControllers.count > 0){
         DTFormatOverviewViewController *homeFormatController = self.viewControllers[0];
-        [homeFormatController.tableView reloadData];
+        [homeFormatController.visibleTableViewController.tableView reloadData];
     }
 }
 

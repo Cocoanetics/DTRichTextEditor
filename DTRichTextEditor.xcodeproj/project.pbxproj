@@ -21,6 +21,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		0B177524173B416F00498540 /* DTFormatStyleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B177523173B416F00498540 /* DTFormatStyleViewController.m */; };
+		0B177539173B417A00498540 /* DTFormatListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B177538173B417A00498540 /* DTFormatListViewController.m */; };
 		0B2BF19F1718E54700BA0213 /* DTFormatOverviewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B2BF19E1718E54700BA0213 /* DTFormatOverviewViewController.m */; };
 		0B2BF1A21718EAB700BA0213 /* DTFormatFontFamilyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B2BF1A11718EAB700BA0213 /* DTFormatFontFamilyTableViewController.m */; };
 		0B804945171B87B6000A3CFE /* DTFormatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B804944171B87B6000A3CFE /* DTFormatViewController.m */; };
@@ -450,6 +452,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0B177522173B416F00498540 /* DTFormatStyleViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTFormatStyleViewController.h; sourceTree = "<group>"; };
+		0B177523173B416F00498540 /* DTFormatStyleViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTFormatStyleViewController.m; sourceTree = "<group>"; };
+		0B177537173B417A00498540 /* DTFormatListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTFormatListViewController.h; sourceTree = "<group>"; };
+		0B177538173B417A00498540 /* DTFormatListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTFormatListViewController.m; sourceTree = "<group>"; };
 		0B2BF19D1718E54600BA0213 /* DTFormatOverviewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTFormatOverviewViewController.h; sourceTree = "<group>"; };
 		0B2BF19E1718E54700BA0213 /* DTFormatOverviewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTFormatOverviewViewController.m; sourceTree = "<group>"; };
 		0B2BF1A01718EAB700BA0213 /* DTFormatFontFamilyTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTFormatFontFamilyTableViewController.h; sourceTree = "<group>"; };
@@ -656,6 +662,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0B17753A173B436A00498540 /* Style */ = {
+			isa = PBXGroup;
+			children = (
+				0B177522173B416F00498540 /* DTFormatStyleViewController.h */,
+				0B177523173B416F00498540 /* DTFormatStyleViewController.m */,
+				0B2BF1A01718EAB700BA0213 /* DTFormatFontFamilyTableViewController.h */,
+				0B2BF1A11718EAB700BA0213 /* DTFormatFontFamilyTableViewController.m */,
+			);
+			name = Style;
+			sourceTree = "<group>";
+		};
+		0B17753B173B437200498540 /* List */ = {
+			isa = PBXGroup;
+			children = (
+				0B177537173B417A00498540 /* DTFormatListViewController.h */,
+				0B177538173B417A00498540 /* DTFormatListViewController.m */,
+			);
+			name = List;
+			sourceTree = "<group>";
+		};
 		A70AE5D7173922B2002F4EA5 /* Test Options */ = {
 			isa = PBXGroup;
 			children = (
@@ -674,8 +700,8 @@
 				0B804944171B87B6000A3CFE /* DTFormatViewController.m */,
 				0B2BF19D1718E54600BA0213 /* DTFormatOverviewViewController.h */,
 				0B2BF19E1718E54700BA0213 /* DTFormatOverviewViewController.m */,
-				0B2BF1A01718EAB700BA0213 /* DTFormatFontFamilyTableViewController.h */,
-				0B2BF1A11718EAB700BA0213 /* DTFormatFontFamilyTableViewController.m */,
+				0B17753A173B436A00498540 /* Style */,
+				0B17753B173B437200498540 /* List */,
 				A7DF6EDB173A6626004F623B /* DTFormatTableView.h */,
 				A7DF6EDC173A6626004F623B /* DTFormatTableView.m */,
 			);
@@ -1533,6 +1559,8 @@
 				0B2BF1A21718EAB700BA0213 /* DTFormatFontFamilyTableViewController.m in Sources */,
 				0B804945171B87B6000A3CFE /* DTFormatViewController.m in Sources */,
 				A7DF6EDD173A6626004F623B /* DTFormatTableView.m in Sources */,
+				0B177524173B416F00498540 /* DTFormatStyleViewController.m in Sources */,
+				0B177539173B417A00498540 /* DTFormatListViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

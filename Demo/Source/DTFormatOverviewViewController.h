@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DTFormatOverviewViewController : UITableViewController
+@interface DTFormatOverviewViewController : UIViewController
+
+@property (nonatomic, weak, readonly) UITableViewController *visibleTableViewController;
 
 @end
