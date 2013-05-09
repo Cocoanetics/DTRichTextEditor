@@ -1694,6 +1694,9 @@ typedef enum
     
     if (action == @selector(_define:))
     {
+        if( ![UIReferenceLibraryViewController class] )
+            return NO;
+        
         NSRange range = [(DTTextRange *)self.selectedTextRange NSRangeValue];
         NSString *selectedTerm = [[self.attributedString string] substringWithRange:range];
         return [UIReferenceLibraryViewController dictionaryHasDefinitionForTerm:selectedTerm];
@@ -1905,7 +1908,10 @@ typedef enum
 }
 
 - (void)_define:(UIMenuController *)sender
-{    
+{
+    if( ![UIReferenceLibraryViewController class] )
+        return;
+    
     NSArray *selectionRects = [self selectionRectsForRange:self.selectedTextRange];
     CGRect selectedWordFrame = CGRectNull;
     for (UITextSelectionRect *selectionRect in selectionRects) {
