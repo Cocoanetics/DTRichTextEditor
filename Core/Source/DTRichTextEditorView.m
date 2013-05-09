@@ -75,6 +75,8 @@ typedef enum
 
 @property (nonatomic, assign) BOOL userIsTyping;  // while user is typing there are no selection range updates to input delegate
 
+@property (nonatomic, retain) UIPopoverController *definePopoverController; // used for presenting definitions of a selected term on the iPad
+
 - (void)setDefaultText;
 - (void)showContextMenuFromSelection;
 - (void)hideContextMenu;
@@ -1518,6 +1520,10 @@ typedef enum
     {
         NSArray *delegateMenuItems = self.editorViewDelegate.menuItems;
         
+        UIMenuItem *defineItem = [[UIMenuItem alloc] initWithTitle:@"Define" action:@selector(_define:)];
+        
+        delegateMenuItems = [delegateMenuItems arrayByAddingObject:defineItem];
+        
         if (delegateMenuItems)
         {
             // Filter delegate's menu items to remove any that would interfere with our code
@@ -1685,6 +1691,13 @@ typedef enum
 	{
 		return YES;
 	}
+    
+    if (action == @selector(_define:))
+    {
+        NSRange range = [(DTTextRange *)self.selectedTextRange NSRangeValue];
+        NSString *selectedTerm = [[self.attributedString string] substringWithRange:range];
+        return [UIReferenceLibraryViewController dictionaryHasDefinitionForTerm:selectedTerm];
+    }
 	
 	
 	return NO;
@@ -1889,6 +1902,39 @@ typedef enum
     self.selectionView.dragHandlesVisible = YES;
 	
 	self.selectedTextRange = [DTTextRange textRangeFromStart:self.beginningOfDocument toEnd:self.endOfDocument];
+}
+
+- (void)_define:(UIMenuController *)sender
+{    
+    NSArray *selectionRects = [self selectionRectsForRange:self.selectedTextRange];
+    CGRect selectedWordFrame = CGRectNull;
+    for (UITextSelectionRect *selectionRect in selectionRects) {
+        if (CGRectIsNull(selectedWordFrame)) {
+            selectedWordFrame = selectionRect.rect;
+        } else {
+            selectedWordFrame = CGRectUnion(selectedWordFrame, selectionRect.rect);
+        }
+    }
+    
+    NSRange range = [(DTTextRange *)self.selectedTextRange NSRangeValue];
+    NSString *selectedTerm = [[self.attributedString string] substringWithRange:range];
+    
+    UIReferenceLibraryViewController *dictionaryViewController = [[UIReferenceLibraryViewController alloc] initWithTerm:selectedTerm];
+    
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ){
+        if(!self.definePopoverController){
+            self.definePopoverController = [[UIPopoverController alloc] initWithContentViewController:dictionaryViewController];
+        }else{
+            [self.definePopoverController setContentViewController:dictionaryViewController];
+        }
+        
+        [self.definePopoverController presentPopoverFromRect:selectedWordFrame
+                                                      inView:self
+                                    permittedArrowDirections:UIPopoverArrowDirectionAny
+                                                    animated:YES];
+    }else{
+        [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:dictionaryViewController animated:YES completion:nil];
+    }
 }
 
 // creates an undo manager lazily in response to a shake gesture or first edit action
