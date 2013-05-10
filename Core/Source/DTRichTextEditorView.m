@@ -58,7 +58,7 @@ typedef enum
 } DTDragMode;
 
 // private extensions to the public interface
-@interface DTRichTextEditorView () <DTAttributedTextContentViewDelegate, UIGestureRecognizerDelegate>
+@interface DTRichTextEditorView () <DTAttributedTextContentViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate>
 
 @property (nonatomic, retain) DTTextSelectionView *selectionView;
 @property (nonatomic, retain) DTCursorView *cursor;
@@ -74,6 +74,9 @@ typedef enum
 @property (retain, readwrite) UIView *inputView;
 
 @property (nonatomic, assign) BOOL userIsTyping;  // while user is typing there are no selection range updates to input delegate
+
+@property (nonatomic, retain, readonly) NSArray *editorMenuItems;
+@property (nonatomic, retain) UIPopoverController *definePopoverController; // used for presenting definitions of a selected term on the iPad
 
 - (void)setDefaultText;
 - (void)showContextMenuFromSelection;
@@ -413,13 +416,7 @@ typedef enum
     
     // Display the context menu
     _contextMenuVisible = YES;
-    CGRect targetRect = [self boundsOfCurrentSelection];
-    
-    // Adjust the target rect to be just above the viewport of the scrollview
-    CGRect visibleRect;
-    visibleRect.origin = self.contentOffset;
-    visibleRect.size = self.bounds.size;
-    targetRect = CGRectIntersection(targetRect, visibleRect);
+    CGRect targetRect = [self visibleBoundsOfCurrentSelection];
     
     // Present the menu
 	UIMenuController *menuController = [UIMenuController sharedMenuController];
@@ -975,6 +972,18 @@ typedef enum
 	return targetRect;
 }
 
+- (CGRect)visibleBoundsOfCurrentSelection
+{
+    CGRect targetRect = [self boundsOfCurrentSelection];
+    
+    CGRect visibleRect;
+    visibleRect.origin = self.contentOffset;
+    visibleRect.size = self.bounds.size;
+    targetRect = CGRectIntersection(targetRect, visibleRect);
+    
+    return targetRect;
+}
+
 #pragma mark Notifications
 
 - (void)cursorDidBlink:(NSNotification *)notification
@@ -1513,27 +1522,22 @@ typedef enum
         [self setEditing:YES];
     }
     
-    // Add custom menu items if implemented by the editor view delegate
+    // Add editor menu items and editor view delegate menu items
+    NSMutableArray *menuItems = [[NSMutableArray alloc] initWithArray:self.editorMenuItems];
+
     if (_editorViewDelegateFlags.delegateMenuItems)
     {
-        NSArray *delegateMenuItems = self.editorViewDelegate.menuItems;
-        
-        if (delegateMenuItems)
+        // Filter delegate's menu items to remove any that would interfere with our code
+        for (UIMenuItem *menuItem in self.editorViewDelegate.menuItems)
         {
-            // Filter delegate's menu items to remove any that would interfere with our code
-            NSMutableArray *acceptableMenuItems = [[NSMutableArray alloc] init];
-            
-            for (UIMenuItem *menuItem in delegateMenuItems)
+            if (![self respondsToSelector:menuItem.action])
             {
-                if (![self respondsToSelector:menuItem.action])
-                {
-                    [acceptableMenuItems addObject:menuItem];
-                }
+                [menuItems addObject:menuItem];
             }
-            
-            [[UIMenuController sharedMenuController] setMenuItems:acceptableMenuItems];
         }
     }
+    
+    [[UIMenuController sharedMenuController] setMenuItems:menuItems];
     
     return YES;
 }
@@ -1597,6 +1601,25 @@ typedef enum
     }
     
     return nil;
+}
+
+- (NSArray *)editorMenuItems
+{
+    if (_editorMenuItems == nil)
+    {
+        NSMutableArray *items = [[NSMutableArray alloc] init];
+        
+        if ([UIReferenceLibraryViewController class])
+        {
+            UIMenuItem *defineItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Define", @"Menu item title for defining a selected term")
+                                                                action:@selector(define:)];
+            [items addObject:defineItem];
+        }
+        
+        _editorMenuItems = items;
+    }
+    
+    return _editorMenuItems;
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
@@ -1685,12 +1708,19 @@ typedef enum
 	{
 		return YES;
 	}
+    
+    if (action == @selector(define:))
+    {
+        if( ![UIReferenceLibraryViewController class] )
+            return NO;
+        
+        NSString *selectedTerm = [self textInRange:self.selectedTextRange];
+        return [UIReferenceLibraryViewController dictionaryHasDefinitionForTerm:selectedTerm];
+    }
 	
 	
 	return NO;
 }
-
-
 
 - (void)delete:(id)sender
 {
@@ -1889,6 +1919,45 @@ typedef enum
     self.selectionView.dragHandlesVisible = YES;
 	
 	self.selectedTextRange = [DTTextRange textRangeFromStart:self.beginningOfDocument toEnd:self.endOfDocument];
+}
+
+- (void)define:(id)sender
+{
+    if (![UIReferenceLibraryViewController class])
+        return;
+    
+    if (!self.selectedTextRange || [self.selectedTextRange isEmpty])
+        return;
+    
+    NSString *selectedTerm = [self textInRange:self.selectedTextRange];
+    
+    if (![UIReferenceLibraryViewController dictionaryHasDefinitionForTerm:selectedTerm])
+        return;
+    
+    UIReferenceLibraryViewController *dictionaryViewController = [[UIReferenceLibraryViewController alloc] initWithTerm:selectedTerm];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+    {
+        UIApplication *application = [UIApplication sharedApplication];
+        UIWindow *window = [application keyWindow];
+        [window.rootViewController presentViewController:dictionaryViewController animated:YES completion:nil];
+    }
+    else // iPad
+    {
+        CGRect targetRect = [self visibleBoundsOfCurrentSelection];
+        
+        if (CGRectIsNull(targetRect))
+            return;
+        
+        UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:dictionaryViewController];
+        popover.delegate = self;
+        [popover presentPopoverFromRect:targetRect
+                                 inView:self
+               permittedArrowDirections:UIPopoverArrowDirectionAny
+                               animated:YES];
+        
+        self.definePopoverController = popover;
+    }
 }
 
 // creates an undo manager lazily in response to a shake gesture or first edit action
@@ -3031,6 +3100,16 @@ typedef enum
     [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidChangeNotification object:self];
 }
 
+#pragma mark - UIPopoverControllerDelegate
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
+    if (popoverController == self.definePopoverController)
+    {
+        self.definePopoverController = nil;
+    }
+}
+
 #pragma mark - Properties
 
 - (void)setAttributedText:(NSAttributedString *)newAttributedText
@@ -3284,6 +3363,7 @@ typedef enum
 @synthesize selectionView = _selectionView;
 @synthesize waitingForDictionationResult = _waitingForDictionationResult;
 @synthesize dictationPlaceholderView = _dictationPlaceholderView;
+@synthesize editorMenuItems = _editorMenuItems;
 
 @synthesize userIsTyping = _userIsTyping;
 
