@@ -15,11 +15,14 @@
 #import "DTFormatViewController.h"
 
 #import "DTAttributedTextCell.h"
+#import "DPTableViewCellSegmentedControl.h"
 
 @interface DTFormatStyleViewController ()
 
 @property (nonatomic, strong) UIStepper *fontSizeStepper;
 @property (nonatomic, weak) UILabel *sizeValueLabel;
+
+@property (nonatomic, strong) DPTableViewCellSegmentedControl *styleSegmentedControl;
 
 @property (nonatomic, weak) DTFormatViewController<DTInternalFormatProtocol> *formatPicker;
 
@@ -39,6 +42,34 @@
     [fontStepper addTarget:self action:@selector(_stepperValueChanged:) forControlEvents:UIControlEventValueChanged];
     
     self.fontSizeStepper = fontStepper;
+    
+    self.styleSegmentedControl = [[DPTableViewCellSegmentedControl alloc] initWithItems:@[ @"B", @"I", @"U", @"S" ]];
+    self.styleSegmentedControl.itemSelectedState = @[@(self.formatPicker.fontDescriptor.boldTrait), @(self.formatPicker.fontDescriptor.italicTrait), @(NO), @(NO)];
+    [self.styleSegmentedControl addTarget:self action:@selector(styleValueChanged:) forControlEvents:UIControlEventValueChanged];
+//    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//    self.tableView.separatorColor = [UIColor redColor];
+    
+//    [self.tableView setSeparatorColor:[UIColor clearColor]];
+//    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
+
+}
+
+- (void)styleValueChanged:(DPTableViewCellSegmentedControl *)control
+{
+    switch(control.selectedIndex){
+        case 0:
+            [self _editBoldTrait];
+            break;
+        case 1:
+            [self _editItalicTrait];
+            break;
+        case 2:
+            [self _editUnderlineTrait];
+            break;
+        case 3:
+            [self _editStrikethroughTrait];
+            break;
+    }
 }
 
 - (CGSize)contentSizeForViewInPopover {
@@ -93,6 +124,8 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    self.styleSegmentedControl.itemSelectedState = @[@(self.formatPicker.fontDescriptor.boldTrait), @(self.formatPicker.fontDescriptor.italicTrait), @(NO), @(NO)];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -113,7 +146,7 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return section == 0 ? 1 : 5;
+    return section == 0 ? 2 : 5;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -129,14 +162,28 @@
         cell = [[DTAttributedTextCell alloc] initWithReuseIdentifier:nil];
         [[(DTAttributedTextCell *)cell attributedTextContextView] setEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
     }
-    
+        
     if (indexPath.section == 0)
     {
-        self.fontSizeStepper.value = self.formatPicker.fontDescriptor.pointSize;
-        cell.textLabel.text = [NSString stringWithFormat:@"Size (%.0f pt)", self.formatPicker.fontDescriptor.pointSize ];
-        self.sizeValueLabel = cell.textLabel;
-        cell.accessoryView = self.fontSizeStepper;
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        if(indexPath.row == 0){
+            self.fontSizeStepper.value = self.formatPicker.fontDescriptor.pointSize;
+            cell.textLabel.text = [NSString stringWithFormat:@"Size (%.0f pt)", self.formatPicker.fontDescriptor.pointSize ];
+            self.sizeValueLabel = cell.textLabel;
+            cell.accessoryView = self.fontSizeStepper;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }else if (indexPath.row == 1){
+            if ( ![cell.contentView viewWithTag:99] ){
+                cell.backgroundColor = [UIColor clearColor];
+                
+                cell.backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
+                
+                self.styleSegmentedControl.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(cell.contentView.bounds), CGRectGetHeight(cell.contentView.bounds));
+                self.styleSegmentedControl.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+                self.styleSegmentedControl.cellPosition = DPTableViewCellSegmentedControlPositionBottom;
+                [cell.contentView addSubview:self.styleSegmentedControl];
+            }
+
+        }
     }
     else if (indexPath.section == 1)
     {
@@ -150,8 +197,6 @@
         }
         else
         {
-            // bold, italic, underline
-            
             switch (indexPath.row)
             {
                 case 1: //bold
