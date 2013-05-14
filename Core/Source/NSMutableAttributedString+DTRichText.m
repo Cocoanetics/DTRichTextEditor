@@ -643,6 +643,8 @@
 		 // get current attributes
 		 NSDictionary *currentAttributes = [self attributesAtIndex:enclosingRange.location effectiveRange:NULL];
 		 
+		 DTCoreTextParagraphStyle *currentParagraphStyle = [currentAttributes paragraphStyle];
+		 
 		 NSMutableAttributedString *paragraphString = [[self attributedSubstringFromRange:enclosingRange] mutableCopy];
 		 
 		 // remove previous prefix in either case
@@ -669,8 +671,16 @@
                  [tmpDict updateParagraphSpacing:0];
                  currentAttributes = tmpDict;
              }
-             
-			 NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:listStyle listIndent:listIndent attributes:currentAttributes];
+			 
+			 CGFloat usedIndent = listIndent;
+			 
+			 if (!didDeletePrefix)
+			 {
+				 // add previous head indent
+				 usedIndent += currentParagraphStyle.firstLineHeadIndent;
+			 }
+			 
+			 NSAttributedString *prefixAttributedString = [NSAttributedString prefixForListItemWithCounter:itemNumber listStyle:listStyle listIndent:usedIndent attributes:currentAttributes];
 			 
 			 [paragraphString insertAttributedString:prefixAttributedString atIndex:0];
 			 
@@ -679,7 +689,23 @@
 			 
 			 if (tabPara)
 			 {
-				 [paragraphString addAttribute:(id)kCTParagraphStyleAttributeName  value:(__bridge id)tabPara range:NSMakeRange(0, [paragraphString length])];
+				 if (didDeletePrefix) // preserve previous indents
+				 {
+					 // preserve previous indents
+					 DTCoreTextParagraphStyle *tabParagraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:tabPara];
+					 
+					 tabParagraphStyle.headIndent = currentParagraphStyle.headIndent;
+					 tabParagraphStyle.firstLineHeadIndent = currentParagraphStyle.firstLineHeadIndent;
+					 
+					 CTParagraphStyleRef newPara = [tabParagraphStyle createCTParagraphStyle];
+					 [paragraphString addAttribute:(id)kCTParagraphStyleAttributeName  value:(__bridge id)newPara range:NSMakeRange(0, [paragraphString length])];
+					 CFRelease(newPara);
+				 }
+				 else
+				 {
+					 // was not prefixed before
+					 [paragraphString addAttribute:(id)kCTParagraphStyleAttributeName  value:(__bridge id)tabPara range:NSMakeRange(0, [paragraphString length])];
+				 }
 			 }
 			 else
 			 {
