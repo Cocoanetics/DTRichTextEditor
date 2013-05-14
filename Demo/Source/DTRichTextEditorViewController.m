@@ -88,7 +88,7 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	[defaults setObject:[UIColor colorWithHTMLName:@"purple"] forKey:DTDefaultLinkColor];
 	
     // demonstrate half em paragraph spacing
-    DTCSSStylesheet *styleSheet = [[DTCSSStylesheet alloc] initWithStyleBlock:@"p {margin-bottom:0.5em} ol {margin-bottom:0.5em} li {margin-bottom:0.5em}"];
+    DTCSSStylesheet *styleSheet = [[DTCSSStylesheet alloc] initWithStyleBlock:@"p {margin-bottom:0.5em} ol {margin-bottom:0.5em} ul {margin-bottom:0.5em}"];
     [defaults setObject:styleSheet forKey:DTDefaultStyleSheet];
     
 	richEditor.textDefaults = defaults;
