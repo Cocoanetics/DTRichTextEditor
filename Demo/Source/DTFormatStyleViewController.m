@@ -153,6 +153,8 @@
 {
     UITableViewCell *cell;
     
+    NSInteger segmentedTag = 99;
+    
     if (indexPath.section == 0 || (indexPath.section == 1 && indexPath.row == 0))
     {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
@@ -161,6 +163,13 @@
     {
         cell = [[DTAttributedTextCell alloc] initWithReuseIdentifier:nil];
         [[(DTAttributedTextCell *)cell attributedTextContextView] setEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
+    }
+    
+    if( [cell.contentView viewWithTag:segmentedTag] && !(indexPath.section == 0 && indexPath.row == 1) )
+    {
+        UIView *targetView = [cell.contentView viewWithTag:segmentedTag];
+        
+        [targetView removeFromSuperview];
     }
         
     if (indexPath.section == 0)
@@ -172,9 +181,9 @@
             cell.accessoryView = self.fontSizeStepper;
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
         }else if (indexPath.row == 1){
-            if ( ![cell.contentView viewWithTag:99] ){
+            if ( ![cell.contentView viewWithTag:segmentedTag] ){
                 cell.backgroundColor = [UIColor clearColor];
-                
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
                 cell.backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
                 
                 self.styleSegmentedControl.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(cell.contentView.bounds), CGRectGetHeight(cell.contentView.bounds));

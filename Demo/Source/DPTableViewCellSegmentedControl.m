@@ -184,8 +184,11 @@
     if (!self.buttons || self.buttons.count == 0){
         [self initializeImages];
     }
+    
+    // frame hack, adding a pixel either side
+    // also moving 2 pixels higher to cover top padding
         
-    CGFloat width = CGRectGetWidth(self.bounds) / self.items.count;
+    CGFloat width = (CGRectGetWidth(self.bounds) + 2.0) / self.items.count;
     CGFloat height = self.imageCenterOff.size.height;
     
     for (NSInteger i = 0; i < self.buttons.count; i++){
@@ -195,7 +198,7 @@
         
         button.selected = [self.itemSelectedState[i] boolValue];
                         
-        [button setFrame:CGRectMake( i * width , 0.0, width, height)];
+        [button setFrame:CGRectMake( (i * width) - 1.0 , -2.0, width, height)];
     }
 }
 
