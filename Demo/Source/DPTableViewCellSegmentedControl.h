@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DPTableViewCellSegmentedControlItem.h"
 
 typedef enum {
     DPTableViewCellSegmentedControlPositionSingle = 1,
@@ -17,7 +18,7 @@ typedef enum {
 
 @interface DPTableViewCellSegmentedControl : UIControl
 
-@property (nonatomic, assign) NSUInteger selectedIndex;
+@property (nonatomic, assign) NSInteger selectedIndex;
 @property (nonatomic, strong) NSArray *items;
 @property (nonatomic, strong) NSArray *itemSelectedState;
 @property (nonatomic, assign) BOOL allowMultipleSelection;

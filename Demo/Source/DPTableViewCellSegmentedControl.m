@@ -26,7 +26,7 @@
     if(self){
         self.items = @[];
         self.buttons = @[];
-        self.selectedIndex = 0;
+        self.selectedIndex = -1;
         self.frame = CGRectZero;
         self.cellPosition = DPTableViewCellSegmentedControlPositionSingle;
         self.allowMultipleSelection = YES;
@@ -137,13 +137,22 @@
 
     for (NSInteger i = 0; i < self.items.count; i++){
         
-        id itemName = self.items[i];
+        id itemObject = self.items[i];
         
-        if( ![itemName isKindOfClass:[NSString class]] )
+        if( ![itemObject isKindOfClass:[NSString class]] && ![itemObject isKindOfClass:[DPTableViewCellSegmentedControlItem class]] )
             continue;
 
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-        [button setTitle:itemName forState:UIControlStateNormal];
+        
+        if([itemObject isKindOfClass:[NSString class]]){
+            [button setTitle:itemObject forState:UIControlStateNormal];
+        }else{
+            DPTableViewCellSegmentedControlItem *item = (DPTableViewCellSegmentedControlItem *)itemObject;
+            [button setImage:item.icon forState:UIControlStateNormal];
+            [button setImage:item.iconHighlighted forState:UIControlStateHighlighted];
+            [button setImage:item.iconHighlighted forState:UIControlStateSelected];
+            [button setImage:item.iconHighlighted forState:UIControlStateHighlighted | UIControlStateSelected];
+        }
         
         [button setTitleColor:[UIColor darkGrayColor] forState:UIControlStateNormal];
         [button setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
@@ -188,7 +197,7 @@
     // frame hack, adding a pixel either side
     // also moving 2 pixels higher to cover top padding
         
-    CGFloat width = (CGRectGetWidth(self.bounds) + 2.0) / self.items.count;
+    CGFloat width = CGRectGetWidth(self.bounds) / self.items.count;
     CGFloat height = self.imageCenterOff.size.height;
     
     for (NSInteger i = 0; i < self.buttons.count; i++){
@@ -196,13 +205,18 @@
         if (!button)
             continue;
         
-        button.selected = [self.itemSelectedState[i] boolValue];
+        button.selected = self.itemSelectedState.count > 0 ? [self.itemSelectedState[i] boolValue] : self.selectedIndex == i;
                         
-        [button setFrame:CGRectMake( (i * width) - 1.0 , -2.0, width, height)];
+        [button setFrame:CGRectMake( i * width , 0.0, width, height)];
     }
 }
 
 - (void)buttonTapped:(UIButton *)sender{
+    
+    if(!self.allowMultipleSelection){
+        [self.buttons makeObjectsPerformSelector:@selector(setSelected:)];
+    }
+    
     sender.selected = !sender.selected;
     
     // toggle adjecant images to show/hide shaddows.

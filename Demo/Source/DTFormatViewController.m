@@ -19,6 +19,15 @@
 
 @synthesize fontDescriptor = _fontDescriptor;
 
+- (id)init
+{
+    self = [super init];
+    if(self){
+        self.textAlignment = -1;
+    }
+    return self;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -102,6 +111,11 @@
 {
     _strikethrough = active;
     [self.formatDelegate formatDidToggleStrikethrough];
+}
+
+- (void)applyTextAlignment:(CTTextAlignment)alignment
+{
+    [self.formatDelegate formatDidChangeTextAlignment:alignment];
 }
 
 #pragma mark - Event bubbling

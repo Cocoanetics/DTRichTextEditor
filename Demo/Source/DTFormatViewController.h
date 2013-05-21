@@ -17,6 +17,7 @@
 @property (strong, nonatomic) DTCoreTextFontDescriptor *fontDescriptor;
 @property (assign, nonatomic, getter = isUnderlined) BOOL underline;
 @property (assign, nonatomic, getter = isStrikethrough) BOOL strikethrough;
+@property (assign, nonatomic) CTTextAlignment textAlignment;
 
 @end
 
@@ -27,6 +28,7 @@
 - (void)formatDidToggleItalic;
 - (void)formatDidToggleUnderline;
 - (void)formatDidToggleStrikethrough;
+- (void)formatDidChangeTextAlignment:(CTTextAlignment)alignment;
 - (void)formatViewControllerUserDidFinish:(DTFormatViewController *)formatController;
 
 @end
@@ -42,4 +44,5 @@
 - (void)applyItalic:(BOOL)active;
 - (void)applyUnderline:(BOOL)active;
 - (void)applyStrikethrough:(BOOL)active;
+- (void)applyTextAlignment:(CTTextAlignment)alignment;
 @end

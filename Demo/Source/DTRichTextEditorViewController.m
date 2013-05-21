@@ -103,14 +103,7 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	
 	photoButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];
     highlightButton = [[UIBarButtonItem alloc] initWithTitle:@"H" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleHighlight:)];
-
-	UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-	
-	leftAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"L" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleLeft:)];
-	centerAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"C" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleCenter:)];
-	rightAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"R" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleRight:)];
-	justifyAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"J" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleJustify:)];
-	
+		
 	increaseIndentButton = [[UIBarButtonItem alloc] initWithTitle:@"->" style:UIBarButtonItemStyleBordered target:self action:@selector(increaseIndent:)];
 	decreaseIndentButton = [[UIBarButtonItem alloc] initWithTitle:@"<-" style:UIBarButtonItemStyleBordered target:self action:@selector(decreaseIndent:)];
 	
@@ -131,15 +124,12 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
 	richEditor.inputAccessoryView = toolbar;
 	
-	[toolbar setItems:[NSArray arrayWithObjects:highlightButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, increaseIndentButton, decreaseIndentButton, spacer3, orderedListButton, unorderedListButton, spacer4, photoButton, smile, linkButton, nil]];
+	[toolbar setItems:[NSArray arrayWithObjects:highlightButton, spacer2, increaseIndentButton, decreaseIndentButton, spacer3, orderedListButton, unorderedListButton, spacer4, photoButton, smile, linkButton, nil]];
     
     // notifications
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
 	[center addObserver:self selector:@selector(menuDidHide:) name:UIMenuControllerDidHideMenuNotification object:nil];
 }
-
-
-
 
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -147,7 +137,6 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     //    return (interfaceOrientation == UIInterfaceOrientationPortrait);
 	return YES;
 }
-
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -294,30 +283,6 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 {
 	UITextRange *range = richEditor.selectedTextRange;
 	[richEditor toggleHighlightInRange:range color:[UIColor yellowColor]];
-}
-
-- (void)toggleLeft:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor applyTextAlignment:kCTLeftTextAlignment toParagraphsContainingRange:range];
-}
-
-- (void)toggleCenter:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor applyTextAlignment:kCTCenterTextAlignment toParagraphsContainingRange:range];
-}
-
-- (void)toggleRight:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor applyTextAlignment:kCTRightTextAlignment toParagraphsContainingRange:range];
-}
-
-- (void)toggleJustify:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor applyTextAlignment:kCTJustifiedTextAlignment toParagraphsContainingRange:range];
 }
 
 - (void)increaseIndent:(UIBarButtonItem *)sender
@@ -487,6 +452,15 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     NSDictionary *attributesDictionary = [richEditor typingAttributesForRange:richEditor.selectedTextRange];
     
     self.formatViewController.underline = (attributesDictionary[@"NSUnderline"] != nil);
+    self.formatViewController.strikethrough = (attributesDictionary[@"NSStrikethrough"] != nil);
+        
+    CTParagraphStyleRef paragraphStyle = (__bridge CTParagraphStyleRef)[attributesDictionary objectForKey:(id)kCTParagraphStyleAttributeName];
+    DTCoreTextParagraphStyle *dtstyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:paragraphStyle];
+    CFRelease(paragraphStyle);
+    
+    CTTextAlignment ali = dtstyle.alignment;
+    
+    self.formatViewController.textAlignment = ali;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
     {
@@ -673,6 +647,12 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     
 	richEditor.inputAccessoryView = toolbar; // restore accessory on next inputView change
 	[richEditor setInputView:nil animated:YES];
+}
+
+- (void)formatDidChangeTextAlignment:(CTTextAlignment)alignment
+{
+    UITextRange *range = richEditor.selectedTextRange;
+	[richEditor applyTextAlignment:alignment toParagraphsContainingRange:range];
 }
 
 @end

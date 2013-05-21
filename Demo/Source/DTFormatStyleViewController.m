@@ -23,6 +23,7 @@
 @property (nonatomic, weak) UILabel *sizeValueLabel;
 
 @property (nonatomic, strong) DPTableViewCellSegmentedControl *styleSegmentedControl;
+@property (nonatomic, strong) DPTableViewCellSegmentedControl *alignmentSegmentedControl;
 
 @property (nonatomic, weak) DTFormatViewController<DTInternalFormatProtocol> *formatPicker;
 
@@ -43,18 +44,25 @@
     
     self.fontSizeStepper = fontStepper;
     
-    self.styleSegmentedControl = [[DPTableViewCellSegmentedControl alloc] initWithItems:@[ @"B", @"I", @"U", @"S" ]];
-    self.styleSegmentedControl.itemSelectedState = @[@(self.formatPicker.fontDescriptor.boldTrait), @(self.formatPicker.fontDescriptor.italicTrait), @(NO), @(NO)];
-    [self.styleSegmentedControl addTarget:self action:@selector(styleValueChanged:) forControlEvents:UIControlEventValueChanged];
-//    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-//    self.tableView.separatorColor = [UIColor redColor];
+    DPTableViewCellSegmentedControlItem *boldItem = [DPTableViewCellSegmentedControlItem itemWithImages:@[ [UIImage imageNamed:@"TSWP_seg-BIU_bold_N.png"], [UIImage imageNamed:@"TSWP_seg-BIU_bold_S.png"] ]];
+    DPTableViewCellSegmentedControlItem *italicItem = [DPTableViewCellSegmentedControlItem itemWithImages:@[ [UIImage imageNamed:@"TSWP_seg-BIU_italic_N.png"], [UIImage imageNamed:@"TSWP_seg-BIU_italic_S.png"] ]];
+    DPTableViewCellSegmentedControlItem *underlineItem = [DPTableViewCellSegmentedControlItem itemWithImages:@[ [UIImage imageNamed:@"TSWP_seg-BIU_underline_N.png"], [UIImage imageNamed:@"TSWP_seg-BIU_underline_S.png"] ]];
+    DPTableViewCellSegmentedControlItem *strikeItem = [DPTableViewCellSegmentedControlItem itemWithImages:@[ [UIImage imageNamed:@"TSWP_seg-BIU_strikethrough_N.png"], [UIImage imageNamed:@"TSWP_seg-BIU_strikethrough_S.png"] ]];
     
-//    [self.tableView setSeparatorColor:[UIColor clearColor]];
-//    [self.tableView setSeparatorStyle:UITableViewCellSeparatorStyleNone];
-
+    self.styleSegmentedControl = [[DPTableViewCellSegmentedControl alloc] initWithItems:@[ boldItem, italicItem, underlineItem, strikeItem ]];
+    [self.styleSegmentedControl addTarget:self action:@selector(_styleValueChanged:) forControlEvents:UIControlEventValueChanged];
+    
+    DPTableViewCellSegmentedControlItem *leftItem = [DPTableViewCellSegmentedControlItem itemWithImages:@[ [UIImage imageNamed:@"TSWP_align-H_left_N.png"], [UIImage imageNamed:@"TSWP_align-H_left_S.png"] ]];
+    DPTableViewCellSegmentedControlItem *centerItem = [DPTableViewCellSegmentedControlItem itemWithImages:@[ [UIImage imageNamed:@"TSWP_align-H_center_N.png"], [UIImage imageNamed:@"TSWP_align-H_center_S.png"] ]];
+    DPTableViewCellSegmentedControlItem *rightItem = [DPTableViewCellSegmentedControlItem itemWithImages:@[ [UIImage imageNamed:@"TSWP_align-H_right_N.png"], [UIImage imageNamed:@"TSWP_align-H_right_S.png"] ]];
+    DPTableViewCellSegmentedControlItem *justifyItem = [DPTableViewCellSegmentedControlItem itemWithImages:@[ [UIImage imageNamed:@"TSWP_align-H_justify_N.png"], [UIImage imageNamed:@"TSWP_align-H_justify_S.png"] ]];
+    
+    self.alignmentSegmentedControl = [[DPTableViewCellSegmentedControl alloc] initWithItems:@[ leftItem, centerItem, rightItem, justifyItem ]];
+    self.alignmentSegmentedControl.allowMultipleSelection = NO;
+    [self.alignmentSegmentedControl addTarget:self action:@selector(_alignmentValueChanged:) forControlEvents:UIControlEventValueChanged];
 }
 
-- (void)styleValueChanged:(DPTableViewCellSegmentedControl *)control
+- (void)_styleValueChanged:(DPTableViewCellSegmentedControl *)control
 {
     switch(control.selectedIndex){
         case 0:
@@ -68,6 +76,24 @@
             break;
         case 3:
             [self _editStrikethroughTrait];
+            break;
+    }
+}
+
+- (void)_alignmentValueChanged:(DPTableViewCellSegmentedControl *)control
+{
+    switch(control.selectedIndex){
+        case 0:
+            [self.formatPicker applyTextAlignment:kCTLeftTextAlignment];
+            break;
+        case 1:
+            [self.formatPicker applyTextAlignment:kCTCenterTextAlignment];
+            break;
+        case 2:
+            [self.formatPicker applyTextAlignment:kCTRightTextAlignment];
+            break;
+        case 3:
+            [self.formatPicker applyTextAlignment:kCTJustifiedTextAlignment];
             break;
     }
 }
@@ -125,7 +151,35 @@
 {
     [super viewWillAppear:animated];
     
-    self.styleSegmentedControl.itemSelectedState = @[@(self.formatPicker.fontDescriptor.boldTrait), @(self.formatPicker.fontDescriptor.italicTrait), @(NO), @(NO)];
+    self.styleSegmentedControl.itemSelectedState = @[@(self.formatPicker.fontDescriptor.boldTrait),
+                                                     @(self.formatPicker.fontDescriptor.italicTrait),
+                                                     @(self.formatPicker.isUnderlined),
+                                                     @(self.formatPicker.isStrikethrough)];
+    
+    if(self.formatPicker.textAlignment != -1){
+        NSInteger selectedIndex;
+        CTTextAlignment alignment = self.formatPicker.textAlignment;
+        switch (alignment) {
+            case kCTNaturalTextAlignment:
+            case kCTLeftTextAlignment:
+                selectedIndex = 0;
+                break;
+            case kCTCenterTextAlignment:
+                selectedIndex = 1;
+                break;
+            case kCTRightTextAlignment:
+                selectedIndex = 2;
+                break;
+            case kCTJustifiedTextAlignment:
+                selectedIndex = 3;
+                break;
+            default:
+                selectedIndex = -1;
+                break;
+        }
+        self.alignmentSegmentedControl.selectedIndex = selectedIndex;
+    }
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -146,23 +200,18 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
-    return section == 0 ? 2 : 5;
+    return section == 0 ? 2 : 2;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell;
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     
-    NSInteger segmentedTag = 99;
+    NSInteger segmentedTag = 98;
+    NSInteger alignementTag = 99;
     
-    if (indexPath.section == 0 || (indexPath.section == 1 && indexPath.row == 0))
-    {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
-    }
-    else
-    {
-        cell = [[DTAttributedTextCell alloc] initWithReuseIdentifier:nil];
-        [[(DTAttributedTextCell *)cell attributedTextContextView] setEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
+    if( !cell ){
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:@"Cell"];
     }
     
     if( [cell.contentView viewWithTag:segmentedTag] && !(indexPath.section == 0 && indexPath.row == 1) )
@@ -170,8 +219,10 @@
         UIView *targetView = [cell.contentView viewWithTag:segmentedTag];
         
         [targetView removeFromSuperview];
-    }
+    }else if([cell.contentView viewWithTag:alignementTag] && !(indexPath.section == 1 && indexPath.row == 0)){
         
+    }
+    
     if (indexPath.section == 0)
     {
         if(indexPath.row == 0){
@@ -191,51 +242,26 @@
                 self.styleSegmentedControl.cellPosition = DPTableViewCellSegmentedControlPositionBottom;
                 [cell.contentView addSubview:self.styleSegmentedControl];
             }
-
+            
         }
     }
     else if (indexPath.section == 1)
     {
-        DTAttributedTextCell *attributedCell = (DTAttributedTextCell *)cell;
-        
-        if(indexPath.row == 0)
-        {
+        if(indexPath.row == 0){
+            if ( ![cell.contentView viewWithTag:alignementTag] ){
+                cell.backgroundColor = [UIColor clearColor];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                cell.backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
+                
+                self.alignmentSegmentedControl.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(cell.contentView.bounds), CGRectGetHeight(cell.contentView.bounds));
+                self.alignmentSegmentedControl.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+                self.alignmentSegmentedControl.cellPosition = DPTableViewCellSegmentedControlPositionTop;
+                [cell.contentView addSubview:self.alignmentSegmentedControl];
+            }
+        }else{
             cell.textLabel.text = @"Font Family";
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", self.formatPicker.fontDescriptor.fontFamily];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        }
-        else
-        {
-            switch (indexPath.row)
-            {
-                case 1: //bold
-                {
-                    cell.accessoryType = self.formatPicker.fontDescriptor.boldTrait ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
-                    [attributedCell setHTMLString:@"<b style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Bold</b>"];
-                    break;
-                }
-                    
-                case 2: //italic
-                {
-                    cell.accessoryType = self.formatPicker.fontDescriptor.italicTrait ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
-                    [attributedCell setHTMLString:@"<em style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Italic</em>"];
-                    break;
-                }
-                    
-                case 3: //underline
-                {
-                    cell.accessoryType = self.formatPicker.isUnderlined ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
-                    [attributedCell setHTMLString:@"<u style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Underlined</u>"];
-                    break;
-                }
-                    
-                case 4: //strikethrough
-                {
-                    cell.accessoryType = self.formatPicker.isUnderlined ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
-                    [attributedCell setHTMLString:@"<del style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Strikethrough</del>"];
-                    break;
-                }
-            }
         }
     }
     
@@ -248,49 +274,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if(!indexPath.section)
-    {
-        return;
-    }
-    
     switch (indexPath.row)
     {
         case 0:
         {
             DTFormatFontFamilyTableViewController *fontFamilyChooserController = [[DTFormatFontFamilyTableViewController alloc] initWithStyle:UITableViewStyleGrouped selectedFontFamily:self.formatPicker.fontDescriptor.fontFamily];
             [self.navigationController pushViewController:fontFamilyChooserController animated:YES];
-            break;
-        }
-            
-        case 1:
-        {
-            [self _editBoldTrait];
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
-            break;
-        }
-            
-        case 2:
-        {
-            [self _editItalicTrait];
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
-            break;
-        }
-            
-        case 3:
-        {
-            [self _editUnderlineTrait];
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
-            break;
-        }
-            
-        case 4:
-        {
-            [self _editStrikethroughTrait];
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
             break;
         }
             
