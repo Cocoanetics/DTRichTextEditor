@@ -50,7 +50,7 @@
     
     _items = items;
     
-    [self setNeedsDisplay];
+    [self setNeedsLayout];
 }
 
 - (void)setSelectedIndex:(NSInteger)selectedIndex
@@ -59,6 +59,16 @@
         return;
     
     _selectedIndex = selectedIndex;
+    
+    [self setNeedsLayout];
+}
+
+- (void)setItemSelectedState:(NSArray *)itemSelectedState
+{
+    if(itemSelectedState == _itemSelectedState)
+        return;
+    
+    _itemSelectedState = itemSelectedState;
     
     [self setNeedsLayout];
 }
@@ -231,7 +241,7 @@
     
     // toggle adjecant images to show/hide shaddows.
     
-    self.selectedIndex = [self.buttons indexOfObject:sender];
+    _selectedIndex = [self.buttons indexOfObject:sender];
     
     [self sendActionsForControlEvents:UIControlEventValueChanged];
 }
