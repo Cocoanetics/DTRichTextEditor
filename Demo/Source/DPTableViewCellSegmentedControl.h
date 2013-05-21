@@ -26,6 +26,4 @@ typedef enum {
 
 - (id)initWithItems:(NSArray *)items;
 
-- (UISegmentedControl *)seg;
-
 @end

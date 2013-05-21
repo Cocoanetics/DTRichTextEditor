@@ -53,6 +53,16 @@
     [self setNeedsDisplay];
 }
 
+- (void)setSelectedIndex:(NSInteger)selectedIndex
+{
+    if(selectedIndex == _selectedIndex)
+        return;
+    
+    _selectedIndex = selectedIndex;
+    
+    [self setNeedsLayout];
+}
+
 - (void)setCellPosition:(DPTableViewCellSegmentedControlPosition)cellPosition
 {
     if(_cellPosition == cellPosition)
