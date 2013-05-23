@@ -10,6 +10,6 @@
 
 @interface DTFormatOverviewViewController : UIViewController
 
-@property (nonatomic, weak, readonly) UITableViewController *visibleTableViewController;
+@property (nonatomic, weak, readonly) UIViewController *visibleTableViewController;
 
 @end

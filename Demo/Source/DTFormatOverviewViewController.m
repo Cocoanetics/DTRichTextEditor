@@ -11,12 +11,15 @@
 
 #import "DTFormatStyleViewController.h"
 #import "DTFormatListViewController.h"
+#import "DTFormatOtherViewController.h"
 
 @interface DTFormatOverviewViewController()
 
 @property (nonatomic, strong) DTFormatStyleViewController *styleTableViewController;
 @property (nonatomic, strong) DTFormatListViewController *listTableViewController;
-@property (nonatomic, weak, readwrite) UITableViewController *visibleTableViewController;
+@property (nonatomic, strong) DTFormatOtherViewController *otherTableViewController;
+@property (nonatomic, strong) UIImagePickerController *mediaController;
+@property (nonatomic, weak, readwrite) UIViewController *visibleTableViewController;
 
 @end
 
@@ -28,7 +31,7 @@
     
     NSAssert([self.navigationController isKindOfClass:[DTFormatViewController class]], @"Must use inside a DTFormatViewController");
     
-    UISegmentedControl *formatTypeChooser = [[UISegmentedControl alloc] initWithItems:@[ @"Style", @"List" ]];
+    UISegmentedControl *formatTypeChooser = [[UISegmentedControl alloc] initWithItems:@[ @"Style", @"List", @"Media", @"Other" ]];
     formatTypeChooser.segmentedControlStyle = UISegmentedControlStyleBar;
 
     formatTypeChooser.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(formatTypeChooser.bounds));
@@ -55,7 +58,7 @@
 #pragma mark - Segmented Control Methods
 - (void)_formatTypeChooserValueChanged:(UISegmentedControl *)control
 {
-    UITableViewController *newViewController = nil;
+    UIViewController *newViewController = nil;
     
     NSUInteger selectedIndex = control ? control.selectedSegmentIndex : 0;
     
@@ -79,6 +82,27 @@
             
             newViewController = self.listTableViewController;
         }
+            break;
+        case 2:
+        {
+            // Media
+            if( !self.mediaController ){
+                self.mediaController = [[UIImagePickerController alloc] init];
+                self.mediaController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+                self.mediaController.delegate = (DTFormatViewController<DTInternalFormatProtocol>*)self.navigationController;
+                self.mediaController.topViewController.navigationItem.rightBarButtonItem = nil;
+            }
+            
+            newViewController = self.mediaController;
+        }
+            break;
+        case 3:
+            if( !self.otherTableViewController ){
+                self.otherTableViewController = [[DTFormatOtherViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            }
+            
+            newViewController = self.otherTableViewController;
+
             break;
         default:
             break;

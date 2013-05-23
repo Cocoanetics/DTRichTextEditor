@@ -52,8 +52,9 @@
     
     if(self.viewControllers.count > 0){
         DTFormatOverviewViewController *homeFormatController = self.viewControllers[0];
-        [homeFormatController.visibleTableViewController.tableView reloadData];
-        
+        if([homeFormatController.visibleTableViewController isKindOfClass:[UITableViewController class]]){
+            [((UITableViewController *)homeFormatController.visibleTableViewController).tableView reloadData];
+        }
         if ([self.topViewController isKindOfClass:[DTFormatFontFamilyTableViewController class]])
         {
             DTFormatFontFamilyTableViewController *fontFamilyController = (DTFormatFontFamilyTableViewController *)self.topViewController;
@@ -68,7 +69,24 @@
     
     if(self.viewControllers.count > 0){
         DTFormatOverviewViewController *homeFormatController = self.viewControllers[0];
-        [homeFormatController.visibleTableViewController.tableView reloadData];
+        if([homeFormatController.visibleTableViewController isKindOfClass:[UITableViewController class]]){
+            [((UITableViewController *)homeFormatController.visibleTableViewController).tableView reloadData];
+        }
+    }
+}
+
+- (void)setHyperlink:(NSURL *)hyperlink
+{
+    if(_hyperlink == hyperlink)
+        return;
+    
+    _hyperlink = [hyperlink copy];
+    
+    if(self.viewControllers.count > 0){
+        DTFormatOverviewViewController *homeFormatController = self.viewControllers[0];
+        if([homeFormatController.visibleTableViewController isKindOfClass:[UITableViewController class]]){
+            [((UITableViewController *)homeFormatController.visibleTableViewController).tableView reloadData];
+        }
     }
 }
 
@@ -130,12 +148,22 @@
 
 - (void)toggleListType:(DTCSSListStyleType)listType
 {
-    if(_listType == listType)
+    if(self.listType == listType)
         return;
     
-    _listType = listType;
+    self.listType = listType;
     
-    [self.formatDelegate toggleListType:listType];
+    [self.formatDelegate toggleListType:self.listType];
+}
+
+- (void)applyHyperlinkToSelectedText:(NSURL *)url
+{
+    if(self.hyperlink == url)
+        return;
+    
+    self.hyperlink = url;
+    
+    [self.formatDelegate applyHyperlinkToSelectedText:self.hyperlink];
 }
 
 #pragma mark - Event bubbling
@@ -143,6 +171,37 @@
 - (void)userPressedDone:(id)sender
 {
     [self.formatDelegate formatViewControllerUserDidFinish:self];
+}
+
+#pragma mark - UIImagePickerControllerDelegate
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    NSURL *imageURL = [info valueForKey:UIImagePickerControllerReferenceURL];
+    ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
+    {
+        ALAssetRepresentation *representation = [myasset defaultRepresentation];
+        
+        CGImageRef iref = [representation fullScreenImage];
+        if (iref) {
+            UIImage *theThumbnail = [UIImage imageWithCGImage:iref];
+			[self.formatDelegate replaceCurrentSelectionWithPhoto:theThumbnail];
+        }
+    };
+	
+	
+    ALAssetsLibraryAccessFailureBlock failureblock  = ^(NSError *myerror)
+    {
+        NSLog(@"booya, cant get image - %@",[myerror localizedDescription]);
+    };
+	
+    if(imageURL)
+    {
+        ALAssetsLibrary* assetslibrary = [[ALAssetsLibrary alloc] init];
+        [assetslibrary assetForURL:imageURL
+                       resultBlock:resultblock
+                      failureBlock:failureblock];
+    }
 }
 
 @end
