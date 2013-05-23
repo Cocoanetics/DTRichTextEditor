@@ -220,7 +220,9 @@
         
         [targetView removeFromSuperview];
     }else if([cell.contentView viewWithTag:alignementTag] && !(indexPath.section == 1 && indexPath.row == 0)){
+        UIView *targetView = [cell.contentView viewWithTag:alignementTag];
         
+        [targetView removeFromSuperview];
     }
     
     if (indexPath.section == 0)
@@ -237,6 +239,7 @@
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
                 cell.backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
                 
+                self.styleSegmentedControl.tag = segmentedTag;
                 self.styleSegmentedControl.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(cell.contentView.bounds), CGRectGetHeight(cell.contentView.bounds));
                 self.styleSegmentedControl.autoresizingMask = UIViewAutoresizingFlexibleWidth;
                 self.styleSegmentedControl.cellPosition = DPTableViewCellSegmentedControlPositionBottom;
@@ -253,6 +256,7 @@
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
                 cell.backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
                 
+                self.alignmentSegmentedControl.tag = alignementTag;
                 self.alignmentSegmentedControl.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(cell.contentView.bounds), CGRectGetHeight(cell.contentView.bounds));
                 self.alignmentSegmentedControl.autoresizingMask = UIViewAutoresizingFlexibleWidth;
                 self.alignmentSegmentedControl.cellPosition = DPTableViewCellSegmentedControlPositionTop;
@@ -270,13 +274,28 @@
     return cell;
 }
 
-#pragma mark - Table view delegate
+#pragma mark - UITableViewDelegate
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    switch (section) {
+        case 1:
+            return @"Paragraph Style";
+            break;
+        default:
+            return nil;
+            break;
+    }
+}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if(indexPath.section != 1)
+        return;
+    
     switch (indexPath.row)
     {
-        case 0:
+        case 1:
         {
             DTFormatFontFamilyTableViewController *fontFamilyChooserController = [[DTFormatFontFamilyTableViewController alloc] initWithStyle:UITableViewStyleGrouped selectedFontFamily:self.formatPicker.fontDescriptor.fontFamily];
             [self.navigationController pushViewController:fontFamilyChooserController animated:YES];

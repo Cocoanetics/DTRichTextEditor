@@ -22,6 +22,7 @@ typedef enum {
 @property (nonatomic, strong) NSArray *items;
 @property (nonatomic, strong) NSArray *itemSelectedState;
 @property (nonatomic, assign) BOOL allowMultipleSelection;
+@property (nonatomic, assign) BOOL allowSelectedState;
 @property (nonatomic, assign) DPTableViewCellSegmentedControlPosition cellPosition;
 
 - (id)initWithItems:(NSArray *)items;

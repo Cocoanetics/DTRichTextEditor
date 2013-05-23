@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DTCSSListStyle.h"
 
 @class DTCoreTextFontDescriptor;
 @protocol DTFormatDelegate;
@@ -18,6 +19,7 @@
 @property (assign, nonatomic, getter = isUnderlined) BOOL underline;
 @property (assign, nonatomic, getter = isStrikethrough) BOOL strikethrough;
 @property (assign, nonatomic) CTTextAlignment textAlignment;
+@property (assign, nonatomic) DTCSSListStyleType listType;
 
 @end
 
@@ -30,6 +32,9 @@
 - (void)formatDidToggleStrikethrough;
 - (void)formatDidChangeTextAlignment:(CTTextAlignment)alignment;
 - (void)formatViewControllerUserDidFinish:(DTFormatViewController *)formatController;
+- (void)decreaseTabulation;
+- (void)increaseTabulation;
+- (void)toggleListType:(DTCSSListStyleType)listType;
 
 @end
 
@@ -45,4 +50,7 @@
 - (void)applyUnderline:(BOOL)active;
 - (void)applyStrikethrough:(BOOL)active;
 - (void)applyTextAlignment:(CTTextAlignment)alignment;
+- (void)decreaseTabulation;
+- (void)increaseTabulation;
+- (void)toggleListType:(DTCSSListStyleType)listType;
 @end

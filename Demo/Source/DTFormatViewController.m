@@ -118,6 +118,26 @@
     [self.formatDelegate formatDidChangeTextAlignment:alignment];
 }
 
+- (void)decreaseTabulation
+{
+    [self.formatDelegate decreaseTabulation];
+}
+
+- (void)increaseTabulation
+{
+    [self.formatDelegate increaseTabulation];
+}
+
+- (void)toggleListType:(DTCSSListStyleType)listType
+{
+    if(_listType == listType)
+        return;
+    
+    _listType = listType;
+    
+    [self.formatDelegate toggleListType:listType];
+}
+
 #pragma mark - Event bubbling
 
 - (void)userPressedDone:(id)sender

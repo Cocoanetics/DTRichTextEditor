@@ -30,6 +30,7 @@
         self.frame = CGRectZero;
         self.cellPosition = DPTableViewCellSegmentedControlPositionSingle;
         self.allowMultipleSelection = YES;
+        self.allowSelectedState = YES;
     }
     return self;
 }
@@ -129,7 +130,7 @@
         default:
             break;
     }
-
+    
     
     self.imageCenterOn  = centerCapOn;
     self.imageCenterOff = centerCapOff;
@@ -137,9 +138,9 @@
     self.imageLeftOff   = leftCapOff;
     self.imageRightOn   = rightCapOn;
     self.imageRightOff  = rightCapOff;
-
+    
     [self clearButtons];
-        
+    
     [self setNeedsDisplay];
 }
 
@@ -154,14 +155,14 @@
 - (void)initializeImages
 {
     NSMutableArray *buttonsArray = [NSMutableArray array];
-
+    
     for (NSInteger i = 0; i < self.items.count; i++){
         
         id itemObject = self.items[i];
         
         if( ![itemObject isKindOfClass:[NSString class]] && ![itemObject isKindOfClass:[DPTableViewCellSegmentedControlItem class]] )
             continue;
-
+        
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
         
         if([itemObject isKindOfClass:[NSString class]]){
@@ -201,7 +202,7 @@
         [button addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchDown];
         
         [buttonsArray addObject:button];
-
+        
         [self addSubview:button];
     }
     
@@ -216,7 +217,7 @@
     
     // frame hack, adding a pixel either side
     // also moving 2 pixels higher to cover top padding
-        
+    
     CGFloat width = CGRectGetWidth(self.bounds) / self.items.count;
     CGFloat height = self.imageCenterOff.size.height;
     
@@ -226,21 +227,21 @@
             continue;
         
         button.selected = self.itemSelectedState.count > 0 ? [self.itemSelectedState[i] boolValue] : self.selectedIndex == i;
-                        
+        
         [button setFrame:CGRectMake( i * width , 0.0, width, height)];
     }
 }
 
-- (void)buttonTapped:(UIButton *)sender{
-    
-    if(!self.allowMultipleSelection){
-        [self.buttons makeObjectsPerformSelector:@selector(setSelected:)];
+- (void)buttonTapped:(UIButton *)sender
+{
+    if(self.allowSelectedState){
+        if(!self.allowMultipleSelection){
+            [self.buttons makeObjectsPerformSelector:@selector(setSelected:)];
+        }
+        sender.selected = !sender.selected;
     }
     
-    sender.selected = !sender.selected;
-    
     // toggle adjecant images to show/hide shaddows.
-    
     _selectedIndex = [self.buttons indexOfObject:sender];
     
     [self sendActionsForControlEvents:UIControlEventValueChanged];

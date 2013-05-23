@@ -103,11 +103,6 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	
 	photoButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];
     highlightButton = [[UIBarButtonItem alloc] initWithTitle:@"H" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleHighlight:)];
-		
-	increaseIndentButton = [[UIBarButtonItem alloc] initWithTitle:@"->" style:UIBarButtonItemStyleBordered target:self action:@selector(increaseIndent:)];
-	decreaseIndentButton = [[UIBarButtonItem alloc] initWithTitle:@"<-" style:UIBarButtonItemStyleBordered target:self action:@selector(decreaseIndent:)];
-	
-	UIBarButtonItem *spacer2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
 	UIBarButtonItem *spacer3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 	
@@ -124,7 +119,7 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
 	richEditor.inputAccessoryView = toolbar;
 	
-	[toolbar setItems:[NSArray arrayWithObjects:highlightButton, spacer2, increaseIndentButton, decreaseIndentButton, spacer3, orderedListButton, unorderedListButton, spacer4, photoButton, smile, linkButton, nil]];
+	[toolbar setItems:[NSArray arrayWithObjects:highlightButton, spacer3, orderedListButton, unorderedListButton, spacer4, photoButton, smile, linkButton, nil]];
     
     // notifications
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
@@ -285,41 +280,6 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	[richEditor toggleHighlightInRange:range color:[UIColor yellowColor]];
 }
 
-- (void)increaseIndent:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor changeParagraphLeftMarginBy:36 toParagraphsContainingRange:range];
-}
-
-- (void)decreaseIndent:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor changeParagraphLeftMarginBy:-36 toParagraphsContainingRange:range];
-}
-
-- (void)toggleUnorderedList:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	
-	DTCSSListStyle *listStyle = [[DTCSSListStyle alloc] init];
-	listStyle.startingItemNumber = 1;
-	listStyle.type = DTCSSListStyleTypeDisc;
-	
-	[richEditor toggleListStyle:listStyle inRange:range];
-}
-
-- (void)toggleOrderedList:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	
-	DTCSSListStyle *listStyle = [[DTCSSListStyle alloc] init];
-	listStyle.startingItemNumber = 1;
-    listStyle.position = DTCSSListStylePositionOutside;
-	listStyle.type = DTCSSListStyleTypeDecimal;
-	
-	[richEditor toggleListStyle:listStyle inRange:range];
-}
-
 - (void)toggleURL:(UIBarButtonItem *)sender
 {
 	UITextRange *range = richEditor.selectedTextRange;
@@ -461,6 +421,14 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     CTTextAlignment ali = dtstyle.alignment;
     
     self.formatViewController.textAlignment = ali;
+    
+    NSArray *listTypes = attributesDictionary[@"DTTextLists"];
+    
+    DTCSSListStyle *style = [listTypes lastObject];
+    
+    DTCSSListStyleType listType = style.type;
+    
+    self.formatViewController.listType = listType;
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
     {
@@ -654,5 +622,30 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     UITextRange *range = richEditor.selectedTextRange;
 	[richEditor applyTextAlignment:alignment toParagraphsContainingRange:range];
 }
+
+- (void)increaseTabulation
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	[richEditor changeParagraphLeftMarginBy:36 toParagraphsContainingRange:range];
+}
+
+- (void)decreaseTabulation
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	[richEditor changeParagraphLeftMarginBy:-36 toParagraphsContainingRange:range];
+}
+
+- (void)toggleListType:(DTCSSListStyleType)listType
+{
+    UITextRange *range = richEditor.selectedTextRange;
+	
+	DTCSSListStyle *listStyle = [[DTCSSListStyle alloc] init];
+	listStyle.startingItemNumber = 1;
+    listStyle.position = listType;
+	listStyle.type = listType;
+	
+	[richEditor toggleListStyle:listStyle inRange:range];
+}
+
 
 @end
