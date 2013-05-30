@@ -1820,8 +1820,16 @@ typedef enum
 	
 	if (image)
 	{
-		DTImageTextAttachment *attachment = [[DTImageTextAttachment alloc] initWithElement:nil options:nil];
-		attachment.contentURL = [pasteboard URL];
+        Class ImageAttachmentClass = [DTTextAttachment registeredClassForTagName:@"img"];
+        
+        if (![ImageAttachmentClass isSubclassOfClass:[DTImageTextAttachment class]])
+        {
+            NSLog(@"DTRichTextEditor requires DTImageTextAttachment or a subclass of it be registered for 'img' tags to enable pasting images.  %@ is not a subclass of DTImageTextAttachment.", NSStringFromClass(ImageAttachmentClass));
+            return;
+        }
+        
+        DTImageTextAttachment *attachment = [[ImageAttachmentClass alloc] initWithElement:nil options:nil];
+        attachment.contentURL = [pasteboard URL];
 		attachment.image = image;
 		attachment.originalSize = [image size];
 		
@@ -1833,7 +1841,8 @@ typedef enum
 				displaySize = sizeThatFitsKeepingAspectRatio(image.size,_maxImageDisplaySize);
 			}
 		}
-		attachment.displaySize = displaySize;
+        
+        attachment.displaySize = displaySize;
         
         NSAttributedString *attachmentString = [self attributedStringForTextRange:_selectedTextRange wrappingAttachment:attachment inParagraph:NO];
         [self _pasteAttributedString:attachmentString inRange:_selectedTextRange];
