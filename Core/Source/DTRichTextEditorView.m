@@ -1821,12 +1821,7 @@ typedef enum
 	if (image)
 	{
         Class ImageAttachmentClass = [DTTextAttachment registeredClassForTagName:@"img"];
-        
-        if (![ImageAttachmentClass isSubclassOfClass:[DTImageTextAttachment class]])
-        {
-            NSLog(@"DTRichTextEditor requires DTImageTextAttachment or a subclass of it be registered for 'img' tags to enable pasting images.  %@ is not a subclass of DTImageTextAttachment.", NSStringFromClass(ImageAttachmentClass));
-            return;
-        }
+        NSAssert([ImageAttachmentClass isSubclassOfClass:[DTImageTextAttachment class]], @"DTRichTextEditor requires DTImageTextAttachment or a subclass of it be registered for 'img' tags.");
         
         DTImageTextAttachment *attachment = [[ImageAttachmentClass alloc] initWithElement:nil options:nil];
         attachment.contentURL = [pasteboard URL];
