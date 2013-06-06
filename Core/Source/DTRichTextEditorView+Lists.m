@@ -78,11 +78,7 @@
 		return;
 	}
 	
-	// close off typing group, this is a new operations
-	if (!self.keepCurrentUndoGroup)
-	{
-		[self _closeTypingUndoGroupIfNecessary];
-	}
+	[self _closeTypingUndoGroupIfNecessary];
 	
 	if (listAroundSelection)
 	{
