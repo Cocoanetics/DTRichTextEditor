@@ -12,6 +12,8 @@
 
 /**
  Toggles a list style on a given range.
+ 
+ Toggling the list style is its own Undo group unless you set _keepCurrentUndoGroup to `YES`.
  @param listStyle the list style to toggle, or `nil` to remove the list style.
  @param range The text range
  */

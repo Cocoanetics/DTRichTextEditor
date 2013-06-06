@@ -23,6 +23,7 @@
 
 @property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
 @property (nonatomic, assign) BOOL userIsTyping;  // while user is typing there are no selection range updates to input delegate
+@property (nonatomic, assign) BOOL keepCurrentUndoGroup; // avoid closing of Undo Group for sub operations
 
 @end
 
@@ -78,7 +79,10 @@
 	}
 	
 	// close off typing group, this is a new operations
-	[self _closeTypingUndoGroupIfNecessary];
+	if (!self.keepCurrentUndoGroup)
+	{
+		[self _closeTypingUndoGroupIfNecessary];
+	}
 	
 	if (listAroundSelection)
 	{
@@ -231,7 +235,6 @@
 	if (!typingAttributes)
 	{
 		typingAttributes = [self typingAttributesForRange:range];
-		
 	}
 	
 	NSRange selectionRange = [(DTTextRange *)range NSRangeValue];
@@ -266,7 +269,9 @@
 			
 			if (paragraphIsEmpty)
 			{
+				self.keepCurrentUndoGroup = YES;
 				[self toggleListStyle:nil inRange:range];
+				self.keepCurrentUndoGroup = NO;
 				
 				// remove list from typing Attributes
 				NSMutableDictionary *tmpDict = [typingAttributes mutableCopy];

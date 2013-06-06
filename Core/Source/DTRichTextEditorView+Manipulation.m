@@ -21,6 +21,8 @@
 - (void)_inputDelegateTextWillChange;
 - (void)_inputDelegateTextDidChange;
 
+@property (nonatomic, assign) BOOL keepCurrentUndoGroup; // avoid closing of Undo Group for sub operations
+
 @end
 
 
@@ -711,7 +713,9 @@
 	[self _inputDelegateSelectionWillChange];
 	
 	// we cannot have this be part of a list
+	self.keepCurrentUndoGroup = YES;
 	[self toggleListStyle:nil inRange:self.selectedTextRange];
+	self.keepCurrentUndoGroup = NO;
 	
 	// extend selected range to include full paragraphs
 	range = [self textRangeOfParagraphsContainingRange:self.selectedTextRange];
