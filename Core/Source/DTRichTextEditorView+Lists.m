@@ -23,6 +23,7 @@
 
 @property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
 @property (nonatomic, assign) BOOL userIsTyping;  // while user is typing there are no selection range updates to input delegate
+@property (nonatomic, assign) BOOL keepCurrentUndoGroup; // avoid closing of Undo Group for sub operations
 
 @end
 
@@ -77,7 +78,6 @@
 		return;
 	}
 	
-	// close off typing group, this is a new operations
 	[self _closeTypingUndoGroupIfNecessary];
 	
 	if (listAroundSelection)
@@ -225,6 +225,14 @@
 
 - (BOOL)handleNewLineInputInListInRange:(UITextRange *)range
 {
+	// get current typing attributes, we'll be at beginnings of lines and we want to conserve the same typing attributes
+	NSDictionary *typingAttributes = self.overrideInsertionAttributes;
+	
+	if (!typingAttributes)
+	{
+		typingAttributes = [self typingAttributesForRange:range];
+	}
+	
 	NSRange selectionRange = [(DTTextRange *)range NSRangeValue];
 	NSAttributedString *attributedText = self.attributedText;
 	NSRange selectedParagraphRange = [attributedText.string rangeOfParagraphsContainingRange:selectionRange parBegIndex:NULL parEndIndex:NULL];
@@ -241,7 +249,7 @@
 	NSRange listRange = [attributedText rangeOfTextList:effectiveList atIndex:selectedParagraphRange.location];
 	
 	// need to replace attributes with typing attributes
-	NSMutableAttributedString *newlineText = [[NSMutableAttributedString alloc] initWithString:@"\n" attributes:attributes];
+	NSMutableAttributedString *newlineText = [[NSMutableAttributedString alloc] initWithString:@"\n" attributes:typingAttributes];
     
     // newline must not have a list prefix
     [newlineText removeAttribute:DTFieldAttribute range:NSMakeRange(0, 1)];
@@ -257,7 +265,17 @@
 			
 			if (paragraphIsEmpty)
 			{
+				self.keepCurrentUndoGroup = YES;
 				[self toggleListStyle:nil inRange:range];
+				self.keepCurrentUndoGroup = NO;
+				
+				// remove list from typing Attributes
+				NSMutableDictionary *tmpDict = [typingAttributes mutableCopy];
+				[tmpDict removeObjectForKey:DTListPrefixField];
+				[tmpDict removeObjectForKey:DTTextListsAttribute];
+				
+				// restore typing attributes
+				self.overrideInsertionAttributes = tmpDict;
             
 				return YES;
 			}
@@ -300,7 +318,10 @@
 	[self _inputDelegateTextWillChange];
 	[self replaceRange:[DTTextRange rangeWithNSRange:totalRange] withText:mutableText];
 	[self _inputDelegateTextDidChange];
-	  
+
+	// restore typing attributes
+	self.overrideInsertionAttributes = typingAttributes;
+	
 	// restore selection
 	self.selectedTextRange = [DTTextRange rangeWithNSRange:rangeToSelectAfterwards];
 	  
@@ -313,6 +334,8 @@
 	[self updateCursorAnimated:NO];
 
 	[self hideContextMenu];
+	
+	
 	return YES;
 }
 

@@ -59,9 +59,12 @@
 
 + (NSAttributedString *)attributedStringWithImage:(UIImage *)image maxDisplaySize:(CGSize)maxDisplaySize
 {
-	DTImageTextAttachment *attachment = [[DTImageTextAttachment alloc] initWithElement:nil options:nil];
-	attachment.image = image;
-	attachment.originalSize = image.size;
+    Class ImageAttachmentClass = [DTTextAttachment registeredClassForTagName:@"img"];
+    NSAssert([ImageAttachmentClass isSubclassOfClass:[DTImageTextAttachment class]], @"DTRichTextEditor requires DTImageTextAttachment or a subclass of it be registered for 'img' tags.");
+    
+    DTImageTextAttachment *attachment = [[ImageAttachmentClass alloc] initWithElement:nil options:nil];
+    attachment.image = image;
+    attachment.originalSize = image.size;
 
 	CGSize displaySize = image.size;
 	if (!CGSizeEqualToSize(maxDisplaySize, CGSizeZero))

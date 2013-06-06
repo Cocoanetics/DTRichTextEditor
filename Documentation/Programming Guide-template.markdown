@@ -3,6 +3,27 @@ DTRichTextEditor Programming Guide
 
 This document tries to answer the kinds of questions a programmer might ask working with DTRichTextEditor and provide examples for common use cases.
 
+Overriding Fonts
+----------------
+
+DTCoreTextFontDescriptor tries to find a font that matches its property. However if no font can found then it falls back to the fallback font family. The default value for this is "Times New Roman". To specify a different fallback font family you can use the class method:
+
+    [DTCoreTextFontDescriptor setFallbackFontFamily:@"Helvetica"];
+	 
+The family you set must be a valid one that is guaranteed to be available at run time.
+
+DTCoreText uses an internal font override table to quickly find the correct font face name for a given combination of font family and bold and italic traits. This lookup process is an order of magnitude faster than searching through font tables. DTCoreText tries to load an override table plist from your app bundle at startup, named **DTCoreTextFontOverrides.plist**. It is recommended that you either use the one provided by the DTCoreText demo app or provide your own containing the fonts that you will be using.
+
+You can also manually specify overrides:
+
+    [DTCoreTextFontDescriptor setOverrideFontName:@"Helvetica" forFontFamily:@"Calibri" bold:NO italic:NO];
+    [DTCoreTextFontDescriptor setOverrideFontName:@"Helvetica-Bold" forFontFamily:@"Calibri" bold:YES italic:NO];
+    [DTCoreTextFontDescriptor setOverrideFontName:@"Helvetica-Oblique" forFontFamily:@"Calibri" bold:NO italic:YES];
+    [DTCoreTextFontDescriptor setOverrideFontName:@"Helvetica-BoldOblique" forFontFamily:@"Calibri" bold:YES italic:YES];
+	 
+Note that you are specifying font face names, not family names in this case.
+
+
 Getting Typing Attributes
 -------------------------
 

@@ -23,6 +23,22 @@ extern NSString * const DTRichTextEditorTextDidChangeNotification;
  */
 extern NSString * const DTRichTextEditorTextDidEndEditingNotification;
 
+/**
+ The DTRichTextEditorStandardEditActions protocol declares the custom menu items inserted by DTRichTextEditor.
+ 
+ Use editorView:canPerformAction:withSender: in the DTRichTextEditorViewDelegate to disable these actions
+ */
+@protocol DTRichTextEditorStandardEditActions <NSObject>
+
+/**
+ Displays the system reference dictionary view for the selected term if found. (iOS 5.0+)
+ 
+ @param sender The object calling this method.
+ */
+- (void)define:(id)sender;
+
+@end
+
 
 @class DTTextRange, DTTextPosition;
 @class DTCursorView;
@@ -35,7 +51,7 @@ extern NSString * const DTRichTextEditorTextDidEndEditingNotification;
 /**
  DTRichTextEditorView is a subclass of UIScrollView and offers rich text edtiting capabilities. It has a single content view of type DTRichTextEditorContentView which is repsonsible for displaying the rich text.
  */
-@interface DTRichTextEditorView : DTAttributedTextView <UITextInputTraits, UITextInput>
+@interface DTRichTextEditorView : DTAttributedTextView <UITextInputTraits, UITextInput, DTRichTextEditorStandardEditActions>
 
 /**
  @name Setting Text Defaults
@@ -162,6 +178,12 @@ extern NSString * const DTRichTextEditorTextDidEndEditingNotification;
 - (CGRect)boundsOfCurrentSelection;
 
 /**
+ Gets the bounds of the rectangle that encloses the cursor or an envelope around the current selection.
+ @return the visible portion of the selection or CGRectNull if not visible.
+ */
+- (CGRect)visibleBoundsOfCurrentSelection;
+
+/**
  Property to enable copy/paste support. If enabled the user can paste text into DTRichTextEditorView or copy text to the pasteboard.
  */
 @property (nonatomic, assign) BOOL canInteractWithPasteboard;
@@ -283,7 +305,7 @@ extern NSString * const DTRichTextEditorTextDidEndEditingNotification;
  This method might be called more than once for the same action but with a different sender each time. You should be prepared for any kind of sender including nil.
  
  @param editorView The editor view which is making this request.
- @param action A selector type identifying the method to show in the editing menu.  This includes both the actions of the UIResponderStandardEditActions informal protocol and the actions of the delegate's custom menuItems.
+ @param action A selector type identifying the method to show in the editing menu.  This includes the actions of the UIResponderStandardEditActions informal protocol, the DTRichTextEditorStandardEditActions protocol, and the actions of the delegate's custom menuItems.
  @param sender The object calling this method. For the editing menu commands, this is the shared UIApplication object. Depending on the context, you can query the sender for information to help you determine whether a command should be enabled.
  @return YES if the the command identified by action should be enabled or NO if it should be disabled. Returning YES means that your class can handle your custom menu item command in the current context, or that the editor view is allowed to handle standard edit actions.
  */
