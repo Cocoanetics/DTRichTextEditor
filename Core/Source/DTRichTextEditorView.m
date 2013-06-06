@@ -162,6 +162,7 @@ typedef enum
     
     // tracking of content insets
     UIEdgeInsets _userSetContentInsets;
+	UIEdgeInsets _userSetScrollIndicatorInsets;
     BOOL _shouldNotRecordChangedContentInsets;
 	
 	// the undo manager
@@ -1022,9 +1023,12 @@ typedef enum
 			
 			// set inset to make up for covered array at bottom
 			_shouldNotRecordChangedContentInsets = YES;
+			
 			self.contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, coveredFrame.size.height + _userSetContentInsets.bottom, _userSetContentInsets.right);
+			
+			self.scrollIndicatorInsets = UIEdgeInsetsMake(_userSetScrollIndicatorInsets.top, _userSetScrollIndicatorInsets.left, _userSetScrollIndicatorInsets.bottom + coveredFrame.size.height, _userSetScrollIndicatorInsets.right);
+			
 			_shouldNotRecordChangedContentInsets = NO;
-			self.scrollIndicatorInsets = self.contentInset;
 		}
 						 completion:^(BOOL finished) {
 							 // only scroll the cursor visible if there was a change in content insets
@@ -1044,8 +1048,13 @@ typedef enum
 		return;
 	}
 	
+	// reset the content insets, but don't record them
+	_shouldNotRecordChangedContentInsets = YES;
+	
 	self.contentInset = _userSetContentInsets;
-	self.scrollIndicatorInsets = self.contentInset;
+	self.scrollIndicatorInsets = _userSetScrollIndicatorInsets;
+	
+	_shouldNotRecordChangedContentInsets = NO;
 
     _heightCoveredByKeyboard = 0;
 }
@@ -3198,6 +3207,16 @@ typedef enum
     if (!_shouldNotRecordChangedContentInsets)
     {
         _userSetContentInsets = contentInset;
+    }
+}
+
+- (void)setScrollIndicatorInsets:(UIEdgeInsets)scrollIndicatorInsets
+{
+    [super setScrollIndicatorInsets:scrollIndicatorInsets];
+    
+    if (!_shouldNotRecordChangedContentInsets)
+    {
+        _userSetScrollIndicatorInsets = scrollIndicatorInsets;
     }
 }
 
