@@ -217,6 +217,11 @@
 
 - (void)_closeTypingUndoGroupIfNecessary
 {
+	if (self.keepCurrentUndoGroup)
+	{
+		return;
+	}
+
 	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	
 	[undoManager closeAllOpenGroups];
