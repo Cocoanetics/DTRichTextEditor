@@ -74,6 +74,7 @@ typedef enum
 @property (retain, readwrite) UIView *inputView;
 
 @property (nonatomic, assign) BOOL userIsTyping;  // while user is typing there are no selection range updates to input delegate
+@property (nonatomic, assign) BOOL keepCurrentUndoGroup; // to avoid closing an undo group if it is a sub-operation
 
 @property (nonatomic, retain, readonly) NSArray *editorMenuItems;
 @property (nonatomic, retain) UIPopoverController *definePopoverController; // used for presenting definitions of a selected term on the iPad
@@ -132,6 +133,7 @@ typedef enum
     BOOL _shouldShowDragHandlesAfterLoupeHide;
 	BOOL _shouldShowContextMenuAfterMovementEnded;
     BOOL _userIsTyping;
+	BOOL _keepCurrentUndoGroup;
     BOOL _waitingForDictationResult;
 	BOOL _isChangingInputView;
 	
@@ -3389,6 +3391,7 @@ typedef enum
 @synthesize editorMenuItems = _editorMenuItems;
 
 @synthesize userIsTyping = _userIsTyping;
+@synthesize keepCurrentUndoGroup = _keepCurrentUndoGroup;
 
 @end
 
