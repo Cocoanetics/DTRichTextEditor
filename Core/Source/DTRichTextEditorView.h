@@ -269,6 +269,17 @@ extern NSString * const DTRichTextEditorTextDidEndEditingNotification;
 - (BOOL)editorView:(DTRichTextEditorView *)editorView shouldChangeTextInRange:(NSRange)range replacementText:(NSAttributedString *)text;
 
 /**
+ Notifies the delegate that text will be pasted at the given range.  This gives the delegate an opportunity to modify content for a paste operation.  A delegate may use this method to modify or remove specific attributes including disallowing image attachments.  editorView:shouldChangeTextInRange:replacementText: is called before this method if implemented.
+ 
+ @param editorView The editor view undergoing a paste operation.
+ @param text The text to paste.
+ @param range The range in which to paste the text.
+ 
+ @return An attributed string for the paste operation.  Return text if suitable or a modified string. Return nil to cancel the paste operation.
+ */
+- (NSAttributedString *)editorView:(DTRichTextEditorView *)editorView willPasteText:(NSAttributedString *)text inRange:(NSRange)range;
+
+/**
  Tells the delegate that the text or attributes in the specified editor view were changed by the user
  
  @param editorView The editor view containing the changes.

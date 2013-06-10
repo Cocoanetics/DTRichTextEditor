@@ -180,6 +180,7 @@ typedef enum
         
         // Text and Selection Changes
         unsigned int delegateShouldChangeTextInRangeReplacementText:1;
+        unsigned int delegateWillPasteTextInRange:1;
         unsigned int delegateDidChange:1;
         unsigned int delegateDidChangeSelection:1;
         
@@ -1435,6 +1436,7 @@ typedef enum
     _editorViewDelegateFlags.delegateShouldEndEditing = [editorViewDelegate respondsToSelector:@selector(editorViewShouldEndEditing:)];
     _editorViewDelegateFlags.delegateDidEndEditing = [editorViewDelegate respondsToSelector:@selector(editorViewDidEndEditing:)];
     _editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText = [editorViewDelegate respondsToSelector:@selector(editorView:shouldChangeTextInRange:replacementText:)];
+    _editorViewDelegateFlags.delegateWillPasteTextInRange = [editorViewDelegate respondsToSelector:@selector(editorView:willPasteText:inRange:)];
     _editorViewDelegateFlags.delegateDidChange = [editorViewDelegate respondsToSelector:@selector(editorViewDidChange:)];
     _editorViewDelegateFlags.delegateDidChangeSelection = [editorViewDelegate respondsToSelector:@selector(editorViewDidChangeSelection:)];
     _editorViewDelegateFlags.delegateMenuItems = [editorViewDelegate respondsToSelector:@selector(menuItems)];
@@ -1902,6 +1904,15 @@ typedef enum
     if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
         if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:[textRange NSRangeValue] replacementText:attributedStringToPaste])
             return;
+    
+    if (_editorViewDelegateFlags.delegateWillPasteTextInRange)
+    {
+        attributedStringToPaste = [self.editorViewDelegate editorView:self
+                                                        willPasteText:attributedStringToPaste
+                                                              inRange:[textRange NSRangeValue]];
+        if (attributedStringToPaste == nil)
+            return;
+    }
     
     DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	[undoManager closeAllOpenGroups];
