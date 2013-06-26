@@ -897,19 +897,6 @@ typedef enum
 	_dragMode = DTDragModeNone;	
 }
 
-- (void)removeMarkedTextCandidateView
-{
-	// remove invisible marking candidate view to avoid touch handling problems
-	// prevents "Warning: phrase boundary gesture handler is somehow installed when there is no marked text"
-	for (UIView *oneView in self.subviews)
-	{
-		if (![oneView isKindOfClass:[UIImageView class]] && oneView != self.attributedTextContentView && oneView != _cursor && oneView != _selectionView)
-		{
-			[oneView removeFromSuperview];
-		}
-	}
-}
-
 - (void)extendSelectionToIncludeWordInDirection:(UITextStorageDirection)direction
 {
     if (direction == UITextStorageDirectionForward)
@@ -1091,31 +1078,38 @@ typedef enum
             return;
     }
     
-    // Move the cursor if there isn't marked text, otherwise unmark it
-    if (self.markedTextRange == nil)
-    {
-        CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
+    // Update selection.  Text input system steals taps inside of marked text so if we receive a tap, we end multi-stage text input.
+    [self.inputDelegate selectionWillChange:self];
     
-        if ([self moveCursorToPositionClosestToLocation:touchPoint])
-        {
-            // did move
+    BOOL  hadMarkedText = (self.markedTextRange != nil);
+    self.markedTextRange = nil;
+    
+    CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
+    DTTextPosition *touchPosition = (DTTextPosition *)[self closestPositionToPoint:touchPoint];
+    DTTextRange *touchRange = [DTTextRange textRangeFromStart:touchPosition toEnd:touchPosition];
+    
+    if ([self.selectedTextRange isEqual:touchRange])
+    {
+        [self updateCursorAnimated:NO];
+        
+        if ([[UIMenuController sharedMenuController] isMenuVisible])
             [self hideContextMenu];
-        }
-        else
-        {
-            // was same position as before and did not start an editing session in response to this tap
-            // an editing view that lost first responder and therefore stopped editing retains it's selectedTextRange(cursor position)
-            // therefore a tap that initiates editing can reach this point and we don't want to display the menu.
-            if (wasEditing)
-            {
-                [self showContextMenuFromSelection];
-            }
-        }
+        else if (wasEditing && !hadMarkedText)
+            [self showContextMenuFromSelection];
     }
     else
     {
-        [self unmarkText];
+        self.selectedTextRange = touchRange;
+        
+        if (self.isEditing)
+        {
+            // begins a new typing undo group
+            DTUndoManager *undoManager = self.undoManager;
+            [undoManager closeAllOpenGroups];
+        }
     }
+
+    [self.inputDelegate selectionDidChange:self];
 }
 
 - (void)handleDoubleTap:(UITapGestureRecognizer *)gesture
@@ -1139,6 +1133,8 @@ typedef enum
     }
 
     // Select a word closest to the touchPoint
+    [self.inputDelegate selectionWillChange:self];
+    
     CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
     UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
     UITextRange *wordRange = [self textRangeOfWordAtPosition:position];
@@ -1147,6 +1143,8 @@ typedef enum
     if (wordRange == nil || (self.isEditing && [self.selectedTextRange isEqual:wordRange]))
         return;
     
+    // Text input system steals taps inside of marked text so if we receive a tap, we end multi-stage text input.
+    self.markedTextRange = nil;
     self.selectionView.dragHandlesVisible = YES;
     
     [self hideContextMenu];
@@ -1161,6 +1159,8 @@ typedef enum
         DTUndoManager *undoManager = self.undoManager;
         [undoManager closeAllOpenGroups];
     }
+    
+    [self.inputDelegate selectionDidChange:self];
 }
 
 - (void)handleTripleTap:(UITapGestureRecognizer *)gesture
@@ -1222,6 +1222,14 @@ typedef enum
             
 		case UIGestureRecognizerStateBegan:
 		{
+            // If we get here during multi-stage input we need to cancel it because selectionChanged notifications won't update the text system appropriately.  Text system steals touches inside of marked text.
+            if (self.markedTextRange)
+            {
+                [self.inputDelegate selectionWillChange:self];
+                self.markedTextRange = nil;
+                [self.inputDelegate selectionDidChange:self];
+            }
+            
             // wrap long press/drag handles in calls to the input delegate because the intermediate selection changes are not important to editing
             [self _inputDelegateSelectionDidChange];
             
@@ -2339,34 +2347,21 @@ typedef enum
 		newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
 	}
 	
-	if (_selectedTextRange && [[newTextRange start] isEqual:[_selectedTextRange start]] && [[newTextRange end] isEqual:[_selectedTextRange end]])
+	if (_selectedTextRange && [_selectedTextRange isEqual:selectedTextRange])
 	{
 		// no change
 		return;
 	}
 	
-	BOOL shouldNotifyDelegates = NO;
-	
-	// Notify selection changed as long as the user is not dragging the circle loupe
-	if (_dragMode != DTDragModeCursor && _dragMode != DTDragModeCursorInsideMarking)
-	{
-		shouldNotifyDelegates = YES;
-	}
-	
 	[self willChangeValueForKey:@"selectedTextRange"];
-	
-	if (shouldNotifyDelegates)
-	{
-		[self _inputDelegateSelectionWillChange];
-	}
 	
 	_selectedTextRange = [newTextRange copy];
 	
 	[self didChangeValueForKey:@"selectedTextRange"];
 	
-	if (shouldNotifyDelegates)
+    // Notify the editor delegate if not dragging
+	if (_dragMode != DTDragModeCursor && _dragMode != DTDragModeCursorInsideMarking)
 	{
-		[self _inputDelegateSelectionDidChange];
 		[self _editorViewDelegateDidChangeSelection];
 	}
 	
@@ -2394,58 +2389,43 @@ typedef enum
 
 - (void)setMarkedText:(NSString *)markedText selectedRange:(NSRange)selectedRange
 {
-	NSUInteger adjustedContentLength = [self.attributedTextContentView.layoutFrame.attributedStringFragment length];
-	
-	if (adjustedContentLength>0)
-	{
-		// preserve trailing newline at end of document
-		adjustedContentLength--;
-	}
-	
-	if (!markedText)
-	{
-		markedText = @"";
-	}
-	
-	DTTextRange *currentMarkedRange = (id)self.markedTextRange;
-	DTTextRange *currentSelection = (id)self.selectedTextRange;
-	UITextRange *replaceRange;
-	
-	if (currentMarkedRange)
-	{
-		// replace current marked text
-		replaceRange = currentMarkedRange;
-	}
-	else 
-	{
-		if (!currentSelection)
-		{
-			replaceRange = [self textRangeFromPosition:self.endOfDocument toPosition:self.endOfDocument];
-		}
-		else 
-		{
-			replaceRange = currentSelection;
-		}
-		
-	}
-	
-	// do the replacing
-	[self replaceRange:replaceRange withText:markedText];
-	
-	// adjust selection
-	self.selectedTextRange = [DTTextRange emptyRangeAtPosition:replaceRange.start offset:[markedText length]];
-	
-	[self willChangeValueForKey:@"markedTextRange"];
-	
-	// selected range is always zero-based
-	DTTextPosition *startOfReplaceRange = (DTTextPosition *)replaceRange.start;
-	
-	// set new marked range
-	self.markedTextRange = [DTTextRange rangeWithNSRange:NSMakeRange(startOfReplaceRange.location, [markedText length])];
-	
-	[self updateCursorAnimated:NO];
-	
-	[self didChangeValueForKey:@"markedTextRange"];
+    // Calculate ranges
+    DTTextRange *selectedTextRange = (DTTextRange *)self.selectedTextRange;
+    DTTextRange *markedTextRange = (DTTextRange *)self.markedTextRange;
+    DTTextRange *replaceRange = (markedTextRange) ? markedTextRange : selectedTextRange;
+    
+    DTTextPosition *markedTextRangeStart = (DTTextPosition *)replaceRange.start;
+    DTTextRange *newMarkedTextRange = [DTTextRange rangeWithNSRange:NSMakeRange(markedTextRangeStart.location, [markedText length])];
+    
+    NSRange newSelectedRange = NSMakeRange(markedTextRangeStart.location + selectedRange.location, selectedRange.length);
+    DTTextRange *newSelectedTextRange = [DTTextRange rangeWithNSRange:newSelectedRange];
+    
+    
+    // Update the text storage (We capture undo for the replacement and selectedTextRange, but calling undo will cancel multi-stage input and remove markings)
+    NSUndoManager *undoManager = self.undoManager;
+    
+    if (markedTextRange == nil)
+        [undoManager beginUndoGrouping]; // Overall marked session group began
+    
+    [undoManager beginUndoGrouping];
+
+    [[undoManager prepareWithInvocationTarget:self.inputDelegate] textDidChange:self];
+    [[undoManager prepareWithInvocationTarget:self] setSelectedTextRange:selectedTextRange];
+
+    self.markedTextRange = newMarkedTextRange;
+    [self replaceRange:replaceRange withText:markedText]; // Registers undo for the text replacement
+    self.selectedTextRange = newSelectedTextRange;
+    
+    [[undoManager prepareWithInvocationTarget:self] setMarkedTextRange:nil];
+    [[undoManager prepareWithInvocationTarget:self.inputDelegate] textWillChange:self];
+
+    [undoManager endUndoGrouping];
+    
+    if (markedText.length == 0)
+        [undoManager endUndoGrouping]; // Overall marked session group ended
+    
+    // Notify delegate
+    [self _editorViewDelegateDidChange];
 }
 
 - (void)unmarkText
@@ -2455,16 +2435,9 @@ typedef enum
 		return;
 	}
 	
-	[self _inputDelegateTextWillChange];
-	
 	self.markedTextRange = nil;
 	
 	[self updateCursorAnimated:NO];
-	
-	// calling textDidChange makes the input candidate go away
-	[self _inputDelegateTextDidChange];
-	
-	[self removeMarkedTextCandidateView];
 }
 
 #pragma mark Computing Text Ranges and Text Positions
