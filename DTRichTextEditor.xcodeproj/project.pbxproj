@@ -33,6 +33,10 @@
 		A70E62F416C2534E009B47BF /* DTDictationPlaceholderView.h in Headers */ = {isa = PBXBuildFile; fileRef = A70E62F016C25340009B47BF /* DTDictationPlaceholderView.h */; };
 		A70E62F516C2534E009B47BF /* DTDictationPlaceholderTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A70E62F116C25340009B47BF /* DTDictationPlaceholderTextAttachment.h */; };
 		A7212177173A26C0003C6F0A /* test.html in Resources */ = {isa = PBXBuildFile; fileRef = A7212176173A26C0003C6F0A /* test.html */; };
+		A7398A0F178457A30084DC12 /* DTRichTextEditorView+Attributes.h in Headers */ = {isa = PBXBuildFile; fileRef = A7398A0D178457A30084DC12 /* DTRichTextEditorView+Attributes.h */; };
+		A7398A10178457A30084DC12 /* DTRichTextEditorView+Attributes.h in Headers */ = {isa = PBXBuildFile; fileRef = A7398A0D178457A30084DC12 /* DTRichTextEditorView+Attributes.h */; };
+		A7398A11178457A30084DC12 /* DTRichTextEditorView+Attributes.m in Sources */ = {isa = PBXBuildFile; fileRef = A7398A0E178457A30084DC12 /* DTRichTextEditorView+Attributes.m */; };
+		A7398A12178457A30084DC12 /* DTRichTextEditorView+Attributes.m in Sources */ = {isa = PBXBuildFile; fileRef = A7398A0E178457A30084DC12 /* DTRichTextEditorView+Attributes.m */; };
 		A73F89D71754AD8F00E5CAA3 /* DTRichTextEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D7293D1487D9EE00A22742 /* DTRichTextEditor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A73F89D81754ADA200E5CAA3 /* DTIframeTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D4CD31726BC8F008245A0 /* DTIframeTextAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A73F89D91754ADA200E5CAA3 /* DTImageTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A72D4CD41726BC8F008245A0 /* DTImageTextAttachment.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -146,7 +150,7 @@
 		A73F8A451754AE0900E5CAA3 /* DTRichTextEditorConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = A7A02EE71714469A00789F2C /* DTRichTextEditorConstants.m */; };
 		A73F8A461754AE3400E5CAA3 /* libDTCoreText_no_DTFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A73129CC15A5E69900971C55 /* libDTCoreText_no_DTFoundation.a */; };
 		A73F8A471754AE3400E5CAA3 /* libDTFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F34D6C16D0E32F0054A512 /* libDTFoundation.a */; };
-		A73F8A481754AE3400E5CAA3 /* libDTHTMLParser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F34D7216D0E32F0054A512 /* libDTHTMLParser.a */; };
+		A73F8A481754AE3400E5CAA3 /* libDTHTMLParser_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F34D7216D0E32F0054A512 /* libDTHTMLParser_iOS.a */; };
 		A73F8A491754AE3400E5CAA3 /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A75D430517005893003CAF38 /* libDTLoupe.a */; };
 		A73F8A4A1754AE3400E5CAA3 /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7235AA61487A9C100C9F926 /* libDTWebArchive.a */; };
 		A73F8A761754C4D100E5CAA3 /* DTLoupe.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A75D430717005893003CAF38 /* DTLoupe.bundle */; };
@@ -243,6 +247,55 @@
 			proxyType = 2;
 			remoteGlobalIDString = A7F7EFCD1573603100F5A4D0;
 			remoteInfo = "Static Library (no DTFoundation)";
+		};
+		A7398A28178457A40084DC12 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7D8C7C21723174600025675;
+			remoteInfo = "DTZipArchive (Mac)";
+		};
+		A7398A2A178457A40084DC12 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A72121DA173BFFB1003C6F0A;
+			remoteInfo = "DTReachability (iOS)";
+		};
+		A7398A2C178457A40084DC12 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A72121EA173BFFED003C6F0A;
+			remoteInfo = "DTReachability (Mac)";
+		};
+		A7398A2E178457A40084DC12 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7C92B7A174FB8900019D70A;
+			remoteInfo = "DTSQLite (iOS)";
+		};
+		A7398A30178457A40084DC12 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7C92B8C174FB9720019D70A;
+			remoteInfo = "DTSQLite (Mac)";
+		};
+		A7398A32178457A40084DC12 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A70D74D01743AFBC00E6E626;
+			remoteInfo = "DTSidePanels Demo";
+		};
+		A7398A34178457A40084DC12 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7D9D62D1758C89800C29B6F;
+			remoteInfo = "DTReachability Demo";
 		};
 		A73F89CB1754AD4800E5CAA3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -481,6 +534,8 @@
 		A72D4CD61726BC8F008245A0 /* DTVideoTextAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTVideoTextAttachment.h; path = DTCoreText/Core/Source/DTVideoTextAttachment.h; sourceTree = "<group>"; };
 		A730BCCB16D27EE1003B849F /* Readme.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Readme.markdown; sourceTree = "<group>"; };
 		A730BCD216D28957003B849F /* DTTiledLayerWithoutFade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTTiledLayerWithoutFade.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/iOS/DTTiledLayerWithoutFade.h; sourceTree = "<group>"; };
+		A7398A0D178457A30084DC12 /* DTRichTextEditorView+Attributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTRichTextEditorView+Attributes.h"; sourceTree = "<group>"; };
+		A7398A0E178457A30084DC12 /* DTRichTextEditorView+Attributes.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DTRichTextEditorView+Attributes.m"; sourceTree = "<group>"; };
 		A73F89C01754AD2C00E5CAA3 /* DTRichTextEditor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DTRichTextEditor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7402D4A167F4E5200BE0AAF /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		A7402D4D167F571A00BE0AAF /* DTRichTextEditorView+Manipulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTRichTextEditorView+Manipulation.h"; sourceTree = "<group>"; };
@@ -613,7 +668,7 @@
 			files = (
 				A73F8A461754AE3400E5CAA3 /* libDTCoreText_no_DTFoundation.a in Frameworks */,
 				A73F8A471754AE3400E5CAA3 /* libDTFoundation.a in Frameworks */,
-				A73F8A481754AE3400E5CAA3 /* libDTHTMLParser.a in Frameworks */,
+				A73F8A481754AE3400E5CAA3 /* libDTHTMLParser_iOS.a in Frameworks */,
 				A73F8A491754AE3400E5CAA3 /* libDTLoupe.a in Frameworks */,
 				A73F8A4A1754AE3400E5CAA3 /* libDTWebArchive.a in Frameworks */,
 			);
@@ -736,6 +791,8 @@
 				A74351271486771700F4C766 /* DTRichTextEditorContentView.m */,
 				A74351281486771700F4C766 /* DTRichTextEditorView.h */,
 				A74351291486771700F4C766 /* DTRichTextEditorView.m */,
+				A7398A0D178457A30084DC12 /* DTRichTextEditorView+Attributes.h */,
+				A7398A0E178457A30084DC12 /* DTRichTextEditorView+Attributes.m */,
 				A7E8442C16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.h */,
 				A7E8442D16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.m */,
 				A7402D53167F66DF00BE0AAF /* DTRichTextEditorView+DTCoreText.h */,
@@ -968,11 +1025,18 @@
 				A7F34D6C16D0E32F0054A512 /* libDTFoundation.a */,
 				A7F34D6E16D0E32F0054A512 /* UnitTests.octest */,
 				A7F34D7016D0E32F0054A512 /* libDTFoundation_Mac.a */,
-				A7F34D7216D0E32F0054A512 /* libDTHTMLParser.a */,
-				A7F34D7416D0E32F0054A512 /* libDTHTMLParser.a */,
-				A7F34D7616D0E32F0054A512 /* libDTZipArchive.a */,
-				A7F34D7816D0E32F0054A512 /* libDTUTI.a */,
-				A7F34D7A16D0E32F0054A512 /* libDTUTI.a */,
+				A7F34D7216D0E32F0054A512 /* libDTHTMLParser_iOS.a */,
+				A7F34D7416D0E32F0054A512 /* libDTHTMLParser_Mac.a */,
+				A7F34D7616D0E32F0054A512 /* libDTZipArchive_iOS.a */,
+				A7398A29178457A40084DC12 /* libDTZipArchive_Mac.a */,
+				A7F34D7816D0E32F0054A512 /* libDTUTI_iOS.a */,
+				A7F34D7A16D0E32F0054A512 /* libDTUTI_Mac.a */,
+				A7398A2B178457A40084DC12 /* libDTReachability_iOS.a */,
+				A7398A2D178457A40084DC12 /* libDTReachability_Mac.a */,
+				A7398A2F178457A40084DC12 /* libDTSQLite_iOS.a */,
+				A7398A31178457A40084DC12 /* libDTSQLite_Mac.a */,
+				A7398A33178457A40084DC12 /* DTSidePanels Demo.app */,
+				A7398A35178457A40084DC12 /* DTReachability Demo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1071,6 +1135,7 @@
 				A73F8A2B1754ADDE00E5CAA3 /* DTRichTextEditorView+Styles.h in Headers */,
 				A73F8A2C1754ADDE00E5CAA3 /* DTUndoManager.h in Headers */,
 				A73F8A2D1754ADDE00E5CAA3 /* DTRichTextEditorConstants.h in Headers */,
+				A7398A10178457A30084DC12 /* DTRichTextEditorView+Attributes.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1106,6 +1171,7 @@
 				A776DBF21716C9C100E71F36 /* DTRichTextEditorView+Lists.h in Headers */,
 				A776DC1F1716CABA00E71F36 /* DTRichTextEditorView+Ranges.h in Headers */,
 				A7DB4676171D369F0092FB7D /* DTRichTextEditorView+Styles.h in Headers */,
+				A7398A0F178457A30084DC12 /* DTRichTextEditorView+Attributes.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1246,6 +1312,55 @@
 			remoteRef = A73129CB15A5E69900971C55 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		A7398A29178457A40084DC12 /* libDTZipArchive_Mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDTZipArchive_Mac.a;
+			remoteRef = A7398A28178457A40084DC12 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7398A2B178457A40084DC12 /* libDTReachability_iOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDTReachability_iOS.a;
+			remoteRef = A7398A2A178457A40084DC12 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7398A2D178457A40084DC12 /* libDTReachability_Mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDTReachability_Mac.a;
+			remoteRef = A7398A2C178457A40084DC12 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7398A2F178457A40084DC12 /* libDTSQLite_iOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDTSQLite_iOS.a;
+			remoteRef = A7398A2E178457A40084DC12 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7398A31178457A40084DC12 /* libDTSQLite_Mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDTSQLite_Mac.a;
+			remoteRef = A7398A30178457A40084DC12 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7398A33178457A40084DC12 /* DTSidePanels Demo.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "DTSidePanels Demo.app";
+			remoteRef = A7398A32178457A40084DC12 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7398A35178457A40084DC12 /* DTReachability Demo.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "DTReachability Demo.app";
+			remoteRef = A7398A34178457A40084DC12 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		A75D430317005893003CAF38 /* Demo App.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -1337,38 +1452,38 @@
 			remoteRef = A7F34D6F16D0E32F0054A512 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A7F34D7216D0E32F0054A512 /* libDTHTMLParser.a */ = {
+		A7F34D7216D0E32F0054A512 /* libDTHTMLParser_iOS.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libDTHTMLParser.a;
+			path = libDTHTMLParser_iOS.a;
 			remoteRef = A7F34D7116D0E32F0054A512 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A7F34D7416D0E32F0054A512 /* libDTHTMLParser.a */ = {
+		A7F34D7416D0E32F0054A512 /* libDTHTMLParser_Mac.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libDTHTMLParser.a;
+			path = libDTHTMLParser_Mac.a;
 			remoteRef = A7F34D7316D0E32F0054A512 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A7F34D7616D0E32F0054A512 /* libDTZipArchive.a */ = {
+		A7F34D7616D0E32F0054A512 /* libDTZipArchive_iOS.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libDTZipArchive.a;
+			path = libDTZipArchive_iOS.a;
 			remoteRef = A7F34D7516D0E32F0054A512 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A7F34D7816D0E32F0054A512 /* libDTUTI.a */ = {
+		A7F34D7816D0E32F0054A512 /* libDTUTI_iOS.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libDTUTI.a;
+			path = libDTUTI_iOS.a;
 			remoteRef = A7F34D7716D0E32F0054A512 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A7F34D7A16D0E32F0054A512 /* libDTUTI.a */ = {
+		A7F34D7A16D0E32F0054A512 /* libDTUTI_Mac.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = libDTUTI.a;
+			path = libDTUTI_Mac.a;
 			remoteRef = A7F34D7916D0E32F0054A512 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1488,6 +1603,7 @@
 				A73F8A431754AE0900E5CAA3 /* DTRichTextEditorView+Styles.m in Sources */,
 				A73F8A441754AE0900E5CAA3 /* DTUndoManager.m in Sources */,
 				A73F8A451754AE0900E5CAA3 /* DTRichTextEditorConstants.m in Sources */,
+				A7398A12178457A30084DC12 /* DTRichTextEditorView+Attributes.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1519,6 +1635,7 @@
 				A776DBF41716C9C100E71F36 /* DTRichTextEditorView+Lists.m in Sources */,
 				A776DC211716CABA00E71F36 /* DTRichTextEditorView+Ranges.m in Sources */,
 				A7DB4674171D369F0092FB7D /* DTRichTextEditorView+Styles.m in Sources */,
+				A7398A11178457A30084DC12 /* DTRichTextEditorView+Attributes.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
