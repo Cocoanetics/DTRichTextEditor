@@ -1023,13 +1023,13 @@
 			path = "Pages Images";
 			sourceTree = "<group>";
 		};
-		0BCE64C2174DCB14007EE10F /* Media */ = {
+		0BCE64C2174DCB14007EE10F /* Other */ = {
 			isa = PBXGroup;
 			children = (
 				0BCE64AD174DCAF8007EE10F /* DTFormatOtherViewController.h */,
 				0BCE64AE174DCAF8007EE10F /* DTFormatOtherViewController.m */,
 			);
-			name = Media;
+			name = Other;
 			sourceTree = "<group>";
 		};
 		A70AE5D7173922B2002F4EA5 /* Test Options */ = {
@@ -1052,7 +1052,7 @@
 				0B2BF19E1718E54700BA0213 /* DTFormatOverviewViewController.m */,
 				0B17753A173B436A00498540 /* Style */,
 				0B17753B173B437200498540 /* List */,
-				0BCE64C2174DCB14007EE10F /* Media */,
+				0BCE64C2174DCB14007EE10F /* Other */,
 				A7DF6EDB173A6626004F623B /* DTFormatTableView.h */,
 				A7DF6EDC173A6626004F623B /* DTFormatTableView.m */,
 			);

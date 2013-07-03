@@ -67,8 +67,14 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
                                                                    style:UIBarButtonItemStyleBordered
                                                                   target:self
                                                                   action:@selector(presentFormatOptions:)];
+
+    UIBarButtonItem *insertItem = [[UIBarButtonItem alloc] initWithTitle:@"Insert"
+                                                                   style:UIBarButtonItemStyleBordered
+                                                                  target:self
+                                                                  action:@selector(presentGallery:)];
+
     UIBarButtonItem *testStateItem = [[UIBarButtonItem alloc] initWithTitle:@"Test Options" style:UIBarButtonItemStyleBordered target:self action:@selector(presentTestOptions:)];
-    self.navigationItem.rightBarButtonItems = @[formatItem, testStateItem];
+    self.navigationItem.rightBarButtonItems = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? @[formatItem, insertItem, testStateItem] : @[formatItem, testStateItem];
     
 	// defaults
     [DTCoreTextLayoutFrame setShouldDrawDebugFrames:self.testState.shouldDrawDebugFrames];
@@ -348,6 +354,23 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 		richEditor.inputAccessoryView = nil; // no accessory on next inputView change
 		[richEditor setInputView:self.formatViewController.view animated:YES];
     }
+}
+
+- (void)presentGallery:(id)sender
+{
+    if (!self.formatViewController)
+    {
+        DTFormatViewController *controller = [[DTFormatViewController alloc] init];
+        controller.formatDelegate = self;
+        self.formatViewController = controller;
+    }
+    
+    UIImagePickerController *mediaController = [[UIImagePickerController alloc] init];
+    mediaController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    mediaController.allowsEditing = YES;
+    mediaController.delegate = (DTFormatViewController<DTInternalFormatProtocol>*)self.formatViewController;
+
+    [self presentViewController:mediaController animated:YES completion:NULL];
 }
 
 

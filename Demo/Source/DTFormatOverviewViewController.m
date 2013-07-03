@@ -31,14 +31,7 @@
     
     NSAssert([self.navigationController isKindOfClass:[DTFormatViewController class]], @"Must use inside a DTFormatViewController");
     
-    UISegmentedControl *formatTypeChooser = [[UISegmentedControl alloc] initWithItems:@[ @"Style", @"List", @"Media", @"Other" ]];
-    formatTypeChooser.segmentedControlStyle = UISegmentedControlStyleBar;
-
-    formatTypeChooser.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(formatTypeChooser.bounds));
-    formatTypeChooser.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    formatTypeChooser.selectedSegmentIndex = 0;
-    [formatTypeChooser addTarget:self action:@selector(_formatTypeChooserValueChanged:) forControlEvents:UIControlEventValueChanged];
-    self.navigationItem.titleView = formatTypeChooser;
+    NSArray *optionsArray = @[ @"Style", @"List", @"Media", @"Other" ];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         // on the phone this controller will be presented modally
@@ -50,8 +43,19 @@
                                                                      target:nil
                                                                      action:@selector(userPressedDone:)];
         self.navigationItem.rightBarButtonItem = closeItem;
+        
+        optionsArray = @[optionsArray[0], optionsArray[1], optionsArray[3] ];
     }
     
+    UISegmentedControl *formatTypeChooser = [[UISegmentedControl alloc] initWithItems:optionsArray];
+    formatTypeChooser.segmentedControlStyle = UISegmentedControlStyleBar;
+    
+    formatTypeChooser.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(formatTypeChooser.bounds));
+    formatTypeChooser.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    formatTypeChooser.selectedSegmentIndex = 0;
+    [formatTypeChooser addTarget:self action:@selector(_formatTypeChooserValueChanged:) forControlEvents:UIControlEventValueChanged];
+    self.navigationItem.titleView = formatTypeChooser;
+
     [self _formatTypeChooserValueChanged:nil];
 }
 
@@ -61,6 +65,9 @@
     UIViewController *newViewController = nil;
     
     NSUInteger selectedIndex = control ? control.selectedSegmentIndex : 0;
+    
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && selectedIndex == 2)
+        selectedIndex = 3;
     
     switch (selectedIndex) {
         case 0:
@@ -90,7 +97,6 @@
                 self.mediaController = [[UIImagePickerController alloc] init];
                 self.mediaController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
                 self.mediaController.delegate = (DTFormatViewController<DTInternalFormatProtocol>*)self.navigationController;
-                self.mediaController.topViewController.navigationItem.rightBarButtonItem = nil;
             }
             
             newViewController = self.mediaController;
@@ -128,5 +134,6 @@
     
     self.contentSizeForViewInPopover = self.visibleTableViewController.contentSizeForViewInPopover;
 }
+
 
 @end

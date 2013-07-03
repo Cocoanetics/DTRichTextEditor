@@ -83,8 +83,8 @@
     
     UIImage *leftCapOn;
     UIImage *leftCapOff;
-    UIImage *centerCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Selected_Blue_Bottom_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
-    UIImage *centerCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Unselected.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
+    UIImage *centerCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Selected_Blue_Bottom_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0)];
+    UIImage *centerCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Unselected.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0) ];
     UIImage *rightCapOn;
     UIImage *rightCapOff;
     
@@ -92,38 +92,38 @@
     switch (self.cellPosition) {
         case DPTableViewCellSegmentedControlPositionSingle:
         {
-            leftCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_LeftCap_Selected_Blue_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 10.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
-            leftCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_LeftCap_Unselected.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 10.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
-            rightCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_RightCap_Selected_Blue_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 10.0) resizingMode:UIImageResizingModeTile];
-            rightCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_RightCap_Unselected.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 10.0) resizingMode:UIImageResizingModeTile];
+            leftCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_LeftCap_Selected_Blue_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 10.0, 0.0, 1.0)];
+            leftCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_LeftCap_Unselected.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 10.0, 0.0, 1.0)];
+            rightCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_RightCap_Selected_Blue_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 10.0)];
+            rightCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_RightCap_Unselected.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 10.0)];
         }
             break;
         case DPTableViewCellSegmentedControlPositionTop:
         {
-            leftCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_LeftCap_Selected_Blue_Top_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 10.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
-            leftCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_LeftCap_Unselected_Top.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 10.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
-            rightCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_RightCap_Selected_Blue_Top_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 10.0) resizingMode:UIImageResizingModeTile];
-            rightCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_RightCap_Unselected_Top.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 10.0) resizingMode:UIImageResizingModeTile];
-            centerCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Selected_Blue_Top_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
-            centerCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Unselected_Top.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
+            leftCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_LeftCap_Selected_Blue_Top_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 10.0, 0.0, 1.0)];
+            leftCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_LeftCap_Unselected_Top.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 10.0, 0.0, 1.0)];
+            rightCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_RightCap_Selected_Blue_Top_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 10.0)];
+            rightCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_RightCap_Unselected_Top.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 10.0)];
+            centerCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Selected_Blue_Top_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0)];
+            centerCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Unselected_Top.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0)];
         }
             break;
         case DPTableViewCellSegmentedControlPositionMiddle:
         {
-            leftCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Selected_Blue_Bottom_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
-            leftCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Unselected.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
-            rightCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Selected_Blue_Bottom_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
-            rightCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Unselected.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
+            leftCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Selected_Blue_Bottom_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0)];
+            leftCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Unselected.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0)];
+            rightCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Selected_Blue_Bottom_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0)];
+            rightCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Unselected.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0)];
         }
             break;
         case DPTableViewCellSegmentedControlPositionBottom:
         {
-            leftCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_LeftCap_Selected_Blue_Bottom_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 10.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
-            leftCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_LeftCap_Unselected_Bottom.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 10.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
-            rightCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_RightCap_Selected_Blue_Bottom_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 10.0) resizingMode:UIImageResizingModeTile];
-            rightCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_RightCap_Unselected_Bottom.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 10.0) resizingMode:UIImageResizingModeTile];
-            centerCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Selected_Blue_Bottom_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
-            centerCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Unselected_Bottom.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0) resizingMode:UIImageResizingModeTile];
+            leftCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_LeftCap_Selected_Blue_Bottom_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 10.0, 0.0, 1.0)];
+            leftCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_LeftCap_Unselected_Bottom.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 10.0, 0.0, 1.0)];
+            rightCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_RightCap_Selected_Blue_Bottom_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 10.0)];
+            rightCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_RightCap_Unselected_Bottom.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 10.0)];
+            centerCapOn = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Selected_Blue_Bottom_ShadowNone.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0)];
+            centerCapOff = [[UIImage imageNamed:@"TSK_SegmentedControl_Center_Unselected_Bottom.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0, 1.0, 0.0, 1.0)];
         }
             break;
             

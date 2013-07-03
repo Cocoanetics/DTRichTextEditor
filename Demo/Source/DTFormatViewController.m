@@ -186,6 +186,9 @@
         if (iref) {
             UIImage *theThumbnail = [UIImage imageWithCGImage:iref];
 			[self.formatDelegate replaceCurrentSelectionWithPhoto:theThumbnail];
+            
+            if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+                [picker dismissViewControllerAnimated:YES completion:NULL];
         }
     };
 	
@@ -201,6 +204,24 @@
         [assetslibrary assetForURL:imageURL
                        resultBlock:resultblock
                       failureBlock:failureblock];
+    }
+}
+
+#pragma mark image picker hacks
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    if(![navigationController isKindOfClass:[UIImagePickerController class]])
+        return;
+
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+        return;
+    
+    UINavigationItem *item = [viewController navigationItem];
+    
+    if(!item.rightBarButtonItems){
+        [item setValue:nil forKey:@"_customRightViews"];
+    }else{
+        [item setRightBarButtonItems:nil];
     }
 }
 
