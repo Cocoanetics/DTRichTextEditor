@@ -58,7 +58,7 @@ typedef enum
 } DTDragMode;
 
 // private extensions to the public interface
-@interface DTRichTextEditorView () <DTAttributedTextContentViewDelegate, UIGestureRecognizerDelegate>
+@interface DTRichTextEditorView () <DTAttributedTextContentViewDelegate, UIGestureRecognizerDelegate, UIPopoverControllerDelegate>
 
 @property (nonatomic, retain) DTTextSelectionView *selectionView;
 @property (nonatomic, retain) DTCursorView *cursor;
@@ -74,6 +74,10 @@ typedef enum
 @property (retain, readwrite) UIView *inputView;
 
 @property (nonatomic, assign) BOOL userIsTyping;  // while user is typing there are no selection range updates to input delegate
+@property (nonatomic, assign) BOOL keepCurrentUndoGroup; // to avoid closing an undo group if it is a sub-operation
+
+@property (nonatomic, retain, readonly) NSArray *editorMenuItems;
+@property (nonatomic, retain) UIPopoverController *definePopoverController; // used for presenting definitions of a selected term on the iPad
 
 - (void)setDefaultText;
 - (void)showContextMenuFromSelection;
@@ -129,6 +133,7 @@ typedef enum
     BOOL _shouldShowDragHandlesAfterLoupeHide;
 	BOOL _shouldShowContextMenuAfterMovementEnded;
     BOOL _userIsTyping;
+	BOOL _keepCurrentUndoGroup;
     BOOL _waitingForDictationResult;
 	BOOL _isChangingInputView;
 	
@@ -159,6 +164,7 @@ typedef enum
     
     // tracking of content insets
     UIEdgeInsets _userSetContentInsets;
+	UIEdgeInsets _userSetScrollIndicatorInsets;
     BOOL _shouldNotRecordChangedContentInsets;
 	
 	// the undo manager
@@ -174,6 +180,7 @@ typedef enum
         
         // Text and Selection Changes
         unsigned int delegateShouldChangeTextInRangeReplacementText:1;
+        unsigned int delegateWillPasteTextInRange:1;
         unsigned int delegateDidChange:1;
         unsigned int delegateDidChangeSelection:1;
         
@@ -413,13 +420,7 @@ typedef enum
     
     // Display the context menu
     _contextMenuVisible = YES;
-    CGRect targetRect = [self boundsOfCurrentSelection];
-    
-    // Adjust the target rect to be just above the viewport of the scrollview
-    CGRect visibleRect;
-    visibleRect.origin = self.contentOffset;
-    visibleRect.size = self.bounds.size;
-    targetRect = CGRectIntersection(targetRect, visibleRect);
+    CGRect targetRect = [self visibleBoundsOfCurrentSelection];
     
     // Present the menu
 	UIMenuController *menuController = [UIMenuController sharedMenuController];
@@ -896,19 +897,6 @@ typedef enum
 	_dragMode = DTDragModeNone;	
 }
 
-- (void)removeMarkedTextCandidateView
-{
-	// remove invisible marking candidate view to avoid touch handling problems
-	// prevents "Warning: phrase boundary gesture handler is somehow installed when there is no marked text"
-	for (UIView *oneView in self.subviews)
-	{
-		if (![oneView isKindOfClass:[UIImageView class]] && oneView != self.attributedTextContentView && oneView != _cursor && oneView != _selectionView)
-		{
-			[oneView removeFromSuperview];
-		}
-	}
-}
-
 - (void)extendSelectionToIncludeWordInDirection:(UITextStorageDirection)direction
 {
     if (direction == UITextStorageDirectionForward)
@@ -975,6 +963,18 @@ typedef enum
 	return targetRect;
 }
 
+- (CGRect)visibleBoundsOfCurrentSelection
+{
+    CGRect targetRect = [self boundsOfCurrentSelection];
+    
+    CGRect visibleRect;
+    visibleRect.origin = self.contentOffset;
+    visibleRect.size = self.bounds.size;
+    targetRect = CGRectIntersection(targetRect, visibleRect);
+    
+    return targetRect;
+}
+
 #pragma mark Notifications
 
 - (void)cursorDidBlink:(NSNotification *)notification
@@ -1013,9 +1013,12 @@ typedef enum
 			
 			// set inset to make up for covered array at bottom
 			_shouldNotRecordChangedContentInsets = YES;
+			
 			self.contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, coveredFrame.size.height + _userSetContentInsets.bottom, _userSetContentInsets.right);
+			
+			self.scrollIndicatorInsets = UIEdgeInsetsMake(_userSetScrollIndicatorInsets.top, _userSetScrollIndicatorInsets.left, _userSetScrollIndicatorInsets.bottom + coveredFrame.size.height, _userSetScrollIndicatorInsets.right);
+			
 			_shouldNotRecordChangedContentInsets = NO;
-			self.scrollIndicatorInsets = self.contentInset;
 		}
 						 completion:^(BOOL finished) {
 							 // only scroll the cursor visible if there was a change in content insets
@@ -1035,8 +1038,13 @@ typedef enum
 		return;
 	}
 	
+	// reset the content insets, but don't record them
+	_shouldNotRecordChangedContentInsets = YES;
+	
 	self.contentInset = _userSetContentInsets;
-	self.scrollIndicatorInsets = self.contentInset;
+	self.scrollIndicatorInsets = _userSetScrollIndicatorInsets;
+	
+	_shouldNotRecordChangedContentInsets = NO;
 
     _heightCoveredByKeyboard = 0;
 }
@@ -1070,31 +1078,38 @@ typedef enum
             return;
     }
     
-    // Move the cursor if there isn't marked text, otherwise unmark it
-    if (self.markedTextRange == nil)
-    {
-        CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
+    // Update selection.  Text input system steals taps inside of marked text so if we receive a tap, we end multi-stage text input.
+    [self.inputDelegate selectionWillChange:self];
     
-        if ([self moveCursorToPositionClosestToLocation:touchPoint])
-        {
-            // did move
+    BOOL  hadMarkedText = (self.markedTextRange != nil);
+    self.markedTextRange = nil;
+    
+    CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
+    DTTextPosition *touchPosition = (DTTextPosition *)[self closestPositionToPoint:touchPoint];
+    DTTextRange *touchRange = [DTTextRange textRangeFromStart:touchPosition toEnd:touchPosition];
+    
+    if ([self.selectedTextRange isEqual:touchRange])
+    {
+        [self updateCursorAnimated:NO];
+        
+        if ([[UIMenuController sharedMenuController] isMenuVisible])
             [self hideContextMenu];
-        }
-        else
-        {
-            // was same position as before and did not start an editing session in response to this tap
-            // an editing view that lost first responder and therefore stopped editing retains it's selectedTextRange(cursor position)
-            // therefore a tap that initiates editing can reach this point and we don't want to display the menu.
-            if (wasEditing)
-            {
-                [self showContextMenuFromSelection];
-            }
-        }
+        else if (wasEditing && !hadMarkedText)
+            [self showContextMenuFromSelection];
     }
     else
     {
-        [self unmarkText];
+        self.selectedTextRange = touchRange;
+        
+        if (self.isEditing)
+        {
+            // begins a new typing undo group
+            DTUndoManager *undoManager = self.undoManager;
+            [undoManager closeAllOpenGroups];
+        }
     }
+
+    [self.inputDelegate selectionDidChange:self];
 }
 
 - (void)handleDoubleTap:(UITapGestureRecognizer *)gesture
@@ -1118,6 +1133,8 @@ typedef enum
     }
 
     // Select a word closest to the touchPoint
+    [self.inputDelegate selectionWillChange:self];
+    
     CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
     UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
     UITextRange *wordRange = [self textRangeOfWordAtPosition:position];
@@ -1126,6 +1143,8 @@ typedef enum
     if (wordRange == nil || (self.isEditing && [self.selectedTextRange isEqual:wordRange]))
         return;
     
+    // Text input system steals taps inside of marked text so if we receive a tap, we end multi-stage text input.
+    self.markedTextRange = nil;
     self.selectionView.dragHandlesVisible = YES;
     
     [self hideContextMenu];
@@ -1140,6 +1159,8 @@ typedef enum
         DTUndoManager *undoManager = self.undoManager;
         [undoManager closeAllOpenGroups];
     }
+    
+    [self.inputDelegate selectionDidChange:self];
 }
 
 - (void)handleTripleTap:(UITapGestureRecognizer *)gesture
@@ -1201,6 +1222,14 @@ typedef enum
             
 		case UIGestureRecognizerStateBegan:
 		{
+            // If we get here during multi-stage input we need to cancel it because selectionChanged notifications won't update the text system appropriately.  Text system steals touches inside of marked text.
+            if (self.markedTextRange)
+            {
+                [self.inputDelegate selectionWillChange:self];
+                self.markedTextRange = nil;
+                [self.inputDelegate selectionDidChange:self];
+            }
+            
             // wrap long press/drag handles in calls to the input delegate because the intermediate selection changes are not important to editing
             [self _inputDelegateSelectionDidChange];
             
@@ -1415,6 +1444,7 @@ typedef enum
     _editorViewDelegateFlags.delegateShouldEndEditing = [editorViewDelegate respondsToSelector:@selector(editorViewShouldEndEditing:)];
     _editorViewDelegateFlags.delegateDidEndEditing = [editorViewDelegate respondsToSelector:@selector(editorViewDidEndEditing:)];
     _editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText = [editorViewDelegate respondsToSelector:@selector(editorView:shouldChangeTextInRange:replacementText:)];
+    _editorViewDelegateFlags.delegateWillPasteTextInRange = [editorViewDelegate respondsToSelector:@selector(editorView:willPasteText:inRange:)];
     _editorViewDelegateFlags.delegateDidChange = [editorViewDelegate respondsToSelector:@selector(editorViewDidChange:)];
     _editorViewDelegateFlags.delegateDidChangeSelection = [editorViewDelegate respondsToSelector:@selector(editorViewDidChangeSelection:)];
     _editorViewDelegateFlags.delegateMenuItems = [editorViewDelegate respondsToSelector:@selector(menuItems)];
@@ -1513,27 +1543,22 @@ typedef enum
         [self setEditing:YES];
     }
     
-    // Add custom menu items if implemented by the editor view delegate
+    // Add editor menu items and editor view delegate menu items
+    NSMutableArray *menuItems = [[NSMutableArray alloc] initWithArray:self.editorMenuItems];
+
     if (_editorViewDelegateFlags.delegateMenuItems)
     {
-        NSArray *delegateMenuItems = self.editorViewDelegate.menuItems;
-        
-        if (delegateMenuItems)
+        // Filter delegate's menu items to remove any that would interfere with our code
+        for (UIMenuItem *menuItem in self.editorViewDelegate.menuItems)
         {
-            // Filter delegate's menu items to remove any that would interfere with our code
-            NSMutableArray *acceptableMenuItems = [[NSMutableArray alloc] init];
-            
-            for (UIMenuItem *menuItem in delegateMenuItems)
+            if (![self respondsToSelector:menuItem.action])
             {
-                if (![self respondsToSelector:menuItem.action])
-                {
-                    [acceptableMenuItems addObject:menuItem];
-                }
+                [menuItems addObject:menuItem];
             }
-            
-            [[UIMenuController sharedMenuController] setMenuItems:acceptableMenuItems];
         }
     }
+    
+    [[UIMenuController sharedMenuController] setMenuItems:menuItems];
     
     return YES;
 }
@@ -1597,6 +1622,25 @@ typedef enum
     }
     
     return nil;
+}
+
+- (NSArray *)editorMenuItems
+{
+    if (_editorMenuItems == nil)
+    {
+        NSMutableArray *items = [[NSMutableArray alloc] init];
+        
+        if ([UIReferenceLibraryViewController class])
+        {
+            UIMenuItem *defineItem = [[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Define", @"Menu item title for defining a selected term")
+                                                                action:@selector(define:)];
+            [items addObject:defineItem];
+        }
+        
+        _editorMenuItems = items;
+    }
+    
+    return _editorMenuItems;
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
@@ -1685,12 +1729,19 @@ typedef enum
 	{
 		return YES;
 	}
+    
+    if (action == @selector(define:))
+    {
+        if( ![UIReferenceLibraryViewController class] )
+            return NO;
+        
+        NSString *selectedTerm = [self textInRange:self.selectedTextRange];
+        return [UIReferenceLibraryViewController dictionaryHasDefinitionForTerm:selectedTerm];
+    }
 	
 	
 	return NO;
 }
-
-
 
 - (void)delete:(id)sender
 {
@@ -1790,8 +1841,11 @@ typedef enum
 	
 	if (image)
 	{
-		DTImageTextAttachment *attachment = [[DTImageTextAttachment alloc] initWithElement:nil options:nil];
-		attachment.contentURL = [pasteboard URL];
+        Class ImageAttachmentClass = [DTTextAttachment registeredClassForTagName:@"img"];
+        NSAssert([ImageAttachmentClass isSubclassOfClass:[DTImageTextAttachment class]], @"DTRichTextEditor requires DTImageTextAttachment or a subclass of it be registered for 'img' tags.");
+        
+        DTImageTextAttachment *attachment = [[ImageAttachmentClass alloc] initWithElement:nil options:nil];
+        attachment.contentURL = [pasteboard URL];
 		attachment.image = image;
 		attachment.originalSize = [image size];
 		
@@ -1803,7 +1857,8 @@ typedef enum
 				displaySize = sizeThatFitsKeepingAspectRatio(image.size,_maxImageDisplaySize);
 			}
 		}
-		attachment.displaySize = displaySize;
+        
+        attachment.displaySize = displaySize;
         
         NSAttributedString *attachmentString = [self attributedStringForTextRange:_selectedTextRange wrappingAttachment:attachment inParagraph:NO];
         [self _pasteAttributedString:attachmentString inRange:_selectedTextRange];
@@ -1858,6 +1913,15 @@ typedef enum
         if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:[textRange NSRangeValue] replacementText:attributedStringToPaste])
             return;
     
+    if (_editorViewDelegateFlags.delegateWillPasteTextInRange)
+    {
+        attributedStringToPaste = [self.editorViewDelegate editorView:self
+                                                        willPasteText:attributedStringToPaste
+                                                              inRange:[textRange NSRangeValue]];
+        if (attributedStringToPaste == nil)
+            return;
+    }
+    
     DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	[undoManager closeAllOpenGroups];
     
@@ -1889,6 +1953,45 @@ typedef enum
     self.selectionView.dragHandlesVisible = YES;
 	
 	self.selectedTextRange = [DTTextRange textRangeFromStart:self.beginningOfDocument toEnd:self.endOfDocument];
+}
+
+- (void)define:(id)sender
+{
+    if (![UIReferenceLibraryViewController class])
+        return;
+    
+    if (!self.selectedTextRange || [self.selectedTextRange isEmpty])
+        return;
+    
+    NSString *selectedTerm = [self textInRange:self.selectedTextRange];
+    
+    if (![UIReferenceLibraryViewController dictionaryHasDefinitionForTerm:selectedTerm])
+        return;
+    
+    UIReferenceLibraryViewController *dictionaryViewController = [[UIReferenceLibraryViewController alloc] initWithTerm:selectedTerm];
+    
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+    {
+        UIApplication *application = [UIApplication sharedApplication];
+        UIWindow *window = [application keyWindow];
+        [window.rootViewController presentViewController:dictionaryViewController animated:YES completion:nil];
+    }
+    else // iPad
+    {
+        CGRect targetRect = [self visibleBoundsOfCurrentSelection];
+        
+        if (CGRectIsNull(targetRect))
+            return;
+        
+        UIPopoverController *popover = [[UIPopoverController alloc] initWithContentViewController:dictionaryViewController];
+        popover.delegate = self;
+        [popover presentPopoverFromRect:targetRect
+                                 inView:self
+               permittedArrowDirections:UIPopoverArrowDirectionAny
+                               animated:YES];
+        
+        self.definePopoverController = popover;
+    }
 }
 
 // creates an undo manager lazily in response to a shake gesture or first edit action
@@ -2244,34 +2347,21 @@ typedef enum
 		newTextRange = [DTTextRange textRangeFromStart:start toEnd:end];
 	}
 	
-	if (_selectedTextRange && [[newTextRange start] isEqual:[_selectedTextRange start]] && [[newTextRange end] isEqual:[_selectedTextRange end]])
+	if (_selectedTextRange && [_selectedTextRange isEqual:selectedTextRange])
 	{
 		// no change
 		return;
 	}
 	
-	BOOL shouldNotifyDelegates = NO;
-	
-	// Notify selection changed as long as the user is not dragging the circle loupe
-	if (_dragMode != DTDragModeCursor && _dragMode != DTDragModeCursorInsideMarking)
-	{
-		shouldNotifyDelegates = YES;
-	}
-	
 	[self willChangeValueForKey:@"selectedTextRange"];
-	
-	if (shouldNotifyDelegates)
-	{
-		[self _inputDelegateSelectionWillChange];
-	}
 	
 	_selectedTextRange = [newTextRange copy];
 	
 	[self didChangeValueForKey:@"selectedTextRange"];
 	
-	if (shouldNotifyDelegates)
+    // Notify the editor delegate if not dragging
+	if (_dragMode != DTDragModeCursor && _dragMode != DTDragModeCursorInsideMarking)
 	{
-		[self _inputDelegateSelectionDidChange];
 		[self _editorViewDelegateDidChangeSelection];
 	}
 	
@@ -2299,58 +2389,43 @@ typedef enum
 
 - (void)setMarkedText:(NSString *)markedText selectedRange:(NSRange)selectedRange
 {
-	NSUInteger adjustedContentLength = [self.attributedTextContentView.layoutFrame.attributedStringFragment length];
-	
-	if (adjustedContentLength>0)
-	{
-		// preserve trailing newline at end of document
-		adjustedContentLength--;
-	}
-	
-	if (!markedText)
-	{
-		markedText = @"";
-	}
-	
-	DTTextRange *currentMarkedRange = (id)self.markedTextRange;
-	DTTextRange *currentSelection = (id)self.selectedTextRange;
-	UITextRange *replaceRange;
-	
-	if (currentMarkedRange)
-	{
-		// replace current marked text
-		replaceRange = currentMarkedRange;
-	}
-	else 
-	{
-		if (!currentSelection)
-		{
-			replaceRange = [self textRangeFromPosition:self.endOfDocument toPosition:self.endOfDocument];
-		}
-		else 
-		{
-			replaceRange = currentSelection;
-		}
-		
-	}
-	
-	// do the replacing
-	[self replaceRange:replaceRange withText:markedText];
-	
-	// adjust selection
-	self.selectedTextRange = [DTTextRange emptyRangeAtPosition:replaceRange.start offset:[markedText length]];
-	
-	[self willChangeValueForKey:@"markedTextRange"];
-	
-	// selected range is always zero-based
-	DTTextPosition *startOfReplaceRange = (DTTextPosition *)replaceRange.start;
-	
-	// set new marked range
-	self.markedTextRange = [DTTextRange rangeWithNSRange:NSMakeRange(startOfReplaceRange.location, [markedText length])];
-	
-	[self updateCursorAnimated:NO];
-	
-	[self didChangeValueForKey:@"markedTextRange"];
+    // Calculate ranges
+    DTTextRange *selectedTextRange = (DTTextRange *)self.selectedTextRange;
+    DTTextRange *markedTextRange = (DTTextRange *)self.markedTextRange;
+    DTTextRange *replaceRange = (markedTextRange) ? markedTextRange : selectedTextRange;
+    
+    DTTextPosition *markedTextRangeStart = (DTTextPosition *)replaceRange.start;
+    DTTextRange *newMarkedTextRange = [DTTextRange rangeWithNSRange:NSMakeRange(markedTextRangeStart.location, [markedText length])];
+    
+    NSRange newSelectedRange = NSMakeRange(markedTextRangeStart.location + selectedRange.location, selectedRange.length);
+    DTTextRange *newSelectedTextRange = [DTTextRange rangeWithNSRange:newSelectedRange];
+    
+    
+    // Update the text storage (We capture undo for the replacement and selectedTextRange, but calling undo will cancel multi-stage input and remove markings)
+    NSUndoManager *undoManager = self.undoManager;
+    
+    if (markedTextRange == nil)
+        [undoManager beginUndoGrouping]; // Overall marked session group began
+    
+    [undoManager beginUndoGrouping];
+
+    [[undoManager prepareWithInvocationTarget:self.inputDelegate] textDidChange:self];
+    [[undoManager prepareWithInvocationTarget:self] setSelectedTextRange:selectedTextRange];
+
+    self.markedTextRange = newMarkedTextRange;
+    [self replaceRange:replaceRange withText:markedText]; // Registers undo for the text replacement
+    self.selectedTextRange = newSelectedTextRange;
+    
+    [[undoManager prepareWithInvocationTarget:self] setMarkedTextRange:nil];
+    [[undoManager prepareWithInvocationTarget:self.inputDelegate] textWillChange:self];
+
+    [undoManager endUndoGrouping];
+    
+    if (markedText.length == 0)
+        [undoManager endUndoGrouping]; // Overall marked session group ended
+    
+    // Notify delegate
+    [self _editorViewDelegateDidChange];
 }
 
 - (void)unmarkText
@@ -2360,16 +2435,9 @@ typedef enum
 		return;
 	}
 	
-	[self _inputDelegateTextWillChange];
-	
 	self.markedTextRange = nil;
 	
 	[self updateCursorAnimated:NO];
-	
-	// calling textDidChange makes the input candidate go away
-	[self _inputDelegateTextDidChange];
-	
-	[self removeMarkedTextCandidateView];
 }
 
 #pragma mark Computing Text Ranges and Text Positions
@@ -3031,6 +3099,16 @@ typedef enum
     [[NSNotificationCenter defaultCenter] postNotificationName:DTRichTextEditorTextDidChangeNotification object:self];
 }
 
+#pragma mark - UIPopoverControllerDelegate
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
+    if (popoverController == self.definePopoverController)
+    {
+        self.definePopoverController = nil;
+    }
+}
+
 #pragma mark - Properties
 
 - (void)setAttributedText:(NSAttributedString *)newAttributedText
@@ -3115,6 +3193,16 @@ typedef enum
     if (!_shouldNotRecordChangedContentInsets)
     {
         _userSetContentInsets = contentInset;
+    }
+}
+
+- (void)setScrollIndicatorInsets:(UIEdgeInsets)scrollIndicatorInsets
+{
+    [super setScrollIndicatorInsets:scrollIndicatorInsets];
+    
+    if (!_shouldNotRecordChangedContentInsets)
+    {
+        _userSetScrollIndicatorInsets = scrollIndicatorInsets;
     }
 }
 
@@ -3284,8 +3372,10 @@ typedef enum
 @synthesize selectionView = _selectionView;
 @synthesize waitingForDictionationResult = _waitingForDictionationResult;
 @synthesize dictationPlaceholderView = _dictationPlaceholderView;
+@synthesize editorMenuItems = _editorMenuItems;
 
 @synthesize userIsTyping = _userIsTyping;
+@synthesize keepCurrentUndoGroup = _keepCurrentUndoGroup;
 
 @end
 
