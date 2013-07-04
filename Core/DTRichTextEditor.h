@@ -18,6 +18,7 @@
 #import "DTRichTextEditorContentView.h"
 
 #import "DTRichTextEditorView.h"
+#import "DTRichTextEditorView+Attributes.h"
 #import "DTRichTextEditorView+DTCoreText.h"
 #import "DTRichTextEditorView+Manipulation.h"
 #import "DTRichTextEditorView+Dictation.h"
