@@ -7,45 +7,23 @@
 //
 
 #import "DTFormatOverviewViewController.h"
-#import "DTCoreTextFontDescriptor.h"
 #import "DTFormatViewController.h"
 
-#import "DTFormatFontFamilyTableViewController.h"
-#import "DTFormatViewController.h"
-
-#import "DTAttributedTextCell.h"
-#import "DTFormatTableView.h"
+#import "DTFormatStyleViewController.h"
+#import "DTFormatListViewController.h"
+#import "DTFormatOtherViewController.h"
 
 @interface DTFormatOverviewViewController()
-@property (nonatomic, strong) UIStepper *fontSizeStepper;
-@property (nonatomic, weak) UILabel *sizeValueLabel;
 
-@property (nonatomic, weak) DTFormatViewController<DTInternalFormatProtocol> *formatPicker;
+@property (nonatomic, strong) DTFormatStyleViewController *styleTableViewController;
+@property (nonatomic, strong) DTFormatListViewController *listTableViewController;
+@property (nonatomic, strong) DTFormatOtherViewController *otherTableViewController;
+@property (nonatomic, strong) UIImagePickerController *mediaController;
+@property (nonatomic, weak, readwrite) UIViewController *visibleTableViewController;
+
 @end
 
 @implementation DTFormatOverviewViewController
-
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-        self.title = @"Format";
-    }
-    return self;
-}
-
-
-- (void)loadView
-{
-	CGRect frame = [UIScreen mainScreen].applicationFrame;
-	
-	DTFormatTableView *tableView = [[DTFormatTableView alloc] initWithFrame:frame style:UITableViewStyleGrouped];
-	tableView.delegate = self;
-	tableView.dataSource = self;
-	
-	self.view = tableView;
-}
 
 - (void)viewDidLoad
 {
@@ -53,15 +31,7 @@
     
     NSAssert([self.navigationController isKindOfClass:[DTFormatViewController class]], @"Must use inside a DTFormatViewController");
     
-    self.formatPicker = (DTFormatViewController<DTInternalFormatProtocol> *)self.navigationController;
-    
-    UIStepper *fontStepper = [[UIStepper alloc] init];
-    fontStepper.minimumValue = 9;
-    fontStepper.maximumValue = 288;
-    
-    [fontStepper addTarget:self action:@selector(_stepperValueChanged:) forControlEvents:UIControlEventValueChanged];
-    
-    self.fontSizeStepper = fontStepper;
+    NSArray *optionsArray = @[ @"Style", @"List", @"Media", @"Other" ];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         // on the phone this controller will be presented modally
@@ -73,213 +43,97 @@
                                                                      target:nil
                                                                      action:@selector(userPressedDone:)];
         self.navigationItem.rightBarButtonItem = closeItem;
-    }
-}
-
-- (CGSize)contentSizeForViewInPopover {
-    // Currently no way to obtain the width dynamically before viewWillAppear.
-    CGFloat width = 320.0;
-    
-    CGFloat totalHeight = 0.0;
-    
-    //Need to total each section
-    for (int i = 0; i < [self.tableView numberOfSections]; i++)
-    {
-        CGRect sectionRect = [self.tableView rectForSection:i];
-        totalHeight += sectionRect.size.height;
-    }
-
-    return (CGSize){width, totalHeight + 44.0};
-}
-
-- (void)_stepperValueChanged:(UIStepper *)stepper;
-{
-    id<DTInternalFormatProtocol> formatController = (id<DTInternalFormatProtocol>)self.navigationController;
-    
-    [formatController applyFontSize:stepper.value];
-    
-    self.sizeValueLabel.text = [NSString stringWithFormat:@"Size (%.0f pt)", stepper.value];
-}
-
-- (void)_editBoldTrait
-{    
-    self.formatPicker.fontDescriptor.boldTrait = !self.formatPicker.fontDescriptor.boldTrait;
-    
-    [self.formatPicker applyBold:self.formatPicker.fontDescriptor.boldTrait];
-}
-
-- (void)_editItalicTrait
-{    
-    self.formatPicker.fontDescriptor.italicTrait = !self.formatPicker.fontDescriptor.italicTrait;
-    
-    [self.formatPicker applyItalic:self.formatPicker.fontDescriptor.italicTrait];
-}
-
-- (void)_editUnderlineTrait
-{    
-    [self.formatPicker applyUnderline:YES];
-}
-
-- (void)_editStrikethroughTrait
-{
-    [self.formatPicker applyStrikethrough:YES];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-	[super viewDidAppear:animated];
-	
-	[self.tableView reloadData];
-}
-
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    // Return the number of sections.
-    return 2;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    // Return the number of rows in the section.
-    return section == 0 ? 1 : 5;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-	UITableViewCell *cell;
-	
-	if (indexPath.section == 0 || (indexPath.section == 1 && indexPath.row == 0))
-	{
-		cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:nil];
-	}
-	else
-	{
-		cell = [[DTAttributedTextCell alloc] initWithReuseIdentifier:nil];
-		[[(DTAttributedTextCell *)cell attributedTextContextView] setEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
-	}
-	
-    if (indexPath.section == 0)
-    {
-        self.fontSizeStepper.value = self.formatPicker.fontDescriptor.pointSize;
-        cell.textLabel.text = [NSString stringWithFormat:@"Size (%.0f pt)", self.formatPicker.fontDescriptor.pointSize ];
-        self.sizeValueLabel = cell.textLabel;
-        cell.accessoryView = self.fontSizeStepper;
-        cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    }
-    else if (indexPath.section == 1)
-    {
-		DTAttributedTextCell *attributedCell = (DTAttributedTextCell *)cell;
-
-        if(indexPath.row == 0)
-		{
-            cell.textLabel.text = @"Font Family";
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", self.formatPicker.fontDescriptor.fontFamily];
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        }
-		else
-		{
-            // bold, italic, underline
-            
-            switch (indexPath.row)
-			{
-                case 1: //bold
-				{
-                    cell.accessoryType = self.formatPicker.fontDescriptor.boldTrait ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
-					[attributedCell setHTMLString:@"<b style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Bold</b>"];
-                    break;
-				}
-					
-                case 2: //italic
-				{
-                    cell.accessoryType = self.formatPicker.fontDescriptor.italicTrait ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
-					[attributedCell setHTMLString:@"<em style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Italic</em>"];
-                    break;
-				}
-					
-                case 3: //underline
-                {
-                    cell.accessoryType = self.formatPicker.isUnderlined ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
-					[attributedCell setHTMLString:@"<u style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Underlined</u>"];
-                    break;
-                }
-					
-				case 4: //strikethrough
-                {
-                    cell.accessoryType = self.formatPicker.isUnderlined ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
-					[attributedCell setHTMLString:@"<del style=\"font-size:18px;font-family:\'Helvetica Neue\';\">Strikethrough</del>"];
-                    break;
-                }
-            }
-        }
+        
+        optionsArray = @[optionsArray[0], optionsArray[1], optionsArray[3] ];
     }
     
-	NSAssert(cell, @"TableView Cell should never be nil");
-	
-    return cell;
+    UISegmentedControl *formatTypeChooser = [[UISegmentedControl alloc] initWithItems:optionsArray];
+    formatTypeChooser.segmentedControlStyle = UISegmentedControlStyleBar;
+    
+    formatTypeChooser.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(formatTypeChooser.bounds));
+    formatTypeChooser.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    formatTypeChooser.selectedSegmentIndex = 0;
+    [formatTypeChooser addTarget:self action:@selector(_formatTypeChooserValueChanged:) forControlEvents:UIControlEventValueChanged];
+    self.navigationItem.titleView = formatTypeChooser;
+
+    [self _formatTypeChooserValueChanged:nil];
 }
 
-#pragma mark - Table view delegate
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+#pragma mark - Segmented Control Methods
+- (void)_formatTypeChooserValueChanged:(UISegmentedControl *)control
 {
-    if(!indexPath.section)
-	{
-        return;
-	}
+    UIViewController *newViewController = nil;
     
-    switch (indexPath.row)
-	{
+    NSUInteger selectedIndex = control ? control.selectedSegmentIndex : 0;
+    
+    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && selectedIndex == 2)
+        selectedIndex = 3;
+    
+    switch (selectedIndex) {
         case 0:
         {
-            DTFormatFontFamilyTableViewController *fontFamilyChooserController = [[DTFormatFontFamilyTableViewController alloc] initWithStyle:UITableViewStyleGrouped selectedFontFamily:self.formatPicker.fontDescriptor.fontFamily];
-            [self.navigationController pushViewController:fontFamilyChooserController animated:YES];
-            break;
+            // Style
+            if( !self.styleTableViewController ){
+                self.styleTableViewController = [[DTFormatStyleViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            }
+            
+            newViewController = self.styleTableViewController;
         }
-			
+            break;
         case 1:
         {
-            [self _editBoldTrait];
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
-            break;
+            // List
+            if( !self.listTableViewController ){
+                self.listTableViewController = [[DTFormatListViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            }
+            
+            newViewController = self.listTableViewController;
         }
-			
+            break;
         case 2:
         {
-            [self _editItalicTrait];
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
-			break;
-		}
-
+            // Media
+            if( !self.mediaController ){
+                self.mediaController = [[UIImagePickerController alloc] init];
+                self.mediaController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+                self.mediaController.delegate = (DTFormatViewController<DTInternalFormatProtocol>*)self.navigationController;
+            }
+            
+            newViewController = self.mediaController;
+        }
+            break;
         case 3:
-        {
-            [self _editUnderlineTrait];
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
+            if( !self.otherTableViewController ){
+                self.otherTableViewController = [[DTFormatOtherViewController alloc] initWithStyle:UITableViewStyleGrouped];
+            }
+            
+            newViewController = self.otherTableViewController;
+
             break;
-        }
-			
-		case 4:
-        {
-            [self _editStrikethroughTrait];
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            [cell setAccessoryType:cell.accessoryType == UITableViewCellAccessoryCheckmark ? UITableViewCellAccessoryNone : UITableViewCellAccessoryCheckmark];
-            break;
-        }
-			
         default:
             break;
     }
     
-    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if (!newViewController)
+        return;
+    
+    // remove old one
+    [self.visibleTableViewController.view removeFromSuperview];
+    [self.visibleTableViewController willMoveToParentViewController:nil];
+    [self.visibleTableViewController removeFromParentViewController];
+
+    // change the controller
+    self.visibleTableViewController = newViewController;
+        
+    // add new one
+    [self addChildViewController:self.visibleTableViewController];
+    self.visibleTableViewController.view.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds));
+    self.visibleTableViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:self.visibleTableViewController.view];
+    [self.visibleTableViewController didMoveToParentViewController:self];
+    
+    self.contentSizeForViewInPopover = self.visibleTableViewController.contentSizeForViewInPopover;
 }
+
 
 @end
