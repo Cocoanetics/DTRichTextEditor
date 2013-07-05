@@ -21,7 +21,7 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 
 @implementation DTRichTextEditorViewController
 
- // Implement loadView to create a view hierarchy programmatically, without using a nib.
+// Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView
 {
     CGRect frame = [UIScreen mainScreen].applicationFrame;
@@ -67,8 +67,14 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
                                                                    style:UIBarButtonItemStyleBordered
                                                                   target:self
                                                                   action:@selector(presentFormatOptions:)];
+
+    UIBarButtonItem *insertItem = [[UIBarButtonItem alloc] initWithTitle:@"Insert"
+                                                                   style:UIBarButtonItemStyleBordered
+                                                                  target:self
+                                                                  action:@selector(presentGallery:)];
+
     UIBarButtonItem *testStateItem = [[UIBarButtonItem alloc] initWithTitle:@"Test Options" style:UIBarButtonItemStyleBordered target:self action:@selector(presentTestOptions:)];
-    self.navigationItem.rightBarButtonItems = @[formatItem, testStateItem];
+    self.navigationItem.rightBarButtonItems = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? @[formatItem, insertItem, testStateItem] : @[formatItem, testStateItem];
     
 	// defaults
     [DTCoreTextLayoutFrame setShouldDrawDebugFrames:self.testState.shouldDrawDebugFrames];
@@ -88,58 +94,33 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	[defaults setObject:[UIColor colorWithHTMLName:@"purple"] forKey:DTDefaultLinkColor];
 	
     // demonstrate half em paragraph spacing
-    DTCSSStylesheet *styleSheet = [[DTCSSStylesheet alloc] initWithStyleBlock:@"p {margin-bottom:0.5em} ol {margin-bottom:0.5em} li {margin-bottom:0.5em}"];
+    DTCSSStylesheet *styleSheet = [[DTCSSStylesheet alloc] initWithStyleBlock:@"p {margin-bottom:0.5em} ol {margin-bottom:0.5em; -webkit-padding-start:40px;} ul {margin-bottom:0.5em;-webkit-padding-start:40px;}"];
     [defaults setObject:styleSheet forKey:DTDefaultStyleSheet];
     
 	richEditor.textDefaults = defaults;
-
-   // load initial string from file
+    
+    // load initial string from file
 	NSString *path = [[NSBundle mainBundle] pathForResource:@"test" ofType:@"html"];
 	NSString *html = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:NULL];
 	[richEditor setHTMLString:html];
-   
+    
 	// image as drawn by your custom views which you return in the delegate method
 	richEditor.attributedTextContentView.shouldDrawImages = NO;
 	
-	photoButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera target:self action:@selector(insertPhoto:)];
     highlightButton = [[UIBarButtonItem alloc] initWithTitle:@"H" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleHighlight:)];
-
-	UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-	
-	leftAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"L" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleLeft:)];
-	centerAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"C" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleCenter:)];
-	rightAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"R" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleRight:)];
-	justifyAlignButton = [[UIBarButtonItem alloc] initWithTitle:@"J" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleJustify:)];
-	
-	increaseIndentButton = [[UIBarButtonItem alloc] initWithTitle:@"->" style:UIBarButtonItemStyleBordered target:self action:@selector(increaseIndent:)];
-	decreaseIndentButton = [[UIBarButtonItem alloc] initWithTitle:@"<-" style:UIBarButtonItemStyleBordered target:self action:@selector(decreaseIndent:)];
-	
-	UIBarButtonItem *spacer2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-
-	UIBarButtonItem *spacer3 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-	
-	orderedListButton = [[UIBarButtonItem alloc] initWithTitle:@"1." style:UIBarButtonItemStyleBordered target:self action:@selector(toggleOrderedList:)];
-	unorderedListButton = [[UIBarButtonItem alloc] initWithTitle:@"+" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleUnorderedList:)];
-
-	UIBarButtonItem *spacer4 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-	
+    	
 	UIBarButtonItem *smile = [[UIBarButtonItem alloc] initWithTitle:@":)" style:UIBarButtonItemStyleBordered target:self action:@selector(insertSmiley:)];
 	
-
-	linkButton = [[UIBarButtonItem alloc] initWithTitle:@"URL" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleURL:)];
 	
 	toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
 	richEditor.inputAccessoryView = toolbar;
 	
-	[toolbar setItems:[NSArray arrayWithObjects:highlightButton, spacer, leftAlignButton, centerAlignButton, rightAlignButton, justifyAlignButton, spacer2, increaseIndentButton, decreaseIndentButton, spacer3, orderedListButton, unorderedListButton, spacer4, photoButton, smile, linkButton, nil]];
+	[toolbar setItems:[NSArray arrayWithObjects:highlightButton, smile, nil]];
     
     // notifications
     NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
 	[center addObserver:self selector:@selector(menuDidHide:) name:UIMenuControllerDidHideMenuNotification object:nil];
 }
-
-
-
 
 // Override to allow orientations other than the default portrait orientation.
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -147,7 +128,6 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     //    return (interfaceOrientation == UIInterfaceOrientationPortrait);
 	return YES;
 }
-
 
 - (void)didReceiveMemoryWarning {
 	// Releases the view if it doesn't have a superview.
@@ -162,7 +142,7 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 }
 
 
-- (void)dealloc 
+- (void)dealloc
 {
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	
@@ -174,96 +154,19 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 #pragma mark Helpers
 
 - (void)replaceCurrentSelectionWithPhoto:(UIImage *)image
-{
-	if (!lastSelection)
-	{
-		return;
-	}
-	
+{	
 	// make an attachment
 	DTImageTextAttachment *attachment = [[DTImageTextAttachment alloc] initWithElement:nil options:nil];
 	attachment.image = (id)image;
 	attachment.displaySize = image.size;
 	attachment.originalSize = image.size;
 	
-	[richEditor replaceRange:lastSelection withAttachment:attachment inParagraph:YES];
+	[richEditor replaceRange:[richEditor selectedTextRange] withAttachment:attachment inParagraph:YES];
 }
 
 
 #pragma mark Actions
 
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
-{
-	NSURL *imageURL = [info valueForKey:UIImagePickerControllerReferenceURL];
-    ALAssetsLibraryAssetForURLResultBlock resultblock = ^(ALAsset *myasset)
-    {
-        ALAssetRepresentation *representation = [myasset defaultRepresentation];
-        
-        CGImageRef iref = [representation fullScreenImage];
-        if (iref) {
-            UIImage *theThumbnail = [UIImage imageWithCGImage:iref];
-			[self replaceCurrentSelectionWithPhoto:theThumbnail];
-        }
-    };
-	
-	
-    ALAssetsLibraryAccessFailureBlock failureblock  = ^(NSError *myerror)
-    {
-        NSLog(@"booya, cant get image - %@",[myerror localizedDescription]);
-    };
-	
-    if(imageURL)
-    {
-        ALAssetsLibrary* assetslibrary = [[ALAssetsLibrary alloc] init];
-        [assetslibrary assetForURL:imageURL 
-                       resultBlock:resultblock
-                      failureBlock:failureblock];
-    }
-	
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-	{
-        [popover dismissPopoverAnimated:YES];
-        popover = nil;
-    }
-    else
-    {
-        [self dismissModalViewControllerAnimated:YES];
-    }
-}
-
-- (void)insertPhoto:(UIBarButtonItem *)sender
-{
-	// preserve last selection because this goes away when editor loses firstResponder
-	lastSelection = [richEditor selectedTextRange];
-	
-	if (!lastSelection)
-	{
-		return;
-	}
-	
-    if ([popover isPopoverVisible])
-    {
-        [popover dismissPopoverAnimated:YES];
-        popover = nil;
-        
-        return;
-    }
-    
-	UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-	picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-	picker.delegate = self;
-	
-	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
-	{
-		popover = [[UIPopoverController alloc] initWithContentViewController:picker];
-		popover.delegate = self;
-		[popover presentPopoverFromBarButtonItem:sender permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
-	}
-	else
-	{
-		[self presentModalViewController:picker animated:YES];
-	}
-}
 
 - (void)insertSmiley:(UIBarButtonItem *)sender
 {
@@ -294,75 +197,6 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 {
 	UITextRange *range = richEditor.selectedTextRange;
 	[richEditor toggleHighlightInRange:range color:[UIColor yellowColor]];
-}
-
-- (void)toggleLeft:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor applyTextAlignment:kCTLeftTextAlignment toParagraphsContainingRange:range];
-}
-
-- (void)toggleCenter:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor applyTextAlignment:kCTCenterTextAlignment toParagraphsContainingRange:range];
-}
-
-- (void)toggleRight:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor applyTextAlignment:kCTRightTextAlignment toParagraphsContainingRange:range];
-}
-
-- (void)toggleJustify:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor applyTextAlignment:kCTJustifiedTextAlignment toParagraphsContainingRange:range];
-}
-
-- (void)increaseIndent:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor changeParagraphLeftMarginBy:36 toParagraphsContainingRange:range];
-}
-
-- (void)decreaseIndent:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	[richEditor changeParagraphLeftMarginBy:-36 toParagraphsContainingRange:range];
-}
-
-- (void)toggleUnorderedList:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	
-	DTCSSListStyle *listStyle = [[DTCSSListStyle alloc] init];
-	listStyle.startingItemNumber = 1;
-	listStyle.type = DTCSSListStyleTypeDisc;
-	
-	[richEditor toggleListStyle:listStyle inRange:range];
-}
-
-- (void)toggleOrderedList:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	
-	DTCSSListStyle *listStyle = [[DTCSSListStyle alloc] init];
-	listStyle.startingItemNumber = 1;
-    listStyle.position = DTCSSListStylePositionOutside;
-	listStyle.type = DTCSSListStyleTypeDecimal;
-	
-	[richEditor toggleListStyle:listStyle inRange:range];
-}
-
-- (void)toggleURL:(UIBarButtonItem *)sender
-{
-	UITextRange *range = richEditor.selectedTextRange;
-	
-	// for simplicity this is static
-	NSURL *URL =[NSURL URLWithString:@"http://www.cocoanetics.com"];
-	
-	[richEditor toggleHyperlinkInRange:range URL:URL];
 }
 
 #pragma mark - DTAttributedTextContentViewDelegate
@@ -487,6 +321,20 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     NSDictionary *attributesDictionary = [richEditor typingAttributesForRange:richEditor.selectedTextRange];
     
     self.formatViewController.underline = (attributesDictionary[@"NSUnderline"] != nil);
+    self.formatViewController.strikethrough = (attributesDictionary[@"NSStrikethrough"] != nil);
+    
+    CTParagraphStyleRef paragraphStyle = (__bridge CTParagraphStyleRef)[attributesDictionary objectForKey:(id)kCTParagraphStyleAttributeName];
+    DTCoreTextParagraphStyle *dtstyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:paragraphStyle];
+    CFRelease(paragraphStyle);
+    CTTextAlignment ali = dtstyle.alignment;
+    self.formatViewController.textAlignment = ali;
+    
+    NSArray *listTypes = attributesDictionary[@"DTTextLists"];
+    DTCSSListStyle *style = [listTypes lastObject];
+    DTCSSListStyleType listType = style.type;
+    self.formatViewController.listType = listType;
+    
+    self.formatViewController.hyperlink = attributesDictionary[@"NSLinkAttributeName"];
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
     {
@@ -506,6 +354,23 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 		richEditor.inputAccessoryView = nil; // no accessory on next inputView change
 		[richEditor setInputView:self.formatViewController.view animated:YES];
     }
+}
+
+- (void)presentGallery:(id)sender
+{
+    if (!self.formatViewController)
+    {
+        DTFormatViewController *controller = [[DTFormatViewController alloc] init];
+        controller.formatDelegate = self;
+        self.formatViewController = controller;
+    }
+    
+    UIImagePickerController *mediaController = [[UIImagePickerController alloc] init];
+    mediaController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+    mediaController.allowsEditing = YES;
+    mediaController.delegate = (DTFormatViewController<DTInternalFormatProtocol>*)self.formatViewController;
+
+    [self presentViewController:mediaController animated:YES completion:NULL];
 }
 
 
@@ -674,5 +539,43 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	richEditor.inputAccessoryView = toolbar; // restore accessory on next inputView change
 	[richEditor setInputView:nil animated:YES];
 }
+
+- (void)formatDidChangeTextAlignment:(CTTextAlignment)alignment
+{
+    UITextRange *range = richEditor.selectedTextRange;
+	[richEditor applyTextAlignment:alignment toParagraphsContainingRange:range];
+}
+
+- (void)increaseTabulation
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	[richEditor changeParagraphLeftMarginBy:36 toParagraphsContainingRange:range];
+}
+
+- (void)decreaseTabulation
+{
+	UITextRange *range = richEditor.selectedTextRange;
+	[richEditor changeParagraphLeftMarginBy:-36 toParagraphsContainingRange:range];
+}
+
+- (void)toggleListType:(DTCSSListStyleType)listType
+{
+    UITextRange *range = richEditor.selectedTextRange;
+	
+	DTCSSListStyle *listStyle = [[DTCSSListStyle alloc] init];
+	listStyle.startingItemNumber = 1;
+    listStyle.position = listType;
+	listStyle.type = listType;
+	
+	[richEditor toggleListStyle:listStyle inRange:range];
+}
+
+- (void)applyHyperlinkToSelectedText:(NSURL *)url
+{
+    UITextRange *range = richEditor.selectedTextRange;
+    
+    [richEditor toggleHyperlinkInRange:range URL:url];
+}
+
 
 @end

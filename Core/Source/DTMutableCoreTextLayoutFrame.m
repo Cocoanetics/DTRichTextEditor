@@ -125,7 +125,7 @@
 	{
 		if (previousLine)
 		{
-			oneLine.baselineOrigin = [self baselineOriginToPositionLine:(id)oneLine afterLine:(id)previousLine];
+            oneLine.baselineOrigin = [self baselineOriginToPositionLine:(id)oneLine afterLine:(id)previousLine options:DTCoreTextLayoutFrameLinePositioningOptionAlgorithmWebKit];
 			[oneLine adjustStringRangeToStartAtIndex:NSMaxRange(previousLine.stringRange)];
 		}
 		
@@ -137,7 +137,7 @@
 	// copy the rest
 	for (DTCoreTextLayoutLine *oneLine in suffixLines)
 	{
-		oneLine.baselineOrigin = [self baselineOriginToPositionLine:(id)oneLine afterLine:(id)previousLine];
+        oneLine.baselineOrigin = [self baselineOriginToPositionLine:(id)oneLine afterLine:(id)previousLine options:DTCoreTextLayoutFrameLinePositioningOptionAlgorithmWebKit];
 		[oneLine adjustStringRangeToStartAtIndex:NSMaxRange(previousLine.stringRange)];
 		
 		[newLines addObject:oneLine];
@@ -310,7 +310,7 @@
 		DTCoreTextLayoutLine *firstNewLine = [relayoutedLines objectAtIndex:0];
 		
 		CGPoint oldBaselineOrigin = firstNewLine.baselineOrigin;
-		CGPoint newBaselineOrigin = [self  baselineOriginToPositionLine:(id)firstNewLine afterLine:(id)previousLine];
+        CGPoint newBaselineOrigin = [self baselineOriginToPositionLine:(id)firstNewLine afterLine:(id)previousLine options:DTCoreTextLayoutFrameLinePositioningOptionAlgorithmWebKit];
 		
 		insertedLinesBaselineOffset.y = newBaselineOrigin.y - oldBaselineOrigin.y;
 	}
@@ -354,7 +354,8 @@
 		{
 			// first line determines shift down
 			CGPoint oldBaselineOrigin = oneLine.baselineOrigin;
-			CGPoint newBaselineOrigin = [self baselineOriginToPositionLine:(id)oneLine afterLine:(id)previousLine];
+            CGPoint newBaselineOrigin = [self baselineOriginToPositionLine:(id)oneLine afterLine:(id)previousLine options:DTCoreTextLayoutFrameLinePositioningOptionAlgorithmWebKit];
+
 			
 			linesAfterinsertedLinesBaselineOffset.y = newBaselineOrigin.y - oldBaselineOrigin.y;
 			
@@ -385,6 +386,8 @@
 		{
 			// rest of document shifted up or down
 			redrawArea.size.height = MAX(_frame.size.height - redrawArea.origin.y, redrawArea.size.height);
+			redrawArea.size.width = _frame.size.width;
+			redrawArea.origin.x = _frame.origin.x;
 		}
 		
 		*dirtyRect = redrawArea;

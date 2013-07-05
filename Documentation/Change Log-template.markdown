@@ -3,6 +3,23 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.6.0
+
+- FIXED: Multi-stage text input had issues with input delegate messaging
+- ADDED: Support for custom HTML attributes
+- ADDED: Delegate method for finer control over pasted content.
+- ADDED: More formatting options in Demo app
+- CHANGED: Updated DTCoreText to 1.6.0
+
+Version 1.5.1
+
+- FIXED: Crash on hitting enter key on empty list item right after parsing
+- FIXED: Scroll Indicator inset incorrectly
+- FIXED: Changing typing attributes inside a list would not be preserved on Enter key
+- FIXED: Pasting an image attribute now uses registered DTTextAttachment subclass for IMG tag
+- ADDED: Support for Define context menu option to show dictionary
+- CHANGED: Updated DTCoreText to 1.5.3
+
 Version 1.5
 
 - ADDED: Implemented Support for Ordered and Unordered Lists, editable 1 level

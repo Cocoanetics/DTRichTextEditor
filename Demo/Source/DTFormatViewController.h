@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DTCSSListStyle.h"
 
 @class DTCoreTextFontDescriptor;
 @protocol DTFormatDelegate;
@@ -17,6 +18,9 @@
 @property (strong, nonatomic) DTCoreTextFontDescriptor *fontDescriptor;
 @property (assign, nonatomic, getter = isUnderlined) BOOL underline;
 @property (assign, nonatomic, getter = isStrikethrough) BOOL strikethrough;
+@property (assign, nonatomic) CTTextAlignment textAlignment;
+@property (assign, nonatomic) DTCSSListStyleType listType;
+@property (copy, nonatomic) NSURL *hyperlink;
 
 @end
 
@@ -27,11 +31,17 @@
 - (void)formatDidToggleItalic;
 - (void)formatDidToggleUnderline;
 - (void)formatDidToggleStrikethrough;
+- (void)formatDidChangeTextAlignment:(CTTextAlignment)alignment;
 - (void)formatViewControllerUserDidFinish:(DTFormatViewController *)formatController;
+- (void)decreaseTabulation;
+- (void)increaseTabulation;
+- (void)toggleListType:(DTCSSListStyleType)listType;
+- (void)applyHyperlinkToSelectedText:(NSURL *)url;
+- (void)replaceCurrentSelectionWithPhoto:(UIImage *)image;
 
 @end
 
-@protocol DTInternalFormatProtocol <NSObject>
+@protocol DTInternalFormatProtocol <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
 @required
 @property (strong, nonatomic) DTCoreTextFontDescriptor *fontDescriptor;
@@ -42,4 +52,9 @@
 - (void)applyItalic:(BOOL)active;
 - (void)applyUnderline:(BOOL)active;
 - (void)applyStrikethrough:(BOOL)active;
+- (void)applyTextAlignment:(CTTextAlignment)alignment;
+- (void)decreaseTabulation;
+- (void)increaseTabulation;
+- (void)toggleListType:(DTCSSListStyleType)listType;
+- (void)applyHyperlinkToSelectedText:(NSURL *)url;
 @end
