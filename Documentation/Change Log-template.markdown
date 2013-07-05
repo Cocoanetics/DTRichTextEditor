@@ -3,6 +3,14 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.6.0
+
+- FIXED: Multi-stage text input had issues with input delegate messaging
+- ADDED: Support for custom HTML attributes
+- ADDED: Delegate method for finer control over pasted content.
+- ADDED: More formatting options in Demo app
+- CHANGED: Updated DTCoreText to 1.6.0
+
 Version 1.5.1
 
 - FIXED: Crash on hitting enter key on empty list item right after parsing
