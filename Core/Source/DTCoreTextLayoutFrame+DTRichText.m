@@ -7,6 +7,7 @@
 //
 
 #import "DTCoreTextLayoutFrame+DTRichText.h"
+#import "DTCoreTextLayoutFrame+Cursor.h"
 
 #import "DTTextPosition.h"
 #import "DTTextRange.h"
