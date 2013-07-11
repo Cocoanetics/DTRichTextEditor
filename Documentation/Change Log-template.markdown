@@ -5,6 +5,9 @@ This is the history of version updates.
 
 Version 1.6.1
 
+- FIXED: Pasted plain text missing typing attributes
+- ADDED: DTProcessCustomHTMLAttributes in Demo App parsing options
+- CHANGED: Processing of Custom HTML Attributes is now optional and defaults to off.
 - CHANGED: Updated DTCoreText to 1.6.1
 
 Version 1.6.0
