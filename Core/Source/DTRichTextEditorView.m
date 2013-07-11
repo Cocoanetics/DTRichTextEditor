@@ -1900,10 +1900,19 @@ typedef enum
 	
 	if (string)
 	{
-        NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:string];
-        [self _pasteAttributedString:attributedText inRange:_selectedTextRange];
-        
-        return;
+		// plain text string should always be treated as if is was typed, must have font attribute
+		NSDictionary *typingAttributes = self.overrideInsertionAttributes;
+		
+		if (!typingAttributes)
+		{
+			typingAttributes = [self typingAttributesForRange:_selectedTextRange];
+		}
+		
+		NSAttributedString *attributedText = [[NSAttributedString alloc] initWithString:string attributes:typingAttributes];
+		
+		[self _pasteAttributedString:attributedText inRange:_selectedTextRange];
+		
+		return;
 	}
 }
 
