@@ -3,6 +3,10 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.6.1
+
+- CHANGED: Updated DTCoreText to 1.6.1
+
 Version 1.6.0
 
 - FIXED: Multi-stage text input had issues with input delegate messaging

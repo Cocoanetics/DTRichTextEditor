@@ -92,6 +92,7 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
 	[defaults setObject:[NSNumber numberWithBool:YES] forKey:DTDefaultLinkDecoration];
 	[defaults setObject:[UIColor colorWithHTMLName:@"purple"] forKey:DTDefaultLinkColor];
+	[defaults setObject:[NSNumber numberWithBool:YES] forKey:DTProcessCustomHTMLAttributes]; 
 	
     // demonstrate half em paragraph spacing
     DTCSSStylesheet *styleSheet = [[DTCSSStylesheet alloc] initWithStyleBlock:@"p {margin-bottom:0.5em} ol {margin-bottom:0.5em; -webkit-padding-start:40px;} ul {margin-bottom:0.5em;-webkit-padding-start:40px;}"];
