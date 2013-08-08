@@ -3122,9 +3122,6 @@ typedef enum
 
 - (void)setAttributedText:(NSAttributedString *)newAttributedText
 {
-    if (self.attributedString && [self.attributedString isEqualToAttributedString:newAttributedText])
-        return;
-    
 	if (newAttributedText && newAttributedText.length > 0)
 	{
 		NSMutableAttributedString *tmpString = [newAttributedText mutableCopy];
