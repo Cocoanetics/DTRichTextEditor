@@ -1054,159 +1054,185 @@ typedef enum
 
 - (void)handleTap:(UITapGestureRecognizer *)gesture
 {
-    // Bail out if not recognized
-    if (gesture.state != UIGestureRecognizerStateRecognized)
-        return;
-    
-    // If not editable, simple resign first responder (hides context menu, cursors, and selections if showing)
-    if (!self.isEditable)
-    {
-        [self resignFirstResponder];
-        return;
-    }
-    
-    // If not editing, attempt to start editing
-    BOOL wasEditing = self.isEditing;
-    _cursor.state = DTCursorStateBlinking;
-    
-    if (!self.isFirstResponder)
-    {
-        [self becomeFirstResponder];
-        
-        // Bail out if we couldn't start editing (This may occur if editorViewShouldBeginEditing: returns NO)
-        if (!self.isEditing)
-            return;
-    }
-    
-    // Update selection.  Text input system steals taps inside of marked text so if we receive a tap, we end multi-stage text input.
-    [self.inputDelegate selectionWillChange:self];
-    
-    BOOL  hadMarkedText = (self.markedTextRange != nil);
-    self.markedTextRange = nil;
-    
-    CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
-    DTTextPosition *touchPosition = (DTTextPosition *)[self closestPositionToPoint:touchPoint];
-    DTTextRange *touchRange = [DTTextRange textRangeFromStart:touchPosition toEnd:touchPosition];
-    
-    if ([self.selectedTextRange isEqual:touchRange])
-    {
-        [self updateCursorAnimated:NO];
-        
-        if ([[UIMenuController sharedMenuController] isMenuVisible])
-            [self hideContextMenu];
-        else if (wasEditing && !hadMarkedText)
-            [self showContextMenuFromSelection];
-    }
-    else
-    {
-        self.selectedTextRange = touchRange;
-        
-        if (self.isEditing)
-        {
-            // begins a new typing undo group
-            DTUndoManager *undoManager = self.undoManager;
-            [undoManager closeAllOpenGroups];
-        }
-    }
-
-    [self.inputDelegate selectionDidChange:self];
+	// Bail out if not recognized
+	if (gesture.state != UIGestureRecognizerStateRecognized)
+	{
+		return;
+	}
+   
+	// If not editable, simple resign first responder (hides context menu, cursors, and selections if showing)
+	if (!self.isEditable)
+	{
+		[self resignFirstResponder];
+		return;
+	}
+	
+	// get touch point here, later it might get corrupted by becoming first reponder
+	CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
+   
+	// If not editing, attempt to start editing
+	BOOL wasEditing = self.isEditing;
+	_cursor.state = DTCursorStateBlinking;
+	
+	if (!self.isFirstResponder)
+	{
+		[self becomeFirstResponder];
+		
+		// Bail out if we couldn't start editing (This may occur if editorViewShouldBeginEditing: returns NO)
+		if (!self.isEditing)
+		{
+			return;
+		}
+	}
+	
+	// Update selection.  Text input system steals taps inside of marked text so if we receive a tap, we end multi-stage text input.
+	[self.inputDelegate selectionWillChange:self];
+	
+	BOOL hadMarkedText = (self.markedTextRange != nil);
+	self.markedTextRange = nil;
+	
+	DTTextPosition *touchPosition = (DTTextPosition *)[self closestPositionToPoint:touchPoint];
+	DTTextRange *touchRange = [DTTextRange textRangeFromStart:touchPosition toEnd:touchPosition];
+	
+	if ([self.selectedTextRange isEqual:touchRange])
+	{
+		[self updateCursorAnimated:NO];
+		
+		if ([[UIMenuController sharedMenuController] isMenuVisible])
+		{
+			[self hideContextMenu];
+		}
+		else if (wasEditing && !hadMarkedText)
+		{
+			[self showContextMenuFromSelection];
+		}
+	}
+	else
+	{
+		self.selectedTextRange = touchRange;
+		
+		if (self.isEditing)
+		{
+			// begins a new typing undo group
+			DTUndoManager *undoManager = self.undoManager;
+			[undoManager closeAllOpenGroups];
+		}
+	}
+	
+	[self.inputDelegate selectionDidChange:self];
 }
 
 - (void)handleDoubleTap:(UITapGestureRecognizer *)gesture
 {
-    // Bail out if not recognized
-    if (gesture.state != UIGestureRecognizerStateRecognized)
-        return;
-    
-    // Attempt to become first responder (for selection, menu, possibly editing)
-    if (!self.isFirstResponder)
-    {
-        [self becomeFirstResponder];
-        
-        // Bail out if we couldn't become first responder
-        if (!self.isEditable && !self.isFirstResponder)
-            return;
-        
-        // Bail out if we couldn't start editing but we're editable (This may occur if editorViewShouldBeginEditing: returns NO)
-        if (self.isEditable && !self.isEditing)
-            return;
-    }
-
-    // Select a word closest to the touchPoint
-    [self.inputDelegate selectionWillChange:self];
-    
-    CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
-    UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
-    UITextRange *wordRange = [self textRangeOfWordAtPosition:position];
-    
-    // Bail out if there isn't a word range or if we are editing and it's the same as the current word range
-    if (wordRange == nil || (self.isEditing && [self.selectedTextRange isEqual:wordRange]))
-        return;
-    
-    // Text input system steals taps inside of marked text so if we receive a tap, we end multi-stage text input.
-    self.markedTextRange = nil;
-    self.selectionView.dragHandlesVisible = YES;
-    
-    [self hideContextMenu];
-    
-    self.selectedTextRange = wordRange;
-    
-    [self showContextMenuFromSelection];
-    
-    if (self.isEditing)
-    {
-        // begins a new typing undo group
-        DTUndoManager *undoManager = self.undoManager;
-        [undoManager closeAllOpenGroups];
-    }
-    
-    [self.inputDelegate selectionDidChange:self];
+	// Bail out if not recognized
+	if (gesture.state != UIGestureRecognizerStateRecognized)
+	{
+		return;
+	}
+	
+	// get the touch point now, because becoming first responder might change the position
+	CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
+	
+	// Attempt to become first responder (for selection, menu, possibly editing)
+	if (!self.isFirstResponder)
+	{
+		[self becomeFirstResponder];
+		
+		// Bail out if we couldn't become first responder
+		if (!self.isEditable && !self.isFirstResponder)
+		{
+			return;
+		}
+		
+		// Bail out if we couldn't start editing but we're editable (This may occur if editorViewShouldBeginEditing: returns NO)
+		if (self.isEditable && !self.isEditing)
+		{
+			return;
+		}
+	}
+	
+	// Select a word closest to the touchPoint
+	[self.inputDelegate selectionWillChange:self];
+	
+	UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
+	UITextRange *wordRange = [self textRangeOfWordAtPosition:position];
+	
+	// Bail out if there isn't a word range or if we are editing and it's the same as the current word range
+	if (wordRange == nil || (self.isEditing && [self.selectedTextRange isEqual:wordRange]))
+		return;
+	
+	// Text input system steals taps inside of marked text so if we receive a tap, we end multi-stage text input.
+	self.markedTextRange = nil;
+	self.selectionView.dragHandlesVisible = YES;
+	
+	[self hideContextMenu];
+	
+	self.selectedTextRange = wordRange;
+	
+	[self showContextMenuFromSelection];
+	
+	if (self.isEditing)
+	{
+		// begins a new typing undo group
+		DTUndoManager *undoManager = self.undoManager;
+		[undoManager closeAllOpenGroups];
+	}
+	
+	[self.inputDelegate selectionDidChange:self];
 }
 
 - (void)handleTripleTap:(UITapGestureRecognizer *)gesture
 {
-    // Bail out if not recognized
-    if (gesture.state != UIGestureRecognizerStateRecognized)
-        return;
-    
-    // Attempt to become first responder (for selection, menu, possibly editing)
-    if (!self.isFirstResponder)
-    {
-        [self becomeFirstResponder];
-        
-        // Bail out if we couldn't become first responder
-        if (!self.isEditable && !self.isFirstResponder)
-            return;
-        
-        // Bail out if we couldn't start editing but we're editable (This may occur if editorViewShouldBeginEditing: returns NO)
-        if (self.isEditable && !self.isEditing)
-            return;
-    }
-    
-    // Select a paragraph containing the touchPoint
-    CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
-    UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
-    UITextRange *textRange = [DTTextRange textRangeFromStart:position toEnd:position];
-    textRange = [self textRangeOfParagraphsContainingRange:textRange];
-    
-    // Bail out if there isn't a paragraph range or if we are editing and it's the same as the current selected range
-    if (textRange == nil || (self.isEditing && [self.selectedTextRange isEqual:textRange]))
-        return;
-    
-    self.selectionView.dragHandlesVisible = YES;
-    
-    [self hideContextMenu];
-    
-    self.selectedTextRange = textRange;
-    
-    [self showContextMenuFromSelection];
-    
-    if (self.isEditing)
-    {
-        // begins a new typing undo group
-        DTUndoManager *undoManager = self.undoManager;
-        [undoManager closeAllOpenGroups];
-    }
+	// Bail out if not recognized
+	if (gesture.state != UIGestureRecognizerStateRecognized)
+	{
+		return;
+	}
+	
+	// get the touch point now, because becoming first responder might change the position
+	CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
+   
+	// Attempt to become first responder (for selection, menu, possibly editing)
+	if (!self.isFirstResponder)
+	{
+		[self becomeFirstResponder];
+		
+		// Bail out if we couldn't become first responder
+		if (!self.isEditable && !self.isFirstResponder)
+		{
+			return;
+		}
+		
+		// Bail out if we couldn't start editing but we're editable (This may occur if editorViewShouldBeginEditing: returns NO)
+		if (self.isEditable && !self.isEditing)
+		{
+			return;
+		}
+	}
+	
+	// Select a paragraph containing the touchPoint
+	UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
+	UITextRange *textRange = [DTTextRange textRangeFromStart:position toEnd:position];
+	textRange = [self textRangeOfParagraphsContainingRange:textRange];
+	
+	// Bail out if there isn't a paragraph range or if we are editing and it's the same as the current selected range
+	if (textRange == nil || (self.isEditing && [self.selectedTextRange isEqual:textRange]))
+		return;
+	
+	self.selectionView.dragHandlesVisible = YES;
+	
+	[self hideContextMenu];
+	
+	self.selectedTextRange = textRange;
+	
+	[self showContextMenuFromSelection];
+	
+	if (self.isEditing)
+	{
+		// begins a new typing undo group
+		DTUndoManager *undoManager = self.undoManager;
+		[undoManager closeAllOpenGroups];
+	}
 }
 
 - (void)handleLongPress:(UILongPressGestureRecognizer *)gesture
@@ -3122,9 +3148,6 @@ typedef enum
 
 - (void)setAttributedText:(NSAttributedString *)newAttributedText
 {
-    if (self.attributedString && [self.attributedString isEqualToAttributedString:newAttributedText])
-        return;
-    
 	if (newAttributedText && newAttributedText.length > 0)
 	{
 		NSMutableAttributedString *tmpString = [newAttributedText mutableCopy];

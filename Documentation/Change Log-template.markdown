@@ -3,6 +3,11 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.6.2
+
+- FIXED: Removed unnecessary test that would prevent redrawing for "empty" contents
+- CHANGED: Updated DTCoreText to 1.6.3
+
 Version 1.6.1
 
 - FIXED: Pasted plain text missing typing attributes
