@@ -6,6 +6,7 @@ This is the history of version updates.
 Version 1.6.2
 
 - FIXED: Removed unnecessary test that would prevent redrawing for "empty" contents
+- FIXED: Tapping on editor would cause incorrect scrolling on long documents if the editor was not first reponder
 - CHANGED: Updated DTCoreText to 1.6.3
 
 Version 1.6.1
