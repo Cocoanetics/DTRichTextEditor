@@ -3,6 +3,11 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.6.3
+
+- FIXED: Pasting from Google Drive might yield empty content
+- CHANGED: Updated DTCoreText to 1.6.6
+
 Version 1.6.2
 
 - FIXED: Removed unnecessary test that would prevent redrawing for "empty" contents
