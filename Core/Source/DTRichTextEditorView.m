@@ -1907,9 +1907,14 @@ typedef enum
 	if (webArchive)
 	{
 		NSAttributedString *attributedText = [[NSAttributedString alloc] initWithWebArchive:webArchive options:[self textDefaults] documentAttributes:NULL];
-        [self _pasteAttributedString:attributedText inRange:_selectedTextRange];
-        
-		return;
+		
+		if (attributedText)
+		{
+			
+			[self _pasteAttributedString:attributedText inRange:_selectedTextRange];
+			
+			return;
+		}
 	}
 
 	NSData *HTMLdata = [pasteboard dataForPasteboardType:@"public.html"];

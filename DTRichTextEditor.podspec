@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = 'DTRichTextEditor'
-  spec.version      = '1.6.2'
+  spec.version      = '1.6.3'
   spec.platform     = :ios, '4.3'
   spec.license      = 'BSD'
   spec.source       = { :git => 'git@git.cocoanetics.com:parts/dtrichtexteditor.git', :tag => spec.version.to_s }
@@ -9,6 +9,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'DTCoreText', '~>1.6.3'
   spec.dependency 'DTWebArchive', '~>0.0.1'
   spec.dependency 'DTLoupe', '~>1.5.1'
+  spec.dependency 'DTFoundation', '~>1.5.2'
   spec.frameworks   = 'AssetsLibrary'
   spec.requires_arc = true
   spec.homepage     = 'http://www.cocoanetics.com/parts/dtrichtexteditor/'
