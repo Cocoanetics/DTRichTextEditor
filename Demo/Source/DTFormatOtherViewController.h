@@ -6,8 +6,8 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "DTInputViewTableViewController.h"
 
-@interface DTFormatOtherViewController : UITableViewController
+@interface DTFormatOtherViewController : DTInputViewTableViewController
 
 @end

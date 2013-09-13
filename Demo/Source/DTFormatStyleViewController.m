@@ -31,6 +31,11 @@
 
 @implementation DTFormatStyleViewController
 
+- (void)dealloc
+{
+	[self.tableView removeObserver:self forKeyPath:@"contentInset"];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -60,6 +65,18 @@
     self.alignmentSegmentedControl = [[DPTableViewCellSegmentedControl alloc] initWithItems:@[ leftItem, centerItem, rightItem, justifyItem ]];
     self.alignmentSegmentedControl.allowMultipleSelection = NO;
     [self.alignmentSegmentedControl addTarget:self action:@selector(_alignmentValueChanged:) forControlEvents:UIControlEventValueChanged];
+	
+	// fix for rdar://13836932 - inputView gets contentInset set if keyboard is showing
+	[self.tableView addObserver:self forKeyPath:@"contentInset" options:NSKeyValueObservingOptionNew context:NULL];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	// fix for rdar://13836932 - inputView gets contentInset set if keyboard is showing
+	if (self.tableView.contentInset.bottom>0)
+	{
+		self.tableView.contentInset = UIEdgeInsetsZero;
+	}
 }
 
 - (void)_styleValueChanged:(DPTableViewCellSegmentedControl *)control
@@ -156,30 +173,27 @@
                                                      @(self.formatPicker.isUnderlined),
                                                      @(self.formatPicker.isStrikethrough)];
     
-    if(self.formatPicker.textAlignment != -1){
-        NSInteger selectedIndex;
-        CTTextAlignment alignment = self.formatPicker.textAlignment;
-        switch (alignment) {
-            case kCTNaturalTextAlignment:
-            case kCTLeftTextAlignment:
-                selectedIndex = 0;
-                break;
-            case kCTCenterTextAlignment:
-                selectedIndex = 1;
-                break;
-            case kCTRightTextAlignment:
-                selectedIndex = 2;
-                break;
-            case kCTJustifiedTextAlignment:
-                selectedIndex = 3;
-                break;
-            default:
-                selectedIndex = -1;
-                break;
-        }
-        self.alignmentSegmentedControl.selectedIndex = selectedIndex;
-    }
-    
+	NSInteger selectedIndex;
+	CTTextAlignment alignment = self.formatPicker.textAlignment;
+	switch (alignment) {
+		case kCTNaturalTextAlignment:
+		case kCTLeftTextAlignment:
+			selectedIndex = 0;
+			break;
+		case kCTCenterTextAlignment:
+			selectedIndex = 1;
+			break;
+		case kCTRightTextAlignment:
+			selectedIndex = 2;
+			break;
+		case kCTJustifiedTextAlignment:
+			selectedIndex = 3;
+			break;
+		default:
+			selectedIndex = -1;
+			break;
+	}
+	self.alignmentSegmentedControl.selectedIndex = selectedIndex;
 }
 
 - (void)viewDidAppear:(BOOL)animated

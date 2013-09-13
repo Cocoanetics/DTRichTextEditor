@@ -21,6 +21,10 @@
     return CGSizeMake(320.0, 400.0);
 }
 
+- (void)dealloc
+{
+	[self.tableView removeObserver:self forKeyPath:@"contentInset"];
+}
 
 - (void)viewDidLoad
 {
@@ -40,6 +44,18 @@
     self.tabulationControl.allowMultipleSelection = NO;
     self.tabulationControl.allowSelectedState = NO;
     [self.tabulationControl addTarget:self action:@selector(_tabulationValueChanged:) forControlEvents:UIControlEventValueChanged];
+
+	// fix for rdar://13836932 - inputView gets contentInset set if keyboard is showing
+	[self.tableView addObserver:self forKeyPath:@"contentInset" options:NSKeyValueObservingOptionNew context:NULL];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	// fix for rdar://13836932 - inputView gets contentInset set if keyboard is showing
+	if (self.tableView.contentInset.bottom>0)
+	{
+		self.tableView.contentInset = UIEdgeInsetsZero;
+	}
 }
 
 - (void)_tabulationValueChanged:(DPTableViewCellSegmentedControl *)control

@@ -1,18 +1,18 @@
 //
-//  DTFormatTableView.m
+//  DTTableView.m
 //  DTRichTextEditor
 //
-//  Created by Oliver Drobnik on 08.05.13.
+//  Created by Oliver Drobnik on 13.09.13.
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
-#import "DTFormatTableView.h"
+#import "DTTableView.h"
 
-@implementation DTFormatTableView
+@implementation DTTableView
 
 - (void)setContentInset:(UIEdgeInsets)contentInset
 {
-	// ignore
+	// ignore content inset bug
 }
 
 @end

@@ -16,6 +16,7 @@
 #import "DTCoreTextLayoutFrame.h"
 
 #import "DTFormatViewController.h"
+#import "DTCoreTextFunctions.h"
 
 NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 
@@ -91,7 +92,7 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	
 	NSMutableDictionary *defaults = [NSMutableDictionary dictionary];
 	[defaults setObject:[NSNumber numberWithBool:YES] forKey:DTDefaultLinkDecoration];
-	[defaults setObject:[UIColor colorWithHTMLName:@"purple"] forKey:DTDefaultLinkColor];
+	[defaults setObject:DTColorCreateWithHTMLName(@"purple") forKey:DTDefaultLinkColor];
 	[defaults setObject:[NSNumber numberWithBool:YES] forKey:DTProcessCustomHTMLAttributes]; 
 	
     // demonstrate half em paragraph spacing
@@ -326,7 +327,6 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     
     CTParagraphStyleRef paragraphStyle = (__bridge CTParagraphStyleRef)[attributesDictionary objectForKey:(id)kCTParagraphStyleAttributeName];
     DTCoreTextParagraphStyle *dtstyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:paragraphStyle];
-    CFRelease(paragraphStyle);
     CTTextAlignment ali = dtstyle.alignment;
     self.formatViewController.textAlignment = ali;
     
