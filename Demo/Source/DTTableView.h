@@ -1,13 +1,14 @@
 //
-//  DTFormatTableView.h
+//  DTTableView.h
 //  DTRichTextEditor
 //
-//  Created by Oliver Drobnik on 08.05.13.
+//  Created by Oliver Drobnik on 13.09.13.
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
-@interface DTFormatTableView : UITableView
+@interface DTTableView : UITableView
+
 
 @end

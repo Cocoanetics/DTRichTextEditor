@@ -276,6 +276,8 @@
 		A743515F1486772100F4C766 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = A74351521486772100F4C766 /* Icon.png */; };
 		A74351601486772100F4C766 /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A74351531486772100F4C766 /* Icon@2x.png */; };
 		A74351641486772100F4C766 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A743515A1486772100F4C766 /* main.m */; };
+		A751AE4517E2F7CA005C6AF6 /* DTTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = A751AE4417E2F7C9005C6AF6 /* DTTableView.m */; };
+		A751AE6A17E2FA7B005C6AF6 /* DTInputViewTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A751AE6917E2FA7B005C6AF6 /* DTInputViewTableViewController.m */; };
 		A75D431017005D6E003CAF38 /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A75D430517005893003CAF38 /* libDTLoupe.a */; };
 		A75D432717005E15003CAF38 /* DTLoupe.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A75D430717005893003CAF38 /* DTLoupe.bundle */; };
 		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
@@ -329,7 +331,6 @@
 		A7DA0C5716822CEC007637A2 /* DTUndoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DA0C5416822CEC007637A2 /* DTUndoManager.m */; };
 		A7DB4674171D369F0092FB7D /* DTRichTextEditorView+Styles.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DB4672171D369F0092FB7D /* DTRichTextEditorView+Styles.m */; };
 		A7DB4676171D369F0092FB7D /* DTRichTextEditorView+Styles.h in Headers */ = {isa = PBXBuildFile; fileRef = A7DB4673171D369F0092FB7D /* DTRichTextEditorView+Styles.h */; };
-		A7DF6EDD173A6626004F623B /* DTFormatTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = A7DF6EDC173A6626004F623B /* DTFormatTableView.m */; };
 		A7E8442E16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.h in Headers */ = {isa = PBXBuildFile; fileRef = A7E8442C16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.h */; };
 		A7E8443016C1419D00F3EEDE /* DTRichTextEditorView+Dictation.m in Sources */ = {isa = PBXBuildFile; fileRef = A7E8442D16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.m */; };
 		A7F0C84313C326E900EBD027 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84213C326E900EBD027 /* UIKit.framework */; };
@@ -451,6 +452,27 @@
 			proxyType = 1;
 			remoteGlobalIDString = A7F7EF761573603100F5A4D0;
 			remoteInfo = "Static Library (no DTFoundation)";
+		};
+		A751AE5E17E2F7CA005C6AF6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A79D999C1792D1F50082BC06;
+			remoteInfo = "DTAWS (iOS)";
+		};
+		A751AE6017E2F7CA005C6AF6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FA9CB80C17ABDEF200A596C5;
+			remoteInfo = "DTASN1 (iOS)";
+		};
+		A751AE6217E2F7CA005C6AF6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FAF37A2017AFDD93009AC27C;
+			remoteInfo = DTZipArchiveDemo;
 		};
 		A75D430217005893003CAF38 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -809,6 +831,10 @@
 		A743515A1486772100F4C766 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A7439C1016D77CED0004363C /* DTAttributedLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedLabel.h; path = DTCoreText/Core/Source/DTAttributedLabel.h; sourceTree = "<group>"; };
 		A74D940316D4CA4600824C2B /* DTUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTUtils.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/DTUtils.h; sourceTree = "<group>"; };
+		A751AE4317E2F7C9005C6AF6 /* DTTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTTableView.h; sourceTree = "<group>"; };
+		A751AE4417E2F7C9005C6AF6 /* DTTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTTableView.m; sourceTree = "<group>"; };
+		A751AE6817E2FA7B005C6AF6 /* DTInputViewTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTInputViewTableViewController.h; sourceTree = "<group>"; };
+		A751AE6917E2FA7B005C6AF6 /* DTInputViewTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTInputViewTableViewController.m; sourceTree = "<group>"; };
 		A7556EC31679BCE5000AC6D9 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		A76D453D1732B5C1006A7CDA /* NSDictionary+DTCoreText.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "NSDictionary+DTCoreText.h"; path = "DTCoreText/Core/Source/NSDictionary+DTCoreText.h"; sourceTree = "<group>"; };
 		A76F898113C73421007B37C0 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
@@ -826,7 +852,7 @@
 		A79646E115DEA0EE0091CD4C /* NSString+Paragraphs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSString+Paragraphs.h"; path = "DTCoreText/Core/Source/NSString+Paragraphs.h"; sourceTree = "<group>"; };
 		A7A02EE61714469A00789F2C /* DTRichTextEditorConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTRichTextEditorConstants.h; sourceTree = "<group>"; };
 		A7A02EE71714469A00789F2C /* DTRichTextEditorConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTRichTextEditorConstants.m; sourceTree = "<group>"; };
-		A7CE404E17AF9F14009A2F60 /* DTWeakSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file; name = DTWeakSupport.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/DTWeakSupport.h; sourceTree = "<group>"; };
+		A7CE404E17AF9F14009A2F60 /* DTWeakSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTWeakSupport.h; path = DTCoreText/Core/Externals/DTFoundation/Core/Source/DTWeakSupport.h; sourceTree = "<group>"; };
 		A7CF231016DE5354005A4A6E /* AppledocSettings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = AppledocSettings.plist; sourceTree = "<group>"; };
 		A7D545E215D567BC00711CA1 /* DTAttributedTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextCell.h; path = DTCoreText/Core/Source/DTAttributedTextCell.h; sourceTree = "<group>"; };
 		A7D545E415D567BC00711CA1 /* DTAttributedTextView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextView.h; path = DTCoreText/Core/Source/DTAttributedTextView.h; sourceTree = "<group>"; };
@@ -874,8 +900,6 @@
 		A7DA0C5416822CEC007637A2 /* DTUndoManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTUndoManager.m; sourceTree = "<group>"; };
 		A7DB4672171D369F0092FB7D /* DTRichTextEditorView+Styles.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DTRichTextEditorView+Styles.m"; sourceTree = "<group>"; };
 		A7DB4673171D369F0092FB7D /* DTRichTextEditorView+Styles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTRichTextEditorView+Styles.h"; sourceTree = "<group>"; };
-		A7DF6EDB173A6626004F623B /* DTFormatTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTFormatTableView.h; sourceTree = "<group>"; };
-		A7DF6EDC173A6626004F623B /* DTFormatTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTFormatTableView.m; sourceTree = "<group>"; };
 		A7E8082215EBAC2900525855 /* NSMutableString+HTML.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSMutableString+HTML.h"; path = "DTCoreText/Core/Source/NSMutableString+HTML.h"; sourceTree = "<group>"; };
 		A7E82CDF15D5384700BD47AB /* DTLoupeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTLoupeView.h; path = DTLoupe/Core/Source/DTLoupeView.h; sourceTree = "<group>"; };
 		A7E8442C16C1419D00F3EEDE /* DTRichTextEditorView+Dictation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTRichTextEditorView+Dictation.h"; sourceTree = "<group>"; };
@@ -1105,8 +1129,8 @@
 				0B17753A173B436A00498540 /* Style */,
 				0B17753B173B437200498540 /* List */,
 				0BCE64C2174DCB14007EE10F /* Other */,
-				A7DF6EDB173A6626004F623B /* DTFormatTableView.h */,
-				A7DF6EDC173A6626004F623B /* DTFormatTableView.m */,
+				A751AE6817E2FA7B005C6AF6 /* DTInputViewTableViewController.h */,
+				A751AE6917E2FA7B005C6AF6 /* DTInputViewTableViewController.m */,
 			);
 			name = Formatting;
 			sourceTree = "<group>";
@@ -1229,6 +1253,8 @@
 				A74351571486772100F4C766 /* DTRichTextEditorAppDelegate.m */,
 				A74351581486772100F4C766 /* DTRichTextEditorViewController.h */,
 				A74351591486772100F4C766 /* DTRichTextEditorViewController.m */,
+				A751AE4317E2F7C9005C6AF6 /* DTTableView.h */,
+				A751AE4417E2F7C9005C6AF6 /* DTTableView.m */,
 				0B05790817407C4D007737F3 /* DPTableViewCellSegmentedControl.h */,
 				0B05790917407C4D007737F3 /* DPTableViewCellSegmentedControl.m */,
 				0B383D00174AF1CF006C7A45 /* DPTableViewCellSegmentedControlItem.h */,
@@ -1414,6 +1440,8 @@
 				A7F34D6C16D0E32F0054A512 /* libDTFoundation.a */,
 				A7F34D6E16D0E32F0054A512 /* UnitTests.octest */,
 				A7F34D7016D0E32F0054A512 /* libDTFoundation_Mac.a */,
+				A751AE5F17E2F7CA005C6AF6 /* libDTAWS.a */,
+				A751AE6117E2F7CA005C6AF6 /* libDTASN1.a */,
 				A7F34D7216D0E32F0054A512 /* libDTHTMLParser_iOS.a */,
 				A7F34D7416D0E32F0054A512 /* libDTHTMLParser_Mac.a */,
 				A7F34D7616D0E32F0054A512 /* libDTZipArchive_iOS.a */,
@@ -1426,6 +1454,7 @@
 				A7398A31178457A40084DC12 /* libDTSQLite_Mac.a */,
 				A7398A33178457A40084DC12 /* DTSidePanels Demo.app */,
 				A7398A35178457A40084DC12 /* DTReachability Demo.app */,
+				A751AE6317E2F7CA005C6AF6 /* DTZipArchive.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1750,6 +1779,27 @@
 			fileType = wrapper.application;
 			path = "DTReachability Demo.app";
 			remoteRef = A7398A34178457A40084DC12 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A751AE5F17E2F7CA005C6AF6 /* libDTAWS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDTAWS.a;
+			remoteRef = A751AE5E17E2F7CA005C6AF6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A751AE6117E2F7CA005C6AF6 /* libDTASN1.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDTASN1.a;
+			remoteRef = A751AE6017E2F7CA005C6AF6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A751AE6317E2F7CA005C6AF6 /* DTZipArchive.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = DTZipArchive.app;
+			remoteRef = A751AE6217E2F7CA005C6AF6 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		A75D430317005893003CAF38 /* Demo App.app */ = {
@@ -2141,6 +2191,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				A74351641486772100F4C766 /* main.m in Sources */,
+				A751AE6A17E2FA7B005C6AF6 /* DTInputViewTableViewController.m in Sources */,
+				A751AE4517E2F7CA005C6AF6 /* DTTableView.m in Sources */,
 				A7D142081508DCC000ACC855 /* DTRichTextEditorAppDelegate.m in Sources */,
 				A7D142091508DCC000ACC855 /* DTRichTextEditorViewController.m in Sources */,
 				20D63B021701A1BD001E854F /* DTRichTextEditorTestState.m in Sources */,
@@ -2148,7 +2200,6 @@
 				0B2BF19F1718E54700BA0213 /* DTFormatOverviewViewController.m in Sources */,
 				0B2BF1A21718EAB700BA0213 /* DTFormatFontFamilyTableViewController.m in Sources */,
 				0B804945171B87B6000A3CFE /* DTFormatViewController.m in Sources */,
-				A7DF6EDD173A6626004F623B /* DTFormatTableView.m in Sources */,
 				0B177524173B416F00498540 /* DTFormatStyleViewController.m in Sources */,
 				0B177539173B417A00498540 /* DTFormatListViewController.m in Sources */,
 				0B05790A17407C4D007737F3 /* DPTableViewCellSegmentedControl.m in Sources */,

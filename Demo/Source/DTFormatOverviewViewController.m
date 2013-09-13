@@ -33,7 +33,8 @@
     
     NSArray *optionsArray = @[ @"Style", @"List", @"Media", @"Other" ];
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+	{
         // on the phone this controller will be presented modally
         // we need a control to dismiss ourselves
         
@@ -55,7 +56,7 @@
     formatTypeChooser.selectedSegmentIndex = 0;
     [formatTypeChooser addTarget:self action:@selector(_formatTypeChooserValueChanged:) forControlEvents:UIControlEventValueChanged];
     self.navigationItem.titleView = formatTypeChooser;
-
+	
     [self _formatTypeChooserValueChanged:nil];
 }
 
@@ -66,10 +67,13 @@
     
     NSUInteger selectedIndex = control ? control.selectedSegmentIndex : 0;
     
-    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && selectedIndex == 2)
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone && selectedIndex == 2)
+	{
         selectedIndex = 3;
+	}
     
-    switch (selectedIndex) {
+    switch (selectedIndex)
+	{
         case 0:
         {
             // Style
@@ -78,8 +82,9 @@
             }
             
             newViewController = self.styleTableViewController;
+			break;
         }
-            break;
+			
         case 1:
         {
             // List
@@ -88,8 +93,9 @@
             }
             
             newViewController = self.listTableViewController;
+			break;
         }
-            break;
+			
         case 2:
         {
             // Media
@@ -100,39 +106,64 @@
             }
             
             newViewController = self.mediaController;
+			break;
         }
-            break;
+			
         case 3:
-            if( !self.otherTableViewController ){
+		{
+            if (!self.otherTableViewController)
+			{
                 self.otherTableViewController = [[DTFormatOtherViewController alloc] initWithStyle:UITableViewStyleGrouped];
             }
             
             newViewController = self.otherTableViewController;
-
+			
             break;
-        default:
-            break;
+		}
     }
     
     if (!newViewController)
+	{
         return;
+	}
     
     // remove old one
-    [self.visibleTableViewController.view removeFromSuperview];
-    [self.visibleTableViewController willMoveToParentViewController:nil];
-    [self.visibleTableViewController removeFromParentViewController];
-
+    [_visibleTableViewController.view removeFromSuperview];
+    [_visibleTableViewController willMoveToParentViewController:nil];
+    [_visibleTableViewController removeFromParentViewController];
+	
     // change the controller
-    self.visibleTableViewController = newViewController;
-        
+    _visibleTableViewController = newViewController;
+	
     // add new one
-    [self addChildViewController:self.visibleTableViewController];
-    self.visibleTableViewController.view.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds));
-    self.visibleTableViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self.view addSubview:self.visibleTableViewController.view];
-    [self.visibleTableViewController didMoveToParentViewController:self];
-    
-    self.contentSizeForViewInPopover = self.visibleTableViewController.contentSizeForViewInPopover;
+    [self addChildViewController:_visibleTableViewController];
+    _visibleTableViewController.view.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds));
+    _visibleTableViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:_visibleTableViewController.view];
+    [_visibleTableViewController didMoveToParentViewController:self];
+	
+	[CATransaction begin];
+	[CATransaction setDisableActions:YES];
+    self.contentSizeForViewInPopover = _visibleTableViewController.contentSizeForViewInPopover;
+	[CATransaction commit];
+}
+
+#pragma mark - Properties
+
+- (UIViewController *)visibleTableViewController
+{
+	if (!_visibleTableViewController)
+	{
+		// set initial format table view
+		[self _formatTypeChooserValueChanged:nil];
+	}
+	
+	return _visibleTableViewController;
+}
+
+- (CGSize)contentSizeForViewInPopover
+{
+	return self.visibleTableViewController.contentSizeForViewInPopover;
 }
 
 
