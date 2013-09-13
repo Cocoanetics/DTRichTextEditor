@@ -31,11 +31,6 @@
 
 @implementation DTFormatStyleViewController
 
-- (void)dealloc
-{
-	[self.tableView removeObserver:self forKeyPath:@"contentInset"];
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -65,18 +60,6 @@
     self.alignmentSegmentedControl = [[DPTableViewCellSegmentedControl alloc] initWithItems:@[ leftItem, centerItem, rightItem, justifyItem ]];
     self.alignmentSegmentedControl.allowMultipleSelection = NO;
     [self.alignmentSegmentedControl addTarget:self action:@selector(_alignmentValueChanged:) forControlEvents:UIControlEventValueChanged];
-	
-	// fix for rdar://13836932 - inputView gets contentInset set if keyboard is showing
-	[self.tableView addObserver:self forKeyPath:@"contentInset" options:NSKeyValueObservingOptionNew context:NULL];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	// fix for rdar://13836932 - inputView gets contentInset set if keyboard is showing
-	if (self.tableView.contentInset.bottom>0)
-	{
-		self.tableView.contentInset = UIEdgeInsetsZero;
-	}
 }
 
 - (void)_styleValueChanged:(DPTableViewCellSegmentedControl *)control
