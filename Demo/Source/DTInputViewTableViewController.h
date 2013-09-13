@@ -6,8 +6,8 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
+// table view controller that instantiates a table view that ignores setContentInset
+// fix for rdar://13836932 - inputView gets contentInset set if keyboard is showing
 
 @interface DTInputViewTableViewController : UITableViewController
 
