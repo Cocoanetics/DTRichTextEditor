@@ -1009,17 +1009,16 @@ typedef enum
 	if (!UIEdgeInsetsEqualToEdgeInsets(contentInset, self.contentInset))
 	{
 		[UIView animateWithDuration:0.3 animations:^{
-			UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, coveredFrame.size.height + _userSetContentInsets.bottom, _userSetContentInsets.right);
 			
 			// set inset to make up for covered array at bottom
 			_shouldNotRecordChangedContentInsets = YES;
 			
-			self.contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, coveredFrame.size.height + _userSetContentInsets.bottom, _userSetContentInsets.right);
-			
-			self.scrollIndicatorInsets = UIEdgeInsetsMake(_userSetScrollIndicatorInsets.top, _userSetScrollIndicatorInsets.left, _userSetScrollIndicatorInsets.bottom + coveredFrame.size.height, _userSetScrollIndicatorInsets.right);
+			self.contentInset = contentInset;
+			self.scrollIndicatorInsets = contentInset;
 			
 			_shouldNotRecordChangedContentInsets = NO;
 		}
+
 						 completion:^(BOOL finished) {
 							 // only scroll the cursor visible if there was a change in content insets
 							 [self scrollCursorVisibleAnimated:YES];
