@@ -1032,7 +1032,6 @@ typedef enum
 	[self _updateContentInsetForKeyboardAnimated:YES];
 }
 
-
 - (void)_updateContentInsetForKeyboardAnimated:(BOOL)animated
 {
 	UIEdgeInsets contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, _heightCoveredByKeyboard + _userSetContentInsets.bottom, _userSetContentInsets.right);
@@ -1077,23 +1076,6 @@ typedef enum
 		// not animated to avoid artifacting on the prompt
 		[self scrollCursorVisibleAnimated:NO];
 	}
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-	if (context != DTRichTextEditorAutocorrectionPromptFrameObservation)
-	{
-		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-	}
-	
-	CGRect newRect = [change[@"new"] CGRectValue];
-	
-	NSLog(@"%@", change);
-	
-	// next run loop to avoid artifacting on delete
-	dispatch_async(dispatch_get_main_queue(), ^{
-		[self _updateContentInsetForKeyboardAnimated:NO];
-	});
 }
 
 #pragma mark - Gestures
