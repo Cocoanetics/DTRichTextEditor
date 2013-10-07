@@ -2163,26 +2163,25 @@ typedef enum
 - (void)deleteBackward
 {
 	DTTextRange *replacementTextRange = (id)[self selectedTextRange];
+	UITextRange *entireDocument = [self textRangeFromPosition:self.beginningOfDocument toPosition:self.endOfDocument];
 	
+	// extending the selection towards beginning is done for us on iOS 7
 	if ([replacementTextRange isEmpty])
 	{
-		// delete character left of carret
-		DTTextPosition *beginningOfDocument = (DTTextPosition *)[self beginningOfDocument];
-		
 		// nothing to delete past beginning of document
-		if ([replacementTextRange.start isEqual:beginningOfDocument])
+		if ([replacementTextRange.start isEqual:self.beginningOfDocument])
 		{
 			return;
 		}
 		
-		UITextRange *entireDocument = [self textRangeFromPosition:beginningOfDocument toPosition:[self endOfDocument]];
-		
-		UITextPosition *delStart = [self positionFromPosition:[replacementTextRange start] offset:-1];
-		
-		// skips fields
-		delStart = [self positionSkippingFieldsFromPosition:delStart withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
+		// extend deletion range towards beginning of document
+		UITextPosition *delStart = [self positionFromPosition:replacementTextRange.start offset:-1];
 		replacementTextRange = [DTTextRange textRangeFromStart:delStart toEnd:[replacementTextRange start]];
 	}
+
+	// make sure that the beginning is before any fields
+	UITextPosition *delStart = [self positionSkippingFieldsFromPosition:replacementTextRange.start withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
+	replacementTextRange = [DTTextRange textRangeFromStart:delStart toEnd:replacementTextRange.end];
 	
 	NSAttributedString *replacementText = [[NSAttributedString alloc] init];
 	
@@ -2441,6 +2440,8 @@ typedef enum
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange
 {
+	NSLog(@"%s %@", __PRETTY_FUNCTION__, newTextRange);
+	
 	[self setSelectedTextRange:newTextRange animated:NO];
 }
 
