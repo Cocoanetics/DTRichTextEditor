@@ -18,6 +18,9 @@
 	
 	UIEdgeInsets _edgeInsets; // space between frame edges and text
 	BOOL shouldRebuildLines;
+	
+	// concurrent queue for syncing drawing and updates
+	dispatch_queue_t _syncQueue;
 }
 
 
@@ -42,10 +45,19 @@
 			_attributedStringFragment = [attributedString mutableCopy];
 		}
 		
+		_syncQueue = dispatch_queue_create("DTMutableCoreTextLayoutFrame Sync Queue", DISPATCH_QUEUE_CONCURRENT);
+		
 		// we don't need a layouter because we create a temporary one if we need it
 	}
 	
 	return self;
+}
+
+- (void)dealloc
+{
+#if !OS_OBJECT_USE_OBJC
+	dispatch_release(_syncQueue);
+#endif
 }
 
 - (void)setAttributedString:(NSAttributedString *)attributedString
@@ -60,25 +72,28 @@
 
 - (void)relayoutText
 {
-	// next call needs new selection rectangles
-	_cachedSelectionRectangles = nil;
-	
-	// layout the new text
-	DTCoreTextLayouter *tmpLayouter = [[DTCoreTextLayouter alloc] initWithAttributedString:_attributedStringFragment];
-	CGRect rect = _frame;
-	rect.size.height = CGFLOAT_OPEN_HEIGHT;
-	NSRange allTextRange = NSMakeRange(0, 0);
-	DTCoreTextLayoutFrame *tmpFrame = [tmpLayouter layoutFrameWithRect:rect range:allTextRange];
-	
-	// transfer the lines
-	_lines = [tmpFrame.lines copy];
-	
-	// correct the overall frame size
-	DTCoreTextLayoutLine *lastLine = [_lines lastObject];
-	_frame.size.height = ceilf((CGRectGetMaxY(lastLine.frame) - _frame.origin.y + 1.5));
-	
-	// some attachments might have been overwritten, so we force refresh of the attachments list
-	_textAttachments = nil;
+	dispatch_barrier_sync(_syncQueue, ^{
+		
+		// next call needs new selection rectangles
+		_cachedSelectionRectangles = nil;
+		
+		// layout the new text
+		DTCoreTextLayouter *tmpLayouter = [[DTCoreTextLayouter alloc] initWithAttributedString:_attributedStringFragment];
+		CGRect rect = _frame;
+		rect.size.height = CGFLOAT_OPEN_HEIGHT;
+		NSRange allTextRange = NSMakeRange(0, 0);
+		DTCoreTextLayoutFrame *tmpFrame = [tmpLayouter layoutFrameWithRect:rect range:allTextRange];
+		
+		// transfer the lines
+		_lines = [tmpFrame.lines copy];
+		
+		// correct the overall frame size
+		DTCoreTextLayoutLine *lastLine = [_lines lastObject];
+		_frame.size.height = ceilf((CGRectGetMaxY(lastLine.frame) - _frame.origin.y + 1.5));
+		
+		// some attachments might have been overwritten, so we force refresh of the attachments list
+		_textAttachments = nil;
+	});
 }
 
 - (void)relayoutTextInRange:(NSRange)range
@@ -178,226 +193,229 @@
 
 - (void)replaceTextInRange:(NSRange)range withText:(NSAttributedString *)text dirtyRect:(CGRect *)dirtyRect
 {
-	NSString *plainText = [_attributedStringFragment string];
-	
-	// get beginning and end of paragraph containing the replaced range
-	NSUInteger parBeginIndex;
-	NSUInteger parEndIndex;
-	NSRange rangeForRedoneParagraphs;
-	
-	// get the first and last index of the paragraphs containing this range
-	rangeForRedoneParagraphs = [plainText rangeOfParagraphsContainingRange:range parBegIndex:&parBeginIndex parEndIndex:&parEndIndex];
-	
-	// if the range ends on a \n then we need to extend to include the following paragraph if it's actually a deletion
-	if (parEndIndex < [plainText length] && ![text length])
-	{
-		if ([plainText indexIsAtBeginningOfParagraph:parEndIndex])
-		{
-			NSRange extendedRange = range;
-			extendedRange.length += 1;
-			rangeForRedoneParagraphs = [plainText rangeOfParagraphsContainingRange:extendedRange parBegIndex:&parBeginIndex parEndIndex:&parEndIndex];
-		}
-	}
-	
-	// text between begin of paragraph and insertion point is prefix
-	NSAttributedString *prefix = nil;
-	
-	if (range.location > parBeginIndex)
-	{
-		NSRange prefixRange = NSMakeRange(parBeginIndex, range.location - parBeginIndex);
-		prefix = [_attributedStringFragment attributedSubstringFromRange:prefixRange];
-	}
-	
-	// text between end of paragraph and end of insertion range is suffix
-	NSAttributedString *suffix = nil;
-	
-	NSInteger lastIndex = NSMaxRange(range);
-	
-	if (lastIndex < parEndIndex)
-	{
-		NSRange suffixRange = NSMakeRange(lastIndex, parEndIndex - lastIndex);
-		suffix = [_attributedStringFragment attributedSubstringFromRange:suffixRange];
-	}
-	
-	NSAttributedString *modifiedParagraphText;
-	
-	// we need to append a prefix or suffix
-	if (prefix || suffix)
-	{
-		NSMutableAttributedString *tmpString = [[NSMutableAttributedString alloc] init];
+	dispatch_barrier_sync(_syncQueue, ^{
 		
-		if (prefix)
+		NSString *plainText = [_attributedStringFragment string];
+		
+		// get beginning and end of paragraph containing the replaced range
+		NSUInteger parBeginIndex;
+		NSUInteger parEndIndex;
+		NSRange rangeForRedoneParagraphs;
+		
+		// get the first and last index of the paragraphs containing this range
+		rangeForRedoneParagraphs = [plainText rangeOfParagraphsContainingRange:range parBegIndex:&parBeginIndex parEndIndex:&parEndIndex];
+		
+		// if the range ends on a \n then we need to extend to include the following paragraph if it's actually a deletion
+		if (parEndIndex < [plainText length] && ![text length])
 		{
-			[tmpString appendAttributedString:prefix];
+			if ([plainText indexIsAtBeginningOfParagraph:parEndIndex])
+			{
+				NSRange extendedRange = range;
+				extendedRange.length += 1;
+				rangeForRedoneParagraphs = [plainText rangeOfParagraphsContainingRange:extendedRange parBegIndex:&parBeginIndex parEndIndex:&parEndIndex];
+			}
 		}
 		
-		if (text)
+		// text between begin of paragraph and insertion point is prefix
+		NSAttributedString *prefix = nil;
+		
+		if (range.location > parBeginIndex)
 		{
-			[tmpString appendAttributedString:text];
+			NSRange prefixRange = NSMakeRange(parBeginIndex, range.location - parBeginIndex);
+			prefix = [_attributedStringFragment attributedSubstringFromRange:prefixRange];
 		}
 		
-		if (suffix)
+		// text between end of paragraph and end of insertion range is suffix
+		NSAttributedString *suffix = nil;
+		
+		NSInteger lastIndex = NSMaxRange(range);
+		
+		if (lastIndex < parEndIndex)
 		{
-			[tmpString appendAttributedString:suffix];
+			NSRange suffixRange = NSMakeRange(lastIndex, parEndIndex - lastIndex);
+			suffix = [_attributedStringFragment attributedSubstringFromRange:suffixRange];
 		}
 		
-		modifiedParagraphText = tmpString;
-	}
-	else
-	{
-		modifiedParagraphText = text;
-	}
-	
-	
-	// get affected paragraphs
-	NSRange paragraphs = [self paragraphRangeContainingStringRange:rangeForRedoneParagraphs];
-	
-	if (![self.paragraphRanges count])
-	{
-		return;
-	}
-	
-	// make this replacement in our local copy
-	[(NSMutableAttributedString *)_attributedStringFragment replaceCharactersInRange:range withAttributedString:text];
-	
-	// layout the new paragraph text
-	DTCoreTextLayouter *tmpLayouter = [[DTCoreTextLayouter alloc] initWithAttributedString:modifiedParagraphText];
-	CGRect rect = self.frame;
-	rect.size.height = CGFLOAT_OPEN_HEIGHT;
-	NSRange allTextRange = NSMakeRange(0, 0);
-	DTCoreTextLayoutFrame *tmpFrame = [tmpLayouter layoutFrameWithRect:rect range:allTextRange];
-	
-	NSArray *relayoutedLines = tmpFrame.lines;
-	
-	NSUInteger insertionIndex = 0;
-	
-	if (paragraphs.location > 0)
-	{
-		NSArray *preParaLines = [self linesInParagraphAtIndex:paragraphs.location-1];
+		NSAttributedString *modifiedParagraphText;
 		
-		DTCoreTextLayoutLine *lineBefore = [preParaLines lastObject];
-		insertionIndex = [_lines indexOfObject:lineBefore] + 1;
-	}
-	
-	
-	// remove the changed lines
-	NSMutableArray *tmpArray = [self.lines mutableCopy];
-	NSMutableArray *replacedLines = [NSMutableArray array];
-	
-	for (NSInteger index=paragraphs.location; index < NSMaxRange(paragraphs); index++)
-	{
-		NSArray *lines = [self linesInParagraphAtIndex:index];
-		[replacedLines addObjectsFromArray:lines];
-		[tmpArray removeObjectsInArray:lines];
-	}
-	
-	// this rect is the place where lines where removed, to be relayouted
-	CGRect replacedLinesRect = [self _frameCoveringLines:replacedLines];
-	
-	// remove paragraph ranges
-	_paragraphRanges = nil;
-	
-	DTCoreTextLayoutLine *previousLine = nil;
-	
-	// the amount that the relayouted lines need to be shifted down
-	CGPoint insertedLinesBaselineOffset = CGPointZero;
-	
-	if (insertionIndex>0)
-	{
-		// if there is a line before this one we base ourselfs off that
-		previousLine = [tmpArray objectAtIndex:insertionIndex-1];
-		
-		DTCoreTextLayoutLine *firstNewLine = [relayoutedLines objectAtIndex:0];
-		
-		CGPoint oldBaselineOrigin = firstNewLine.baselineOrigin;
-        CGPoint newBaselineOrigin = [self baselineOriginToPositionLine:(id)firstNewLine afterLine:(id)previousLine options:DTCoreTextLayoutFrameLinePositioningOptionAlgorithmWebKit];
-		
-		insertedLinesBaselineOffset.y = newBaselineOrigin.y - oldBaselineOrigin.y;
-	}
-	
-	// determine how much the range has to be shifted
-	for (DTCoreTextLayoutLine *oneLine in tmpFrame.lines)
-	{
-		// only shift down if there are lines before it
-		if (insertedLinesBaselineOffset.y!=0.0f)
+		// we need to append a prefix or suffix
+		if (prefix || suffix)
 		{
-			CGPoint baselineOrigin = oneLine.baselineOrigin;
-			baselineOrigin.y += insertedLinesBaselineOffset.y;
+			NSMutableAttributedString *tmpString = [[NSMutableAttributedString alloc] init];
+			
+			if (prefix)
+			{
+				[tmpString appendAttributedString:prefix];
+			}
+			
+			if (text)
+			{
+				[tmpString appendAttributedString:text];
+			}
+			
+			if (suffix)
+			{
+				[tmpString appendAttributedString:suffix];
+			}
+			
+			modifiedParagraphText = tmpString;
+		}
+		else
+		{
+			modifiedParagraphText = text;
+		}
+		
+		
+		// get affected paragraphs
+		NSRange paragraphs = [self paragraphRangeContainingStringRange:rangeForRedoneParagraphs];
+		
+		if (![self.paragraphRanges count])
+		{
+			return;
+		}
+		
+		// make this replacement in our local copy
+		[(NSMutableAttributedString *)_attributedStringFragment replaceCharactersInRange:range withAttributedString:text];
+		
+		// layout the new paragraph text
+		DTCoreTextLayouter *tmpLayouter = [[DTCoreTextLayouter alloc] initWithAttributedString:modifiedParagraphText];
+		CGRect rect = self.frame;
+		rect.size.height = CGFLOAT_OPEN_HEIGHT;
+		NSRange allTextRange = NSMakeRange(0, 0);
+		DTCoreTextLayoutFrame *tmpFrame = [tmpLayouter layoutFrameWithRect:rect range:allTextRange];
+		
+		NSArray *relayoutedLines = tmpFrame.lines;
+		
+		NSUInteger insertionIndex = 0;
+		
+		if (paragraphs.location > 0)
+		{
+			NSArray *preParaLines = [self linesInParagraphAtIndex:paragraphs.location-1];
+			
+			DTCoreTextLayoutLine *lineBefore = [preParaLines lastObject];
+			insertionIndex = [_lines indexOfObject:lineBefore] + 1;
+		}
+		
+		
+		// remove the changed lines
+		NSMutableArray *tmpArray = [self.lines mutableCopy];
+		NSMutableArray *replacedLines = [NSMutableArray array];
+		
+		for (NSInteger index=paragraphs.location; index < NSMaxRange(paragraphs); index++)
+		{
+			NSArray *lines = [self linesInParagraphAtIndex:index];
+			[replacedLines addObjectsFromArray:lines];
+			[tmpArray removeObjectsInArray:lines];
+		}
+		
+		// this rect is the place where lines where removed, to be relayouted
+		CGRect replacedLinesRect = [self _frameCoveringLines:replacedLines];
+		
+		// remove paragraph ranges
+		_paragraphRanges = nil;
+		
+		DTCoreTextLayoutLine *previousLine = nil;
+		
+		// the amount that the relayouted lines need to be shifted down
+		CGPoint insertedLinesBaselineOffset = CGPointZero;
+		
+		if (insertionIndex>0)
+		{
+			// if there is a line before this one we base ourselfs off that
+			previousLine = [tmpArray objectAtIndex:insertionIndex-1];
+			
+			DTCoreTextLayoutLine *firstNewLine = [relayoutedLines objectAtIndex:0];
+			
+			CGPoint oldBaselineOrigin = firstNewLine.baselineOrigin;
+			CGPoint newBaselineOrigin = [self baselineOriginToPositionLine:(id)firstNewLine afterLine:(id)previousLine options:DTCoreTextLayoutFrameLinePositioningOptionAlgorithmWebKit];
+			
+			insertedLinesBaselineOffset.y = newBaselineOrigin.y - oldBaselineOrigin.y;
+		}
+		
+		// determine how much the range has to be shifted
+		for (DTCoreTextLayoutLine *oneLine in tmpFrame.lines)
+		{
+			// only shift down if there are lines before it
+			if (insertedLinesBaselineOffset.y!=0.0f)
+			{
+				CGPoint baselineOrigin = oneLine.baselineOrigin;
+				baselineOrigin.y += insertedLinesBaselineOffset.y;
+				oneLine.baselineOrigin = baselineOrigin;
+			}
+			
+			[tmpArray insertObject:oneLine atIndex:insertionIndex];
+			
+			insertionIndex++;
+			
+			// adjust string range
+			[oneLine adjustStringRangeToStartAtIndex:NSMaxRange(previousLine.stringRange)];
+			
+			previousLine = oneLine;
+		}
+		
+		// this rect covers the freshly layouted replacement lines
+		CGRect relayoutedLinesRect = [self _frameCoveringLines:tmpFrame.lines];
+		
+		BOOL firstLineAfterInsert = YES;
+		CGPoint linesAfterinsertedLinesBaselineOffset = CGPointZero;
+		
+		// move down lines after the re-layouted lines
+		while (insertionIndex<[tmpArray count])
+		{
+			DTCoreTextLayoutLine *oneLine = [tmpArray objectAtIndex:insertionIndex];
+			
+			// adjust string range
+			[oneLine adjustStringRangeToStartAtIndex:NSMaxRange(previousLine.stringRange)];
+			
+			if (firstLineAfterInsert)
+			{
+				// first line determines shift down
+				CGPoint oldBaselineOrigin = oneLine.baselineOrigin;
+				CGPoint newBaselineOrigin = [self baselineOriginToPositionLine:(id)oneLine afterLine:(id)previousLine options:DTCoreTextLayoutFrameLinePositioningOptionAlgorithmWebKit];
+				
+				
+				linesAfterinsertedLinesBaselineOffset.y = newBaselineOrigin.y - oldBaselineOrigin.y;
+				
+				// we got our offset now
+				firstLineAfterInsert = NO;
+			}
+			
+			CGPoint baselineOrigin =  oneLine.baselineOrigin;
+			baselineOrigin.y += linesAfterinsertedLinesBaselineOffset.y;
 			oneLine.baselineOrigin = baselineOrigin;
-		}
-		
-		[tmpArray insertObject:oneLine atIndex:insertionIndex];
-		
-		insertionIndex++;
-		
-		// adjust string range
-		[oneLine adjustStringRangeToStartAtIndex:NSMaxRange(previousLine.stringRange)];
-		
-		previousLine = oneLine;
-	}
-	
-	// this rect covers the freshly layouted replacement lines
-	CGRect relayoutedLinesRect = [self _frameCoveringLines:tmpFrame.lines];
-	
-	BOOL firstLineAfterInsert = YES;
-	CGPoint linesAfterinsertedLinesBaselineOffset = CGPointZero;
-	
-	// move down lines after the re-layouted lines
-	while (insertionIndex<[tmpArray count])
-	{
-		DTCoreTextLayoutLine *oneLine = [tmpArray objectAtIndex:insertionIndex];
-		
-		// adjust string range
-		[oneLine adjustStringRangeToStartAtIndex:NSMaxRange(previousLine.stringRange)];
-		
-		if (firstLineAfterInsert)
-		{
-			// first line determines shift down
-			CGPoint oldBaselineOrigin = oneLine.baselineOrigin;
-            CGPoint newBaselineOrigin = [self baselineOriginToPositionLine:(id)oneLine afterLine:(id)previousLine options:DTCoreTextLayoutFrameLinePositioningOptionAlgorithmWebKit];
-
 			
-			linesAfterinsertedLinesBaselineOffset.y = newBaselineOrigin.y - oldBaselineOrigin.y;
-			
-			// we got our offset now
-			firstLineAfterInsert = NO;
+			previousLine = oneLine;
+			insertionIndex++;
 		}
 		
-		CGPoint baselineOrigin =  oneLine.baselineOrigin;
-		baselineOrigin.y += linesAfterinsertedLinesBaselineOffset.y;
-		oneLine.baselineOrigin = baselineOrigin;
+		// save
+		_lines = [tmpArray copy];
 		
-		previousLine = oneLine;
-		insertionIndex++;
-	}
-	
-	// save
-	_lines = [tmpArray copy];
-	
-	// correct the overall frame size
-	DTCoreTextLayoutLine *lastLine = [_lines lastObject];
-	_frame.size.height = ceilf((CGRectGetMaxY(lastLine.frame) - _frame.origin.y + 1.5));
-	
-	if (dirtyRect)
-	{
-		CGRect redrawArea = CGRectUnion(replacedLinesRect, relayoutedLinesRect);
+		// correct the overall frame size
+		DTCoreTextLayoutLine *lastLine = [_lines lastObject];
+		_frame.size.height = ceilf((CGRectGetMaxY(lastLine.frame) - _frame.origin.y + 1.5));
 		
-		if (replacedLinesRect.origin.y != relayoutedLinesRect.origin.y || replacedLinesRect.size.height != relayoutedLinesRect.size.height)
+		if (dirtyRect)
 		{
-			// rest of document shifted up or down
-			redrawArea.size.height = MAX(_frame.size.height - redrawArea.origin.y, redrawArea.size.height);
-			redrawArea.size.width = _frame.size.width;
-			redrawArea.origin.x = _frame.origin.x;
+			CGRect redrawArea = CGRectUnion(replacedLinesRect, relayoutedLinesRect);
+			
+			if (replacedLinesRect.origin.y != relayoutedLinesRect.origin.y || replacedLinesRect.size.height != relayoutedLinesRect.size.height)
+			{
+				// rest of document shifted up or down
+				redrawArea.size.height = MAX(_frame.size.height - redrawArea.origin.y, redrawArea.size.height);
+				redrawArea.size.width = _frame.size.width;
+				redrawArea.origin.x = _frame.origin.x;
+			}
+			
+			*dirtyRect = redrawArea;
 		}
 		
-		*dirtyRect = redrawArea;
-	}
-	
-	// some attachments might have been overwritten, so we force refresh of the attachments list
-	_textAttachments = nil;
-	
-	// next call needs new selection rectangles
-	_cachedSelectionRectangles = nil;
+		// some attachments might have been overwritten, so we force refresh of the attachments list
+		_textAttachments = nil;
+		
+		// next call needs new selection rectangles
+		_cachedSelectionRectangles = nil;
+	});
 }
 
 - (NSArray *)selectionRectsForRange:(NSRange)range
@@ -413,6 +431,13 @@
 	return _cachedSelectionRectangles;
 }
 
+- (void)drawInContext:(CGContextRef)context options:(DTCoreTextLayoutFrameDrawingOptions)options
+{
+	dispatch_sync(_syncQueue, ^{
+		
+		[super drawInContext:context options:options];
+	});
+}
 
 #pragma mark - Properties
 
