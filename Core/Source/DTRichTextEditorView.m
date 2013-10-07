@@ -1027,9 +1027,25 @@ typedef enum
 
 #pragma mark - Autocorrection Prompt
 
+- (void)_updateContentInsetForKeyboardNonAnimated
+{
+	[self _updateContentInsetForKeyboardAnimated:YES];
+}
+
+
 - (void)_updateContentInsetForKeyboardAnimated:(BOOL)animated
 {
-	UIEdgeInsets contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, _heightCoveredByKeyboard + _userSetContentInsets.bottom + _autocorrectionPromptView.frame.size.height, _userSetContentInsets.right);
+	UIEdgeInsets contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, _heightCoveredByKeyboard + _userSetContentInsets.bottom, _userSetContentInsets.right);
+	
+	if (_autocorrectionPromptView)
+	{
+		UITextPosition *downPosition = [self positionFromPosition:self.selectedTextRange.end inDirection:UITextLayoutDirectionDown offset:1];
+		
+		if (!downPosition)
+		{
+			contentInset.bottom += 40;
+		}
+	}
 	
 	if (UIEdgeInsetsEqualToEdgeInsets(contentInset, self.contentInset))
 	{
@@ -1069,6 +1085,10 @@ typedef enum
 	{
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
 	}
+	
+	CGRect newRect = [change[@"new"] CGRectValue];
+	
+	NSLog(@"%@", change);
 	
 	// next run loop to avoid artifacting on delete
 	dispatch_async(dispatch_get_main_queue(), ^{
@@ -3298,8 +3318,7 @@ typedef enum
 	{
 		_autocorrectionPromptView = view;
 		
-		// observe the frame
-		[_autocorrectionPromptView addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:DTRichTextEditorAutocorrectionPromptFrameObservation];
+		[self _updateContentInsetForKeyboardAnimated:NO];
 	}
 	
 	[super addSubview:view];
@@ -3323,11 +3342,12 @@ typedef enum
 	
 	if (subview == _autocorrectionPromptView)
 	{
-		[_autocorrectionPromptView removeObserver:self forKeyPath:@"frame" context:DTRichTextEditorAutocorrectionPromptFrameObservation];
-		
 		_autocorrectionPromptView = nil;
-		
-		[self _updateContentInsetForKeyboardAnimated:YES];
+
+		// wait a bit longer with removing the inset because the autocorrect prompt might come back right
+		SEL selector = @selector(_updateContentInsetForKeyboardNonAnimated);
+		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
+		[self performSelector:selector withObject:nil afterDelay:0.5];
 	}
 }
 
