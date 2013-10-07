@@ -1040,7 +1040,12 @@ typedef enum
 		
 		if (!downPosition)
 		{
-			contentInset.bottom += 40;
+			// get space needed
+			
+			NSDictionary *attributes = [self typingAttributesForRange:self.selectedTextRange];
+			DTCoreTextFontDescriptor *fontDescriptor = [attributes fontDescriptor];
+			
+			contentInset.bottom += (fontDescriptor.pointSize);
 		}
 	}
 	
