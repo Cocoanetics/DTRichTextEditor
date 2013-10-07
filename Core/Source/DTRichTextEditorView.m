@@ -2440,8 +2440,6 @@ typedef enum
 
 - (void)setSelectedTextRange:(DTTextRange *)newTextRange
 {
-	NSLog(@"%s %@", __PRETTY_FUNCTION__, newTextRange);
-	
 	[self setSelectedTextRange:newTextRange animated:NO];
 }
 
