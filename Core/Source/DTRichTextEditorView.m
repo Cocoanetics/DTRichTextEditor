@@ -46,8 +46,6 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 NSString * const DTRichTextEditorTextDidChangeNotification = @"DTRichTextEditorTextDidChangeNotification";
 NSString * const DTRichTextEditorTextDidEndEditingNotification = @"DTRichTextEditorTextDidEndEditingNotification";
 
-static void * DTRichTextEditorAutocorrectionPromptFrameObservation = @"DTRichTextEditorAutocorrectionPromptFrameObservation";
-
 // the modes that can be dragged in
 typedef enum
 {
