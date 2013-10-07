@@ -46,6 +46,7 @@ NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextE
 NSString * const DTRichTextEditorTextDidChangeNotification = @"DTRichTextEditorTextDidChangeNotification";
 NSString * const DTRichTextEditorTextDidEndEditingNotification = @"DTRichTextEditorTextDidEndEditingNotification";
 
+static void * DTRichTextEditorAutocorrectionPromptFrameObservation = @"DTRichTextEditorAutocorrectionPromptFrameObservation";
 
 // the modes that can be dragged in
 typedef enum
@@ -142,11 +143,11 @@ typedef enum
 	CGPoint _dragCursorStartMidPoint;
 	CGPoint _touchDownPoint;
 	NSDictionary *_overrideInsertionAttributes;
-
+	
 	BOOL _contextMenuVisible;
 	NSTimeInterval _lastCursorMovementTimestamp;
     CGPoint _lastCursorMovementTouchPoint;
-
+	
 	// gesture recognizers
 	UITapGestureRecognizer *tapGesture;
 	UITapGestureRecognizer *doubleTapGesture;
@@ -159,7 +160,7 @@ typedef enum
 	NSString *_defaultFontFamily;
 	NSURL *_baseURL;
 	CGFloat _textSizeMultiplier;
-
+	
 	NSDictionary *_textDefaults;
     
     // tracking of content insets
@@ -191,6 +192,8 @@ typedef enum
     
     // Use to disallow canPerformAction: to proceed up the responder chain (-nextResponder)
     BOOL _stopResponderChain;
+	
+	UIView *_autocorrectionPromptView;
 }
 
 #pragma mark -
@@ -201,9 +204,9 @@ typedef enum
 #ifdef TIMEBOMB
 #warning Timebomb enabled
 	// TIMEBOMB define is seconds since 1970 when the thing should stop working
-	 NSTimeInterval expirationTimestamp = TIMEBOMB;
-	 NSDate *expirationDate = [NSDate dateWithTimeIntervalSince1970:expirationTimestamp];
-	 
+	NSTimeInterval expirationTimestamp = TIMEBOMB;
+	NSDate *expirationDate = [NSDate dateWithTimeIntervalSince1970:expirationTimestamp];
+	
 	// date formatter for output
 	NSDateFormatter *df = [[NSDateFormatter alloc] init];
 	[df setTimeStyle:NSDateFormatterNoStyle];
@@ -384,7 +387,6 @@ typedef enum
 {
 	return [DTRichTextEditorContentView class];
 }
-
 
 #pragma mark - Menu
 
@@ -650,7 +652,7 @@ typedef enum
 		{
 			_dragMode = DTDragModeRightHandle;
 		}
-		else 
+		else
 		{
 			_dragMode = DTDragModeCursor;
 		}
@@ -701,7 +703,7 @@ typedef enum
         {
             return;
         }
-
+		
 		loupeStartPoint = CGRectCenter(rect);
 		_dragCursorStartMidPoint = CGRectCenter(rect);
 		
@@ -749,7 +751,7 @@ typedef enum
 - (void)moveLoupeWithTouchPoint:(CGPoint)touchPoint
 {
 	DTLoupeView *loupe = [DTLoupeView sharedLoupe];
-
+	
 	if (_dragMode == DTDragModeCursor)
 	{
 		CGRect visibleArea = [self visibleContentRect];
@@ -770,7 +772,7 @@ typedef enum
             
 			loupe.touchPoint = restrictedTouchPoint;
 		}
-
+		
 		[self hideContextMenu];
 		
 		if (self.isEditable && self.isEditing)
@@ -857,7 +859,7 @@ typedef enum
 - (void)dismissLoupeWithTouchPoint:(CGPoint)touchPoint
 {
 	DTLoupeView *loupe = [DTLoupeView sharedLoupe];
-
+	
 	if (_dragMode == DTDragModeCursor || _dragMode == DTDragModeCursorInsideMarking)
 	{
 		if (self.editable)
@@ -894,7 +896,7 @@ typedef enum
 		[loupe dismissLoupeTowardsLocation:point];
 	}
 	
-	_dragMode = DTDragModeNone;	
+	_dragMode = DTDragModeNone;
 }
 
 - (void)extendSelectionToIncludeWordInDirection:(UITextStorageDirection)direction
@@ -980,7 +982,7 @@ typedef enum
 - (void)cursorDidBlink:(NSNotification *)notification
 {
 	DTLoupeView *loupe = [DTLoupeView sharedLoupe];
-
+	
 	// update loupe magnified image to show changed cursor
 	if ([loupe isShowing])
 	{
@@ -1004,30 +1006,11 @@ typedef enum
 	coveredFrame = [self.window convertRect:coveredFrame toView:self.superview];
     
     _heightCoveredByKeyboard = coveredFrame.size.height;
-	UIEdgeInsets contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, coveredFrame.size.height + _userSetContentInsets.bottom, _userSetContentInsets.right);
 	
-	if (!UIEdgeInsetsEqualToEdgeInsets(contentInset, self.contentInset))
-	{
-		[UIView animateWithDuration:0.3 animations:^{
-			
-			// set inset to make up for covered array at bottom
-			_shouldNotRecordChangedContentInsets = YES;
-			
-			self.contentInset = contentInset;
-			self.scrollIndicatorInsets = contentInset;
-			
-			_shouldNotRecordChangedContentInsets = NO;
-		}
-
-						 completion:^(BOOL finished) {
-							 // only scroll the cursor visible if there was a change in content insets
-							 [self scrollCursorVisibleAnimated:YES];
-						 }
-		 ];
-	}
-
 	// if we were changing then this is done now
 	_isChangingInputView = NO;
+	
+	[self _updateContentInsetForKeyboardAnimated:YES];
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
@@ -1037,17 +1020,81 @@ typedef enum
 		return;
 	}
 	
-	// reset the content insets, but don't record them
-	_shouldNotRecordChangedContentInsets = YES;
-	
-	self.contentInset = _userSetContentInsets;
-	self.scrollIndicatorInsets = _userSetScrollIndicatorInsets;
-	
-	_shouldNotRecordChangedContentInsets = NO;
-
     _heightCoveredByKeyboard = 0;
+	
+	[self _updateContentInsetForKeyboardAnimated:YES];
 }
 
+#pragma mark - Autocorrection Prompt
+
+- (void)_updateContentInsetForKeyboardNonAnimated
+{
+	[self _updateContentInsetForKeyboardAnimated:YES];
+}
+
+
+- (void)_updateContentInsetForKeyboardAnimated:(BOOL)animated
+{
+	UIEdgeInsets contentInset = UIEdgeInsetsMake(_userSetContentInsets.top, _userSetContentInsets.left, _heightCoveredByKeyboard + _userSetContentInsets.bottom, _userSetContentInsets.right);
+	
+	if (_autocorrectionPromptView)
+	{
+		UITextPosition *downPosition = [self positionFromPosition:self.selectedTextRange.end inDirection:UITextLayoutDirectionDown offset:1];
+		
+		if (!downPosition)
+		{
+			contentInset.bottom += 40;
+		}
+	}
+	
+	if (UIEdgeInsetsEqualToEdgeInsets(contentInset, self.contentInset))
+	{
+		return;
+	}
+	
+	void (^block)() = ^{
+		// set inset to make up for covered array at bottom
+		_shouldNotRecordChangedContentInsets = YES;
+		
+		self.contentInset = contentInset;
+		self.scrollIndicatorInsets = contentInset;
+		
+		_shouldNotRecordChangedContentInsets = NO;
+	};
+	
+	if (animated)
+	{
+		[UIView animateWithDuration:0.3 delay:0 options:UIViewAnimationOptionBeginFromCurrentState animations:block
+						 completion:^(BOOL finished) {
+							 
+							 [self scrollCursorVisibleAnimated:YES];
+						 }];
+	}
+	else
+	{
+		block();
+		
+		// not animated to avoid artifacting on the prompt
+		[self scrollCursorVisibleAnimated:NO];
+	}
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if (context != DTRichTextEditorAutocorrectionPromptFrameObservation)
+	{
+		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	}
+	
+	CGRect newRect = [change[@"new"] CGRectValue];
+	
+	NSLog(@"%@", change);
+	
+	// next run loop to avoid artifacting on delete
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[self _updateContentInsetForKeyboardAnimated:NO];
+	});
+}
 
 #pragma mark - Gestures
 
@@ -1058,7 +1105,7 @@ typedef enum
 	{
 		return;
 	}
-   
+	
 	// If not editable, simple resign first responder (hides context menu, cursors, and selections if showing)
 	if (!self.isEditable)
 	{
@@ -1068,7 +1115,7 @@ typedef enum
 	
 	// get touch point here, later it might get corrupted by becoming first reponder
 	CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
-   
+	
 	// If not editing, attempt to start editing
 	BOOL wasEditing = self.isEditing;
 	_cursor.state = DTCursorStateBlinking;
@@ -1190,7 +1237,7 @@ typedef enum
 	
 	// get the touch point now, because becoming first responder might change the position
 	CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
-   
+	
 	// Attempt to become first responder (for selection, menu, possibly editing)
 	if (!self.isFirstResponder)
 	{
@@ -1319,7 +1366,7 @@ typedef enum
             
             // Dismissing will set _dragMode to DTDragModeNone
 			[self dismissLoupeWithTouchPoint:touchPoint];
-
+			
             // Notify that long press/drag handles has concluded and selection may be changed
             [self _inputDelegateSelectionDidChange];
             
@@ -1338,7 +1385,7 @@ typedef enum
 {
 	CGPoint touchPoint = [gesture locationInView:self.attributedTextContentView];
 	
-	switch (gesture.state) 
+	switch (gesture.state)
 	{
         case UIGestureRecognizerStatePossible:
         {
@@ -1349,7 +1396,7 @@ typedef enum
 		{
             // wrap long press/drag handles in calls to the input delegate because the intermediate selection changes are not important to editing
             [self _inputDelegateSelectionWillChange];
-
+			
             
 			[self presentLoupeWithTouchPoint:touchPoint];
 			
@@ -1373,7 +1420,7 @@ typedef enum
 		case UIGestureRecognizerStateEnded:
 		{
             NSTimeInterval delta = [NSDate timeIntervalSinceReferenceDate] - _lastCursorMovementTimestamp;
-        
+			
             if (delta < 0.25)
             {
                 if (_dragMode == DTDragModeLeftHandle)
@@ -1393,7 +1440,7 @@ typedef enum
             _shouldShowDragHandlesAfterLoupeHide = YES;
             
 			[self dismissLoupeWithTouchPoint:touchPoint];
-
+			
             // Notify that long press/drag handles has concluded and selection may be changed
             [self _inputDelegateSelectionDidChange];
 			
@@ -1409,7 +1456,7 @@ typedef enum
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
-	CGPoint touchPoint = [touch locationInView:self];	
+	CGPoint touchPoint = [touch locationInView:self];
 	
 	// ignore touches on views that UITextInput adds
 	// those are added to self, user custom views are subviews of contentView
@@ -1570,7 +1617,7 @@ typedef enum
     
     // Add editor menu items and editor view delegate menu items
     NSMutableArray *menuItems = [[NSMutableArray alloc] initWithArray:self.editorMenuItems];
-
+	
     if (_editorViewDelegateFlags.delegateMenuItems)
     {
         // Filter delegate's menu items to remove any that would interfere with our code
@@ -1594,7 +1641,7 @@ typedef enum
     {
         return [self.editorViewDelegate editorViewShouldEndEditing:self];
     }
-
+	
     return YES;
 }
 
@@ -1618,7 +1665,7 @@ typedef enum
         // Remove custom menu items
         [[UIMenuController sharedMenuController] setMenuItems:nil];
     }
-
+	
     return !self.isFirstResponder;
 }
 
@@ -1694,7 +1741,7 @@ typedef enum
 	{
 		if (([[_selectedTextRange start] isEqual:(id)[self beginningOfDocument]] && [[_selectedTextRange end] isEqual:(id)[self endOfDocument]]) || ![_selectedTextRange isEmpty])
 		{
-			return NO;	
+			return NO;
 		}
 		else
 		{
@@ -1915,7 +1962,7 @@ typedef enum
 			return;
 		}
 	}
-
+	
 	NSData *HTMLdata = [pasteboard dataForPasteboardType:@"public.html"];
     
     if (HTMLdata)
@@ -2052,7 +2099,7 @@ typedef enum
 	// there should always be a \n with the default format
 	
 	NSAttributedString *currentContent = self.attributedTextContentView.layoutFrame.attributedStringFragment;
-
+	
 	// has to have text
 	if ([currentContent length]>1)
 	{
@@ -2081,13 +2128,13 @@ typedef enum
         if (![self.editorViewDelegate editorView:self shouldChangeTextInRange:range replacementText:replacementText])
             return;
     }
-
+	
 	DTUndoManager *undoManager = (DTUndoManager *)self.undoManager;
 	if (!undoManager.numberOfOpenGroups)
 	{
 		[self.undoManager beginUndoGrouping];
 	}
-
+	
 	if (_replaceParagraphsWithLineFeeds)
 	{
 		text = [text stringByReplacingOccurrencesOfString:@"\n" withString:UNICODE_LINE_FEED];
@@ -2106,7 +2153,7 @@ typedef enum
         
 		[self unmarkText];
 	}
-	else 
+	else
 	{
         if ([text isEqualToString:@"\n"])
         {
@@ -2145,16 +2192,16 @@ typedef enum
 		{
 			return;
 		}
-
+		
 		UITextRange *entireDocument = [self textRangeFromPosition:beginningOfDocument toPosition:[self endOfDocument]];
-
+		
 		UITextPosition *delStart = [self positionFromPosition:[replacementTextRange start] offset:-1];
 		
 		// skips fields
 		delStart = [self positionSkippingFieldsFromPosition:delStart withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
 		replacementTextRange = [DTTextRange textRangeFromStart:delStart toEnd:[replacementTextRange start]];
 	}
-
+	
 	NSAttributedString *replacementText = [[NSAttributedString alloc] init];
 	
     // Check with editor delegate to allow change
@@ -2276,7 +2323,7 @@ typedef enum
 	
 	NSUndoManager *undoManager = self.undoManager;
 	[undoManager beginUndoGrouping];
-
+	
 	// restore selection/cursor together with the previous text
 	// the replaceRange:withText: also modifies the selection so we need to restore this first
 	[[undoManager prepareWithInvocationTarget:self] setSelectedTextRange:textRangeBeforeChange];
@@ -2292,10 +2339,10 @@ typedef enum
 	DTTextRange *replacedTextRange = [DTTextRange rangeWithNSRange:replacedRange];
 	
 	[[undoManager prepareWithInvocationTarget:self] replaceRange:replacedTextRange withText:(id)attributedStringBeingReplaced];
-
+	
 	// do the actual replacement
 	[(DTRichTextEditorContentView *)self.attributedTextContentView replaceTextInRange:myRange withText:text];
-
+	
 	if (![undoManager isUndoing] && ![undoManager isRedoing])
 	{
         if (_waitingForDictationResult)
@@ -2311,7 +2358,7 @@ typedef enum
 	[undoManager endUndoGrouping];
 	
 	// ----
-
+	
 	self.contentSize = self.attributedTextContentView.frame.size;
 	
     // if it's just one character remaining then set text defaults on this
@@ -2340,7 +2387,7 @@ typedef enum
 	{
 		self.selectedTextRange = nil;
 	}
-
+	
 	[self updateCursorAnimated:NO];
 	[self scrollCursorVisibleAnimated:YES];
     
@@ -2447,17 +2494,17 @@ typedef enum
         [undoManager beginUndoGrouping]; // Overall marked session group began
     
     [undoManager beginUndoGrouping];
-
+	
     [[undoManager prepareWithInvocationTarget:self.inputDelegate] textDidChange:self];
     [[undoManager prepareWithInvocationTarget:self] setSelectedTextRange:selectedTextRange];
-
+	
     self.markedTextRange = newMarkedTextRange;
     [self replaceRange:replaceRange withText:markedText]; // Registers undo for the text replacement
     self.selectedTextRange = newSelectedTextRange;
     
     [[undoManager prepareWithInvocationTarget:self] setMarkedTextRange:nil];
     [[undoManager prepareWithInvocationTarget:self.inputDelegate] textWillChange:self];
-
+	
     [undoManager endUndoGrouping];
     
     if (markedText.length == 0)
@@ -2506,7 +2553,7 @@ typedef enum
 				return begin;
 			}
 		}
-		else 
+		else
 		{
 			return begin;
 		}
@@ -2521,7 +2568,7 @@ typedef enum
 		{
 			return newPosition;
 		}
-		else 
+		else
 		{
 			return end;
 		}
@@ -2542,7 +2589,7 @@ typedef enum
         // position is before begin
         return beginningOfDocument;
     }
-
+	
     if ([self comparePosition:position toPosition:endOfDocument] == NSOrderedDescending)
     {
         // position is after end
@@ -2630,7 +2677,7 @@ typedef enum
 		case UITextLayoutDirectionLeft:
 		{
 			UITextPosition *newPosition = [self positionFromPosition:position offset:-1];
-         
+			
 			// TODO: make the skipping direction dependend on the text direction in this paragraph
 			retPosition = [self positionSkippingFieldsFromPosition:newPosition withinRange:entireDocument inDirection:UITextStorageDirectionBackward];
 			break;
@@ -2708,7 +2755,7 @@ typedef enum
         case UITextLayoutDirectionRight:
         case UITextLayoutDirectionDown:
             return [range end];
-
+			
         case UITextLayoutDirectionLeft:
         case UITextLayoutDirectionUp:
             return [range start];
@@ -2856,7 +2903,7 @@ typedef enum
 	NSMutableDictionary *uiStyles = [ctStyles mutableCopy];
 	
 	CTFontRef ctFont = (__bridge CTFontRef)[ctStyles objectForKey:(id)kCTFontAttributeName];
-	if (ctFont) 
+	if (ctFont)
 	{
 		/* As far as I can tell, the name that UIFont wants is the PostScript name of the font. (It's undocumented, of course. RADAR 7881781 / 7241008) */
 		CFStringRef fontName = CTFontCopyPostScriptName(ctFont);
@@ -2900,7 +2947,7 @@ typedef enum
 {
 	CGRect visibleContentRect = [self visibleContentRect];
 	CGRect selectionRect = [self boundsOfCurrentSelection];
-
+	
 	// selection is visible if the selection rect is in the visible rect
 	if (!CGRectIntersectsRect(visibleContentRect, selectionRect))
 	{
@@ -3103,7 +3150,7 @@ typedef enum
     {
         return;
     }
-
+	
     [self.inputDelegate selectionWillChange:self];
 }
 
@@ -3267,6 +3314,13 @@ typedef enum
 // make sure that the selection rectangles are always in front of content view
 - (void)addSubview:(UIView *)view
 {
+	if ([NSStringFromClass([view class]) rangeOfString:@"InlinePrompt"].length)
+	{
+		_autocorrectionPromptView = view;
+		
+		[self _updateContentInsetForKeyboardAnimated:NO];
+	}
+	
 	[super addSubview:view];
 	
 	// content view should always be at back
@@ -3282,6 +3336,20 @@ typedef enum
 	}
 }
 
+- (void)willRemoveSubview:(UIView *)subview
+{
+	[super willRemoveSubview:subview];
+	
+	if (subview == _autocorrectionPromptView)
+	{
+		_autocorrectionPromptView = nil;
+
+		// wait a bit longer with removing the inset because the autocorrect prompt might come back right
+		SEL selector = @selector(_updateContentInsetForKeyboardNonAnimated);
+		[NSObject cancelPreviousPerformRequestsWithTarget:self selector:selector object:nil];
+		[self performSelector:selector withObject:nil afterDelay:0.5];
+	}
+}
 
 - (UIView *)inputView
 {
