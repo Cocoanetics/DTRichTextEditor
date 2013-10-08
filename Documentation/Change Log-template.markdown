@@ -3,6 +3,13 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.6.4
+
+- FIXED: Backwards deleting of list prefixes broken due to a change in iOS 7
+- FIXED: A crash might occur if editing text while drawing of tiles was still going on
+- ADDED: Adjust bottom contentInset to avoid cutting of autocorrect prompt
+- CHANGED: Updated DTCoreText to 1.6.8
+
 Version 1.6.3
 
 - FIXED: Pasting from Google Drive might yield empty content
