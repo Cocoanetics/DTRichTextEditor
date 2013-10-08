@@ -22,19 +22,20 @@
 - (id)init
 {
     self = [super init];
-    if(self){
+	
+    if (self)
+	{
         self.textAlignment = -1;
     }
+	
     return self;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-	// Do any additional setup after loading the view.
-        
-    DTFormatOverviewViewController *homeFormatController = [[DTFormatOverviewViewController alloc] init];
     
+    DTFormatOverviewViewController *homeFormatController = [[DTFormatOverviewViewController alloc] init];
     self.viewControllers = @[homeFormatController];
 }
 
@@ -45,16 +46,22 @@
 
 - (void)setFontDescriptor:(DTCoreTextFontDescriptor *)fontDescriptor
 {
-    if(fontDescriptor == _fontDescriptor)
+    if (fontDescriptor == _fontDescriptor)
+	{
         return;
+	}
 
     _fontDescriptor = fontDescriptor;
     
-    if(self.viewControllers.count > 0){
+    if (self.viewControllers.count > 0)
+	{
         DTFormatOverviewViewController *homeFormatController = self.viewControllers[0];
-        if([homeFormatController.visibleTableViewController isKindOfClass:[UITableViewController class]]){
+		
+        if ([homeFormatController.visibleTableViewController isKindOfClass:[UITableViewController class]])
+		{
             [((UITableViewController *)homeFormatController.visibleTableViewController).tableView reloadData];
         }
+		
         if ([self.topViewController isKindOfClass:[DTFormatFontFamilyTableViewController class]])
         {
             DTFormatFontFamilyTableViewController *fontFamilyController = (DTFormatFontFamilyTableViewController *)self.topViewController;
@@ -67,9 +74,10 @@
 {
     _underline = underline;
     
-    if(self.viewControllers.count > 0){
+    if (self.viewControllers.count > 0)
+	{
         DTFormatOverviewViewController *homeFormatController = self.viewControllers[0];
-        if([homeFormatController.visibleTableViewController isKindOfClass:[UITableViewController class]]){
+        if ([homeFormatController.visibleTableViewController isKindOfClass:[UITableViewController class]]){
             [((UITableViewController *)homeFormatController.visibleTableViewController).tableView reloadData];
         }
     }
@@ -77,20 +85,26 @@
 
 - (void)setHyperlink:(NSURL *)hyperlink
 {
-    if(_hyperlink == hyperlink)
+    if (_hyperlink == hyperlink)
+	{
         return;
+	}
     
     _hyperlink = [hyperlink copy];
     
-    if(self.viewControllers.count > 0){
+    if (self.viewControllers.count > 0)
+	{
         DTFormatOverviewViewController *homeFormatController = self.viewControllers[0];
-        if([homeFormatController.visibleTableViewController isKindOfClass:[UITableViewController class]]){
+		
+        if ([homeFormatController.visibleTableViewController isKindOfClass:[UITableViewController class]])
+		{
             [((UITableViewController *)homeFormatController.visibleTableViewController).tableView reloadData];
         }
     }
 }
 
 #pragma mark - DTInternalFormatProtocol methods
+
 - (void)applyFont:(DTCoreTextFontDescriptor *)font
 {
     CGFloat pointSize = self.fontDescriptor.pointSize;
@@ -148,8 +162,10 @@
 
 - (void)toggleListType:(DTCSSListStyleType)listType
 {
-    if(self.listType == listType)
+    if (self.listType == listType)
+	{
         return;
+	}
     
     self.listType = listType;
     
@@ -158,8 +174,10 @@
 
 - (void)applyHyperlinkToSelectedText:(NSURL *)url
 {
-    if(self.hyperlink == url)
+    if (self.hyperlink == url)
+	{
         return;
+	}
     
     self.hyperlink = url;
     
@@ -183,11 +201,12 @@
         ALAssetRepresentation *representation = [myasset defaultRepresentation];
         
         CGImageRef iref = [representation fullScreenImage];
-        if (iref) {
+        if (iref)
+		{
             UIImage *theThumbnail = [UIImage imageWithCGImage:iref];
 			[self.formatDelegate replaceCurrentSelectionWithPhoto:theThumbnail];
             
-            if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
                 [picker dismissViewControllerAnimated:YES completion:NULL];
         }
     };
@@ -198,7 +217,7 @@
         NSLog(@"booya, cant get image - %@",[myerror localizedDescription]);
     };
 	
-    if(imageURL)
+    if (imageURL)
     {
         ALAssetsLibrary* assetslibrary = [[ALAssetsLibrary alloc] init];
         [assetslibrary assetForURL:imageURL
@@ -210,17 +229,24 @@
 #pragma mark image picker hacks
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
 {
-    if(![navigationController isKindOfClass:[UIImagePickerController class]])
+    if (![navigationController isKindOfClass:[UIImagePickerController class]])
+	{
         return;
+	}
 
-    if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone)
+	{
         return;
+	}
     
     UINavigationItem *item = [viewController navigationItem];
     
-    if(!item.rightBarButtonItems){
+    if (!item.rightBarButtonItems)
+	{
         [item setValue:nil forKey:@"_customRightViews"];
-    }else{
+    }
+	else
+	{
         [item setRightBarButtonItems:nil];
     }
 }

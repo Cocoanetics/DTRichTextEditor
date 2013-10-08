@@ -22,6 +22,8 @@
 @property (assign, nonatomic) DTCSSListStyleType listType;
 @property (copy, nonatomic) NSURL *hyperlink;
 
+- (void)userPressedDone:(id)sender;
+
 @end
 
 @protocol DTFormatDelegate <NSObject>

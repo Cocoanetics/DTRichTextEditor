@@ -17,7 +17,8 @@
 
 @implementation DTFormatListViewController
 
-- (CGSize)contentSizeForViewInPopover {
+- (CGSize)contentSizeForViewInPopover
+{
     return CGSizeMake(320.0, 400.0);
 }
 
@@ -25,12 +26,6 @@
 {
     [super viewDidLoad];
     self.formatPicker = (DTFormatViewController<DTInternalFormatProtocol> *)self.navigationController;
-    
-    UIStepper *fontStepper = [[UIStepper alloc] init];
-    fontStepper.minimumValue = 9;
-    fontStepper.maximumValue = 288;
-    
-    [fontStepper addTarget:self action:@selector(_stepperValueChanged:) forControlEvents:UIControlEventValueChanged];
     
     DPTableViewCellSegmentedControlItem *leftItem = [DPTableViewCellSegmentedControlItem itemWithImages:@[ [UIImage imageNamed:@"TSWP_ListOutdent_N.png"], [UIImage imageNamed:@"TSWP_ListOutdent_S.png"] ]];
     DPTableViewCellSegmentedControlItem *rightItem = [DPTableViewCellSegmentedControlItem itemWithImages:@[ [UIImage imageNamed:@"TSWP_ListIndent_N.png"], [UIImage imageNamed:@"TSWP_ListIndent_S.png"] ]];
@@ -88,8 +83,10 @@
 
     NSInteger tabulationTag = 99;
     
-    if (indexPath.section == 0){
-        if ( ![cell.contentView viewWithTag:tabulationTag] ){
+    if (indexPath.section == 0)
+	{
+        if (![cell.contentView viewWithTag:tabulationTag])
+		{
             cell.backgroundColor = [UIColor clearColor];
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             cell.backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
@@ -100,14 +97,18 @@
             self.tabulationControl.cellPosition = DPTableViewCellSegmentedControlPositionSingle;
             [cell.contentView addSubview:self.tabulationControl];
         }
-    }else if(indexPath.section == 1) {
-        if( [cell.contentView viewWithTag:tabulationTag] ){
+    }
+	else if(indexPath.section == 1)
+	{
+        if( [cell.contentView viewWithTag:tabulationTag] )
+		{
             UIView *targetView = [cell.contentView viewWithTag:tabulationTag];
             
             [targetView removeFromSuperview];
         }
         
-        switch (indexPath.row) {
+        switch (indexPath.row)
+		{
             case 0:
                 cell.textLabel.text = @"None";
                 cell.accessoryType = self.formatPicker.listType == (DTCSSListStyleTypeInherit | DTCSSListStyleTypeInherit) ? UITableViewCellAccessoryCheckmark : UITableViewCellAccessoryNone;
@@ -153,7 +154,8 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    switch (section) {
+    switch (section)
+	{
         case 1:
             return @"List Type";
             break;
@@ -166,9 +168,12 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(indexPath.section == 0)
+	{
         return;
+	}
     
-    switch (indexPath.row) {
+    switch (indexPath.row)
+	{
         case 0:
             [self.formatPicker toggleListType:DTCSSListStyleTypeNone];
             break;

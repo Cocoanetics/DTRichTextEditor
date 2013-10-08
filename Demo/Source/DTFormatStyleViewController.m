@@ -27,6 +27,8 @@
 
 @property (nonatomic, weak) DTFormatViewController<DTInternalFormatProtocol> *formatPicker;
 
+- (void)_stepperValueChanged:(UIStepper *)stepper;
+
 @end
 
 @implementation DTFormatStyleViewController
