@@ -10,4 +10,6 @@
 
 @interface DTFormatStyleViewController : DTInputViewTableViewController
 
+- (void)_stepperValueChanged:(UIStepper *)stepper;
+
 @end
