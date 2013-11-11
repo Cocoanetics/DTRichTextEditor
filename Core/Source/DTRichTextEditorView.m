@@ -3217,6 +3217,10 @@ typedef enum
     {
         self.selectedTextRange = [self textRangeFromPosition:self.endOfDocument toPosition:self.endOfDocument];
     }
+    else // otherwise clear the selected text range.  It will be initialized when setEditing: is called
+    {
+        self.selectedTextRange = nil;
+    }
     
 	[self.undoManager removeAllActions];
 }
