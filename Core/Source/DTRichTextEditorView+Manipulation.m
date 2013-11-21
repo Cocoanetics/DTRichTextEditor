@@ -101,6 +101,61 @@
 	CTFontRef font = (__bridge CTFontRef)[attributes objectForKey:(id)kCTFontAttributeName];
 	CTParagraphStyleRef paragraphStyle = (__bridge CTParagraphStyleRef)[attributes objectForKey:(id)kCTParagraphStyleAttributeName];
 	
+	// typing attributes contain a hyperlink
+	if ([attributes objectForKey:DTLinkAttribute])
+	{
+		DTTextPosition *start = (DTTextPosition *)[range start];
+		DTTextPosition *endOfDocument = (DTTextPosition *)[self endOfDocument];
+		
+		NSDictionary *followingAttributes = nil;
+		
+		if ([start compare:endOfDocument] == NSOrderedAscending)
+		{
+			followingAttributes = [self.attributedTextContentView.layoutFrame.attributedStringFragment attributesAtIndex:start.location+1 effectiveRange:NULL];
+		}
+		
+		if (![followingAttributes objectForKey:DTLinkAttribute])
+		{
+			// no link in character after it = we are typing at end of hyperlink and don't want that to continue
+			
+			NSDictionary *defaultAttributes = [self attributedStringAttributesForTextDefaults];
+			
+			NSMutableDictionary *tmpAttributes = [attributes mutableCopy];
+			
+			// remove the link meta info
+			[tmpAttributes removeObjectForKey:DTLinkAttribute];
+			[tmpAttributes removeObjectForKey:DTGUIDAttribute];
+			
+			id underlineStyle = [defaultAttributes objectForKey:(id)kCTUnderlineStyleAttributeName];
+			
+			// transfer default underline style
+			if (underlineStyle)
+			{
+				[tmpAttributes setObject:underlineStyle forKey:(id)kCTUnderlineStyleAttributeName];
+			}
+			else
+			{
+				[tmpAttributes removeObjectForKey:(id)kCTUnderlineStyleAttributeName];
+			}
+			
+			[tmpAttributes removeObjectForKey:(id)kCTUnderlineStyleAttributeName];
+			
+			// transfer default foreground color
+			id foregroundColor = [defaultAttributes objectForKey:(id)kCTForegroundColorAttributeName];
+			
+			if (foregroundColor)
+			{
+				[tmpAttributes setObject:foregroundColor forKey:(id)kCTForegroundColorAttributeName];
+			}
+			else
+			{
+				[tmpAttributes removeObjectForKey:(id)kCTForegroundColorAttributeName];
+			}
+			
+			attributes = [tmpAttributes copy];
+		}
+	}
+	
 	if (font&&paragraphStyle)
 	{
 		return attributes;
