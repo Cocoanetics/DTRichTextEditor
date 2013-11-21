@@ -59,7 +59,7 @@
 
 - (NSString *)description
 {
-	return [NSString stringWithFormat:@"<%@ location=%d>", [self class], _location];
+	return [NSString stringWithFormat:@"<%@ location=%lu>", [self class], (unsigned long)_location];
 }
 
 - (DTTextPosition *)textPositionWithOffset:(NSInteger)offset

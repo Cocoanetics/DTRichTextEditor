@@ -119,7 +119,7 @@
     
     NSArray *currentRectangleViews = [self.selectionRectangleViews mutableCopy];
     
-    int i=0;
+    NSUInteger i=0;
     
     for (; i<[selectionRectangles count]; i++)
     {

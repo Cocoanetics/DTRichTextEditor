@@ -80,7 +80,7 @@
 		// layout the new text
 		DTCoreTextLayouter *tmpLayouter = [[DTCoreTextLayouter alloc] initWithAttributedString:_attributedStringFragment];
 		CGRect rect = _frame;
-		rect.size.height = CGFLOAT_OPEN_HEIGHT;
+		rect.size.height = CGFLOAT_HEIGHT_UNKNOWN;
 		NSRange allTextRange = NSMakeRange(0, 0);
 		DTCoreTextLayoutFrame *tmpFrame = [tmpLayouter layoutFrameWithRect:rect range:allTextRange];
 		
@@ -106,7 +106,7 @@
 	
 	// same rect as self, but open height
 	CGRect rect = self.frame;
-	rect.size.height = CGFLOAT_OPEN_HEIGHT;
+	rect.size.height = CGFLOAT_HEIGHT_UNKNOWN;
 	
 	DTCoreTextLayoutFrame *tmpFrame = [tmpLayouter layoutFrameWithRect:rect range:dirtyParagraphRange];
 	
@@ -280,7 +280,7 @@
 		// layout the new paragraph text
 		DTCoreTextLayouter *tmpLayouter = [[DTCoreTextLayouter alloc] initWithAttributedString:modifiedParagraphText];
 		CGRect rect = self.frame;
-		rect.size.height = CGFLOAT_OPEN_HEIGHT;
+		rect.size.height = CGFLOAT_HEIGHT_UNKNOWN;
 		NSRange allTextRange = NSMakeRange(0, 0);
 		DTCoreTextLayoutFrame *tmpFrame = [tmpLayouter layoutFrameWithRect:rect range:allTextRange];
 		

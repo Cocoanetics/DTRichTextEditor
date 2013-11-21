@@ -100,7 +100,7 @@
         return attachment;
     }
 
-    NSLog(@"No dictation placeholder at index %d", index);
+    NSLog(@"No dictation placeholder at index %lu", (unsigned long)index);
     return nil;
 }
 
