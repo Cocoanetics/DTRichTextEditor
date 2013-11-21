@@ -2240,8 +2240,6 @@ typedef enum
 
 - (void)replaceRange:(DTTextRange *)range withText:(id)text
 {
-	NSLog(@"%s %@ %@", __PRETTY_FUNCTION__, range, text);
-	
 	NSParameterAssert(range);
     
     NSAttributedString *attributedStringBeingReplaced = nil;
