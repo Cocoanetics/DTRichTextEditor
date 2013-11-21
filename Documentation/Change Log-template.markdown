@@ -3,6 +3,15 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.6.5
+
+- ADDED: support for arm64
+- FIXED: Hyperlink would continue to be extended when typing right of it
+- FIXED: Text get corrupted during Dictation on iOS 7
+- FIXED: Setting the attributed text to nil would not remove selection
+- CHANGED: Updated DTCoreText to 1.6.9
+- CHANGED: Updated DTFoundation to 1.6.0
+
 Version 1.6.4
 
 - FIXED: Backwards deleting of list prefixes broken due to a change in iOS 7

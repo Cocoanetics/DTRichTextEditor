@@ -562,7 +562,7 @@
 	
 	CTParagraphStyleRef para = (__bridge CTParagraphStyleRef)[self attribute:(id)kCTParagraphStyleAttributeName atIndex:index effectiveRange:&effectiveRange];
 	
-	NSAssert(para!=nil, @"Empty Paragraph Style at index %d", index);
+	NSAssert(para!=nil, @"Empty Paragraph Style at index %lu", (unsigned long)index);
 	
 	// create our mutatable paragraph style
 	DTCoreTextParagraphStyle *paragraphStyle = [DTCoreTextParagraphStyle paragraphStyleWithCTParagraphStyle:para];

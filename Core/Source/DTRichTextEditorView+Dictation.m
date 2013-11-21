@@ -19,8 +19,31 @@
 
 @implementation DTRichTextEditorView (Dictation)
 
+
+- (void)insertDictationResult:(NSArray *)dictationResult
+{
+	NSMutableString *tmpString = [NSMutableString string];
+	
+	for (UIDictationPhrase *phrase in dictationResult)
+	{
+		[tmpString appendString:phrase.text];
+	}
+
+	unichar lastChar = [tmpString characterAtIndex:[tmpString length]-1];
+	
+	if ([[NSCharacterSet punctuationCharacterSet] characterIsMember:lastChar])
+	{
+		[tmpString appendString:@" "];
+	}
+
+	[self insertText:tmpString];
+	[self.undoManager setActionName:NSLocalizedString(@"Dictation", @"Undo Action when text is entered via dictation")];
+}
+
 - (void)dictationRecordingDidEnd
 {
+	[self.undoManager endUndoGrouping];
+	
 	// make a placeholder attachment, will be creating a placeholderView at run time
 	DTDictationPlaceholderTextAttachment *attachment = [[DTDictationPlaceholderTextAttachment alloc] init];
     
@@ -31,33 +54,30 @@
     // we don't want the inserting of the image to be an undo step
     [self.undoManager disableUndoRegistration];
 
-    // add an extra space if text before the dictation insertion does not end with whitespace
-    if ([self comparePosition:[self beginningOfDocument] toPosition:[range start]] == NSOrderedAscending)
-    {
-        // not at beginning of document, check that there is a space
-        UITextPosition *positionBefore = [self positionFromPosition:[range start] offset:-1];
-        
-        UITextRange *spaceRange = [self textRangeFromPosition:positionBefore toPosition:[range start]];
-        NSString *characterBefore = [[self attributedSubstringForRange:spaceRange] string];
-        
-        // is not whitespace
-        if ([[characterBefore stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length]>0)
-        {
-            [self replaceRange:range withText:@" "];
-            
-            // advance insertion position
-            UITextPosition *positionAfter = [self positionFromPosition:[range start] offset:1];
-            range = [self textRangeFromPosition:positionAfter toPosition:positionAfter];
-        }
-    }
-    
+	// no need for an extra space, dictation does that for us
+	
     // replace the selected text with the placeholder
 	[self replaceRange:range withAttachment:attachment inParagraph:NO];
-
+	
     [self.undoManager enableUndoRegistration];
     
     // this hides the selection until replaceRange:withText: inserts the result
     self.waitingForDictionationResult = YES;
+}
+
+- (void)dictationRecognitionFailed
+{
+	// we don't want the removal of the image to be an undo step
+    [self.undoManager disableUndoRegistration];
+	
+	UITextRange *range = [self textRangeOfDictationPlaceholder];
+	
+	if (range)
+	{
+		[self replaceRange:range withText:@""];
+	}
+	
+	[self.undoManager enableUndoRegistration];
 }
 
 - (UITextRange *)textRangeOfDictationPlaceholder
@@ -100,7 +120,7 @@
         return attachment;
     }
 
-    NSLog(@"No dictation placeholder at index %d", index);
+    NSLog(@"No dictation placeholder at index %lu", (unsigned long)index);
     return nil;
 }
 
