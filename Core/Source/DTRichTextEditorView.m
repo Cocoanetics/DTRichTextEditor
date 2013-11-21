@@ -26,7 +26,7 @@
 #import "DTLoupeView.h"
 #import "DTCoreTextLayouter.h"
 
-#import "DTUtils.h"
+#import "DTCoreGraphicsUtils.h"
 #import "DTCoreTextFontDescriptor.h"
 #import "DTTiledLayerWithoutFade.h"
 
@@ -680,7 +680,7 @@ typedef enum
         
 		loupeStartPoint = CGPointMake(CGRectGetMidX(rect), rect.origin.y);
 		
-		_dragCursorStartMidPoint = CGRectCenter(rect);
+		_dragCursorStartMidPoint = DTCGRectCenter(rect);
 		
 		loupe.style = DTLoupeStyleRectangleWithArrow;
 		loupe.magnification = 0.5;
@@ -702,8 +702,8 @@ typedef enum
             return;
         }
 		
-		loupeStartPoint = CGRectCenter(rect);
-		_dragCursorStartMidPoint = CGRectCenter(rect);
+		loupeStartPoint = DTCGRectCenter(rect);
+		_dragCursorStartMidPoint = DTCGRectCenter(rect);
 		
 		
 		loupe.style = DTLoupeStyleRectangleWithArrow;
@@ -720,7 +720,7 @@ typedef enum
 		loupe.style = DTLoupeStyleRectangleWithArrow;
 		loupe.magnification = 0.5;
 		
-		CGPoint loupeStartPoint = CGRectCenter(_cursor.frame);
+		CGPoint loupeStartPoint = DTCGRectCenter(_cursor.frame);
 		
 		loupe.touchPoint = loupeStartPoint;
 		[loupe presentLoupeFromLocation:loupeStartPoint];
@@ -789,7 +789,7 @@ typedef enum
 	{
 		[self moveCursorToPositionClosestToLocation:touchPoint];
 		
-		loupe.touchPoint = CGRectCenter(_cursor.frame);
+		loupe.touchPoint = DTCGRectCenter(_cursor.frame);
 		loupe.seeThroughMode = NO;
 		
 		[self hideContextMenu];
@@ -849,7 +849,7 @@ typedef enum
 		CGFloat zoom = 25.0f / rect.size.height;
 		[DTLoupeView sharedLoupe].magnification = zoom;
 		
-		CGPoint point = CGRectCenter(rect);
+		CGPoint point = DTCGRectCenter(rect);
 		loupe.touchPoint = point;
 	}
 }
@@ -882,7 +882,7 @@ typedef enum
 	else if (_dragMode == DTDragModeLeftHandle)
 	{
 		CGRect rect = [_selectionView beginCaretRect];
-		CGPoint point = CGRectCenter(rect);
+		CGPoint point = DTCGRectCenter(rect);
 		_shouldShowContextMenuAfterLoupeHide = YES;
 		[loupe dismissLoupeTowardsLocation:point];
 	}
@@ -890,7 +890,7 @@ typedef enum
 	{
 		_shouldShowContextMenuAfterLoupeHide = YES;
 		CGRect rect = [_selectionView endCaretRect];
-		CGPoint point = CGRectCenter(rect);
+		CGPoint point = DTCGRectCenter(rect);
 		[loupe dismissLoupeTowardsLocation:point];
 	}
 	
@@ -1911,7 +1911,7 @@ typedef enum
 		{
 			if (_maxImageDisplaySize.width < image.size.width || _maxImageDisplaySize.height < image.size.height)
 			{
-				displaySize = sizeThatFitsKeepingAspectRatio(image.size,_maxImageDisplaySize);
+				displaySize = DTCGSizeThatFitsKeepingAspectRatio(image.size,_maxImageDisplaySize);
 			}
 		}
         

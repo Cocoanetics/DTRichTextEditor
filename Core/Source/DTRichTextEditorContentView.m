@@ -41,7 +41,7 @@
 		if ([_attributedString length])
 		{
 			CGRect rect = UIEdgeInsetsInsetRect(self.bounds, _edgeInsets);
-			rect.size.height = CGFLOAT_OPEN_HEIGHT; // necessary height set as soon as we know it.
+			rect.size.height = CGFLOAT_HEIGHT_UNKNOWN; // necessary height set as soon as we know it.
 			
 			DTMutableCoreTextLayoutFrame *layoutFrame = (DTMutableCoreTextLayoutFrame *)self.layoutFrame;
 			layoutFrame.frame = rect;
@@ -64,7 +64,7 @@
 		if (!_layoutFrame)
 		{
 			CGRect rect = UIEdgeInsetsInsetRect(self.bounds, _edgeInsets);
-			rect.size.height = CGFLOAT_OPEN_HEIGHT; // necessary height set as soon as we know it.
+			rect.size.height = CGFLOAT_HEIGHT_UNKNOWN; // necessary height set as soon as we know it.
 			
 			_layoutFrame = [[DTMutableCoreTextLayoutFrame alloc] initWithFrame:rect attributedString:_attributedString];
 			
@@ -116,7 +116,7 @@
 	
 	// reduce frame by edgeinsets
 	CGRect frameForLayout = UIEdgeInsetsInsetRect(frame, _edgeInsets);
-	frameForLayout.size.height = CGFLOAT_OPEN_HEIGHT;
+	frameForLayout.size.height = CGFLOAT_HEIGHT_UNKNOWN;
 	
 	[(DTMutableCoreTextLayoutFrame *)self.layoutFrame setFrame:frameForLayout];
 }
