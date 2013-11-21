@@ -28,9 +28,15 @@
 	{
 		[tmpString appendString:phrase.text];
 	}
+
+	unichar lastChar = [tmpString characterAtIndex:[tmpString length]-1];
 	
+	if ([[NSCharacterSet punctuationCharacterSet] characterIsMember:lastChar])
+	{
+		[tmpString appendString:@" "];
+	}
+
 	[self insertText:tmpString];
-	
 	[self.undoManager setActionName:NSLocalizedString(@"Dictation", @"Undo Action when text is entered via dictation")];
 }
 
