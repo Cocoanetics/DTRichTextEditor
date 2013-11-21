@@ -2103,7 +2103,6 @@ typedef enum
 
 - (void)insertText:(NSString *)text
 {
-    
     // Check with editor delegate to allow change
     if (_editorViewDelegateFlags.delegateShouldChangeTextInRangeReplacementText)
     {
@@ -2241,19 +2240,27 @@ typedef enum
 
 - (void)replaceRange:(DTTextRange *)range withText:(id)text
 {
+	NSLog(@"%s %@ %@", __PRETTY_FUNCTION__, range, text);
+	
 	NSParameterAssert(range);
     
     NSAttributedString *attributedStringBeingReplaced = nil;
     
     if (_waitingForDictationResult)
     {
+		NSString *dictationText = text;
+		
+		if ([dictationText length] && ![[dictationText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length])
+		{
+			return;
+		}
+		
         // get selection range of placeholder
         range = (DTTextRange *)[self textRangeOfDictationPlaceholder];
         
-        // we don't want extra whitespace
-        text = [text stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-        
-        // get placeholder
+		// iOS adds white space smartly, so we keep that
+
+         // get placeholder
         DTDictationPlaceholderTextAttachment *attachment = [self dictationPlaceholderAtPosition:[range start]];
         attributedStringBeingReplaced = attachment.replacedAttributedString;
     }
@@ -2327,7 +2334,7 @@ typedef enum
 	// do the actual replacement
 	[(DTRichTextEditorContentView *)self.attributedTextContentView replaceTextInRange:myRange withText:text];
 	
-	if (![undoManager isUndoing] && ![undoManager isRedoing])
+	if (![undoManager isUndoing] && ![undoManager isRedoing] && [undoManager isUndoRegistrationEnabled])
 	{
         if (_waitingForDictationResult)
         {
