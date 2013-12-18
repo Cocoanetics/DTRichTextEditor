@@ -11,7 +11,7 @@
 /**
  Options for generating HTML output
  */
-NS_ENUM(NSUInteger, DTHTMLWriterOption)
+typedef NS_ENUM(NSUInteger, DTHTMLWriterOption)
 {
    /**
     HTML output as document-style, with CSS styles compressed in header
