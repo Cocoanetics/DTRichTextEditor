@@ -8,12 +8,21 @@
 
 #import "DTRichTextEditorView.h"
 
-// options for generating HTML output
-typedef enum
+/**
+ Options for generating HTML output
+ */
+NS_ENUM(NSUInteger, DTHTMLWriterOption)
 {
+   /**
+    HTML output as document-style, with CSS styles compressed in header
+    */
 	DTHTMLWriterOptionDocument = 0,  // default
+   
+   /**
+    HTML output as fragment, CSS styles inlined
+    */
 	DTHTMLWriterOptionFragment = 1 << 0
-} DTHTMLWriterOption;
+};
 
 
 @class DTTextRange, DTTextPosition, DTCSSListStyle, DTCoreTextFontDescriptor;

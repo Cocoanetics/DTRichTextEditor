@@ -8,12 +8,21 @@
 
 #import <UIKit/UIKit.h>
 
-typedef enum
+/**
+ The type of a selection
+ */
+NS_ENUM(NSUInteger, DTTextSelectionView)
 {
+   /**
+    Selection is a regular selection range
+    */
 	DTTextSelectionStyleSelection = 0,
+   
+   /**
+    Selection is marking range, as for multi-stage text input
+    */
 	DTTextSelectionStyleMarking
-	
-} DTTextSelectionStyle;
+};
 
 @class DTTextSelectionView;
 
