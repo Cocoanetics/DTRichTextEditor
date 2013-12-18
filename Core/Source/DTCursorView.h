@@ -10,11 +10,21 @@
 
 extern NSString * const DTCursorViewDidBlink;
 
-typedef enum 
+/**
+ The current cursor state
+ */
+NS_ENUM(NSUInteger, DTCursorState)
 {
+   /**
+    Cursor is blinking
+    */
 	DTCursorStateBlinking = 0,
+   
+   /**
+    Cursor is not blinking
+    */
 	DTCursorStateStatic
-} DTCursorState;
+};
 
 /**
  Class for representing a caret (aka cursor) in DTRichTextEditorView.
