@@ -3,6 +3,12 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.6.6
+
+- CHANGED: Updated DTLoupe to 1.5.4
+- CHANGED: Updated DTCoreText to 1.6.10
+- CHANGED: Updated DTFoundation to 1.6.1
+
 Version 1.6.5
 
 - ADDED: support for arm64
