@@ -11,7 +11,7 @@
 /**
  The type of a selection
  */
-NS_ENUM(NSUInteger, DTTextSelectionView)
+typedef NS_ENUM(NSUInteger, DTTextSelectionStyle)
 {
    /**
     Selection is a regular selection range

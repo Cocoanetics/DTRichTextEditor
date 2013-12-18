@@ -13,7 +13,7 @@ extern NSString * const DTCursorViewDidBlink;
 /**
  The current cursor state
  */
-NS_ENUM(NSUInteger, DTCursorState)
+typedef NS_ENUM(NSUInteger, DTCursorState)
 {
    /**
     Cursor is blinking
