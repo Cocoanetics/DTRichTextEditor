@@ -147,6 +147,7 @@
 		A707528E18040E380045F3F1 /* libDTHTMLParser_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A784470C18031A5000965447 /* libDTHTMLParser_iOS.a */; };
 		A70E62F416C2534E009B47BF /* DTDictationPlaceholderView.h in Headers */ = {isa = PBXBuildFile; fileRef = A70E62F016C25340009B47BF /* DTDictationPlaceholderView.h */; };
 		A70E62F516C2534E009B47BF /* DTDictationPlaceholderTextAttachment.h in Headers */ = {isa = PBXBuildFile; fileRef = A70E62F116C25340009B47BF /* DTDictationPlaceholderTextAttachment.h */; };
+		A71CCD5D186309B500435527 /* DTCoreGraphicsUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = A71CCD5C186309B500435527 /* DTCoreGraphicsUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7212177173A26C0003C6F0A /* test.html in Resources */ = {isa = PBXBuildFile; fileRef = A7212176173A26C0003C6F0A /* test.html */; };
 		A7398A0F178457A30084DC12 /* DTRichTextEditorView+Attributes.h in Headers */ = {isa = PBXBuildFile; fileRef = A7398A0D178457A30084DC12 /* DTRichTextEditorView+Attributes.h */; };
 		A7398A10178457A30084DC12 /* DTRichTextEditorView+Attributes.h in Headers */ = {isa = PBXBuildFile; fileRef = A7398A0D178457A30084DC12 /* DTRichTextEditorView+Attributes.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -286,7 +287,6 @@
 		A78445FC1802ED6100965447 /* DTTiledLayerWithoutFade.h in Headers */ = {isa = PBXBuildFile; fileRef = A78445FB1802ED6100965447 /* DTTiledLayerWithoutFade.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A78445FE1802ED7200965447 /* DTWeakSupport.h in Headers */ = {isa = PBXBuildFile; fileRef = A78445FD1802ED7200965447 /* DTWeakSupport.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A78446001802ED8300965447 /* DTHTMLParser.h in Headers */ = {isa = PBXBuildFile; fileRef = A78445FF1802ED8300965447 /* DTHTMLParser.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		A78446021802EDA500965447 /* DTUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = A78446011802EDA500965447 /* DTUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7851872168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A7851870168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h */; };
 		A7851874168707A800DACF4B /* DTHTMLWriter+DTWebArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = A7851871168707A800DACF4B /* DTHTMLWriter+DTWebArchive.m */; };
 		A7851878168737B500DACF4B /* DTHTMLWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = A7851876168737B400DACF4B /* DTHTMLWriter.h */; };
@@ -774,6 +774,7 @@
 		A707528718040CDA0045F3F1 /* DTColorFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTColorFunctions.h; path = DTCoreText/Core/Source/DTColorFunctions.h; sourceTree = "<group>"; };
 		A70E62F016C25340009B47BF /* DTDictationPlaceholderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTDictationPlaceholderView.h; path = DTCoreText/Core/Source/DTDictationPlaceholderView.h; sourceTree = "<group>"; };
 		A70E62F116C25340009B47BF /* DTDictationPlaceholderTextAttachment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTDictationPlaceholderTextAttachment.h; path = DTCoreText/Core/Source/DTDictationPlaceholderTextAttachment.h; sourceTree = "<group>"; };
+		A71CCD5C186309B500435527 /* DTCoreGraphicsUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTCoreGraphicsUtils.h; path = DTCoreText/Externals/DTFoundation/Core/Source/DTCoreGraphicsUtils.h; sourceTree = "<group>"; };
 		A7212176173A26C0003C6F0A /* test.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = test.html; sourceTree = "<group>"; };
 		A721D65F16924DDB00C5A48F /* UIFont+DTCoreText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIFont+DTCoreText.h"; path = "DTCoreText/Core/Source/UIFont+DTCoreText.h"; sourceTree = "<group>"; };
 		A721D67616925A5500C5A48F /* DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTWebArchive.h; path = DTWebArchive/Core/Source/DTWebArchive.h; sourceTree = "<group>"; };
@@ -854,7 +855,6 @@
 		A78445FB1802ED6100965447 /* DTTiledLayerWithoutFade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTTiledLayerWithoutFade.h; path = DTCoreText/Externals/DTFoundation/Core/Source/iOS/DTTiledLayerWithoutFade.h; sourceTree = "<group>"; };
 		A78445FD1802ED7200965447 /* DTWeakSupport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTWeakSupport.h; path = DTCoreText/Externals/DTFoundation/Core/Source/DTWeakSupport.h; sourceTree = "<group>"; };
 		A78445FF1802ED8300965447 /* DTHTMLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTHTMLParser.h; path = DTCoreText/Externals/DTFoundation/Core/Source/DTHTMLParser/DTHTMLParser.h; sourceTree = "<group>"; };
-		A78446011802EDA500965447 /* DTUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTUtils.h; path = DTCoreText/Externals/DTFoundation/Core/Source/DTUtils.h; sourceTree = "<group>"; };
 		A784849E15E28DF400595102 /* DTAttributedTextContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTAttributedTextContentView.h; path = DTCoreText/Core/Source/DTAttributedTextContentView.h; sourceTree = "<group>"; };
 		A7851870168707A800DACF4B /* DTHTMLWriter+DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "DTHTMLWriter+DTWebArchive.h"; sourceTree = "<group>"; };
 		A7851871168707A800DACF4B /* DTHTMLWriter+DTWebArchive.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "DTHTMLWriter+DTWebArchive.m"; sourceTree = "<group>"; };
@@ -1287,7 +1287,7 @@
 		A78445F91802ED2400965447 /* DTFoundation */ = {
 			isa = PBXGroup;
 			children = (
-				A78446011802EDA500965447 /* DTUtils.h */,
+				A71CCD5C186309B500435527 /* DTCoreGraphicsUtils.h */,
 				A78445FB1802ED6100965447 /* DTTiledLayerWithoutFade.h */,
 				A78445FD1802ED7200965447 /* DTWeakSupport.h */,
 				A78445FF1802ED8300965447 /* DTHTMLParser.h */,
@@ -1557,6 +1557,7 @@
 				A73F8A161754ADDE00E5CAA3 /* DTTextPosition.h in Headers */,
 				A73F8A171754ADDE00E5CAA3 /* DTTextRange.h in Headers */,
 				A73F8A181754ADDE00E5CAA3 /* DTTextSelectionRect.h in Headers */,
+				A71CCD5D186309B500435527 /* DTCoreGraphicsUtils.h in Headers */,
 				A73F8A191754ADDE00E5CAA3 /* DTTextSelectionView.h in Headers */,
 				A73F8A1A1754ADDE00E5CAA3 /* DTCoreTextLayoutFrame+DTRichText.h in Headers */,
 				A73F8A1B1754ADDE00E5CAA3 /* DTRichTextCategories.h in Headers */,
@@ -1583,7 +1584,6 @@
 				A78445FC1802ED6100965447 /* DTTiledLayerWithoutFade.h in Headers */,
 				A78446001802ED8300965447 /* DTHTMLParser.h in Headers */,
 				A707525618040B590045F3F1 /* DTColor+Compatibility.h in Headers */,
-				A78446021802EDA500965447 /* DTUtils.h in Headers */,
 				A73F89FB1754ADA200E5CAA3 /* DTCoreTextFunctions.h in Headers */,
 				A707528818040CDA0045F3F1 /* DTColorFunctions.h in Headers */,
 			);
