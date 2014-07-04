@@ -193,6 +193,12 @@
     [super layoutSubviews];
 }
 
+- (void)tintColorDidChange
+{
+	self.cursorColor = self.tintColor;
+	[self _updateSelectionRectanglesColor];
+}
+
 #pragma mark Utilities
 - (CGRect)beginCaretRect
 {
@@ -252,12 +258,17 @@
     switch (_style) 
     {
         case DTTextSelectionStyleSelection:
-            return [UIColor colorWithRed:0 green:0.338 blue:0.652 alpha:0.204];
+		 {
+			 if ([self respondsToSelector:@selector(tintColor)])
+			 {
+				 UIColor *tint = self.tintColor;
+				 return [tint colorWithAlphaComponent:0.204];
+			 }
+			 
+			 return [UIColor colorWithRed:0 green:0.338 blue:0.652 alpha:0.204];
+		 }
 
         case DTTextSelectionStyleMarking:
-            return [UIColor colorWithRed:0 green:0.652 blue:0.338 alpha:0.204];
-
-        default:
             return [UIColor colorWithRed:0 green:0.652 blue:0.338 alpha:0.204];
     }
 }
@@ -347,6 +358,14 @@
     return view;
 }
 
+- (void)_updateSelectionRectanglesColor
+{
+	for (UIView *oneView in self.selectionRectangleViews)
+	{
+		oneView.backgroundColor = [self currentSelectionColor];
+	}
+}
+
 #pragma mark Properties
 
 - (void)setStyle:(DTTextSelectionStyle)style
@@ -355,12 +374,7 @@
 	{
 		_style = style;
 		
-		//[self setNeedsDisplay];
-        
-        for (UIView *oneView in self.selectionRectangleViews)
-        {
-            oneView.backgroundColor = [self currentSelectionColor];
-        }
+		[self _updateSelectionRectanglesColor];
 	}
 }
 
@@ -416,7 +430,16 @@
 {
 	if (!_cursorColor)
 	{
-		_cursorColor = [UIColor colorWithRed:66.07/255.0 green:107.0/255.0 blue:242.0/255.0 alpha:1.0];
+		if ([self respondsToSelector:@selector(tintColor)])
+		{
+			// always use fresh tint Color
+			_cursorColor = self.tintColor;
+		}
+		else
+		{
+			// create the default cursor color once and cache it
+			_cursorColor = [UIColor colorWithRed:66.07/255.0 green:107.0/255.0 blue:242.0/255.0 alpha:1.0];
+		}
 	}
 	
 	return _cursorColor;
