@@ -3,6 +3,13 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.6.7
+
+- ADDED: Support for tintColor on >= iOS 7
+- FIXED: iOS 8 crash
+- FIXED: Image text attachments missing from HTML output
+- CHANGED: Updated DTCoreText to 1.6.13
+
 Version 1.6.6
 
 - CHANGED: Updated DTLoupe to 1.5.4
