@@ -356,13 +356,6 @@
 			remoteGlobalIDString = A70B4CE61486637E00873A4A;
 			remoteInfo = "Static Library";
 		};
-		A7084E02183E186200C22622 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A7A476BC180010F100459DFD;
-			remoteInfo = "BundleLoader Dummy";
-		};
 		A7235AA31487A9C100C9F926 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */;
@@ -579,6 +572,34 @@
 			proxyType = 2;
 			remoteGlobalIDString = FAF37A2017AFDD93009AC27C;
 			remoteInfo = "DTZipArchive Demo";
+		};
+		A7A9541F196A949900738B61 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7AC21AF196417830009E1B9;
+			remoteInfo = "DTAnimatedGIF (iOS)";
+		};
+		A7A95421196A949900738B61 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F88FF6801920A83300120808;
+			remoteInfo = "DTProgressHUD (iOS)";
+		};
+		A7A95423196A949900738B61 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F88FF6A51920AAB600120808;
+			remoteInfo = "DTProgressHUD Demo";
+		};
+		A7A95425196A949900738B61 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A78381C31963F8D700AF09D3;
+			remoteInfo = "DTAnimatedGIF Demo";
 		};
 		A7D649AC16359C9A002166D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1369,8 +1390,8 @@
 			children = (
 				A784470018031A5000965447 /* DTFoundation.framework */,
 				A784470218031A5000965447 /* libDTFoundation.a */,
-				A784470418031A5000965447 /* UnitTests.octest */,
 				A784470618031A5000965447 /* libDTFoundation_Mac.a */,
+				A7A95420196A949900738B61 /* libDTAnimatedGIF.a */,
 				A784470818031A5000965447 /* libDTAWS.a */,
 				A784470A18031A5000965447 /* libDTASN1.a */,
 				A784470C18031A5000965447 /* libDTHTMLParser_iOS.a */,
@@ -1383,9 +1404,13 @@
 				A784471A18031A5000965447 /* libDTReachability_Mac.a */,
 				A784471C18031A5000965447 /* libDTSQLite_iOS.a */,
 				A784471E18031A5000965447 /* libDTSQLite_Mac.a */,
+				A7A95422196A949900738B61 /* libDTProgressHUD_iOS.a */,
 				A784472018031A5000965447 /* DTSidePanels Demo.app */,
 				A784472218031A5000965447 /* DTReachability Demo.app */,
 				A784472418031A5000965447 /* DTZipArchive.app */,
+				A7A95424196A949900738B61 /* DTProgressHUD Demo.app */,
+				A784470418031A5000965447 /* Unit Tests.xctest */,
+				A7A95426196A949900738B61 /* DTAnimatedGIF Demo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1428,11 +1453,10 @@
 				A7D8FEB614E14E4500BF8CCD /* RTDemoApp.app */,
 				A7D8FEB814E14E4500BF8CCD /* DTCoreText.framework */,
 				A7D8FEBA14E14E4500BF8CCD /* libDTCoreText.a */,
-				A7D8FEBC14E14E4500BF8CCD /* UnitTest.octest */,
-				A7D8FEBE14E14E4500BF8CCD /* MacUnitTest.octest */,
+				A7D8FEBC14E14E4500BF8CCD /* UnitTest.xctest */,
+				A7D8FEBE14E14E4500BF8CCD /* MacUnitTest.xctest */,
 				A73129CC15A5E69900971C55 /* libDTCoreText_no_DTFoundation.a */,
 				A782209616805EBB005B602D /* DTCoreText.framework */,
-				A7084E03183E186200C22622 /* BundleLoaderDummy.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1699,7 +1723,7 @@
 		A7F0C83513C326E900EBD027 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0600;
 				ORGANIZATIONNAME = Cocoanetics;
 			};
 			buildConfigurationList = A7F0C83813C326E900EBD027 /* Build configuration list for PBXProject "DTRichTextEditor" */;
@@ -1741,13 +1765,6 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		A7084E03183E186200C22622 /* BundleLoaderDummy.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = BundleLoaderDummy.app;
-			remoteRef = A7084E02183E186200C22622 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		A7235AA41487A9C100C9F926 /* DemoApp.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -1811,10 +1828,10 @@
 			remoteRef = A784470118031A5000965447 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A784470418031A5000965447 /* UnitTests.octest */ = {
+		A784470418031A5000965447 /* Unit Tests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = UnitTests.octest;
+			path = "Unit Tests.xctest";
 			remoteRef = A784470318031A5000965447 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -1930,6 +1947,34 @@
 			remoteRef = A784472318031A5000965447 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		A7A95420196A949900738B61 /* libDTAnimatedGIF.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDTAnimatedGIF.a;
+			remoteRef = A7A9541F196A949900738B61 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7A95422196A949900738B61 /* libDTProgressHUD_iOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDTProgressHUD_iOS.a;
+			remoteRef = A7A95421196A949900738B61 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7A95424196A949900738B61 /* DTProgressHUD Demo.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "DTProgressHUD Demo.app";
+			remoteRef = A7A95423196A949900738B61 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7A95426196A949900738B61 /* DTAnimatedGIF Demo.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "DTAnimatedGIF Demo.app";
+			remoteRef = A7A95425196A949900738B61 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		A7D8FEB614E14E4500BF8CCD /* RTDemoApp.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -1951,17 +1996,17 @@
 			remoteRef = A7D8FEB914E14E4500BF8CCD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A7D8FEBC14E14E4500BF8CCD /* UnitTest.octest */ = {
+		A7D8FEBC14E14E4500BF8CCD /* UnitTest.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = UnitTest.octest;
+			path = UnitTest.xctest;
 			remoteRef = A7D8FEBB14E14E4500BF8CCD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A7D8FEBE14E14E4500BF8CCD /* MacUnitTest.octest */ = {
+		A7D8FEBE14E14E4500BF8CCD /* MacUnitTest.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = MacUnitTest.octest;
+			path = MacUnitTest.xctest;
 			remoteRef = A7D8FEBD14E14E4500BF8CCD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -2407,16 +2452,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -2445,16 +2491,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_THUMB_SUPPORT = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -2466,6 +2513,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";

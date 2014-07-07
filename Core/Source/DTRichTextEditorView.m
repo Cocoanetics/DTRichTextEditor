@@ -64,7 +64,7 @@ typedef enum
 @property (nonatomic, readwrite) UITextRange *markedTextRange;  // internal property writeable
 @property (nonatomic, retain) NSDictionary *overrideInsertionAttributes;
 @property (nonatomic, retain) DTMutableCoreTextLayoutFrame *mutableLayoutFrame;
-@property (nonatomic, retain) DTUndoManager *undoManager;
+@property (nonatomic, readonly) DTUndoManager *undoManager;
 @property (nonatomic, assign) BOOL waitingForDictionationResult;
 @property (nonatomic, retain) DTDictationPlaceholderView *dictationPlaceholderView;
 
