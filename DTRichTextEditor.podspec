@@ -1,7 +1,7 @@
 Pod::Spec.new do |spec|
   spec.name         = 'DTRichTextEditor'
   spec.version      = '1.6.7'
-  spec.platform     = :ios, '4.3'
+  spec.platform     = :ios, '6.0'
   spec.license      = 'BSD'
   spec.source       = { :git => 'git@git.cocoanetics.com:parts/dtrichtexteditor.git', :tag => spec.version.to_s }
   spec.source_files = 'Core/Source/*.{h,m,c}', 'Core/*.h'
