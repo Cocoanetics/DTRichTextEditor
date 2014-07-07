@@ -561,11 +561,10 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 
 - (void)toggleListType:(DTCSSListStyleType)listType
 {
-    UITextRange *range = richEditor.selectedTextRange;
+	UITextRange *range = richEditor.selectedTextRange;
 	
 	DTCSSListStyle *listStyle = [[DTCSSListStyle alloc] init];
 	listStyle.startingItemNumber = 1;
-    listStyle.position = listType;
 	listStyle.type = listType;
 	
 	[richEditor toggleListStyle:listStyle inRange:range];
@@ -577,6 +576,5 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     
     [richEditor toggleHyperlinkInRange:range URL:url];
 }
-
 
 @end
