@@ -22,7 +22,14 @@ NSString * const DTCursorViewDidBlink = @"DTCursorViewDidBlink";
 	self = [super initWithFrame:frame];
 	if (self)
 	{
-		self.backgroundColor = [UIColor colorWithRed:66.07/255.0 green:107.0/255.0 blue:242.0/255.0 alpha:1.0];
+		if ([self respondsToSelector:@selector(tintColor)])
+		{
+			self.backgroundColor = self.tintColor;
+		}
+		else
+		{
+			self.backgroundColor = [UIColor colorWithRed:66.07/255.0 green:107.0/255.0 blue:242.0/255.0 alpha:1.0];
+		}
 	}
 	return self;
 }
@@ -84,6 +91,11 @@ NSString * const DTCursorViewDidBlink = @"DTCursorViewDidBlink";
 	[self setTimerForNextBlink];
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:DTCursorViewDidBlink object:self];
+}
+
+- (void)tintColorDidChange
+{
+	self.backgroundColor = self.tintColor;
 }
 
 #pragma mark Properties
