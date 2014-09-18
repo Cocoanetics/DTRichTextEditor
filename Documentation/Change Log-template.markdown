@@ -3,6 +3,10 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.6.8
+
+- CHANGED: Updated DTLoupe to 1.5.5
+
 Version 1.6.7
 
 - ADDED: Support for tintColor on >= iOS 7
