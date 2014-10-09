@@ -280,6 +280,7 @@
 		A751AE6A17E2FA7B005C6AF6 /* DTInputViewTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A751AE6917E2FA7B005C6AF6 /* DTInputViewTableViewController.m */; };
 		A75D431017005D6E003CAF38 /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A75D430517005893003CAF38 /* libDTLoupe.a */; };
 		A75D432717005E15003CAF38 /* DTLoupe.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A75D430717005893003CAF38 /* DTLoupe.bundle */; };
+		A76B317919E684260021243F /* libDTAnimatedGIF.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7A95420196A949900738B61 /* libDTAnimatedGIF.a */; };
 		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
 		A776DBF21716C9C100E71F36 /* DTRichTextEditorView+Lists.h in Headers */ = {isa = PBXBuildFile; fileRef = A776DBF01716C9C100E71F36 /* DTRichTextEditorView+Lists.h */; };
 		A776DBF41716C9C100E71F36 /* DTRichTextEditorView+Lists.m in Sources */ = {isa = PBXBuildFile; fileRef = A776DBF11716C9C100E71F36 /* DTRichTextEditorView+Lists.m */; };
@@ -433,6 +434,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = A7D8FF5A14E17A6600BF8CCD;
 			remoteInfo = "Resource Bundle";
+		};
+		A76B318419E6842D0021243F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7AC21AE196417830009E1B9;
+			remoteInfo = "DTAnimatedGIF (iOS)";
 		};
 		A782209516805EBB005B602D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -953,6 +961,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A76B317919E684260021243F /* libDTAnimatedGIF.a in Frameworks */,
 				A707528E18040E380045F3F1 /* libDTHTMLParser_iOS.a in Frameworks */,
 				A707528D18040E340045F3F1 /* libDTFoundation.a in Frameworks */,
 				A73F8A461754AE3400E5CAA3 /* libDTCoreText_no_DTFoundation.a in Frameworks */,
@@ -1333,7 +1342,6 @@
 				A7D5465515D56A9B00711CA1 /* DTCoreTextConstants.h */,
 				A7D5462715D569A800711CA1 /* DTCoreTextFontCollection.h */,
 				A7D5465D15D56A9B00711CA1 /* DTCoreTextFontDescriptor.h */,
-				A7851877168737B400DACF4B /* DTCoreTextFunctions.h */,
 				A7D5462815D569A800711CA1 /* DTCoreTextGlyphRun.h */,
 				A7D5462915D569A800711CA1 /* DTCoreTextLayouter.h */,
 				A7D5462A15D569A800711CA1 /* DTCoreTextLayoutFrame.h */,
@@ -1670,6 +1678,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A76B318519E6842D0021243F /* PBXTargetDependency */,
 				A707528C18040E260045F3F1 /* PBXTargetDependency */,
 				A707528A18040E220045F3F1 /* PBXTargetDependency */,
 				A73F89D21754AD6200E5CAA3 /* PBXTargetDependency */,
@@ -2331,6 +2340,11 @@
 			name = "Resource Bundle";
 			targetProxy = A75D432817005E1C003CAF38 /* PBXContainerItemProxy */;
 		};
+		A76B318519E6842D0021243F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "DTAnimatedGIF (iOS)";
+			targetProxy = A76B318419E6842D0021243F /* PBXContainerItemProxy */;
+		};
 		A7D649AD16359C9A002166D2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Static Library";
@@ -2366,6 +2380,10 @@
 		A73F89C91754AD2D00E5CAA3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					armv7s,
+				);
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -2396,6 +2414,10 @@
 		A73F89CA1754AD2D00E5CAA3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(ARCHS_STANDARD)",
+					armv7s,
+				);
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_EMPTY_BODY = YES;
