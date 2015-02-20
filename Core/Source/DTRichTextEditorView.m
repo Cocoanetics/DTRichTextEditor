@@ -249,7 +249,7 @@ typedef enum
 	self.editable = YES;
     self.selectionAffinity = UITextStorageDirectionForward;
 	self.userInteractionEnabled = YES; 	// for autocorrection candidate view
-    self.contentInset = UIEdgeInsetsMake(10, 10, 10, 10);
+	self.attributedTextContentView.edgeInsets = UIEdgeInsetsMake(10, 10, 10, 10);
 	
 	// --- gestures
     if (!tripleTapGesture)
@@ -988,7 +988,9 @@ typedef enum
 	}
 }
 
-- (void)keyboardDidShow:(NSNotification *)notification
+// determine height of editor view that is covered by the keyboard
+// NOTE: on iOS 8 the input view might cover part of the view even though the keyboard is hidden
+- (void)_updateContentInsetForKeyboardNotification:(NSNotification *)notification
 {
 	// keyboard frame is in window coordinates
 	NSDictionary *userInfo = [notification userInfo];
@@ -1002,13 +1004,21 @@ typedef enum
 	
 	// now this might be rotated, so convert it back
 	coveredFrame = [self.window convertRect:coveredFrame toView:self.superview];
-    
-    _heightCoveredByKeyboard = coveredFrame.size.height;
+	
+	_heightCoveredByKeyboard = coveredFrame.size.height;
 	
 	// if we were changing then this is done now
 	_isChangingInputView = NO;
 	
 	[self _updateContentInsetForKeyboardAnimated:YES];
+}
+
+- (void)keyboardDidShow:(NSNotification *)notification
+{
+	[self _updateContentInsetForKeyboardNotification:notification];
+	
+	// if we were changing then this is done now
+	_isChangingInputView = NO;
 }
 
 - (void)keyboardWillHide:(NSNotification *)notification
@@ -1018,9 +1028,7 @@ typedef enum
 		return;
 	}
 	
-    _heightCoveredByKeyboard = 0;
-	
-	[self _updateContentInsetForKeyboardAnimated:YES];
+	[self _updateContentInsetForKeyboardNotification:notification];
 }
 
 #pragma mark - Autocorrection Prompt
@@ -1055,14 +1063,15 @@ typedef enum
 	}
 	
 	void (^block)() = ^{
+		
 		// set inset to make up for covered array at bottom
 		_shouldNotRecordChangedContentInsets = YES;
 		
-		self.contentInset = contentInset;
+		super.contentInset = contentInset;
 		
 		// indicators don't get inset left and right
 		UIEdgeInsets indicatorInsets = UIEdgeInsetsMake(contentInset.top, 0, contentInset.bottom, 0);
-		self.scrollIndicatorInsets = indicatorInsets;
+		super.scrollIndicatorInsets = indicatorInsets;
 		
 		_shouldNotRecordChangedContentInsets = NO;
 	};
