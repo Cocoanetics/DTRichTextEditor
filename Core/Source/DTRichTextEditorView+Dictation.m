@@ -15,6 +15,9 @@
 @property (nonatomic, assign) BOOL waitingForDictionationResult;
 @property (nonatomic, retain) DTDictationPlaceholderView *dictationPlaceholderView;
 
+- (void)_inputDelegateTextWillChange;
+- (void)_inputDelegateTextDidChange;
+
 @end
 
 @implementation DTRichTextEditorView (Dictation)
@@ -74,7 +77,15 @@
 	
 	if (range)
 	{
-		[self replaceRange:range withText:@""];
+		// first try the dummy will change + did change. On iOS 8 this calls replaceRange with @"".
+		[self _inputDelegateTextWillChange];
+		[self _inputDelegateTextDidChange];
+		
+		// if we are still waiting for dictation result, then the dummy change did not work, do it the old way
+		if (self.waitingForDictionationResult)
+		{
+			[self replaceRange:range withText:@""];
+		}
 	}
 	
 	[self.undoManager enableUndoRegistration];
