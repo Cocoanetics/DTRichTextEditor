@@ -449,13 +449,6 @@
 			remoteGlobalIDString = E2262DC61638331500BFDAD7;
 			remoteInfo = "Mac Framework";
 		};
-		A78446FF18031A5000965447 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A7BAD10E1483F934000E2B6A;
-			remoteInfo = "Static Framework";
-		};
 		A784470118031A5000965447 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
@@ -609,6 +602,27 @@
 			proxyType = 2;
 			remoteGlobalIDString = A78381C31963F8D700AF09D3;
 			remoteInfo = "DTAnimatedGIF Demo";
+		};
+		A7BD815C1A976CED00DF9603 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = FAC284E619B84B5F0010C385;
+			remoteInfo = "DTActionSheet Demo";
+		};
+		A7BD815E1A976CED00DF9603 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7EA07B81A2B2F6A00B61CCE;
+			remoteInfo = "DTFoundation (iOS)";
+		};
+		A7BD81601A976CED00DF9603 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A7EA07391A2B215200B61CCE;
+			remoteInfo = "DTFoundation (OSX)";
 		};
 		A7D649AC16359C9A002166D2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -809,7 +823,7 @@
 		A721D65F16924DDB00C5A48F /* UIFont+DTCoreText.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIFont+DTCoreText.h"; path = "DTCoreText/Core/Source/UIFont+DTCoreText.h"; sourceTree = "<group>"; };
 		A721D67616925A5500C5A48F /* DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTWebArchive.h; path = DTWebArchive/Core/Source/DTWebArchive.h; sourceTree = "<group>"; };
 		A721D67716925A5500C5A48F /* DTWebResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DTWebResource.h; path = DTWebArchive/Core/Source/DTWebResource.h; sourceTree = "<group>"; };
-		A721D67816925A5500C5A48F /* UIPasteboard+DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIPasteboard+DTWebArchive.h"; path = "DTWebArchive/Core/Source/UIPasteboard+DTWebArchive.h"; sourceTree = "<group>"; };
+		A721D67816925A5500C5A48F /* UIPasteboard+DTWebArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIPasteboard+DTWebArchive.h"; path = "DTWebArchive/Core/Source/iOS/UIPasteboard+DTWebArchive.h"; sourceTree = "<group>"; };
 		A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTCoreText.xcodeproj; path = DTCoreText/DTCoreText.xcodeproj; sourceTree = "<group>"; };
 		A7235A9D1487A9C000C9F926 /* DTWebArchive.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DTWebArchive.xcodeproj; path = DTWebArchive/DTWebArchive.xcodeproj; sourceTree = "<group>"; };
 		A7239FC716A6A22F0071E902 /* Known Issues-template.markdown */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Known Issues-template.markdown"; sourceTree = "<group>"; };
@@ -1398,7 +1412,6 @@
 		A78446E318031A5000965447 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A784470018031A5000965447 /* DTFoundation.framework */,
 				A784470218031A5000965447 /* libDTFoundation.a */,
 				A784470618031A5000965447 /* libDTFoundation_Mac.a */,
 				A7A95420196A949900738B61 /* libDTAnimatedGIF.a */,
@@ -1420,7 +1433,10 @@
 				A784472218031A5000965447 /* DTReachability Demo.app */,
 				A784472018031A5000965447 /* DTSidePanels Demo.app */,
 				A784472418031A5000965447 /* DTZipArchive.app */,
+				A7BD815D1A976CED00DF9603 /* DTActionSheet Demo.app */,
 				A784470418031A5000965447 /* Unit Tests.xctest */,
+				A7BD815F1A976CED00DF9603 /* DTFoundation.framework */,
+				A7BD81611A976CED00DF9603 /* DTFoundation.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1826,13 +1842,6 @@
 			remoteRef = A782209516805EBB005B602D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		A784470018031A5000965447 /* DTFoundation.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = DTFoundation.framework;
-			remoteRef = A78446FF18031A5000965447 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		A784470218031A5000965447 /* libDTFoundation.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1985,6 +1994,27 @@
 			fileType = wrapper.application;
 			path = "DTAnimatedGIF Demo.app";
 			remoteRef = A7A95425196A949900738B61 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7BD815D1A976CED00DF9603 /* DTActionSheet Demo.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "DTActionSheet Demo.app";
+			remoteRef = A7BD815C1A976CED00DF9603 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7BD815F1A976CED00DF9603 /* DTFoundation.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = DTFoundation.framework;
+			remoteRef = A7BD815E1A976CED00DF9603 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		A7BD81611A976CED00DF9603 /* DTFoundation.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = DTFoundation.framework;
+			remoteRef = A7BD81601A976CED00DF9603 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		A7D8FEB614E14E4500BF8CCD /* RTDemoApp.app */ = {
