@@ -3,6 +3,16 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.6.9
+
+- FIXED: Dictation failure would lead to subsequent crash
+- FIXED: Loss of attachment attributes causes retina attachments to double in size
+- FIXED: Scroll indicator inset should be zero for left and right sides
+- FIXED: Static Framework missing DTCoreTextMacros.h
+- FIXED: Rotation of editor view controller causes too big bottom content inset
+- FIXED: Content inset was incorrect with hidden keyboard but input view still showing (i.e. hardware keyboard)
+- CHANGED: Updated DTCoreText to 1.6.15
+
 Version 1.6.8
 
 - CHANGED: Updated DTLoupe to 1.5.5
