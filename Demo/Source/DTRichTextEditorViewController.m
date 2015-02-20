@@ -113,7 +113,6 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     	
 	UIBarButtonItem *smile = [[UIBarButtonItem alloc] initWithTitle:@":)" style:UIBarButtonItemStyleBordered target:self action:@selector(insertSmiley:)];
 	
-	
 	toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
 	richEditor.inputAccessoryView = toolbar;
 	
@@ -131,16 +130,22 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	return YES;
 }
 
-- (void)didReceiveMemoryWarning {
-	// Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-	
-	// Release any cached data, images, etc that aren't in use.
+// letting iOS set the insets automatically interferes with
+- (BOOL)automaticallyAdjustsScrollViewInsets
+{
+	return NO;
 }
 
-- (void)viewDidUnload {
-	// Release any retained subviews of the main view.
-	// e.g. self.myOutlet = nil;
+- (void)viewWillLayoutSubviews
+{
+	[super viewWillLayoutSubviews];
+	
+	// adjust the top and bottom inset so that bars are never underlapped
+	id<UILayoutSupport>topLayoutGuide = self.topLayoutGuide;
+	id<UILayoutSupport>bottomLayoutGuide = self.bottomLayoutGuide;
+	
+	UIEdgeInsets insets = UIEdgeInsetsMake([topLayoutGuide length], 0, [bottomLayoutGuide length], 0);
+	richEditor.contentInset = insets;
 }
 
 
