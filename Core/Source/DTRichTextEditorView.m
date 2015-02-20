@@ -1059,7 +1059,10 @@ typedef enum
 		_shouldNotRecordChangedContentInsets = YES;
 		
 		self.contentInset = contentInset;
-		self.scrollIndicatorInsets = contentInset;
+		
+		// indicators don't get inset left and right
+		UIEdgeInsets indicatorInsets = UIEdgeInsetsMake(contentInset.top, 0, contentInset.bottom, 0);
+		self.scrollIndicatorInsets = indicatorInsets;
 		
 		_shouldNotRecordChangedContentInsets = NO;
 	};
