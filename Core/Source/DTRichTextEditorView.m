@@ -2310,14 +2310,25 @@ typedef enum
 	
 	if ([text isKindOfClass:[NSString class]])
 	{
+		NSMutableDictionary *attributes = [typingAttributes mutableCopy];
+		
 		// if we are inside a list and the text ends with NL we need list prefix
 		if ([text hasSuffix:@"\n"])
 		{
 			newlineEntered = YES;
+			
+			if ([text isEqualToString:@"\n"])
+			{
+				// remove underline decoration from newline
+				[attributes removeObjectForKey:NSUnderlineStyleAttributeName];
+				
+				// remove strike-through decoration from newline
+				[attributes removeObjectForKey:DTStrikeOutAttribute];
+			}
 		}
 		
 		// need to replace attributes with typing attributes
-		text = [[NSAttributedString alloc] initWithString:text attributes:typingAttributes];
+		text = [[NSAttributedString alloc] initWithString:text attributes:attributes];
 	}
 	
 	// ---
