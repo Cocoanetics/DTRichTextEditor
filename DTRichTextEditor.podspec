@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
   spec.version      = '1.6.9'
   spec.platform     = :ios, '6.0'
   spec.license      = 'BSD'
-  spec.source       = { :git => 'git@git.cocoanetics.com:parts/dtrichtexteditor.git', :tag => spec.version.to_s }
+  spec.source       = { :git => 'https://github.com/Cocoanetics/DTRichTextEditor.git', :tag => spec.version.to_s }
   spec.source_files = 'Core/Source/*.{h,m,c}', 'Core/*.h'
   spec.prefix_header_contents = '#import "DTLog.h"'
   spec.dependency 'DTCoreText', '~>1.6.15'
