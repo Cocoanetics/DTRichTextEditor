@@ -8,6 +8,8 @@
 
 #import "DTRichTextEditorView+Styles.h"
 
+#import <DTCoreText/NSAttributedString+HTML.h>
+#import <DTCoreText/NSDictionary+DTCoreText.h>
 
 @implementation DTRichTextEditorView (Styles)
 

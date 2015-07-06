@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 Cocoanetics. All rights reserved.
 //
 
-#import "DTAttributedTextContentView.h"
+#import <DTCoreText/DTAttributedTextContentView.h>
 
 /**
  This class represents the content view of a DTRichTextEditorView which itself is a UIScrollView subclass.

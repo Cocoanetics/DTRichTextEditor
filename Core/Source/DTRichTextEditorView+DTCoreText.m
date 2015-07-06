@@ -7,6 +7,7 @@
 //
 
 #import "DTRichTextEditorView+DTCoreText.h"
+#import <DTCoreText/DTCoreText.h>
 
 @implementation DTRichTextEditorView (DTCoreText)
 

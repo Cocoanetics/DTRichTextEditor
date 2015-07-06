@@ -6,13 +6,12 @@
 //  Copyright 2011 Drobnik.com. All rights reserved.
 //
 
+#import <DTCoreText/DTCoreText.h>
+
 #import "NSAttributedString+DTWebArchive.h"
-#import "NSAttributedString+HTML.h"
 #import "DTWebArchive.h"
 #import "DTWebResource.h"
 #import "DTWebResource+DTRichText.h"
-
-#import "DTCoreText.h"
 
 @implementation NSAttributedString (DTWebArchive)
 

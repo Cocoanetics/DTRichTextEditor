@@ -6,7 +6,7 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
-#import "DTAttributedTextView.h"
+#import <DTCoreText/DTAttributedTextView.h>
 
 /**
  Notifies observers that an editing session began in an editor view. The affected view is stored in the object parameter of the notification. The userInfo dictionary is not used.

@@ -6,7 +6,7 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
-#import "DTCoreTextLayoutFrame.h"
+#import <DTCoreText/DTCoreTextLayoutFrame.h>
 
 @class DTTextPosition, DTTextRange;
 

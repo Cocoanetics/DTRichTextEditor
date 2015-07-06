@@ -8,7 +8,8 @@
 
 #import "DTRichTextEditor.h"
 #import "NSAttributedString+DTRichText.h"
-#import "NSAttributedString+DTDebug.h"
+
+#import <DTCoreText/DTCoreText.h>
 
 @interface DTRichTextEditorView (private)
 

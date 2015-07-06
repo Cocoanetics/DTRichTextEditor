@@ -6,6 +6,7 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
 
 // for savekeeping paragraph spacing while this paragraph is in a list so that it can be restored if the paragraph is taken out of the list
 extern NSString * const DTParagraphSpacingOverriddenByListAttribute;

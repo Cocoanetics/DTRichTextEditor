@@ -7,8 +7,8 @@
 //
 
 #import "DTRichTextEditorView+Attributes.h"
-#import "NSAttributedString+HTML.h"
-#import "NSMutableAttributedString+HTML.h"
+#import <DTCoreText/NSAttributedString+HTML.h>
+#import <DTCoreText/NSMutableAttributedString+HTML.h>
 
 #import "DTTextPosition.h"
 #import "DTTextRange.h"

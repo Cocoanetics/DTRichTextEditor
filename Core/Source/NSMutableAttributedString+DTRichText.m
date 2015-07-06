@@ -6,23 +6,24 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
+#import <DTCoreText/DTCoreText.h>
+#import <DTFoundation/NSString+DTUtilities.h>
+//#import <DTCoreText/NSString+Paragraphs.h>
+
 #import "NSAttributedString+DTRichText.h"
 #import "NSMutableAttributedString+DTRichText.h"
-#import "NSMutableAttributedString+HTML.h"
+//#import "NSMutableAttributedString+HTML.h"
 #import "NSMutableDictionary+DTRichText.h"
 
-#import "DTTextAttachment.h"
-#import <CoreText/CoreText.h>
-#import "NSAttributedStringRunDelegates.h"
-#import "NSString+HTML.h"
-#import "NSString+DTUtilities.h"
+//#import "DTTextAttachment.h"
+//#import "NSAttributedStringRunDelegates.h"
+//#import "NSString+HTML.h"
 
-#import "DTCoreTextFontDescriptor.h"
-#import "DTCoreTextParagraphStyle.h"
-#import "DTCoreTextConstants.h"
+//#import "DTCoreTextFontDescriptor.h"
+//#import "DTCoreTextParagraphStyle.h"
+//#import "DTCoreTextConstants.h"
 
-#import <CoreText/CoreText.h>
-#import "UIFont+DTCoreText.h"
+//#import "UIFont+DTCoreText.h"
 #import "DTRichTextEditorConstants.h"
 
 

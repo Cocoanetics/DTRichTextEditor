@@ -7,10 +7,13 @@
 //
 
 #import <CoreText/CoreText.h>
+
 #import "NSMutableDictionary+DTRichText.h"
-#import "DTCoreTextFontDescriptor.h"
-#import "DTCoreTextConstants.h"
-#import "DTCoreTextParagraphStyle.h"
+
+#import <DTCoreText/DTCoreTextFontDescriptor.h>
+#import <DTCoreText/DTCoreTextConstants.h>
+#import <DTCoreText/DTCoreTextParagraphStyle.h>
+#import <DTCoreText/NSDictionary+DTCoreText.h>
 
 @implementation NSMutableDictionary (DTRichText)
 

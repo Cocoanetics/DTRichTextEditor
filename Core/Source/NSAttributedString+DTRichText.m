@@ -7,14 +7,10 @@
 //
 
 #import "NSAttributedString+DTRichText.h"
-
 #import "NSMutableDictionary+DTRichText.h"
-#import "DTHTMLElement.h"
-#import "DTTextHTMLElement.h"
-#import "DTTextAttachment.h"
-#import "DTCoreTextParagraphStyle.h"
-#import "DTCoreGraphicsUtils.h"
-#import "DTImageTextAttachment.h"
+
+#import <DTCoreText/DTCoreText.h>
+#import <DTFoundation/DTCoreGraphicsUtils.h>
 
 @implementation NSAttributedString (DTRichText)
 

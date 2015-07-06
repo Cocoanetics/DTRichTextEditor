@@ -8,6 +8,9 @@
 
 #import "DTRichTextEditorView+Ranges.h"
 
+#import <DTCoreText/DTAttributedTextContentView.h>
+#import <DTCoreText/NSString+Paragraphs.h>
+
 @implementation DTRichTextEditorView (Ranges)
 
 #pragma mark - Working with Ranges
