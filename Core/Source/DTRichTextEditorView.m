@@ -8,7 +8,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import <DTLoupeView/DTLoupeView.h>
+#import <DTLoupe/DTLoupeView.h>
 #import <DTCoreText/DTCoreText.h>
 #import <DTFoundation/DTCoreGraphicsUtils.h>
 #import <DTFoundation/DTTiledLayerWithoutFade.h>
