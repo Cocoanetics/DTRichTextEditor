@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "DTCSSListStyle.h"
+#import <DTCoreText/DTCoreText.h>
 
 @class DTCoreTextFontDescriptor;
 @protocol DTFormatDelegate;

@@ -7,10 +7,10 @@
 //
 
 #import <DTCoreText/DTCoreText.h>
+#import <DTWebArchive/DTWebArchive.h>
+#import <DTWebArchive/DTWebResource.h>
 
 #import "NSAttributedString+DTWebArchive.h"
-#import "DTWebArchive.h"
-#import "DTWebResource.h"
 #import "DTWebResource+DTRichText.h"
 
 @implementation NSAttributedString (DTWebArchive)

@@ -6,14 +6,9 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
-#import <CoreText/CoreText.h>
+#import <DTCoreText/DTCoreText.h>
 
 #import "NSMutableDictionary+DTRichText.h"
-
-#import <DTCoreText/DTCoreTextFontDescriptor.h>
-#import <DTCoreText/DTCoreTextConstants.h>
-#import <DTCoreText/DTCoreTextParagraphStyle.h>
-#import <DTCoreText/NSDictionary+DTCoreText.h>
 
 @implementation NSMutableDictionary (DTRichText)
 

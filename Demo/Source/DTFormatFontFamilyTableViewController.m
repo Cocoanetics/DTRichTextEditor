@@ -6,10 +6,9 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
-#import "DTFormatFontFamilyTableViewController.h"
-#import "DTCoreTextFontCollection.h"
-#import "DTCoreTextFontDescriptor.h"
+#import <DTCoreText/DTCoreText.h>
 
+#import "DTFormatFontFamilyTableViewController.h"
 #import "DTFormatViewController.h"
 
 @interface DTFormatFontFamilyTableViewController ()

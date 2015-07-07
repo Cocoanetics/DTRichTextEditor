@@ -144,7 +144,6 @@
 		A707528D18040E340045F3F1 /* libDTFoundation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A784470218031A5000965447 /* libDTFoundation.a */; };
 		A707528E18040E380045F3F1 /* libDTHTMLParser_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A784470C18031A5000965447 /* libDTHTMLParser_iOS.a */; };
 		A7212177173A26C0003C6F0A /* test.html in Resources */ = {isa = PBXBuildFile; fileRef = A7212176173A26C0003C6F0A /* test.html */; };
-		A7251EDD1B4B0B0D00029CAC /* DTRichTextEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A7251EC51B4B0B0C00029CAC /* DTRichTextEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A7251F091B4B0B5000029CAC /* DTRichTextEditor.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D7293D1487D9EE00A22742 /* DTRichTextEditor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7251F0A1B4B0B5A00029CAC /* DTTextPosition.h in Headers */ = {isa = PBXBuildFile; fileRef = A743512C1486771700F4C766 /* DTTextPosition.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7251F0B1B4B0B5A00029CAC /* DTTextPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = A743512D1486771700F4C766 /* DTTextPosition.m */; };
@@ -701,6 +700,20 @@
 			remoteGlobalIDString = A7D728D21487D12A00A22742;
 			remoteInfo = "Static Library";
 		};
+		A7F8CD381B4BD67A007DAD63 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A70B4CE61486637E00873A4A;
+			remoteInfo = "Static Library";
+		};
+		A7F8CD7A1B4BD8C9007DAD63 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A70B4CE61486637E00873A4A;
+			remoteInfo = "Static Library";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -710,7 +723,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				A7251EDD1B4B0B0D00029CAC /* DTRichTextEditor.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1616,6 +1628,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A7F8CD7B1B4BD8C9007DAD63 /* PBXTargetDependency */,
 				A7D649AD16359C9A002166D2 /* PBXTargetDependency */,
 				A7D729221487D5DD00A22742 /* PBXTargetDependency */,
 			);
@@ -1636,6 +1649,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A7F8CD391B4BD67A007DAD63 /* PBXTargetDependency */,
 				A75D432917005E1C003CAF38 /* PBXTargetDependency */,
 				A7D8FEC414E14FA300BF8CCD /* PBXTargetDependency */,
 			);
@@ -2361,6 +2375,16 @@
 			target = A7D728D21487D12A00A22742 /* Static Library */;
 			targetProxy = A7D8FEC314E14FA300BF8CCD /* PBXContainerItemProxy */;
 		};
+		A7F8CD391B4BD67A007DAD63 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Static Library";
+			targetProxy = A7F8CD381B4BD67A007DAD63 /* PBXContainerItemProxy */;
+		};
+		A7F8CD7B1B4BD8C9007DAD63 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Static Library";
+			targetProxy = A7F8CD7A1B4BD8C9007DAD63 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -2378,7 +2402,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				FRAMEWORK_SEARCH_PATHS = "/Users/oliver/Library/Developer/Xcode/DerivedData/DTRichTextEditor-csmkbesknlosfucnxyappxxaaedq/Build/Products/Debug-iphonesimulator/**";
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Core/DTRichTextEditor-Prefix.pch";
@@ -2416,7 +2439,6 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				ENABLE_NS_ASSERTIONS = NO;
-				FRAMEWORK_SEARCH_PATHS = "/Users/oliver/Library/Developer/Xcode/DerivedData/DTRichTextEditor-csmkbesknlosfucnxyappxxaaedq/Build/Products/Debug-iphonesimulator/**";
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Core/DTRichTextEditor-Prefix.pch";
@@ -2636,7 +2658,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/DTRichTextEditor-Prefix.pch";
 				GCC_THUMB_SUPPORT = NO;
-				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "Demo/DTRichTextEditor-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -2657,7 +2678,6 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Demo/DTRichTextEditor-Prefix.pch";
 				GCC_THUMB_SUPPORT = NO;
-				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = "Demo/DTRichTextEditor-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
