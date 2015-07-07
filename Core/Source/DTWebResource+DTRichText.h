@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 Cocoanetics. All rights reserved.
 //
 
-#import "DTWebResource.h"
+#import <DTWebArchive/DTWebResource.h>
 
 /**
  Methods for extenting DTWebResource for use with DTRichTextEditor.

@@ -3,6 +3,13 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.6.10
+
+- FIXED: Crash in DTLoupe
+- FIXED: Crash on iOS <= 5.1.1
+- ADDED: iOS Framework
+- ADDED: Support for CocoaPods frameworks and Modules
+
 Version 1.6.9
 
 - FIXED: Dictation failure would lead to subsequent crash

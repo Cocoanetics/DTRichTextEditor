@@ -6,8 +6,8 @@
 //  Copyright (c) 2011 Cocoanetics. All rights reserved.
 //
 
-#import "DTCoreTextGlyphRun.h"
-#import "DTCoreTextLayoutLine.h"
+#import <DTCoreText/DTCoreTextGlyphRun.h>
+#import <DTCoreText/DTCoreTextLayoutLine.h>
 
 /**
  Editor-related extensions to <DTCoreTextGlyphRun>

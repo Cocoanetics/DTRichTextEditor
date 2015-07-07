@@ -8,10 +8,10 @@
 
 #import "DTHTMLWriter+DTWebArchive.h"
 
-#import "DTWebArchive.h"
-#import "DTWebResource.h"
+#import <DTWebArchive/DTWebArchive.h>
+#import <DTWebArchive/DTWebResource.h>
 
-#import "DTCoreText.h"
+#import <DTCoreText/DTCoreText.h>
 
 @class DTWebArchive;
 

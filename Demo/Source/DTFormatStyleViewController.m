@@ -6,15 +6,12 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
+#import <DTCoreText/DTCoreText.h>
+
 #import "DTFormatStyleViewController.h"
-
-#import "DTCoreTextFontDescriptor.h"
 #import "DTFormatViewController.h"
-
 #import "DTFormatFontFamilyTableViewController.h"
 #import "DTFormatViewController.h"
-
-#import "DTAttributedTextCell.h"
 #import "DPTableViewCellSegmentedControl.h"
 
 @interface DTFormatStyleViewController ()

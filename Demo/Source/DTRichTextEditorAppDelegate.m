@@ -6,9 +6,10 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
+#import <DTCoreText/DTCoreText.h>
+
 #import "DTRichTextEditorAppDelegate.h"
 #import "DTRichTextEditorViewController.h"
-#import "DTCoreText.h"
 #import "UIView+DTDebug.h"
 
 @implementation DTRichTextEditorAppDelegate

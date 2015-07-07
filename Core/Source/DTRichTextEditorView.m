@@ -8,39 +8,48 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#import "DTLoupeView.h"
+#import <DTLoupe/DTLoupeView.h>
+#import <DTCoreText/DTCoreText.h>
+#import <DTFoundation/DTCoreGraphicsUtils.h>
+#import <DTFoundation/DTTiledLayerWithoutFade.h>
+#import <DTFoundation/DTWeakSupport.h>
 
 #import "DTRichTextEditor.h"
 
 #import "DTCoreTextLayoutFrame+DTRichText.h"
 #import "DTMutableCoreTextLayoutFrame.h"
-#import "NSMutableAttributedString+HTML.h"
 #import "NSMutableAttributedString+DTRichText.h"
 #import "DTMutableCoreTextLayoutFrame.h"
 #import "NSMutableDictionary+DTRichText.h"
 #import "DTRichTextEditorView.h"
 #import "DTRichTextEditorView+Manipulation.h"
-#import "DTDictationPlaceholderView.h"
 
 #import "DTCursorView.h"
-#import "DTLoupeView.h"
-#import "DTCoreTextLayouter.h"
-
-#import "DTCoreGraphicsUtils.h"
-#import "DTCoreTextFontDescriptor.h"
-#import "DTTiledLayerWithoutFade.h"
 
 #import "DTWebArchive.h"
 #import "NSAttributedString+DTWebArchive.h"
 #import "NSAttributedString+DTRichText.h"
-#import "NSAttributedStringRunDelegates.h"
 #import "UIPasteboard+DTWebArchive.h"
 #import "DTRichTextEditorContentView.h"
 #import "DTRichTextEditorView+Manipulation.h"
 #import "DTUndoManager.h"
-#import "DTHTMLWriter.h"
 #import "DTHTMLWriter+DTWebArchive.h"
 
+
+// defines for renamed attribute names, deprecated in iOS SDK 8
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_7_1
+	#define DTTextInputTextColorKey NSForegroundColorAttributeName
+	#define DTTextInputTextFontKey NSFontAttributeName
+	#define DTTextInputTextBackgroundColorKey NSBackgroundColorAttributeName
+#else
+	#define DTTextInputTextColorKey UITextInputTextColorKey
+	#define DTTextInputTextFontKey UITextInputTextFontKey
+	#define DTTextInputTextBackgroundColorKey UITextInputTextBackgroundColorKey
+#endif
+
+
+// string constants
 
 NSString * const DTRichTextEditorTextDidBeginEditingNotification = @"DTRichTextEditorTextDidBeginEditingNotification";
 NSString * const DTRichTextEditorTextDidChangeNotification = @"DTRichTextEditorTextDidChangeNotification";
@@ -103,7 +112,6 @@ typedef enum
 	
 	// private stuff
 	id<UITextInputTokenizer> tokenizer;
-	__unsafe_unretained id<UITextInputDelegate> inputDelegate;
 	DTTextRange *_selectedTextRange;
 	DTTextRange *_markedTextRange;
 	NSDictionary *_markedTextStyle;
@@ -304,7 +312,7 @@ typedef enum
 	[center addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 	
 	// style for displaying marked text
-	self.markedTextStyle = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor greenColor], UITextInputTextColorKey, nil];
+	self.markedTextStyle = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor greenColor], DTTextInputTextColorKey, nil];
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -2320,7 +2328,7 @@ typedef enum
 			if ([text isEqualToString:@"\n"])
 			{
 				// remove underline decoration from newline
-				[attributes removeObjectForKey:NSUnderlineStyleAttributeName];
+				[attributes removeUnderlineStyle];
 				
 				// remove strike-through decoration from newline
 				[attributes removeObjectForKey:DTStrikeOutAttribute];
@@ -2921,18 +2929,18 @@ typedef enum
 		CFStringRef fontName = CTFontCopyPostScriptName(ctFont);
 		UIFont *uif = [UIFont fontWithName:(__bridge id)fontName size:CTFontGetSize(ctFont)];
 		CFRelease(fontName);
-		[uiStyles setObject:uif forKey:UITextInputTextFontKey];
+		[uiStyles setObject:uif forKey:DTTextInputTextFontKey];
 	}
 	
 	CGColorRef cgColor = (__bridge CGColorRef)[ctStyles objectForKey:(id)kCTForegroundColorAttributeName];
 	if (cgColor)
 	{
-		[uiStyles setObject:[UIColor colorWithCGColor:cgColor] forKey:UITextInputTextColorKey];
+		[uiStyles setObject:[UIColor colorWithCGColor:cgColor] forKey:DTTextInputTextColorKey];
 	}
 	
 	if (self.backgroundColor)
 	{
-		[uiStyles setObject:self.backgroundColor forKey:UITextInputTextBackgroundColorKey];
+		[uiStyles setObject:self.backgroundColor forKey:DTTextInputTextBackgroundColorKey];
 	}
 	
 	return uiStyles;

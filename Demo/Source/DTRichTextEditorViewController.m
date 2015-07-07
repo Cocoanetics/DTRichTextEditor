@@ -7,16 +7,14 @@
 //
 
 #import "DTRichTextEditorViewController.h"
-#import "NSAttributedString+HTML.h"
-#import "NSAttributedString+DTRichText.h"
-#import "DTRichTextEditor.h"
+
+#import <DTCoreText/DTCoreText.h>
+#import <DTRichTextEditor/DTRichTextEditor.h>
 
 #import "DTRichTextEditorTestState.h"
 #import "DTRichTextEditorTestStateController.h"
-#import "DTCoreTextLayoutFrame.h"
 
 #import "DTFormatViewController.h"
-#import "DTCoreTextFunctions.h"
 
 NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 

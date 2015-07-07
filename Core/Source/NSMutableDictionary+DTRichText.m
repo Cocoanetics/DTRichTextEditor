@@ -6,11 +6,9 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
-#import <CoreText/CoreText.h>
+#import <DTCoreText/DTCoreText.h>
+
 #import "NSMutableDictionary+DTRichText.h"
-#import "DTCoreTextFontDescriptor.h"
-#import "DTCoreTextConstants.h"
-#import "DTCoreTextParagraphStyle.h"
 
 @implementation NSMutableDictionary (DTRichText)
 
@@ -73,6 +71,16 @@
 	else
 	{
 		[self setObject:[NSNumber numberWithInteger:kCTUnderlineStyleSingle] forKey:(id)kCTUnderlineStyleAttributeName];
+	}
+}
+
+- (void)removeUnderlineStyle
+{
+	[self removeObjectForKey:(id)kCTUnderlineStyleAttributeName];
+	
+	if (DTCoreTextModernAttributesPossible())
+	{
+		[self removeObjectForKey:NSUnderlineStyleAttributeName];
 	}
 }
 

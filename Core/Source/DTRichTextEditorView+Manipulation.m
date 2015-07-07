@@ -7,8 +7,10 @@
 //
 
 #import "DTRichTextEditor.h"
-#import "DTHTMLWriter.h"
 #import "DTUndoManager.h"
+
+#import <DTCoreText/DTCoreText.h>
+#import <DTWebArchive/UIPasteboard+DTWebArchive.h>
 
 @interface DTRichTextEditorView (private)
 

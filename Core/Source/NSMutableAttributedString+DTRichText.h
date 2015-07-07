@@ -6,9 +6,7 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
-#import "DTCoreText.h"
-
-@class DTTextAttachment;
+@class DTTextAttachment, DTCoreTextParagraphStyle, DTCoreTextFontDescriptor;
 
 // block used for enumerating paragraph styles
 typedef BOOL (^NSMutableAttributedStringParagraphStyleEnumerationBlock)(DTCoreTextParagraphStyle *paragraphStyle, BOOL *stop);

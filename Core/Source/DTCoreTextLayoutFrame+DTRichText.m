@@ -6,12 +6,10 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
-#import "DTCoreTextLayoutFrame+DTRichText.h"
-#import "DTCoreTextLayoutFrame+Cursor.h"
+#import <DTCoreText/DTCoreText.h>
 
 #import "DTTextPosition.h"
 #import "DTTextRange.h"
-#import "DTCoreTextLayoutLine.h"
 #import "DTTextSelectionRect.h"
 
 @implementation DTCoreTextLayoutFrame (DTRichText)
@@ -35,8 +33,8 @@
     NSInteger fromIndex = range.location;
     NSInteger toIndex = range.location + range.length;
     
-    CGFloat fromCaretOffset;
-    CGFloat toCaretOffset;
+    CGFloat fromCaretOffset = 0.0;
+    CGFloat toCaretOffset = 0.0;
     
     BOOL haveStart = NO;
     BOOL haveEnd = NO;

@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 Cocoanetics. All rights reserved.
 //
 
-#import "DTHTMLWriter.h"
+#import <DTCoreText/DTHTMLWriter.h>
 
 @class DTWebArchive;
 

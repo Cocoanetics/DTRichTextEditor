@@ -6,7 +6,7 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
-#import "NSDictionary+DTCoreText.h"
+#import <UIKit/UIKit.h>
 
 @class DTCoreTextFontDescriptor;
 
@@ -64,6 +64,11 @@
  Removes the attributes related to a DTTextAttachment from the receiver
  */
 - (void)removeAttachment;
+
+/**
+ Removes the underline style from the receiver
+ */
+- (void)removeUnderlineStyle;
 
 /**
  Removes list prefix field from the receiver

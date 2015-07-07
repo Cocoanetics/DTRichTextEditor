@@ -1,13 +1,10 @@
 // everything is based on this
-#import "DTCoreText.h"
-
 #import "DTRichTextEditorConstants.h"
 
 // utility categories
 #import "NSAttributedString+DTRichText.h"
 #import "NSMutableAttributedString+DTRichText.h"
 #import "NSMutableDictionary+DTRichText.h"
-#import "UIPasteboard+DTWebArchive.h"
 
 // specialized RTE subclasses
 #import "DTTextRange.h"
@@ -27,7 +24,6 @@
 #import "DTRichTextEditorView+Styles.h"
 
 #import "DTTextSelectionView.h"
-#import "DTDictationPlaceholderView.h"
 
 #import "DTUndoManager.h"
 

@@ -6,6 +6,10 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
+
+@class DTDictationPlaceholderTextAttachment;
+
 #import "DTRichTextEditorView.h"
 
 /**

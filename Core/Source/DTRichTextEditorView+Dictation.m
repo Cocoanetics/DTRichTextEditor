@@ -7,7 +7,7 @@
 //
 
 #import "DTRichTextEditor.h"
-#import "DTDictationPlaceholderView.h"
+#import <DTCoreText/DTCoreText.h>
 
 @interface DTRichTextEditorView (private)
 

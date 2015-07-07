@@ -6,7 +6,10 @@
 //  Copyright (c) 2013 Cocoanetics. All rights reserved.
 //
 
-#import "DTRichTextEditor.h"
+#import "DTRichTextEditorView.h"
+#import <DTCoreText/DTCoreTextFontDescriptor.h>
+#import <DTCoreText/DTCoreTextParagraphStyle.h>
+#import <DTCoreText/DTCSSListStyle.h>
 
 /**
  The **Ranges** category enhances DTRichTextEditorView with methods for retrieving CSS-like style information.

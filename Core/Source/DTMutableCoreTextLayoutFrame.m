@@ -6,9 +6,10 @@
 //  Copyright (c) 2011 Cocoanetics. All rights reserved.
 //
 
+#import <DTCoreText/DTCoreText.h>
+
 #import "DTMutableCoreTextLayoutFrame.h"
 #import "DTRichTextCategories.h"
-#import "DTCoreText.h"
 #import "DTCoreTextLayoutFrame+DTRichText.h"
 
 @implementation DTMutableCoreTextLayoutFrame

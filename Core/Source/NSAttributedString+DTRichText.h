@@ -6,6 +6,8 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
+
 @class DTCSSListStyle;
 
 /**

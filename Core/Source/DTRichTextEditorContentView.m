@@ -8,8 +8,9 @@
 
 #import "DTRichTextEditorContentView.h"
 #import "DTMutableCoreTextLayoutFrame.h"
-#import "DTCoreTextLayoutFrame.h"
-#import "DTTiledLayerWithoutFade.h"
+
+#import <DTCoreText/DTCoreTextLayoutFrame.h>
+#import <DTFoundation/DTTiledLayerWithoutFade.h>
 
 
 @implementation DTRichTextEditorContentView
