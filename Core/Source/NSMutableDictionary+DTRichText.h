@@ -66,6 +66,11 @@
 - (void)removeAttachment;
 
 /**
+ Removes the underline style from the receiver
+ */
+- (void)removeUnderlineStyle;
+
+/**
  Removes list prefix field from the receiver
  */
 - (void)removeListPrefixField;

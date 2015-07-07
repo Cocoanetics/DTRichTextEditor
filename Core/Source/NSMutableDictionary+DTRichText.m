@@ -79,6 +79,16 @@
 	}
 }
 
+- (void)removeUnderlineStyle
+{
+	[self removeObjectForKey:(id)kCTUnderlineStyleAttributeName];
+	
+	if (DTCoreTextModernAttributesPossible())
+	{
+		[self removeObjectForKey:NSUnderlineStyleAttributeName];
+	}
+}
+
 - (void)toggleStrikethrough
 {
 	if ([self isStrikethrough])

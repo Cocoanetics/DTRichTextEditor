@@ -2328,7 +2328,7 @@ typedef enum
 			if ([text isEqualToString:@"\n"])
 			{
 				// remove underline decoration from newline
-				[attributes removeObjectForKey:NSUnderlineStyleAttributeName];
+				[attributes removeUnderlineStyle];
 				
 				// remove strike-through decoration from newline
 				[attributes removeObjectForKey:DTStrikeOutAttribute];
