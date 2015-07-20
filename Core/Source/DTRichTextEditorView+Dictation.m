@@ -68,28 +68,14 @@
     self.waitingForDictionationResult = YES;
 }
 
-- (void)dictationRecognitionFailed
-{
-	// we don't want the removal of the image to be an undo step
-    [self.undoManager disableUndoRegistration];
-	
-	UITextRange *range = [self textRangeOfDictationPlaceholder];
-	
-	if (range)
-	{
-		// first try the dummy will change + did change. On iOS 8 this calls replaceRange with @"".
-		[self _inputDelegateTextWillChange];
-		[self _inputDelegateTextDidChange];
-		
-		// if we are still waiting for dictation result, then the dummy change did not work, do it the old way
-		if (self.waitingForDictionationResult)
-		{
-			[self replaceRange:range withText:@""];
-		}
-	}
-	
-	[self.undoManager enableUndoRegistration];
+-(void)dictationRecognitionFailed{
+    //removeDictationResultPlaceholder is not invoked if no text was inserted, calling it manually
+    [self removeDictationResultPlaceholder:nil willInsertResult:NO];
+    //workaround for the mic to be enabled again
+    [self.inputDelegate selectionWillChange:self];
+    [self.inputDelegate selectionDidChange:self];
 }
+
 
 - (UITextRange *)textRangeOfDictationPlaceholder
 {
