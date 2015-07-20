@@ -2264,25 +2264,6 @@ typedef enum
     
     NSAttributedString *attributedStringBeingReplaced = nil;
     
-    if (_waitingForDictationResult)
-    {
-		NSString *dictationText = text;
-		
-		if ([dictationText length] && ![[dictationText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length])
-		{
-			return;
-		}
-		
-        // get selection range of placeholder
-        range = (DTTextRange *)[self textRangeOfDictationPlaceholder];
-        
-		// iOS adds white space smartly, so we keep that
-
-         // get placeholder
-        DTDictationPlaceholderTextAttachment *attachment = [self dictationPlaceholderAtPosition:[range start]];
-        attributedStringBeingReplaced = attachment.replacedAttributedString;
-    }
-    
 	NSAttributedString *attributedText = self.attributedText;
 	NSString *string = [attributedText string];
 	
@@ -3171,7 +3152,7 @@ typedef enum
         return;
     }
 	
-    [self.inputDelegate selectionWillChange:self];
+    [self.inputDelegate selectionDidChange:self];
 }
 
 - (void)_inputDelegateTextWillChange
@@ -3181,7 +3162,7 @@ typedef enum
 
 - (void)_inputDelegateTextDidChange
 {
-    [self.inputDelegate textWillChange:self];
+    [self.inputDelegate textDidChange:self];
 }
 
 - (void)_editorViewDelegateDidChangeSelection
