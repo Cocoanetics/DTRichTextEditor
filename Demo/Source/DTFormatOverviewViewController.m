@@ -142,7 +142,7 @@
 	
 	[CATransaction begin];
 	[CATransaction setDisableActions:YES];
-    self.preferredContentSize = _visibleTableViewController.contentSizeForViewInPopover;
+    self.preferredContentSize = _visibleTableViewController.preferredContentSize;
 	[CATransaction commit];
 }
 
