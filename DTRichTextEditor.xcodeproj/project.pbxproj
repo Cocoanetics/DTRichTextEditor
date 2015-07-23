@@ -211,6 +211,8 @@
 		A751AE6A17E2FA7B005C6AF6 /* DTInputViewTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A751AE6917E2FA7B005C6AF6 /* DTInputViewTableViewController.m */; };
 		A75D431017005D6E003CAF38 /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A75D430517005893003CAF38 /* libDTLoupe.a */; };
 		A75D432717005E15003CAF38 /* DTLoupe.bundle in Resources */ = {isa = PBXBuildFile; fileRef = A75D430717005893003CAF38 /* DTLoupe.bundle */; };
+		A766D65B1B610E8D00394D48 /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A75D430517005893003CAF38 /* libDTLoupe.a */; };
+		A766D65C1B610E9200394D48 /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7235AA61487A9C100C9F926 /* libDTWebArchive.a */; };
 		A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A76F898113C73421007B37C0 /* AssetsLibrary.framework */; };
 		A776DBF21716C9C100E71F36 /* DTRichTextEditorView+Lists.h in Headers */ = {isa = PBXBuildFile; fileRef = A776DBF01716C9C100E71F36 /* DTRichTextEditorView+Lists.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A776DBF41716C9C100E71F36 /* DTRichTextEditorView+Lists.m in Sources */ = {isa = PBXBuildFile; fileRef = A776DBF11716C9C100E71F36 /* DTRichTextEditorView+Lists.m */; };
@@ -227,8 +229,6 @@
 		A79C304B1B60EDFB00E5491A /* DTRichTextEditor.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A7251EC51B4B0B0C00029CAC /* DTRichTextEditor.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		A7A02EE81714469A00789F2C /* DTRichTextEditorConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = A7A02EE61714469A00789F2C /* DTRichTextEditorConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7A02EEA1714469A00789F2C /* DTRichTextEditorConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = A7A02EE71714469A00789F2C /* DTRichTextEditorConstants.m */; };
-		A7B130611B4B2A890014E109 /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7235AA61487A9C100C9F926 /* libDTWebArchive.a */; };
-		A7B130641B4B2B110014E109 /* libDTLoupe.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A75D430517005893003CAF38 /* libDTLoupe.a */; };
 		A7D142081508DCC000ACC855 /* DTRichTextEditorAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351571486772100F4C766 /* DTRichTextEditorAppDelegate.m */; };
 		A7D142091508DCC000ACC855 /* DTRichTextEditorViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351591486772100F4C766 /* DTRichTextEditorViewController.m */; };
 		A7D728E21487D1B500A22742 /* NSAttributedString+DTWebArchive.h in Headers */ = {isa = PBXBuildFile; fileRef = A7D728631487C2F300A22742 /* NSAttributedString+DTWebArchive.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -296,13 +296,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = A79BA6201B46A1FB0086C2F6;
 			remoteInfo = "DTCoreText (iOS)";
-		};
-		A7251F3C1B4B0C1E00029CAC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A7EA07B71A2B2F6A00B61CCE;
-			remoteInfo = "DTFoundation (iOS)";
 		};
 		A7251F3F1B4B0C3200029CAC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -843,10 +836,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A7B130641B4B2B110014E109 /* libDTLoupe.a in Frameworks */,
-				A7B130611B4B2A890014E109 /* libDTWebArchive.a in Frameworks */,
 				A7251F411B4B0C3600029CAC /* DTCoreText.framework in Frameworks */,
 				A7251F3E1B4B0C2A00029CAC /* DTFoundation.framework in Frameworks */,
+				A766D65B1B610E8D00394D48 /* libDTLoupe.a in Frameworks */,
+				A766D65C1B610E9200394D48 /* libDTWebArchive.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1399,7 +1392,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				A7251F3D1B4B0C1E00029CAC /* PBXTargetDependency */,
 				A766D60B1B60FFA200394D48 /* PBXTargetDependency */,
 				A7B130631B4B2B060014E109 /* PBXTargetDependency */,
 				A7B1305E1B4B272E0014E109 /* PBXTargetDependency */,
@@ -2001,11 +1993,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		A7251F3D1B4B0C1E00029CAC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "DTFoundation (iOS)";
-			targetProxy = A7251F3C1B4B0C1E00029CAC /* PBXContainerItemProxy */;
-		};
 		A7251F401B4B0C3200029CAC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "DTCoreText (iOS)";
@@ -2073,6 +2060,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = DTRichTextEditor;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -2106,6 +2094,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = DTRichTextEditor;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -2241,6 +2230,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = DTRichTextEditor;
 				SKIP_INSTALL = YES;
 				VERSIONING_SYSTEM = "apple-generic";
