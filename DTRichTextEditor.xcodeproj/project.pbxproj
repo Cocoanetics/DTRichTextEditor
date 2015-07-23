@@ -339,6 +339,13 @@
 			remoteGlobalIDString = A7D8FF5A14E17A6600BF8CCD;
 			remoteInfo = "Resource Bundle";
 		};
+		A766D65D1B61534500394D48 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A7EA07B71A2B2F6A00B61CCE;
+			remoteInfo = "DTFoundation (iOS)";
+		};
 		A782209516805EBB005B602D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */;
@@ -1392,6 +1399,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A766D65E1B61534500394D48 /* PBXTargetDependency */,
 				A766D60B1B60FFA200394D48 /* PBXTargetDependency */,
 				A7B130631B4B2B060014E109 /* PBXTargetDependency */,
 				A7B1305E1B4B272E0014E109 /* PBXTargetDependency */,
@@ -2002,6 +2010,11 @@
 			isa = PBXTargetDependency;
 			name = "Resource Bundle";
 			targetProxy = A766D60A1B60FFA200394D48 /* PBXContainerItemProxy */;
+		};
+		A766D65E1B61534500394D48 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "DTFoundation (iOS)";
+			targetProxy = A766D65D1B61534500394D48 /* PBXContainerItemProxy */;
 		};
 		A79C304D1B60EDFB00E5491A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
