@@ -1,4 +1,4 @@
----
+osx_image: xcode63
 language: objective-c
 
 before_install:
