@@ -13,6 +13,8 @@
 #import <DTFoundation/DTCoreGraphicsUtils.h>
 #import <DTFoundation/DTTiledLayerWithoutFade.h>
 #import <DTFoundation/DTWeakSupport.h>
+#import <DTWebArchive/DTWebArchive.h>
+#import <DTWebArchive/UIPasteboard+DTWebArchive.h>
 
 #import "DTRichTextEditor.h"
 
@@ -26,10 +28,8 @@
 
 #import "DTCursorView.h"
 
-#import "DTWebArchive.h"
 #import "NSAttributedString+DTWebArchive.h"
 #import "NSAttributedString+DTRichText.h"
-#import "UIPasteboard+DTWebArchive.h"
 #import "DTRichTextEditorContentView.h"
 #import "DTRichTextEditorView+Manipulation.h"
 #import "DTUndoManager.h"
