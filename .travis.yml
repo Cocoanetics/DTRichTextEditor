@@ -4,7 +4,9 @@ language: objective-c
 before_install:
 - git submodule update --init --recursive
 
+xcode_sdk: iphonesimulator8.4
+
 script:
- - xctool -project DTRichTextEditor.xcodeproj -scheme "Demo App" build -sdk iphonesimulator
- - xctool -project DTRichTextEditor.xcodeproj -scheme "DTRichTextEditor (iOS)" build -sdk iphonesimulator
+ - xctool -project DTRichTextEditor.xcodeproj -scheme "Demo App" build
+ - xctool -project DTRichTextEditor.xcodeproj -scheme "DTRichTextEditor (iOS)" build
  - appledoc -o /tmp .
