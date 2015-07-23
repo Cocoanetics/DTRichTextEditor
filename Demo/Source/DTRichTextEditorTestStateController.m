@@ -138,7 +138,7 @@ typedef enum {
     [super viewDidLoad];
     
     self.title = @"Test Options";
-    self.contentSizeForViewInPopover = CGSizeMake(480, 320);
+    self.preferredContentSize = CGSizeMake(480, 320);
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         // on the phone this controller will be presented modally

@@ -79,7 +79,7 @@
         
         // add a bar button item to close
         UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:@"\u25BC"
-                                                                      style:UIBarButtonItemStyleBordered
+                                                                      style:UIBarButtonItemStylePlain
                                                                      target:nil
                                                                      action:@selector(userPressedDone:)];
         self.navigationItem.rightBarButtonItem = closeItem;
