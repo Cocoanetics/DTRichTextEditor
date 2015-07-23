@@ -6,5 +6,5 @@ before_install:
 
 script:
  - xctool -project DTRichTextEditor.xcodeproj -scheme "Demo App" build -sdk iphonesimulator8.1 -arch x86_64
- - xctool -project DTRichTextEditor.xcodeproj -scheme "DTRichTextEditor (iOS)" build  -sdk iphonesimulator8.4 -arch x86_64
+ - xctool -project DTRichTextEditor.xcodeproj -scheme "DTRichTextEditor (iOS)" build  -sdk iphonesimulator8.1 -arch x86_64
  - appledoc -o /tmp .
