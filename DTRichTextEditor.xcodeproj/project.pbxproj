@@ -479,20 +479,6 @@
 			remoteGlobalIDString = FAF37A2017AFDD93009AC27C;
 			remoteInfo = "DTZipArchive Demo";
 		};
-		A79C303F1B60EDC700E5491A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7F34D5C16D0E32E0054A512 /* DTFoundation.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A7EA07B71A2B2F6A00B61CCE;
-			remoteInfo = "DTFoundation (iOS)";
-		};
-		A79C30441B60EDCF00E5491A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = A79BA61F1B46A1FB0086C2F6;
-			remoteInfo = "DTCoreText (iOS)";
-		};
 		A79C304C1B60EDFB00E5491A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7F0C83513C326E900EBD027 /* Project object */;
@@ -879,17 +865,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				A704273613C37EFE00EE0776 /* CoreText.framework in Frameworks */,
+				A79C303D1B60EDC700E5491A /* DTFoundation.framework in Frameworks */,
 				A79C30421B60EDCF00E5491A /* DTCoreText.framework in Frameworks */,
+				A79C304A1B60EDFB00E5491A /* DTRichTextEditor.framework in Frameworks */,
 				A7D8FECA14E1571900BF8CCD /* libxml2.dylib in Frameworks */,
 				A76F898213C73421007B37C0 /* AssetsLibrary.framework in Frameworks */,
 				A704273A13C37F0B00EE0776 /* MediaPlayer.framework in Frameworks */,
 				A704273813C37F0500EE0776 /* QuartzCore.framework in Frameworks */,
 				A704273413C37EF500EE0776 /* ImageIO.framework in Frameworks */,
 				A7F0C84313C326E900EBD027 /* UIKit.framework in Frameworks */,
-				A79C304A1B60EDFB00E5491A /* DTRichTextEditor.framework in Frameworks */,
 				A7F0C84513C326E900EBD027 /* Foundation.framework in Frameworks */,
 				A7F0C84713C326E900EBD027 /* CoreGraphics.framework in Frameworks */,
-				A79C303D1B60EDC700E5491A /* DTFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1456,8 +1442,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				A79C30401B60EDC700E5491A /* PBXTargetDependency */,
-				A79C30451B60EDCF00E5491A /* PBXTargetDependency */,
 				A79C304D1B60EDFB00E5491A /* PBXTargetDependency */,
 			);
 			name = "Demo App";
@@ -2031,16 +2015,6 @@
 			isa = PBXTargetDependency;
 			name = "Resource Bundle";
 			targetProxy = A766D60A1B60FFA200394D48 /* PBXContainerItemProxy */;
-		};
-		A79C30401B60EDC700E5491A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "DTFoundation (iOS)";
-			targetProxy = A79C303F1B60EDC700E5491A /* PBXContainerItemProxy */;
-		};
-		A79C30451B60EDCF00E5491A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "DTCoreText (iOS)";
-			targetProxy = A79C30441B60EDCF00E5491A /* PBXContainerItemProxy */;
 		};
 		A79C304D1B60EDFB00E5491A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
