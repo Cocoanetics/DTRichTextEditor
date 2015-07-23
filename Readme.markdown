@@ -18,3 +18,14 @@ Documentation for **DTRichTextEditor** can be [browsed online](https://docs.coco
 Documentation for **DTWebArchive** can be [browsed online](http://cocoanetics.github.com/DTWebArchive) or installed in your Xcode Organizer via the [Atom Feed URL](http://cocoanetics.github.com/DTWebArchive/DTWebArchive.atom).
 
 Documentation for **DTFoundation** can be [browsed online](http://cocoanetics.github.com/DTFoundation) or installed in your Xcode Organizer via the [Atom Feed URL](http://cocoanetics.github.com/DTFoundation/DTFoundation.atom).
+
+Follow [@cocoanetics](http://twitter.com/cocoanetics) on Twitter or subscribe to the [Cocoanetics Blog](http://www.cocoanetics.com) for news and updates.
+
+License
+-------
+
+It is open source and covered by a standard 2-clause BSD license. That means you have to mention *Cocoanetics* as the original author of this code and reproduce the LICENSE text inside your app. 
+
+You can purchase a [Non-Attribution-License](https://www.cocoanetics.com/order/?product_id=DTRichTextEditor) for 150 Euros for not having to include the LICENSE text.
+
+We also accept sponsorship for specific enhancements which you might need. Please [contact us via email](mailto:oliver@cocoanetics.com?subject=DTRichTextEditor) for inquiries.
