@@ -1413,11 +1413,11 @@
 			buildRules = (
 			);
 			dependencies = (
+				A7251F3D1B4B0C1E00029CAC /* PBXTargetDependency */,
 				A766D60B1B60FFA200394D48 /* PBXTargetDependency */,
 				A7B130631B4B2B060014E109 /* PBXTargetDependency */,
 				A7B1305E1B4B272E0014E109 /* PBXTargetDependency */,
 				A7251F401B4B0C3200029CAC /* PBXTargetDependency */,
-				A7251F3D1B4B0C1E00029CAC /* PBXTargetDependency */,
 			);
 			name = "DTRichTextEditor (iOS)";
 			productName = DTRichTextEditor;
