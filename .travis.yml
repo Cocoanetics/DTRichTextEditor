@@ -2,6 +2,6 @@
 language: objective-c
 
 script:
- - xctool -project DTRichTextEditor.xcodeproj -scheme "Demo App" build -sdk iphonesimulator -arch i386 ONLY_ACTIVE_ARCH=NO
+# - xctool -project DTRichTextEditor.xcodeproj -scheme "Demo App" build -sdk iphonesimulator -arch i386 ONLY_ACTIVE_ARCH=NO
  - xctool -project DTRichTextEditor.xcodeproj -scheme "DTRichTextEditor (iOS)" build -sdk iphonesimulator
  - appledoc -o /tmp .
