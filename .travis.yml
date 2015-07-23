@@ -5,6 +5,7 @@ before_install:
 - git submodule update --init --recursive
 
 script:
- - xctool -project DTRichTextEditor.xcodeproj -scheme "DTRichTextEditor (iOS)" build  -sdk iphonesimulator -arch x86_64
+# - xctool -project DTRichTextEditor.xcodeproj -scheme "DTRichTextEditor (iOS)" build  -sdk iphonesimulator -arch x86_64
 # - xctool -project DTRichTextEditor.xcodeproj -scheme "Demo App" build -sdk iphonesimulator -arch x86_64
+ - xctool -project DTRichTextEditor.xcodeproj -scheme "DTRichTextEditor (iOS)" build  -sdk iphoneos CODE_SIGN_IDENTITY="" arch=armv7 CODE_SIGNING_REQUIRED=NO
  - appledoc -o /tmp .
