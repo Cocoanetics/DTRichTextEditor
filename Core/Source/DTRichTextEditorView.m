@@ -1205,7 +1205,7 @@ typedef enum
 	// Select a word closest to the touchPoint
 	[self.inputDelegate selectionWillChange:self];
 	
-	UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
+	UITextPosition *position = (id)[self closestPositionToPoint:touchPoint];
 	UITextRange *wordRange = [self textRangeOfWordAtPosition:position];
 	
 	// Bail out if there isn't a word range or if we are editing and it's the same as the current word range
@@ -1262,7 +1262,7 @@ typedef enum
 	}
 	
 	// Select a paragraph containing the touchPoint
-	UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
+	UITextPosition *position = (id)[self closestPositionToPoint:touchPoint];
 	UITextRange *textRange = [DTTextRange textRangeFromStart:position toEnd:position];
 	textRange = [self textRangeOfParagraphsContainingRange:textRange];
 	

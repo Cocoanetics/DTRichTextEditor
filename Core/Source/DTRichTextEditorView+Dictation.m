@@ -97,9 +97,10 @@
     }
 }
 
--(void)dictationRecognitionFailed{
+-(void)dictationRecognitionFailed
+{
     //removeDictationResultPlaceholder is not invoked if no text was inserted, calling it manually
-    [self removeDictationResultPlaceholder:nil willInsertResult:NO];
+    [self removeDictationResultPlaceholder:[NSNull null] willInsertResult:NO];
     //workaround for the mic to be enabled again
     [self.inputDelegate selectionWillChange:self];
     [self.inputDelegate selectionDidChange:self];
