@@ -329,6 +329,13 @@
 			remoteGlobalIDString = A7D8FF5B14E17A6600BF8CCD;
 			remoteInfo = "Resource Bundle";
 		};
+		A76284671B66730600092F02 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A7235A151487A61900C9F926 /* DTCoreText.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A79BA61F1B46A1FB0086C2F6;
+			remoteInfo = "DTCoreText (iOS)";
+		};
 		A766D60A1B60FFA200394D48 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A7D8FF7B14E2939500BF8CCD /* DTLoupe.xcodeproj */;
@@ -1414,6 +1421,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				A76284681B66730600092F02 /* PBXTargetDependency */,
 				A7CB46B21B66369C00AF0D9F /* PBXTargetDependency */,
 				A766D60B1B60FFA200394D48 /* PBXTargetDependency */,
 				A7B130631B4B2B060014E109 /* PBXTargetDependency */,
@@ -2017,6 +2025,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		A76284681B66730600092F02 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "DTCoreText (iOS)";
+			targetProxy = A76284671B66730600092F02 /* PBXContainerItemProxy */;
+		};
 		A766D60B1B60FFA200394D48 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "Resource Bundle";
