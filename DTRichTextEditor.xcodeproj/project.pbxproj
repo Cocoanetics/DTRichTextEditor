@@ -259,6 +259,10 @@
 		A7D728FF1487D1B500A22742 /* DTTextRange.m in Sources */ = {isa = PBXBuildFile; fileRef = A743512F1486771700F4C766 /* DTTextRange.m */; };
 		A7D729001487D1B500A22742 /* DTTextSelectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = A74351301486771700F4C766 /* DTTextSelectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A7D729011487D1B500A22742 /* DTTextSelectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = A74351311486771700F4C766 /* DTTextSelectionView.m */; };
+		A7D8031D1B6641B700D660DA /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273513C37EFE00EE0776 /* CoreText.framework */; };
+		A7D8031E1B6641C900D660DA /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84613C326E900EBD027 /* CoreGraphics.framework */; };
+		A7D8031F1B6641D200D660DA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7F0C84213C326E900EBD027 /* UIKit.framework */; };
+		A7D803201B6641E200D660DA /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A704273713C37F0500EE0776 /* QuartzCore.framework */; };
 		A7D8FEC714E1570000BF8CCD /* libDTCoreText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FEBA14E14E4500BF8CCD /* libDTCoreText.a */; };
 		A7D8FEC814E1570000BF8CCD /* libDTWebArchive.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A7235AA61487A9C100C9F926 /* libDTWebArchive.a */; };
 		A7D8FECA14E1571900BF8CCD /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A7D8FEC914E1571900BF8CCD /* libxml2.dylib */; };
@@ -850,6 +854,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A7D803201B6641E200D660DA /* QuartzCore.framework in Frameworks */,
+				A7D8031F1B6641D200D660DA /* UIKit.framework in Frameworks */,
+				A7D8031E1B6641C900D660DA /* CoreGraphics.framework in Frameworks */,
+				A7D8031D1B6641B700D660DA /* CoreText.framework in Frameworks */,
 				A72F895E1B615E6200D929AA /* DTFoundation.framework in Frameworks */,
 				A72F895C1B615E4700D929AA /* DTCoreText.framework in Frameworks */,
 				A766D65B1B610E8D00394D48 /* libDTLoupe.a in Frameworks */,
@@ -2068,6 +2076,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_MODULES_AUTOLINK = NO;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CURRENT_PROJECT_VERSION = 1;
@@ -2101,6 +2110,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_MODULES_AUTOLINK = NO;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				COPY_PHASE_STRIP = NO;
@@ -2241,6 +2251,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
+				CLANG_MODULES_AUTOLINK = NO;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CURRENT_PROJECT_VERSION = 1;
