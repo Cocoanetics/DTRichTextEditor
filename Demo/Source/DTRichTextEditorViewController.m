@@ -63,16 +63,16 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
     }
     
     UIBarButtonItem *formatItem = [[UIBarButtonItem alloc] initWithTitle:@"Format"
-                                                                   style:UIBarButtonItemStyleBordered
+                                                                   style:UIBarButtonItemStylePlain
                                                                   target:self
                                                                   action:@selector(presentFormatOptions:)];
 
     UIBarButtonItem *insertItem = [[UIBarButtonItem alloc] initWithTitle:@"Insert"
-                                                                   style:UIBarButtonItemStyleBordered
+                                                                   style:UIBarButtonItemStylePlain
                                                                   target:self
                                                                   action:@selector(presentGallery:)];
 
-    UIBarButtonItem *testStateItem = [[UIBarButtonItem alloc] initWithTitle:@"Test Options" style:UIBarButtonItemStyleBordered target:self action:@selector(presentTestOptions:)];
+    UIBarButtonItem *testStateItem = [[UIBarButtonItem alloc] initWithTitle:@"Test Options" style:UIBarButtonItemStylePlain target:self action:@selector(presentTestOptions:)];
     self.navigationItem.rightBarButtonItems = UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone ? @[formatItem, insertItem, testStateItem] : @[formatItem, testStateItem];
     
 	// defaults
@@ -107,9 +107,9 @@ NSString *DTTestStateDataKey = @"DTTestStateDataKey";
 	// image as drawn by your custom views which you return in the delegate method
 	richEditor.attributedTextContentView.shouldDrawImages = NO;
 	
-    highlightButton = [[UIBarButtonItem alloc] initWithTitle:@"H" style:UIBarButtonItemStyleBordered target:self action:@selector(toggleHighlight:)];
+    highlightButton = [[UIBarButtonItem alloc] initWithTitle:@"H" style:UIBarButtonItemStylePlain target:self action:@selector(toggleHighlight:)];
     	
-	UIBarButtonItem *smile = [[UIBarButtonItem alloc] initWithTitle:@":)" style:UIBarButtonItemStyleBordered target:self action:@selector(insertSmiley:)];
+	UIBarButtonItem *smile = [[UIBarButtonItem alloc] initWithTitle:@":)" style:UIBarButtonItemStylePlain target:self action:@selector(insertSmiley:)];
 	
 	toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
 	richEditor.inputAccessoryView = toolbar;
