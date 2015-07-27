@@ -3,6 +3,11 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.6.11
+
+- FIXED: Problems with dictation placeholder leading to crash or double text insertion
+- CHANGED: Updated DTLoupe to 1.5.7 - to support bundle in iOS framework
+
 Version 1.6.10
 
 - FIXED: Crash in DTLoupe
