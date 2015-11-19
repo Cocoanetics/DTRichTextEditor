@@ -3,6 +3,11 @@ Change Log
 
 This is the history of version updates.
 
+Version 1.6.12
+
+- FIXED: Invalid Geometry Crash
+- UPDATED: DTLoupe to 1.5.8
+
 Version 1.6.11
 
 - FIXED: Problems with dictation placeholder leading to crash or double text insertion
