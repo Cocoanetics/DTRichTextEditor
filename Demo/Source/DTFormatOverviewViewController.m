@@ -40,7 +40,7 @@
         
         // add a bar button item to close
         UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:@"\u25BC"
-                                                                      style:UIBarButtonItemStyleBordered
+                                                                      style:UIBarButtonItemStylePlain
                                                                      target:nil
                                                                      action:@selector(userPressedDone:)];
         self.navigationItem.rightBarButtonItem = closeItem;
@@ -49,8 +49,6 @@
     }
     
     UISegmentedControl *formatTypeChooser = [[UISegmentedControl alloc] initWithItems:optionsArray];
-    formatTypeChooser.segmentedControlStyle = UISegmentedControlStyleBar;
-    
     formatTypeChooser.frame = CGRectMake(0.0, 0.0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(formatTypeChooser.bounds));
     formatTypeChooser.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     formatTypeChooser.selectedSegmentIndex = 0;
@@ -144,7 +142,7 @@
 	
 	[CATransaction begin];
 	[CATransaction setDisableActions:YES];
-    self.contentSizeForViewInPopover = _visibleTableViewController.contentSizeForViewInPopover;
+    self.preferredContentSize = _visibleTableViewController.preferredContentSize;
 	[CATransaction commit];
 }
 

@@ -202,7 +202,7 @@
 #pragma mark Utilities
 - (CGRect)beginCaretRect
 {
-	__block CGRect rect = CGRectNull;
+    __block CGRect rect = CGRectZero;
 	
 	// find the first selection rectangle the has the beginning
 	[_selectionRectangles enumerateObjectsUsingBlock:^(DTTextSelectionRect *oneTextSelectionRect, NSUInteger idx, BOOL *stop) {
@@ -219,7 +219,7 @@
 
 - (CGRect)endCaretRect
 {
-	__block CGRect rect = CGRectNull;
+    __block CGRect rect = CGRectZero;
 	
 	// find the first selection rectangle from the back the has the end
 	[_selectionRectangles enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(DTTextSelectionRect *oneTextSelectionRect, NSUInteger idx, BOOL *stop) {
@@ -239,7 +239,7 @@
 {
 	if (![_selectionRectangles count])
 	{
-		return CGRectNull;
+		return CGRectZero;
 	}
 	
 	CGRect unionRect = [[_selectionRectangles objectAtIndex:0] rect];

@@ -8,10 +8,14 @@
 
 @class DTTextAttachment, DTCoreTextParagraphStyle, DTCoreTextFontDescriptor;
 
-// block used for enumerating paragraph styles
+/**
+ Block used for enumerating paragraph styles
+ */
 typedef BOOL (^NSMutableAttributedStringParagraphStyleEnumerationBlock)(DTCoreTextParagraphStyle *paragraphStyle, BOOL *stop);
 
-// block used for enumerating font styles
+/**
+ Block used for enumerating font styles
+ */
 typedef BOOL (^NSMutableAttributedStringFontStyleEnumerationBlock)(DTCoreTextFontDescriptor *fontDescriptor, BOOL *stop);
 
 /**

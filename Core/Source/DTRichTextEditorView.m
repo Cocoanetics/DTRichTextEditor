@@ -13,6 +13,8 @@
 #import <DTFoundation/DTCoreGraphicsUtils.h>
 #import <DTFoundation/DTTiledLayerWithoutFade.h>
 #import <DTFoundation/DTWeakSupport.h>
+#import <DTWebArchive/DTWebArchive.h>
+#import <DTWebArchive/UIPasteboard+DTWebArchive.h>
 
 #import "DTRichTextEditor.h"
 
@@ -26,10 +28,8 @@
 
 #import "DTCursorView.h"
 
-#import "DTWebArchive.h"
 #import "NSAttributedString+DTWebArchive.h"
 #import "NSAttributedString+DTRichText.h"
-#import "UIPasteboard+DTWebArchive.h"
 #import "DTRichTextEditorContentView.h"
 #import "DTRichTextEditorView+Manipulation.h"
 #import "DTUndoManager.h"
@@ -1205,7 +1205,7 @@ typedef enum
 	// Select a word closest to the touchPoint
 	[self.inputDelegate selectionWillChange:self];
 	
-	UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
+	UITextPosition *position = (id)[self closestPositionToPoint:touchPoint];
 	UITextRange *wordRange = [self textRangeOfWordAtPosition:position];
 	
 	// Bail out if there isn't a word range or if we are editing and it's the same as the current word range
@@ -1262,7 +1262,7 @@ typedef enum
 	}
 	
 	// Select a paragraph containing the touchPoint
-	UITextPosition *position = (id)[self closestPositionToPoint:touchPoint withinRange:nil];
+	UITextPosition *position = (id)[self closestPositionToPoint:touchPoint];
 	UITextRange *textRange = [DTTextRange textRangeFromStart:position toEnd:position];
 	textRange = [self textRangeOfParagraphsContainingRange:textRange];
 	
@@ -2264,25 +2264,6 @@ typedef enum
     
     NSAttributedString *attributedStringBeingReplaced = nil;
     
-    if (_waitingForDictationResult)
-    {
-		NSString *dictationText = text;
-		
-		if ([dictationText length] && ![[dictationText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length])
-		{
-			return;
-		}
-		
-        // get selection range of placeholder
-        range = (DTTextRange *)[self textRangeOfDictationPlaceholder];
-        
-		// iOS adds white space smartly, so we keep that
-
-         // get placeholder
-        DTDictationPlaceholderTextAttachment *attachment = [self dictationPlaceholderAtPosition:[range start]];
-        attributedStringBeingReplaced = attachment.replacedAttributedString;
-    }
-    
 	NSAttributedString *attributedText = self.attributedText;
 	NSString *string = [attributedText string];
 	
@@ -3171,7 +3152,7 @@ typedef enum
         return;
     }
 	
-    [self.inputDelegate selectionWillChange:self];
+    [self.inputDelegate selectionDidChange:self];
 }
 
 - (void)_inputDelegateTextWillChange
@@ -3181,7 +3162,7 @@ typedef enum
 
 - (void)_inputDelegateTextDidChange
 {
-    [self.inputDelegate textWillChange:self];
+    [self.inputDelegate textDidChange:self];
 }
 
 - (void)_editorViewDelegateDidChangeSelection

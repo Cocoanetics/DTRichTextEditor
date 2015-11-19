@@ -37,7 +37,7 @@
 		<string>Demo</string>
 	</array>
 	<key>--index-desc</key>
-	<string>Documentation/Readme.markdown</string>
+	<string>Readme.markdown</string>
 	<key>--include</key>
 	<array>
 		<string>./Documentation/Known Issues-template.markdown</string>
