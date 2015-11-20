@@ -42,7 +42,9 @@ gradle.taskGraph.whenReady { taskGraph ->
 	}
 }	
 
-
+project.properties.each {
+	println "- $it"
+} 
 
 // ---------- FTP PUBLISH ----------
 
@@ -112,5 +114,5 @@ task documentationUpload << {
   }
 }
 
-appledoc.onlyIf { !project.hasProperty('develop') }
-documentationUpload.onlyIf { !project.hasProperty('develop') }	
+appledoc.onlyIf { !project.hasProperty('buildBranch-develop') }
+documentationUpload.onlyIf { !project.hasProperty('buildBranch-develop') }	
