@@ -2,9 +2,7 @@
 #osx_image: xcode6.4
 language: objective-c
 
-env:
-  - TERM=dumb
-	
+
 before_install:
 	- git submodule update --init --recursive
 
@@ -13,7 +11,7 @@ branches:
 		- develop
 
 script:
-	- ./gradlew DemoApp
-	- ./gradlew DTRichTextEditor
-	- ./gradlew appledoc
-	- ./gradlew documentationUpload -PuploadUser=$FTP_USER -PuploadPassword=$FTP_PASSWORD
+	- TERM=dumb./gradlew DemoApp
+	- TERM=dumb ./gradlew DTRichTextEditor
+	- TERM=dumb ./gradlew appledoc
+	- TERM=dumb ./gradlew documentationUpload -PuploadUser=$FTP_USER -PuploadPassword=$FTP_PASSWORD
