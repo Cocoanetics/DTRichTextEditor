@@ -35,6 +35,7 @@
 		<string>*.m</string>
 		<string>DTFoundation</string>
 		<string>Demo</string>
+		<string>build</string>
 	</array>
 	<key>--index-desc</key>
 	<string>Readme.markdown</string>
