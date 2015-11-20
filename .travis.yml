@@ -6,12 +6,11 @@ language: objective-c
 before_install:
 	- git submodule update --init --recursive
 
-branches:
-	only:
-		- develop
+env:
+  - TERM=dumb
 
 script:
-	- TERM=dumb./gradlew DemoApp
-	- TERM=dumb ./gradlew DTRichTextEditor
-	- TERM=dumb ./gradlew appledoc
-	- TERM=dumb ./gradlew documentationUpload -PuploadUser=$FTP_USER -PuploadPassword=$FTP_PASSWORD
+	- ./gradlew DemoApp
+	- ./gradlew DTRichTextEditor
+	- ./gradlew appledoc -P$TRAVIS_BRANCH
+	- ./gradlew documentationUpload -PuploadUser=$FTP_USER -PuploadPassword=$FTP_PASSWORD -P$TRAVIS_BRANCH
