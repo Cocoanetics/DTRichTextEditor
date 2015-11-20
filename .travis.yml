@@ -3,10 +3,14 @@
 language: objective-c
 
 before_install:
-- git submodule update --init --recursive
+	- git submodule update --init --recursive
+
+branches:
+	only:
+		- develop
 
 script:
-- ./gradlew DemoApp
-- ./gradlew DTRichTextEditor
-- ./gradlew appledoc
-- ./gradlew documentationUpload -PuploadUser=$FTP_USER -PuploadPassword=$FTP_PASSWORD
+	- ./gradlew DemoApp
+	- ./gradlew DTRichTextEditor
+	- ./gradlew appledoc
+	- ./gradlew documentationUpload -PuploadUser=$FTP_USER -PuploadPassword=$FTP_PASSWORD
