@@ -6,7 +6,7 @@
 //  Copyright 2011 Cocoanetics. All rights reserved.
 //
 
-#import <UIKit/UIKIt.h>
+#import <UIKit/UIKit.h>
 
 /**
  Class to represent a text position in DTRichTextEditorView
