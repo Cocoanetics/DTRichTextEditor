@@ -861,14 +861,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A7D803201B6641E200D660DA /* QuartzCore.framework in Frameworks */,
-				A7D8031F1B6641D200D660DA /* UIKit.framework in Frameworks */,
-				A7D8031E1B6641C900D660DA /* CoreGraphics.framework in Frameworks */,
-				A7D8031D1B6641B700D660DA /* CoreText.framework in Frameworks */,
 				A72F895E1B615E6200D929AA /* DTFoundation.framework in Frameworks */,
 				A72F895C1B615E4700D929AA /* DTCoreText.framework in Frameworks */,
 				A766D65B1B610E8D00394D48 /* libDTLoupe.a in Frameworks */,
 				A766D65C1B610E9200394D48 /* libDTWebArchive.a in Frameworks */,
+				A7D803201B6641E200D660DA /* QuartzCore.framework in Frameworks */,
+				A7D8031F1B6641D200D660DA /* UIKit.framework in Frameworks */,
+				A7D8031E1B6641C900D660DA /* CoreGraphics.framework in Frameworks */,
+				A7D8031D1B6641B700D660DA /* CoreText.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
